@@ -296,8 +296,8 @@ export default {
     },
 
     // Uploads an image to a given product
-    uploadProductImage: (unCheckImageType, userId, businessId, productId, image) => {
-        return instance.post(`/images?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
+    uploadImage: (query, image) => {
+        return instance.post(`/images${query}`,
             image, {
             withCredentials: true,
             headers: {
@@ -307,8 +307,8 @@ export default {
     },
 
     // Sets the primary image
-    setPrimaryImage: (businessId, productId, imageId) => {
-        return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
+    setPrimaryImage: (unCheckImageType, userId, businessId, productId, imageId) => {
+        return instance.put(`/images/${imageId}/makePrimary?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
             {}, {
                 withCredentials: true
             })
@@ -387,7 +387,6 @@ export default {
         return instance.post(`/home/conversation`, messagePayload, { withCredentials: true})
     },
 
-    // TODO needs to be updated when task 730 is done?
     // Sends a message to the backend with a card ID and user ID of the intended recipient
     sendMessage: (cardId, recipient, message) => {
         return instance.post(`/cards/${cardId}/message`, {
@@ -400,5 +399,21 @@ export default {
     // retrieves conversation entities
     getConversations() {
         return instance.get(`/home/conversation`, {withCredentials: true})
+    },
+
+    // Sends a DELETE request to the backend to delete a conversation with the given id.
+    deleteConversation: (id) => {
+        return instance.delete(`/users/conversation/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // retrieves a specific conversation
+    getConversation(id) {
+        return instance.get(`/home/conversation/${id}/messages`, {withCredentials: true})
+    },
+
+    sendReply: (conversationId, message) => {
+        return instance.post(`/home/conversation/${conversationId}`, message, {withCredentials: true})
     }
 }

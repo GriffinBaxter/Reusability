@@ -96,6 +96,7 @@ class ProductResourceIntegrationTests {
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
             "\"businessesAdministered\":[null]," +
+            "\"images\":[]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
             "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +

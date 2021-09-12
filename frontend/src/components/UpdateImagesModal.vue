@@ -1,13 +1,17 @@
 <template>
 
   <!-- Modal -->
-  <div class="modal fade" ref="_updateImagesModal" tabindex="-1" aria-labelledby="updateImagesModal" aria-hidden="true" id="update-product-images-modal">
+  <div class="modal fade" ref="_updateImagesModal" tabindex="-1" aria-labelledby="updateImagesModal" aria-hidden="true"
+       id="update-product-images-modal">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 v-if="location === 'Product'" class="modal-title" id="updateImagesModalTitle_Product">Update Product {{value.data.id}}'s Images</h5>
-          <h5 v-else-if="location === 'Business'" class="modal-title" id="updateImagesModalTitle_Business">Update {{value.data.name}}'s Images</h5>
-          <h5 v-else-if="location === 'User'" class="modal-title" id="updateImagesModalTitle_User">Update {{value.data.firstName}}'s Images</h5>
+          <h5 v-if="location === 'Product'" class="modal-title" id="updateImagesModalTitle_Product">Update Product
+            {{ value.data.id }}'s Images</h5>
+          <h5 v-else-if="location === 'Business'" class="modal-title" id="updateImagesModalTitle_Business">Update
+            {{ value.data.name }}'s Images</h5>
+          <h5 v-else-if="location === 'User'" class="modal-title" id="updateImagesModalTitle_User">Update
+            {{ value.data.firstName }}'s Images</h5>
         </div>
 
         <div class="modal-body">
@@ -19,7 +23,7 @@
             <div class="row my-lg-2">
               <div class="col-12 mx-auto">
                 <div v-if="formErrorModalMessage" class="alert alert-danger">
-                  <label>{{formErrorModalMessage}}</label>
+                  <label>{{ formErrorModalMessage }}</label>
                 </div>
               </div>
             </div>
@@ -28,14 +32,15 @@
               <!-- Primary Image -->
               <div class="col-lg-4">
                 <h5>Primary Image:</h5>
-                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../public/default-product.jpg')" id="primary-image" alt="primary image">
+                <img class="card-img px-5 px-lg-0 mb-3" :src="require('../../public/default-product.jpg')"
+                     id="primary-image" alt="primary image">
               </div>
 
               <div class="col-lg-8">
                 <!-- Upload -->
-                  <button class="btn green-button" @click="onUploadClick">Upload image</button>
-                  <input type="file" id="imageUpload" ref="image" @change="getImage" name="img"
-                         accept="image/png, image/gif, image/jpeg">
+                <button class="btn green-button" @click="onUploadClick">Upload image</button>
+                <input type="file" id="imageUpload" ref="image" @change="uploadImage" name="img"
+                       accept="image/png, image/gif, image/jpeg">
                 <hr>
                 <!-- Images -->
                 <div class="row">
@@ -44,9 +49,13 @@
                   </div>
                   <div class="row">
                     <div class="col-3" v-for="image in images" v-bind:key="image.id">
-                      <img v-if="selectedImage === image.id" class="img-fluid rounded border border-primary border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)" alt="product image">
-                      <img v-else-if="image.id === primaryImage" class="img-fluid rounded border border-warning border-2" :src="getImageSrc(image.filename)" @click="setSelected(image.id)" alt="product image">
-                      <img v-else class="img-fluid rounded" :src="getImageSrc(image.filename)" @click="setSelected(image.id)" alt="product image">
+                      <img v-if="selectedImage === image.id" class="img-fluid rounded border border-primary border-2"
+                           :src="getImageSrc(image.filename)" @click="setSelected(image.id)" alt="product image">
+                      <img v-else-if="image.id === primaryImage"
+                           class="img-fluid rounded border border-warning border-2" :src="getImageSrc(image.filename)"
+                           @click="setSelected(image.id)" alt="product image">
+                      <img v-else class="img-fluid rounded" :src="getImageSrc(image.filename)"
+                           @click="setSelected(image.id)" alt="product image">
                     </div>
                   </div>
                 </div>
@@ -55,14 +64,17 @@
                   <hr>
                   <button class="btn btn-danger" id="delete-button" @click="deleteSelectedImage()">Delete Image</button>
                   <button v-if="selectedImage !== primaryImage" class="btn btn-outline-success float-end"
-                  @click="setPrimarySelectedImage()">Set Primary Image</button>
+                          @click="setPrimarySelectedImage()">Set Primary Image
+                  </button>
                 </div>
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-primary order-0 green-button-transparent" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-outline-primary order-0 green-button-transparent"
+                  data-bs-dismiss="modal">Close
+          </button>
         </div>
       </div>
     </div>
@@ -169,12 +181,34 @@ export default {
     },
 
     /**
+     * get query which will use for image api call
+     */
+    getQueryForParams() {
+      let query;
+      switch (this.location) {
+        case "User":
+          query = "?uncheckedImageType=USER_IMAGE&userId=" + this.id;
+          break
+        case "Business":
+          query = "?uncheckedImageType=BUSINESS_IMAGE&businessId=" + this.id;
+          break
+        case "Product":
+          query = "?uncheckedImageType=PRODUCT_IMAGE&businessId=" + this.id + "&productId=" + this.currentData.data.id;
+          break
+        default:
+          query = "";
+          console.log("Location error!")
+      }
+      return query;
+    },
+
+    /**
      * When a user selects an image and clicks delete then a call is made to the backend for the selected image
      * to delete it.
      */
     deleteSelectedImage() {
       if (this.location === "Product"){
-        Api.deleteProductImage(this.businessId, this.currentData.data.id , this.selectedImage).then(
+        Api.deleteProductImage(this.$props.id, this.currentData.data.id , this.selectedImage).then(
             response => {
               if (response.status === 200) {
                 location.reload();
@@ -206,7 +240,9 @@ export default {
      */
     setPrimarySelectedImage() {
       if (this.location === "Product") {
-        Api.setPrimaryImage(this.businessId, this.currentData.data.id, this.selectedImage).then(
+        Api.setPrimaryImage(
+            "PRODUCT_IMAGE", "", this.$props.id, this.currentData.data.id, this.selectedImage
+        ).then(
             response => {
               if (response.status === 200) {
                 location.reload();
@@ -236,25 +272,19 @@ export default {
     /**
      * Gets the currently selected image for uploading.
      */
-    getImage() {
+    uploadImage() {
       let file = this.$refs.image.files[0];
 
       let image = new FormData();
       image.append("images", file)
 
-      if (this.location === "Product") {
-        Api.uploadProductImage("PRODUCT_IMAGE", "", this.$props.id, this.currentData.data.id, image)
-            .then(() => {
-              location.reload();
-            }).catch((error) => {
-          this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
-          console.log(error.message);
-        })
-      } else if (this.location === "Business") {
-        console.log("To be implemented")
-      } else if (this.location === "User") {
-        console.log("To be implemented")
-      }
+      Api.uploadImage(this.getQueryForParams(), image)
+          .then(() => {
+            location.reload();
+          }).catch((error) => {
+        this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
+        console.log(error.message);
+      })
     },
 
     onUploadClick() {
@@ -270,7 +300,7 @@ export default {
     } else if (this.location === "Business" || this.location === "User") {
       this.currentData = this.value
     }
-        // temp
+    // temp
     this.primaryImage = 0;
   }
 }

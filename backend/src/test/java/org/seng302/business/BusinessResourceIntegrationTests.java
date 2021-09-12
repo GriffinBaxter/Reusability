@@ -107,6 +107,7 @@ class BusinessResourceIntegrationTests {
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
             "\"businessesAdministered\":[null]," +
+            "\"images\":%s," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
             "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]";
@@ -695,6 +696,7 @@ class BusinessResourceIntegrationTests {
                     "\"businessesAdministered\":[" +
                     "null" +
                     "]," +
+                    "\"images\":[]," +
                     "\"dateOfBirth\":\"2007-02-02\"," +
                     "\"phoneNumber\":\"0271316\"," +
                     "\"homeAddress\":{" +
@@ -758,6 +760,7 @@ class BusinessResourceIntegrationTests {
                 "\"businessesAdministered\":[" +
                 "null" +
                 "]," +
+                "\"images\":[]," +
                 "\"dateOfBirth\":\"2007-02-02\"," +
                 "\"phoneNumber\":\"0271316\"," +
                 "\"homeAddress\":{" +
@@ -837,6 +840,7 @@ class BusinessResourceIntegrationTests {
                 "\"businessesAdministered\":[" +
                 "null" +
                 "]," +
+                "\"images\":[]," +
                 "\"dateOfBirth\":\"2007-02-02\"," +
                 "\"phoneNumber\":\"0271316\"," +
                 "\"homeAddress\":{" +
@@ -2062,11 +2066,11 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesByNameWhenBusinessExistsWithDgaaCookieTest() throws Exception {
         // given
         String searchQuery = "NAME";
-        List<String> names = Arrays.asList(searchQuery);
+        List<String> names = List.of(searchQuery);
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
@@ -2098,11 +2102,11 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesWhenBusinessExistsWithValidOrderByAndPageParamsTest() throws Exception {
         // given
         String searchQuery = "NAME";
-        List<String> names = Arrays.asList(searchQuery);
+        List<String> names = List.of(searchQuery);
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
@@ -2137,11 +2141,11 @@ class BusinessResourceIntegrationTests {
     void canSearchBusinessesByNameWhenBusinessExistsWithUserCookieTest() throws Exception {
         // given
         String searchQuery = "NAME";
-        List<String> names = Arrays.asList(searchQuery);
+        List<String> names = List.of(searchQuery);
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
@@ -2172,7 +2176,7 @@ class BusinessResourceIntegrationTests {
     void emptySearchBusinessesByNameWhenBusinessDoesntExistTest() throws Exception {
         // given
         String searchQuery = "BUSINESS";
-        List<String> names = Arrays.asList(searchQuery);
+        List<String> names = List.of(searchQuery);
         expectedJson = "[]";
 
         // when
@@ -2291,7 +2295,7 @@ class BusinessResourceIntegrationTests {
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
@@ -2325,11 +2329,11 @@ class BusinessResourceIntegrationTests {
         String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
         BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
         String searchQuery = "NAME";
-        List<String> names = Arrays.asList(searchQuery);
+        List<String> names = List.of(searchQuery);
 
         expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
-                user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
                 address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),

@@ -350,6 +350,10 @@ public class User {
         this.bookmarkedListingMessages = bookmarkedListingMessages;
     }
 
+    public void setUserImages(List<UserImage> userImages) {
+        this.userImages = userImages;
+    }
+
     /**
      * validate and set firstName
      * @param firstName firstName
@@ -513,6 +517,14 @@ public class User {
     }
 
     /**
+     * return a list of UserImage object related to the user.
+     * @return user image
+     */
+    public List<UserImage> getUserImages() {
+        return userImages;
+    }
+
+    /**
      * Removes the given business from the businessesAdministeredObjects
      * @param business a business to be removed.
      */
@@ -670,7 +682,8 @@ public class User {
                 homeAddress.toAddressPayloadSecure(),
                 created,
                 role,
-                administrators
+                administrators,
+                userImages
         );
     }
 
