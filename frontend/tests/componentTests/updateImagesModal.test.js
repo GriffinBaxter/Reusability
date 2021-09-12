@@ -230,3 +230,57 @@ describe("Testing getQueryForParams() function", () => {
             expect(consoleSpy).toHaveBeenCalledWith('Location error!');
      })
 })
+
+describe("Testing setSelected() function", () => {
+
+    test('Testing setSelected() sets selected image to null when selectedImage equals id',
+        async () => {
+            const wrapper = await factory();
+            const id = 1;
+            wrapper.vm.$data.selectedImage = id;
+
+            wrapper.vm.setSelected(id);
+            expect(wrapper.vm.$data.selectedImage).toBeNull();
+        })
+
+    test('Testing setSelected() sets selected image to id when selectedImage does not equal id',
+        async () => {
+            const wrapper = await factory();
+            const id = 1;
+            wrapper.vm.$data.selectedImage = 2;
+
+            wrapper.vm.setSelected(id);
+            expect(wrapper.vm.$data.selectedImage).toEqual(id);
+        })
+})
+
+
+describe("Testing deleteSelectedImage() function", () => {
+
+    test('Testing when location is User, deleteUserImage Api call is made.',
+        async () => {
+            const wrapper = await factory();
+            await wrapper.setProps({location : "User", id: 1});
+
+            const apiSpy = jest.spyOn(Api, 'deleteUserImage');
+            const data = {
+                response: {
+                    status: 406
+                }
+            }
+            Api.deleteUserImage.mockImplementation(() => Promise.reject(data));
+
+            await wrapper.vm.deleteSelectedImage();
+            expect(apiSpy).toHaveBeenCalled();
+        })
+
+    test('Testing when location is random, an error message is set.',
+        async () => {
+            const wrapper = await factory();
+            await wrapper.setProps({location : "Random", id: 1});
+
+            await wrapper.vm.deleteSelectedImage();
+            expect(wrapper.vm.$data.formErrorModalMessage).toEqual("Sorry, something went wrong...");
+        })
+
+})
