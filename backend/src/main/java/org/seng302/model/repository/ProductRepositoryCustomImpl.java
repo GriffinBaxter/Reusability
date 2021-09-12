@@ -13,7 +13,9 @@ import java.util.List;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
     @Autowired
