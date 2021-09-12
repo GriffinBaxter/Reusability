@@ -13,12 +13,9 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.seng302.exceptions.IllegalListingArgumentException;
-import org.seng302.exceptions.IllegalSoldListingArgumentException;
-import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
+import org.seng302.exceptions.*;
 import org.seng302.model.*;
 import org.seng302.model.repository.*;
-import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
@@ -35,6 +32,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -940,6 +938,13 @@ public class ListingResource {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not a business administrator or a global application administrator");
         }
 
+        // delete listing.
+        try {
+           listingRepository.deleteListing(listingId);
+        } catch (FailedToDeleteListingException error) {
+            logger.error(error.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong attempting to delete the listing");
+        }
     }
 
 

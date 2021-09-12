@@ -1,6 +1,10 @@
 package org.seng302.model.repository;
 
+import org.seng302.exceptions.FailedToDeleteListingException;
+import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.model.Listing;
+import org.seng302.model.ListingNotification;
+import org.seng302.model.User;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +12,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Custom Implementation of Listing Repository for searching
@@ -225,5 +231,41 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         Long count = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(listings, pageable, count);
+    }
+
+
+    /**
+     * Given a listing id attempt to delete it. And created a notification for all bookmarked users.
+     *
+     * @param id This is the id of the listing to be deleted if exists.
+     * @throws FailedToDeleteListingException Thrown when something goes wrong. The message will contain the details.
+     */
+    @Transactional
+    public void deleteListing(Integer id) throws FailedToDeleteListingException {
+        // Try to get the listing
+        Listing listing = entityManager.find(Listing.class, id);
+        if (listing == null) {
+            throw new FailedToDeleteListingException(String.format("Listing with id (%d). Does not exist.", id));
+        }
+
+        // Try to create a notification
+        ListingNotification notification;
+        try {
+            notification = new ListingNotification(String.format("Failed to create listing notification for listing (%d) delete.", id));
+        } catch (IllegalListingNotificationArgumentException err) {
+            throw new FailedToDeleteListingException(err.getMessage());
+        }
+
+        // Add the users to it.
+        notification.setUsers(listing.getBookmarkedListings());
+
+        // Attempt to save the changes
+        try {
+            entityManager.remove(listing);
+            entityManager.persist(notification);
+            entityManager.flush();
+        } catch (Exception err) {
+            throw new FailedToDeleteListingException(err.getMessage());
+        }
     }
 }

@@ -1,6 +1,8 @@
 package org.seng302.model.repository;
 
+import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.model.Listing;
+import org.seng302.model.ListingNotification;
 import org.seng302.model.enums.BusinessType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,4 +63,14 @@ public interface ListingRepositoryCustom {
             List<String> names, Pageable pageable,
             List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode
     );
+
+
+    /**
+     * Given a listing id attempt to delete it. And created a notification for all bookmarked users.
+     *
+     * @param id This is the id of the listing to be deleted if exists.
+     * @throws FailedToDeleteListingException Thrown when something goes wrong. The message will contain the details.
+     */
+    void deleteListing(Integer id) throws FailedToDeleteListingException;
+
 }
