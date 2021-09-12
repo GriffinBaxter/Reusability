@@ -75,7 +75,7 @@ describe("Testing the set primary image, delete and upload image functionality",
         await wrapper.vm.deleteSelectedImage();
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, you do not have permission to delete this image.");
+        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, you do not have permission to perform this action.");
 
     })
 
@@ -127,7 +127,7 @@ describe("Testing the set primary image, delete and upload image functionality",
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.formErrorModalMessage).toBe(
-            "Sorry, you do not have permission to change the primary image."
+            "Sorry, you do not have permission to perform this action."
         );
 
     })

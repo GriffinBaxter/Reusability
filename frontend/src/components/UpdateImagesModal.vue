@@ -173,31 +173,21 @@ export default {
      * to delete it.
      */
     deleteSelectedImage() {
-      if (this.location === "Product"){
-        Api.deleteProductImage(this.$props.id, this.currentData.data.id , this.selectedImage).then(
-            response => {
-              if (response.status === 200) {
-                location.reload();
-              } else {
-                this.formErrorModalMessage = "Sorry, something went wrong...";
-              }
-            }
-        ).catch((error) => {
-          if (error.request && !error.response) {
-            this.$router.push({path: '/timeout'});
-          } else if (error.response.status === 403) {
-            this.formErrorModalMessage = "Sorry, you do not have permission to delete this image.";
-          } else if (error.response.status === 406) {
-            this.formErrorModalMessage = "Sorry, something went wrong...";
-          } else {
-            this.$router.push({path: '/timeout'});
-            console.log(error.message);
-          }
-        })
-      } else if (this.location === "Business") {
-        console.log("To be implemented")
-      } else if (this.location === "User") {
-        console.log("To be implemented")
+      switch (this.location) {
+        case "Product":
+          Api.deleteProductImage(this.$props.id, this.currentData.data.id , this.selectedImage)
+              .then( () => { location.reload(); }).catch((error) => { this.handleError(error); })
+          break;
+        case "User":
+          Api.deleteUserImage(this.currentData.data.id, this.selectedImage)
+              .then( () => { location.reload(); }).catch((error) => { this.handleError(error); })
+          break;
+        case "Business":
+          //TODO to be implemented
+          break;
+        default:
+          this.formErrorModalMessage = "Sorry, something went wrong...";
+          break;
       }
     },
 
@@ -216,22 +206,28 @@ export default {
                 this.formErrorModalMessage = "Sorry, something went wrong...";
               }
             }
-        ).catch((error) => {
-          if (error.request && !error.response) {
-            this.$router.push({path: '/timeout'});
-          } else if (error.response.status === 403) {
-            this.formErrorModalMessage = "Sorry, you do not have permission to change the primary image.";
-          } else if (error.response.status === 406) {
-            this.formErrorModalMessage = "Sorry, something went wrong...";
-          } else {
-            this.$router.push({path: '/timeout'});
-            console.log(error.message);
-          }
-        })
+        ).catch((error) => { this.handleError(error) })
       } else if (this.location === "Business") {
         console.log("To be implemented")
       } else if (this.location === "User") {
         console.log("To be implemented")
+      }
+    },
+
+    /**
+     * This method handles the error that is received from the backend when something goes wrong.
+     * @param error the error to handle
+     */
+    handleError(error) {
+      if (error.request && !error.response) {
+        this.$router.push({path: '/timeout'} );
+      } else if (error.response.status === 403) {
+        this.formErrorModalMessage = "Sorry, you do not have permission to perform this action.";
+      } else if (error.response.status === 406) {
+        this.formErrorModalMessage = "Sorry, something went wrong...";
+      } else {
+        this.$router.push({path: '/timeout'});
+        console.log(error.message);
       }
     },
 
