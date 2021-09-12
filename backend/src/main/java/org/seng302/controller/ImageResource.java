@@ -404,9 +404,6 @@ public class ImageResource {
     /**
      * Verifies that the given user id exists and returns the user if it exists.
      * Throws a NOT_ACCEPTABLE error is the user id does not exist.
-     * <p>
-     * PRECONDITIONS:
-     * POST CONDITIONS:
      *
      * @param userId the id of the user to check if it exists.
      * @return user
@@ -423,9 +420,6 @@ public class ImageResource {
     /**
      * Verifies that the given business id exists and returns the associated business if it exists.
      * Throws a NOT_ACCEPTABLE error is the business id does not exist.
-     * <p>
-     * PRECONDITIONS:
-     * POST CONDITIONS:
      *
      * @param businessId the id of the business to check if it exists.
      * @return business
@@ -442,9 +436,6 @@ public class ImageResource {
     /**
      * Verifies that the given product id exists.
      * Throws NOT_ACCEPTABLE error if product id does not exists.
-     * <p>
-     * PRECONDITIONS:
-     * POST CONDITIONS:
      *
      * @param productId the id of the product to check if it exists.
      * @param business a business which has the product.
@@ -468,7 +459,6 @@ public class ImageResource {
      */
     private ProductImage verifyProductImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
         Optional<ProductImage> image = productImageRepository.findProductImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
-
         if (image.isEmpty()) {
             String errorMessage =
                     String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.",
@@ -483,9 +473,6 @@ public class ImageResource {
      * Updates the primary image of a product and enforces the primary image constraint.
      * If there are other images for the given product id that are not the primary image, then next one of these becomes
      * the primary image. If there are no other images, then there is no primary image (i.e. default used in front end).
-     * <p>
-     * PRECONDITIONS:
-     * POST CONDITIONS:
      *
      * @param businessId the id of business which has the product.
      * @param productId the id of product which has the images.
@@ -549,7 +536,9 @@ public class ImageResource {
     /**
      * This method performs verification before, deleting an user image.
      * In order for an image to be deleted:
-     *
+     *                                    the userId must be for an existing user
+     *                                    the currentUser trying to delete the user must be the "owner" or an application admin
+     *                                    the imageId must be for an existing image.
      * If all this criteria is met then the image is deleted. If the primary image is deleted then another
      * image will be set as the primary image (if another image exists).
      * @param currentUser the currently logged in user.
@@ -564,10 +553,25 @@ public class ImageResource {
         if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to delete image.");
         }
-
         // If user is able to delete image then continue
+
         // Verify image id
         UserImage userImage = verifyUserImageId(imageId, userId, currentUser);
+
+        // verify file exists & delete image
+        boolean imageDeleted = fileStorageService.deleteFile(userImage.getFilename());
+        boolean thumbnailDeleted = fileStorageService.deleteFile(userImage.getThumbnailFilename());
+        if (!imageDeleted || !thumbnailDeleted) {
+            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for user with id %d.", currentUser.getId(), imageId, userId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+
+        // Delete from database
+        userImageRepository.deleteByIdAndUserId(imageId, userId);
+        userImageRepository.flush();
+        // Check if primary image and update primary image if it is
+        updatePrimaryUserImage(userId);
     }
 
     /**
@@ -588,6 +592,24 @@ public class ImageResource {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
         }
         return image.get();
+    }
+
+    /**
+     * Updates the primary image of a user and enforces the primary image constraint.
+     * If there are other images for the given user id that are not the primary image, then next one of these becomes
+     * the primary image. If there are no other images, then there is no primary image (i.e. default used in front end).
+     *
+     * @param userId the id of the user who has the image.
+     */
+    private void updatePrimaryUserImage(Integer userId) {
+        List<UserImage> primaryUserImages = userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true);
+        if (primaryUserImages.isEmpty()) {
+            List<UserImage> userImages = userImageRepository.findUserImageByUserId(userId);
+            if (!userImages.isEmpty()) {
+                userImages.get(0).setIsPrimary(true);
+                userImageRepository.save(userImages.get(0));
+            }
+        }
     }
 
 }

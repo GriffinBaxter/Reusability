@@ -258,7 +258,7 @@ class ImageResourceIntegrationTests {
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a user
      * that does not have already any other primary images.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingFileCreationWithValidDataNoPrimaryImagesForUserImage() throws Exception {
@@ -294,7 +294,7 @@ class ImageResourceIntegrationTests {
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a products
      * that does not have already any other primary images.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingFileCreationWithValidDataNoPrimaryImagesForProductImage() throws Exception {
@@ -333,7 +333,7 @@ class ImageResourceIntegrationTests {
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a user
      * that has already a primary image.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingFileCreationWithValidDataWithPrimaryImagesForUserImage() throws Exception {
@@ -370,7 +370,7 @@ class ImageResourceIntegrationTests {
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a products
      * that has already a primary image.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingFileCreationWithValidDataWithPrimaryImagesForProductImage() throws Exception {
@@ -408,7 +408,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that we get a BAD_REQUEST https status when we do not include the 'images' file.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMvc.
      */
     @Test
     void testingImageFileIsRequiredForUserImage() throws Exception {
@@ -432,7 +432,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that we get a BAD_REQUEST https status when we do not include the 'images' file.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMvc.
      */
     @Test
     void testingImageFileIsRequiredForProductImage() throws Exception {
@@ -459,7 +459,7 @@ class ImageResourceIntegrationTests {
     /**
      * Test that the user must provide a cookie.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void TestingUserHasToHaveCookie() throws Exception {
@@ -504,7 +504,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that the user must provide a valid image type in the parameters when they upload any image.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMvc.
      */
     @Test
     void testingUserHasToProvideValidImageTypeForUploading() throws Exception {
@@ -530,7 +530,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that the user must provide a valid user id in the parameters when they upload user image.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMvc.
      */
     @Test
     void testingUserHasToProvideValidUserIdForUserImage() throws Exception {
@@ -554,7 +554,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that the user must provide a valid business id in the parameters when they upload product image.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMvc.
      */
     @Test
     void testingUserHasToProvideValidBusinessIdForProductImage() throws Exception {
@@ -580,7 +580,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that the user must provide a valid product id in the parameters when they upload product image.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with MockMvc.
      */
     @Test
     void testingUserHasToProvideValidProductIdForProductImage() throws Exception {
@@ -607,7 +607,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user needs to have GAA role to be able to upload an image for another user.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingUserNeedsToBeGaaForAnotherUser() throws Exception {
@@ -642,7 +642,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user needs to have GAA role to be able to upload an image for a product they are not on the administrator list of.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingUserNeedsToBeGaaForBusinessThatTheyAreNotAdminOf() throws Exception {
@@ -682,7 +682,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user needs to have DGAA role to be able to upload an image for another user.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingUserNeedsToBeDgaaForAnotherUser() throws Exception {
@@ -717,7 +717,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user can upload an image for his self.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingUserCanUploadImageForHisSelf() throws Exception {
@@ -752,7 +752,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user can not upload an image for other users.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingUserCanNotUploadImageForOtherUsers() throws Exception {
@@ -787,7 +787,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user needs to have DGAA role to be able to upload an image for a product they are not on the administrator list of.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingUserNeedsToBeDgaaForBusinessThatTheyAreNotAdminOf() throws Exception {
@@ -825,7 +825,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user of role USER can upload images if they are an admin of the business.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingThatUserMustBeAdminOfBusinessToUploadImages() throws Exception {
@@ -864,7 +864,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user of role USER cannot upload images if they are not an admin of the business.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingThatUserThatIsNotAnAdminOfBusinessCannotUploadImages() throws Exception {
@@ -898,7 +898,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that a user cannot upload a file that is not of type .gif, .gif, .jpg or .jpeg.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingInvalidFileFormat() throws Exception {
@@ -930,7 +930,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that .gif is a valid file format to be uploaded.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingThatGifIsAnAcceptableFormat() throws Exception {
@@ -969,7 +969,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that .png is a valid file format to be uploaded.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingThatPngIsAnAcceptableFormat() throws Exception {
@@ -1008,7 +1008,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that .gif is a valid file format to be uploaded.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingThatJpegIsAnAcceptableFormat() throws Exception {
@@ -1047,7 +1047,7 @@ class ImageResourceIntegrationTests {
     /**
      * Testing that .gif is a valid file format to be uploaded.
      *
-     * @throws Exception
+     * @throws Exception thrown if there is an error with the fileStorageService.
      */
     @Test
     void testingThatJpgIsAnAcceptableFormat() throws Exception {
@@ -1110,7 +1110,12 @@ class ImageResourceIntegrationTests {
         List<ProductImage> productImages = List.of(primaryProductImage);
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.findProductImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryProductImage));
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1143,7 +1148,12 @@ class ImageResourceIntegrationTests {
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(Collections.emptyList());
         when(productImageRepository.findProductImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId)).thenReturn(Optional.of(primaryProductImage));
         when(productImageRepository.findProductImageByBusinessIdAndProductId(businessId, productId)).thenReturn(productImages);
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1170,8 +1180,12 @@ class ImageResourceIntegrationTests {
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
-
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", productId))
+                .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
@@ -1201,7 +1215,12 @@ class ImageResourceIntegrationTests {
         List<ProductImage> productImages = List.of(primaryProductImage);
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.findProductImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId)).thenReturn(Optional.empty());
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", productId))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
@@ -1227,7 +1246,12 @@ class ImageResourceIntegrationTests {
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
         when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.empty());
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, "A9000", primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", "A9000"))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
@@ -1250,7 +1274,12 @@ class ImageResourceIntegrationTests {
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", 8000, "A9000", primaryProductImage.getId())).cookie(cookie)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", "8000")
+                .param("productId", "A9000"))
+                .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
