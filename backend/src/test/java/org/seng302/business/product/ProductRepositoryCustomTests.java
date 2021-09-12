@@ -57,6 +57,8 @@ class ProductRepositoryCustomTests {
     private Product product3;
     private Product product4;
     private Product product5;
+    private Product product6;
+
     private List<Product> searchProducts;
 
     /**
@@ -159,7 +161,7 @@ class ProductRepositoryCustomTests {
                 "Brand new Description",
                 "A New Manufacturer",
                 10.00,
-                "9415767624207"
+                "978020137962"
         );
         product4.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(0, 0)));
 
@@ -173,6 +175,18 @@ class ProductRepositoryCustomTests {
                 ""
         );
         product5.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(1, 0)));
+
+
+        product6 = new Product(
+                "BAR",
+                business2,
+                "Bark",
+                "Desc",
+                "J&J",
+                2.1,
+                "9415767624207"
+        );
+        product6.setCreated(LocalDateTime.of(LocalDate.of(2021, 2, 1), LocalTime.of(1, 0)));
 
         searchProducts = List.of(product1, product2, product3, product4, product5);
         for (Product product: searchProducts) {
@@ -697,7 +711,7 @@ class ProductRepositoryCustomTests {
      * Tests the findAllProductsByBusinessIdAndIncludedFieldsAndBarcode method returns the correct Product
      */
     @Test
-    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcode_ReturnListing() {
+    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcode_ReturnProduct() {
         // given
         List<String> search = List.of("Apple");
         List<String> fields = List.of("name");
@@ -720,7 +734,7 @@ class ProductRepositoryCustomTests {
      * match the barcode of a product
      */
     @Test
-    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withInvalidBarcode_ReturnNoListing() {
+    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withInvalidBarcode_ReturnNoProduct() {
         // given
         List<String> search = List.of("Apple");
         List<String> fields = List.of("name");
@@ -738,34 +752,10 @@ class ProductRepositoryCustomTests {
     }
 
     /**
-     * Tests findAllProductsByBusinessIdAndIncludedFieldsAndBarcode method returns all products with the requested barcode
-     */
-    @Test
-    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcode_ReturnMultipleListings() {
-        // given
-        List<String> search = List.of("Apple");
-        List<String> fields = List.of("name");
-        String barcode = "9300675024235";
-        int pageNo = 0;
-        int pageSize = 2;
-        Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase());
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
-
-        // when
-        Page<Product> productPage = productRepository.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
-
-        // then
-        assertThat(productPage.getContent().size()).isGreaterThan(1);
-        for (int i = 0; i < productPage.getContent().size(); i++) {
-            assertThat(productPage.getContent().get(0).getBarcode()).isEqualTo("9300675024235");
-        }
-    }
-
-    /**
      * Tests findAllProductsByBusinessIdAndIncludedFieldsAndBarcode method only returns values for the current business and barcode
      */
     @Test
-    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcodeForTwoBusinesses_ReturnBusinessListing() {
+    void whenFindAllProductsByBusinessIdAndIncludedFieldsAndBarcode_withValidBarcodeForTwoBusinesses_ReturnBusinessProduct() {
         // given
         List<String> search = List.of("Apple");
         List<String> fields = List.of("name");
