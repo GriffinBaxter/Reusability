@@ -46,7 +46,7 @@ class ProductRepositoryCustomTests {
     private ProductRepository productRepository;
 
     @Autowired
-    private ProductRepositoryCustom productRepositoryCustom;
+    private ProductRepositoryCustom productRepositoryCustomImpl;
 
     private Address address;
 
@@ -710,7 +710,7 @@ class ProductRepositoryCustomTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+        Page<Product> productPage = productRepositoryCustomImpl.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
 
         // then
         assertThat(productPage.getContent().size()).isEqualTo(1);
@@ -733,7 +733,7 @@ class ProductRepositoryCustomTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+        Page<Product> productPage = productRepositoryCustomImpl.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
 
         // then
         assertThat(productPage.getContent().size()).isZero();
@@ -754,7 +754,7 @@ class ProductRepositoryCustomTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+        Page<Product> productPage = productRepositoryCustomImpl.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
 
         // then
         assertThat(productPage.getContent().size()).isGreaterThan(1);
@@ -778,7 +778,7 @@ class ProductRepositoryCustomTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Product> productPage = productRepositoryCustom.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
+        Page<Product> productPage = productRepositoryCustomImpl.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(search, fields, business.getId(), pageable, barcode);
 
         // then
         assertThat(productPage.getContent().size()).isNotZero();
