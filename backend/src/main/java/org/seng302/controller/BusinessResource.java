@@ -581,7 +581,7 @@ public class BusinessResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address is required for modifying the business.");
         }
 
-        if (addressJSON.getCountry() == null) {
+        if (addressJSON.getCountry() == null || addressJSON.getCountry().isBlank()) {
             String errorMessage = String.format("User (id: %d) attempted to modify a business (id: %d)." +
                     " But did not provide a new country.", user.getId(), business.getId());
             logger.error(errorMessage);
