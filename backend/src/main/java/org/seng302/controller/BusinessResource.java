@@ -72,7 +72,7 @@ public class BusinessResource {
 
     private static final Logger logger = LogManager.getLogger(BusinessResource.class.getName());
 
-    private static final String FORBIDDEN_MODIFY_ERROR_MESAGE = "Forbidden: Returned when a user tries to " +
+    private static final String FORBIDDEN_MODIFY_ERROR_MESSAGE = "Forbidden: Returned when a user tries to " +
             "update the business info for a business they do not administer AND the user is not a global application admin";
 
     public BusinessResource(
@@ -530,7 +530,7 @@ public class BusinessResource {
                     "lacked permissions.", user.getId(), id);
 
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESAGE);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESSAGE);
         }
 
         // Verify payload content is still valid to the requirements of a business. fail --> 400 BAD REQUEST
@@ -642,7 +642,7 @@ public class BusinessResource {
             }
 
             // Perform the modification
-            String debugMessage = String.format("User (id: %d) modfied business (id: %d) name. %s --> %s.",
+            String debugMessage = String.format("User (id: %d) modified business (id: %d) name. %s --> %s.",
                     user.getId(), business.getId(), business.getName(), payload.getName());
             logger.debug(debugMessage);
             business.setName(payload.getName());
@@ -657,7 +657,7 @@ public class BusinessResource {
     }
 
     /**
-     * Attempts to update the business primary adminstrator if there is a new value.
+     * Attempts to update the business primary administrator if there is a new value.
      *
      * @param user The user that requested update.
      * @param business The business that the update is performed on.
@@ -680,7 +680,7 @@ public class BusinessResource {
                         String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
                                 "But lacked permissions.", user.getId(), business.getId());
                         logger.error(errorMessage);
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESAGE);
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESSAGE);
                     }
 
                     // If the new primary admin is not part of the business then add him in.
@@ -696,10 +696,10 @@ public class BusinessResource {
 
             } else {
                 // Only the primary admin can change the primary admin (or the GAA and DGAA can as well).
-                String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
+                String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary administrator. " +
                         "But lacked permissions.", user.getId(), business.getId());
                 logger.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESAGE);
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESSAGE);
             }
         }
         return business;
