@@ -28,17 +28,45 @@
 
                 <!--user's profile image-->
                 <div id="imageDiv">
-                  <img class="rounded-circle img-fluid" :src="getPrimaryImageSrc(user.data.images)"
-                       alt="Profile Image"/>
+                  <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <div v-if="user.data.images === null || user.data.images.length === 0">
+                        <img :src="getImageSrc('')"
+                             class="rounded-circle img-fluid"
+                             alt="Profile Image">
+                      </div>
+                      <div v-for="image of user.data.images"
+                           v-bind:key="image.id"
+                           :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
+                        <img :src="getImageSrc(image.thumbnailFilename)"
+                             class="rounded-circle img-fluid"
+                             alt="Profile Image">
+                      </div>
+                    </div>
+                    <div v-if="user.data.images.length > 1">
+                      <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
+                              data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                      </button>
+                      <button class="carousel-control-next" type="button" data-bs-target="#profileCarouselControls"
+                              data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                      </button>
+                    </div>
+                  </div>
+
+
                   <div id="change-profile-picture-button" style="padding-top: 10px" v-if="!otherUser">
                     <button type="button" style="width: 252px; max-width: 100%"
-                            class="btn btn-md btn-outline-primary green-button" @click="(event) => {
-                      this.$refs.updateImagesModal.showModel(event);
-                    }">
+                            class="btn btn-md btn-outline-primary green-button"
+                            @click="(event) => {this.$refs.updateImagesModal.showModel(event)}">
                       Change Profile Picture
                     </button>
                   </div>
                 </div>
+
 
                 <!--user's nickname and bio-->
                 <div class="mt-3">
@@ -373,15 +401,11 @@ export default {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-    getPrimaryImageSrc(images) {
-      if (images.length > 0) {
-        for (let image of images) {
-          if (image.isPrimary) {
-            return Api.getServerURL() + "/" + image.thumbnailFilename;
-          }
-        }
+    getImageSrc(filename) {
+      if (filename === "") {
+        return require('../../public/default-image.jpg')
       }
-      return require('../../public/default-image.jpg')
+      return Api.getServerURL() + "/" + filename;
     },
 
     /**
