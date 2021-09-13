@@ -135,7 +135,8 @@
               <div class="col my-2 my-lg-0">
                 <label for="password">Password*</label>
                 <div class="input-group">
-                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)">
+                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password"
+                         v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" autocomplete="new-password">
 
                   <!--toggle password visibility-->
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
@@ -162,7 +163,7 @@
                 <label for="confirm-password">Confirm Password*</label>
                 <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
                        v-model="confirmPassword" :class="toggleInvalidClass(confirmPasswordErrorMsg)"
-                       :maxlength="config.password.maxLength" required>
+                       :maxlength="config.password.maxLength" autocomplete="new-password" required>
                 <div class="invalid-feedback">
                   {{confirmPasswordErrorMsg}}
                 </div>
@@ -339,6 +340,7 @@ import User from "../configs/User"
 import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
+import {isValidDateOfBirth} from "./helpFunction";
 
 export default {
   name: "Registration",
@@ -491,53 +493,6 @@ export default {
      */
     between(val, min, max) {
       return min <= val && val <= max;
-    },
-
-    /**
-     * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
-     * the expected format.
-     *
-     * @param dateString, string, the date to validate and separate.
-     * @returns {{month: number, year: number, day: number}|null}, {year, month, day}, if the date meets the expected
-     * format, else null.
-     *
-     */
-    parseSelectedDate(dateString) {
-      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,2}-[0-9]{1,2}$/
-
-      if (verifyRegex.test(dateString)) {
-        const dateParts = dateString.split("-", 3);
-        return {
-          year: Number(dateParts[0]),
-          month: Number(dateParts[1]),
-          day: Number(dateParts[2])
-        }
-      } else {
-        return null
-      }
-    },
-
-    /**
-     * This method validates the date of birth field input and creates a Date which represents the new user's
-     * date of birth.
-     *
-     * @param selectedDate, string, the date of birth of the user.
-     * @returns {Boolean|null}, returns true is the date is valid i.e. in the past and meets the expected format, else
-     *                          null or false.
-     */
-    isValidDateOfBirth(selectedDate) {
-      const todayDate = new Date();
-      const year_13_ms = 1000 * 60 * 60 * 24 * 365 * 13;
-      const data = this.parseSelectedDate(selectedDate);
-
-      if (data) {
-        const {year, month, day} = data;
-        if (year && month && day) {
-          const chosenDate = new Date(year, month, day);
-          return todayDate - chosenDate >= year_13_ms;
-        }
-      }
-      return null;
     },
 
     /**
@@ -704,7 +659,7 @@ export default {
       if (!this.dateOfBirth) {
         this.dateOfBirthErrorMsg = "This field is required!"
         requestIsInvalid = true
-      } else if (!this.isValidDateOfBirth(this.dateOfBirth)) {
+      } else if (!isValidDateOfBirth(this.dateOfBirth)) {
         this.dateOfBirthErrorMsg = "Must be over 13, and not from the future."
         requestIsInvalid = true
       } else {
@@ -950,44 +905,9 @@ export default {
       this.addressResultProperties = [];
 
       while ((numInList < maxL) && (index < fLength)) {
-        let address = "";
         let { properties } = features[index];
         if (properties) {
-
-          let {country, city, postcode, state, street, housenumber, name, district} = properties;
-
-          if (name) {
-            address += name + ", ";
-          }
-
-          if (housenumber) {
-            address += housenumber;
-          }
-
-          if (street) {
-            address += " " + street + ", ";
-          }
-
-          if (district) {
-            address += " " + district + ", ";
-          }
-
-          if (city) {
-            address += city + ", ";
-          }
-
-          if (postcode) {
-            address += postcode + ", ";
-          }
-
-          if (state) {
-            address += state + ", ";
-          }
-
-          if (country) {
-            address += country;
-          }
-
+          let address = this.getAddressConcatenation(properties);
           if (!autoCompleteOptions.includes(address.trim())) {
             // Add to both the string to display and the variable for later use.
             autoCompleteOptions.push(address.trim());
@@ -1000,6 +920,27 @@ export default {
       return autoCompleteOptions;
     },
 
+    /**
+     * This method converts the components of the address received from the Komoot Photon API
+     * to a single line string.
+     * @return address a string representation of the address returned by the Komoot Photon API
+     */
+    getAddressConcatenation(properties) {
+      let address = "";
+
+      let {country, city, postcode, state, street, housenumber, name, district} = properties;
+
+      if (name) { address += name + ", "; }
+      if (housenumber) { address += housenumber; }
+      if (street) { address += " " + street + ", "; }
+      if (district) { address += " " + district + ", "; }
+      if (city) { address += city + ", "; }
+      if (postcode) { address += postcode + ", "; }
+      if (state) { address += state + ", "; }
+      if (country) { address += country; }
+
+      return address;
+    },
 
     /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
@@ -1015,7 +956,6 @@ export default {
      * @returns {Promise<boolean>} Async implied promise
      */
     async input() {
-
       // Populate the addresses array by making a request to the API
       await this.request();
       // Get the current address input
@@ -1048,34 +988,7 @@ export default {
             document.getElementById('home-address').value = "";
             const id = event.target.id;
 
-            let {country, city, postcode, state, street, housenumber, district} = self.addressResultProperties[id];
-
-            if (housenumber) {
-              document.getElementById('streetNumber').value = housenumber;
-            }
-            if (street) {
-              document.getElementById('streetName').value = street;
-            }
-
-            if (district) {
-              document.getElementById('suburb').value = district;
-            }
-
-            if (city) {
-              document.getElementById('city').value = city;
-            }
-
-            if (postcode) {
-              document.getElementById('postcode').value = postcode;
-            }
-
-            if (state) {
-              document.getElementById('region').value = state;
-            }
-
-            if (country) {
-              document.getElementById('country').value = country;
-            }
+            self.setAddressElementsById(self.addressResultProperties[id]);
 
             // Close the list of autocompleted values,
             // (or any other open lists of autocompleted values:
@@ -1092,13 +1005,27 @@ export default {
 
     },
 
+    /**
+     * This methods sets the values of the address related fields.
+     */
+    setAddressElementsById(addressComponents) {
+      let {country, city, postcode, state, street, housenumber, district} = addressComponents;
+
+      if (housenumber) { document.getElementById('streetNumber').value = housenumber; }
+      if (street) { document.getElementById('streetName').value = street; }
+      if (district) { document.getElementById('suburb').value = district; }
+      if (city) { document.getElementById('city').value = city; }
+      if (postcode) { document.getElementById('postcode').value = postcode; }
+      if (state) { document.getElementById('region').value = state; }
+      if (country) { document.getElementById('country').value = country; }
+    },
 
     /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
      * https://www.w3schools.com/howto/howto_js_autocomplete.asp
      *
      * This function removes all of the autocomplete dropdown items except the one passed to it.
-     * @param DOM Element An optional element that won't be closed if given
+     * @param element Element An optional element that won't be closed if given
      */
     closeAllLists(element) {
       // Close all autocomplete lists in the document, except the one passed as an argument

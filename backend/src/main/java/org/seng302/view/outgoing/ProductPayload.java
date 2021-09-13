@@ -13,6 +13,7 @@ package org.seng302.view.outgoing;
 import org.seng302.model.ProductImage;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class ProductPayload {
         this.manufacturer = manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
         this.created = created.toString();
-        this.images = ImagePayload.convertToImagePayload(productImages);
+        this.images = ImagePayload.convertToImagePayload(productImages == null ? null : new ArrayList<>(productImages));
         this.business = business;
         this.barcode = barcode;
     }
@@ -109,9 +110,9 @@ public class ProductPayload {
                 "\"description\":\"" + description + "\"," +
                 "\"manufacturer\":\"" + manufacturer + "\"," +
                 "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
-                "\"created\":\"" + created + "," +
+                "\"created\":\"" + created + "\"," +
                 "\"images\":" + images + "," +
-                "\"business\":" + business +
+                "\"business\":" + business + "," +
                 "\"barcode\":\"" + barcode + "\"}";
     }
 

@@ -19,6 +19,7 @@ import org.seng302.Authorization;
 import org.seng302.model.User;
 import org.seng302.model.repository.*;
 import org.seng302.utils.PaginationUtils;
+import org.seng302.utils.SearchUtils;
 import org.seng302.view.incoming.ProductCreationPayload;
 import org.seng302.view.outgoing.ProductPayload;
 import org.seng302.view.incoming.ProductUpdatePayload;
@@ -138,18 +139,25 @@ public class ProductResource {
      *
      * @param sessionToken Session token
      * @param id Business ID
+     * @param searchQuery A search query to match the products to (Optional)
+     * @param searchBy A list of fields to search by (Optional)
      * @param orderBy Column to order the results by
      * @param page Page number to return results from
+     * @param barcode Barcode number (Optional)
      * @return A list of ProductPayload objects representing the products belonging to the given business
      */
     @GetMapping("/businesses/{id}/products")
     public ResponseEntity<List<ProductPayload>> retrieveProducts(
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer id,
+            @RequestParam(defaultValue = "") String searchQuery,
+            @RequestParam(required = false) List<String> searchBy,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(required = false) String barcode
     ) throws Exception {
-        logger.debug("Product retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
+        logger.debug("Product retrieval request received with business ID {}, search query {}, search by {}, " +
+                "order by {}, page {}, barcode {}", id, searchQuery, searchBy, orderBy, page, barcode);
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -213,7 +221,7 @@ public class ProductResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<Product> pagedResult = productRepository.findProductsByBusinessId(id, paging);
+        Page<Product> pagedResult = parseAndExecuteQuery(searchQuery, searchBy, id, paging, barcode);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -422,5 +430,40 @@ public class ProductResource {
                 .body(productPayloads);
     }
 
+    /**
+     * This method parses the search criteria and then calls the needed methods to execute the "query".
+     *
+     * @param searchQuery Criteria to search for products.
+     * @param searchBy The fields to match the criteria to.
+     * @param businessId The ID of the business you want to retrieve products for.
+     * @param paging Information used to paginate the retrieved listings.
+     * @param barcode Product barcode to search for.
+     * @return Page<Product> A page of products matching the search criteria.
+     */
+    private Page<Product> parseAndExecuteQuery(String searchQuery, List<String> searchBy, Integer businessId, Pageable paging, String barcode) {
+        if (searchBy == null) {
+            searchBy = List.of("name");
+        }
+
+        List<String> validSearchBy = List.of("name", "id", "description", "manufacturer");
+        for (String searchType : searchBy) {
+            if (!validSearchBy.contains(searchType)) {
+                logger.error("400 [BAD REQUEST] - {} is an invalid search by parameter", searchType);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "searchBy field invalid"
+                );
+            }
+        }
+
+        List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
+
+        if (barcode != null) {
+            return productRepository.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(names, searchBy, businessId, paging, barcode);
+
+        } else {
+            return productRepository.findAllProductsByBusinessIdAndIncludedFields(names, searchBy, businessId, paging);
+        }
+    }
 
 }

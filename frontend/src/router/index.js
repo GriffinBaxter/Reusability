@@ -50,6 +50,17 @@ const routes = [
         component: () => import('../views/Profile.vue')
     },
     {
+        path: '/profile/:id/edit',
+        name: 'EditProfile',
+        meta: {
+            title: 'EditProfile'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/EditProfile.vue')
+    },
+    {
         path: '/search',
         name: 'Search',
         meta: {
@@ -235,16 +246,16 @@ const routes = [
         component: () => import('../views/BrowseListings')
     },
     {
-        path: '/businessProfile/:businessId/saleHistory',
-        name: 'SaleHistory',
+        path: '/businessProfile/:businessId/sales',
+        name: 'Sales',
         meta: {
-            title: 'SaleHistory'
+            title: 'Sales'
         },
         props: true,
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import('../views/SaleHistory')
+        component: () => import('../views/Sales')
     },
     {
         path: '*',

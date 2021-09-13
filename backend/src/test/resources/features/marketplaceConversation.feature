@@ -14,7 +14,18 @@ Feature: UCM8 Contacting Other Marketplace Users
     When I send a message with the content of "Hi, can I buy your baked goods please?" about this marketplace card with id 1
     Then A conversation which contains this message is created
 
+  Scenario: AC4: The recipient can expand the message to see the full message text.
+    Given There exists a conversation with instigator "Jim James" with id 1, recipient "John Jones" with id 2, and marketplace card with title "Flying Fish".
+    When The recipient with id 2 tries to retrieve the messages in their conversation.
+    Then A 200 response is received containing an ordered list of full messages.
+
   Scenario: AC5 - Sending a message in an existing conversation results in a new item in the receiver’s version of this conversation
     And I have contacted this user about this card before in the conversation with id 1
     When I send a message with the content of "Hello, yes you can" about this marketplace card with id 1 in the existing conversation with id 1
     And I expect the message to be created in this conversation
+
+  Scenario: AC5: The recipient can reply to the message. This leads to a response appearing on the original sender's feed.
+    Given There exists a conversation with instigator "Jim James" with id 1, recipient "John Jones" with id 2, and marketplace card with title "Flying Fish".
+    When The recipient replies to the conversation with the message "This is a reply"
+    And The recipient with id 1 tries to retrieve the messages in their conversation.
+    Then A 200 response is received containing the message "This is a reply"

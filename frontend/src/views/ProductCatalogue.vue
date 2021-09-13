@@ -25,7 +25,7 @@
             </div>
           </div>
 
-          <ProductSearchBar/>
+          <ProductSearchBar v-on:search="onSearch"/>
 
           <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0"
                  :table-headers="tableHeaders" :table-data="tableData"
@@ -39,7 +39,7 @@
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
-        <UpdateProductImagesModal ref="updateProductImagesModal" :business-id="businessId" v-model="currentProduct"/>
+        <UpdateImagesModal ref="updateImagesModal" location="Product" :id="businessId" v-model="currentProduct"/>
 
         <div v-if="showModal">
           <transition name="fade">
@@ -65,7 +65,7 @@
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
                       this.showModal = false;
-                      this.$refs.updateProductImagesModal.showModel(event);
+                      this.$refs.updateImagesModal.showModel(event);
                     }">Update Photos</button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
@@ -116,10 +116,10 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price" v-if="currencyCode != ''">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-if="currencyCode !== ''">Recommended Retail Price ({{ currencyCode }})</label>
                     <label for="product-price" v-else>Recommended Retail Price</label>
                     <div class="input-group">
-                      <div class="input-group-prepend" v-if="currencySymbol != ''">
+                      <div class="input-group-prepend" v-if="currencySymbol !== ''">
                         <span class="input-group-text">{{ currencySymbol }}</span>
                       </div>
                       <input id="product-price" class="input-styling" name="product-price" type="text"
@@ -245,18 +245,18 @@ import Footer from "../components/main/Footer";
 import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
-import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
+import UpdateImagesModal from "../components/UpdateImagesModal";
 
 export default {
   name: "ProductCatalogue",
   components: {
     ProductSearchBar,
     UpdateProductModal,
-    UpdateProductImagesModal,
+    UpdateImagesModal,
     Table,
     ProductModal,
     Navbar,
@@ -283,6 +283,12 @@ export default {
       currentPage: 0,
       totalRows: 0,
       loadingProducts: false,
+      // The query to search for.
+      searchQuery: "",
+      // The attributes to search by stored as a list.
+      searchBy: ["name"],
+      // The attributes to search by in the required url format.
+      searchByString: "",
 
 
       // Product modal variables
@@ -359,6 +365,30 @@ export default {
     }
   },
   methods: {
+    /**
+     * This method gets the list of attributes of a product that are to be searched for and
+     * converts them to a string which can be used in the url.
+     */
+    convertSearchByListToString() {
+      let searchByString = "";
+      for (let i = 0; i < this.searchBy.length; i++) {
+        if (i === 0) {
+          searchByString += this.searchBy[i];
+        } else {
+          searchByString = searchByString + "," + this.searchBy[i];
+        }
+      }
+      this.searchByString = searchByString;
+    },
+    /**
+     * This method converts the route query for searchBy to a list.
+     * @return list of searchBy attributes.
+     */
+    convertSearchByStringToList() {
+      let searchByString = this.$route.query["searchBy"];
+      if (searchByString) { return searchByString.split(","); }
+      return ["name"]; // if searchBy does not exist in route query then return the default.
+    },
     /**
      * set link business accounts
      */
@@ -450,9 +480,10 @@ export default {
      */
     updatePage(event) {
       this.currentPage = event.newPageNumber;
+      this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       })
       this.requestProducts();
     },
@@ -498,15 +529,17 @@ export default {
      * @return {Promise}
      */
     async requestProducts() {
-
       // Getting all the information necessary from the route update (params and query).
       this.businessId = parseInt(this.$route.params.id);
+      this.searchQuery = this.$route.query["searchQuery"] || "";
+      this.searchBy = this.convertSearchByStringToList();
+      this.convertSearchByListToString(); // update the searchByString
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
       this.loadingProducts = true;
 
       // Perform the call to sort the products and get them back.
-      await Api.sortProducts(this.businessId, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.orderByString, this.currentPage).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -535,10 +568,8 @@ export default {
             newtableData.push(formatDate(this.productList[i].data.created));
             newtableData.push(this.productList[i].data.barcode);
           }
-
-          this.tableData = newtableData;
         }
-
+        this.tableData = newtableData;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -563,10 +594,11 @@ export default {
      * @param event This contains the {orderBy, isAscending} components of the new desired ordering.
      */
     orderProducts(event) {
-      this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
+      this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`;
+      this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestProducts();
     },
@@ -730,46 +762,13 @@ export default {
 
       const product = new Product(productData);
 
-      /*
-       * Add the Product to the database by sending an API request to the backend to store the product's information.
-       * Raise any errors and ensure they are displayed on the UI.
-       */
+      // Add the Product to the database by sending an API request to the backend to store the product's information.
+      // Raise any errors and ensure they are displayed on the UI.
       Api.addNewProduct(this.businessId, product
       ).then((res) => {
             if (res.status === 201) {
-              this.modal.hide();
               // Set message so user knows product has been added.
               this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
-
-              // Reset product id related variables
-              this.productID = "";
-              this.productIDErrorMsg = "";
-
-              // Reset product barcode related variables
-              this.barcode = "";
-              this.barcodeErrorMsg = "";
-
-              // Reset product name related variables
-              this.productName = "";
-              this.productNameErrorMsg = "";
-
-              // Reset recommended retail price related variables
-              this.recommendedRetailPrice = "";
-              this.recommendedRetailPriceErrorMsg = "";
-
-              // Reset product description related variables
-              this.description = "";
-              this.descriptionErrorMsg = "";
-
-              // Reset product manufacturer related variables
-              this.manufacturer = "";
-              this.manufacturerErrorMsg = "";
-
-              // Reset toast related variables
-              this.toastErrorMessage = "";
-              this.cannotProceed = false;
-
-
               this.userAlertMessage = this.addedMessage;
               this.closeCreateProductModal();
               this.afterCreation();
@@ -909,11 +908,20 @@ export default {
       autofillProductFromBarcode(this, function () {
         return undefined;
       });
+    },
+    onSearch (checked, searchQuery) {
+      this.searchBy = checked;
+      this.searchQuery = searchQuery;
+      this.convertSearchByListToString(); // update the searchByString
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/productCatalogue`,
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": "0"}
+      });
+      this.requestProducts();
     }
   },
 
   async mounted() {
-
     // If the edit is successful the UpdateProductModal component will emit an 'edits' event. This code notices the emit
     // and will alert the user that the edit was successful by calling the afterEdit function.
     this.$root.$on('edits', this.afterEdit);
@@ -939,7 +947,7 @@ export default {
             (e) => console.log(e)
         )
       } else {
-        this.$router.push({name: 'Login'});
+        await  this.$router.push({name: 'Login'});
       }
     }
 
@@ -992,10 +1000,6 @@ export default {
 #create-product-button:focus {
   background-color: transparent;
   color: #1EBA8C;
-}
-
-.modal {
-  background: rgba(17, 78, 60, 0.4);
 }
 
 .modal-content {

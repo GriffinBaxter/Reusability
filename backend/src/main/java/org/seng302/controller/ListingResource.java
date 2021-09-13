@@ -41,7 +41,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.*;
+
+import static java.time.temporal.TemporalAdjusters.*;
 
 
 /**
@@ -181,7 +186,7 @@ public class ListingResource {
 
         Page<Listing> pagedResult;
 
-        if (barcode != null) {
+        if (barcode != null && !barcode.equals("")) {
             pagedResult = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(id, barcode, paging);
         } else {
             pagedResult = listingRepository.findListingsByBusinessId(id, paging);
@@ -462,6 +467,154 @@ public class ListingResource {
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(listingPayloads);
+    }
+
+    /**
+     * Retrieve sales report for a business, by from/to dates and granularity (e.g. Yearly).
+     *
+     * @param sessionToken Session token used to authenticate user (is user logged in?).
+     * @param businessId ID of the business to retrieve the sales report from.
+     * @param fromDate The date the sales report should be from.
+     * @param toDate The date the sales report should be to.
+     * @param granularity The granularity of the sales report (e.g. Yearly).
+     * @return List of sales report payloads containing granularity name, total sales and total revenue.
+     */
+    @GetMapping("/businesses/{businessId}/salesReport")
+    public ResponseEntity<List<SalesReportPayload>> retrieveSalesReport(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            @RequestParam(defaultValue = "Total") String granularity
+    ) {
+        logger.debug(
+                "Business sales report request received with business ID {}, from date {}, " +
+                        "to date {}, granularity {}",
+                businessId, fromDate, toDate, granularity);
+
+        // 401 if not verified
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // 406 if business does not exist
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+
+        // 403 if not a business admin nor a GAA
+        Authorization.verifyBusinessAdmin(user, businessId);
+
+        LocalDateTime startOf2021 = LocalDateTime.of(2021, Month.JANUARY, 1, 0, 0);
+        if (fromDate.isBefore(startOf2021)) {
+            fromDate = startOf2021;
+        }
+        if (toDate.isAfter(LocalDateTime.now())) {
+            toDate = LocalDateTime.now();
+        }
+
+        // 400 if "from date" is after "to date"
+        if (fromDate.isAfter(toDate)) {
+            logger.error(
+                    "400 [BAD REQUEST] - \"From date\" is after \"to date\" or " +
+                            "\"to date\" is before 2021 (before the year that the app was first deployed)"
+            );
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "There was some error with the data supplied."
+            );
+        }
+
+        // 400 if granularity does not exist
+        ArrayList<SalesReportPayload> salesReportPayloads = new ArrayList<>();
+        LocalDateTime currentDate = fromDate;
+        switch (granularity) {
+            case "Total":
+                salesReportPayloads.add(generateIndividualSalesReport(businessId, fromDate, toDate, null));
+                break;
+            case "Yearly":
+                while (currentDate.getYear() != toDate.getYear()) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(lastDayOfYear()),
+                            String.valueOf(currentDate.getYear())
+                    ));
+                    currentDate = currentDate.plusYears(1).with(firstDayOfYear());
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate, String.valueOf(currentDate.getYear())
+                ));
+                break;
+            case "Monthly":
+                while (currentDate.getYear() != toDate.getYear() || currentDate.getMonth() != toDate.getMonth()) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(lastDayOfMonth()),
+                            currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                    currentDate.getYear()
+                    ));
+                    currentDate = currentDate.plusMonths(1).with(firstDayOfMonth());
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate,
+                        currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                currentDate.getYear()
+                ));
+                break;
+            case "Daily":
+                while (
+                        currentDate.getYear() != toDate.getYear() ||
+                        currentDate.getMonth() != toDate.getMonth() ||
+                        currentDate.getDayOfMonth() != toDate.getDayOfMonth()
+                ) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(LocalTime.MAX),
+                            currentDate.getDayOfMonth() + " " +
+                                    currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                    currentDate.getYear()
+                    ));
+                    currentDate = currentDate.plusDays(1).with(LocalTime.MIN);
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate,
+                        currentDate.getDayOfMonth() + " " +
+                                currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                currentDate.getYear()
+                ));
+                break;
+            default:
+                logger.error("400 [BAD REQUEST] - Granularity type {} does not exist", granularity);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "There was some error with the data supplied."
+                );
+        }
+
+        logger.info(
+                "Sales Report Success - 200 [OK] - Sales Report retrieved for business ID {}, from date {}, " +
+                        "to date {}, granularity {}",
+                businessId, fromDate, toDate, granularity
+        );
+        return ResponseEntity.ok().body(salesReportPayloads);
+    }
+
+    /**
+     * Method for generating and returning an individual sales report payload.
+     * 
+     * @param businessId The business ID.
+     * @param fromDate The date the sales report payload should be from.
+     * @param toDate The date the sales report payload should be to.
+     * @param granularityName The granularity name e.g. 2020.
+     * @return SalesReportPayload.
+     */
+    private SalesReportPayload generateIndividualSalesReport(
+            Integer businessId, LocalDateTime fromDate, LocalDateTime toDate, String granularityName
+    ) {
+        // Set "to date" to the end of the day
+        toDate = toDate.with(LocalTime.MAX);
+
+        List<SoldListing> soldListings = soldListingRepository.findAllByBusinessIdAndSaleDateBetween(
+                businessId, fromDate, toDate
+        );
+        int totalSales = 0;
+        double totalRevenue = 0;
+        for (SoldListing soldListing : soldListings) {
+            totalSales++;
+            totalRevenue += soldListing.getPrice();
+        }
+        return new SalesReportPayload(granularityName, totalSales, totalRevenue);
     }
 
     /**
