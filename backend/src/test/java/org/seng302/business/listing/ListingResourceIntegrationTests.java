@@ -4,6 +4,7 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.repository.*;
@@ -2267,7 +2268,6 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
-
     /**
      * When deleting a listing as a GAA then a OK status is returned.
      */
@@ -2283,8 +2283,6 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
-
-
     /**
      * When deleting a listing as a DGAA then a OK status is returned.
      */
@@ -2298,5 +2296,21 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When an error is thrown when trying to delete the listing then an internal server error is thrown.
+     */
+    @Test
+    void whenDeletingListingAndListingRepositoryFailsToDeleteThenServerErrorIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+        when(listingRepository.deleteListing(listing.getId())).thenThrow(new FailedToDeleteListingException(""));
+
+        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
