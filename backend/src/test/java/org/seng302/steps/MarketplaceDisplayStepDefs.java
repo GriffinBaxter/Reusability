@@ -106,6 +106,7 @@ public class MarketplaceDisplayStepDefs extends CucumberSpringConfiguration {
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
             "\"businessesAdministered\":[null]," +
+            "\"images\":[]," +
             "\"homeAddress\":%s" +
             "}," +
             "\"section\":\"%s\"," +

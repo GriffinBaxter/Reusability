@@ -98,7 +98,7 @@
                 <div class="col my-2 my-lg-0">
                   <label for="email">Email*</label>
                   <input id="email" name="email" type="email" tabindex="6" v-model="email"
-                         :class="toggleInvalidClass(emailErrorMsg)" :maxlength="config.email.maxLength" required>
+                         :class="toggleInvalidClass(emailErrorMsg)" :maxlength="config.email.maxLength" autocomplete="email" required>
                   <div class="invalid-feedback">
                     {{emailErrorMsg}}
                   </div>
@@ -134,11 +134,21 @@
                 <!--current password input field-->
                 <div class="col my-2 my-lg-0">
                   <label for="current-password">Current Password (Only required when changing password)</label>
-                  <input id="current-password" name="password" tabindex="7"
-                         v-model="currentPassword" :class="toggleInvalidClass(currentPasswordErrorMsg)"
-                         :maxlength="config.password.maxLength" required>
-                  <div class="invalid-feedback">
-                    {{currentPasswordErrorMsg}}
+                  <div class="input-group">
+                    <input id="current-password" name="password" tabindex="7"  :type="togglePasswordInputType(showCurrentPassword)"
+                           v-model="currentPassword" :class="toggleInvalidClass(currentPasswordErrorMsg)"
+                           :maxlength="config.password.maxLength" autocomplete="password">
+
+                    <!--toggle password visibility-->
+                    <span class="input-group-text green-search-button" @click="showCurrentPassword = !showCurrentPassword"
+                          @keydown=" (event) => { if (event.keyCode === 13) this.showCurrentPassword = !showCurrentPassword}"
+                          tabindex="8">
+                      <i v-if="!showCurrentPassword" class="fas fa-eye" aria-hidden="true"></i>
+                      <i v-else class="fas fa-eye-slash" aria-hidden="true"></i>
+                    </span>
+                    <div class="invalid-feedback">
+                      {{currentPasswordErrorMsg}}
+                    </div>
                   </div>
                 </div>
 
@@ -152,7 +162,8 @@
                 <div class="col my-2 my-lg-0">
                   <label for="password">Password</label>
                   <div class="input-group">
-                    <input id="password" name="password" tabindex="8" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)">
+                    <input id="password" name="password" tabindex="8" :type="togglePasswordInputType(showPassword)" v-model="password"
+                           v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" autocomplete="new-password">
 
                     <!--toggle password visibility-->
                     <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
@@ -179,7 +190,7 @@
                   <label for="confirm-password">Confirm Password</label>
                   <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
                          v-model="confirmPassword" :class="toggleInvalidClass(confirmPasswordErrorMsg)"
-                         :maxlength="config.password.maxLength" required>
+                         :maxlength="config.password.maxLength" autocomplete="new-password">
                   <div class="invalid-feedback">
                     {{confirmPasswordErrorMsg}}
                   </div>
@@ -351,11 +362,13 @@
 </template>
 
 <script>
-import User from "../configs/User"
+import User, {EditUser} from "../configs/User"
 import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 import Api from "../Api";
+import {isValidDateOfBirth} from "./helpFunction";
+import {getErrorMessage} from "../components/inventory/InventoryValidationHelper";
 
 export default {
   name: "EditProfile",
@@ -365,6 +378,8 @@ export default {
 
   data() {
     return {
+      // Used to determine if logged in user is admin
+      currentRole: null,
 
       // Used for having pre-filled input fields
       DEBUG_MODE: false,
@@ -410,6 +425,7 @@ export default {
       // Current password related variables
       currentPassword: "",
       currentPasswordErrorMsg: "",
+      showCurrentPassword: false,
 
       // Confirm password related variables
       confirmPassword: "",
@@ -509,11 +525,269 @@ export default {
     },
 
     /**
-     * This method edits a user.
+     * This method checks the validation of all fields and if all fields are okay sends an EditUser object to the backend
+     * to update the user, if not, appropriate error messages will be displayed
+     *
      * @param e, the current event.
      */
     editUser(e) {
       e.preventDefault()  // prevents page from reloading
+
+      this.trimTextInputFields()
+      this.getErrorMsgs()
+
+      if (!this.checkRequestValid()) {
+        return
+      }
+
+      const addressData = {
+        streetNumber: this.streetNumber,
+        streetName: this.streetName,
+        suburb: this.suburb,
+        city: this.city,
+        region: this.region,
+        country: this.country,
+        postcode: this.postcode
+      }
+
+
+      let currentPassword = null
+      let newPassword = null
+      if (this.password !== "") { // password field is not empty
+        currentPassword = this.currentPassword;
+        newPassword = this.password
+      }
+      const userData = {
+        firstName: this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1),
+        lastName: this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1),
+        middleName: this.middleName.charAt(0).toUpperCase() + this.middleName.slice(1),
+        nickname: this.nickname.charAt(0).toUpperCase() + this.nickname.slice(1),
+        bio: this.bio,
+        email: this.email,
+        dateOfBirth: this.dateOfBirth,
+        phoneNumber: this.phoneNumber,
+        homeAddress: addressData,
+        currentPassword: currentPassword,
+        newPassword: newPassword
+      }
+      const id = this.$route.params.id
+
+      Api.editUser(id, new EditUser(userData)).then( (res) => {
+        if (res.status === 200) {
+          this.toProfile()
+        }
+      }).catch((error) => {
+        if (error.response) {
+          if (error.response.status === 400) {
+            this.errorMessageBubble = error.response.data.message
+          } else if (error.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          } else {
+            this.errorMessageBubble = `${error.response.status} Unexpected error occurred!`;
+          }
+        } else if (error.request) {
+          this.errorMessageBubble = 'Timeout occurred';
+        } else {
+          this.errorMessageBubble = 'Unexpected error occurred!';
+        }
+      })
+    },
+    /**
+     * Checks validation for all fields and creates error messages as required
+     */
+    getErrorMsgs() {
+      // First/Middle/Last/Nick name error checking
+      this.getNameErrorMsgs()
+      // Current password, password and confirm password error checking
+      this.getPasswordErrorMsgs()
+      // Street number/name, suburb, city, region, postcode, country
+      this.getAddressErrorMsgs()
+      // Bio error checking
+      this.bioErrorMsg = getErrorMessage(
+          this.config.bio.name,
+          this.bio,
+          this.config.bio.minLength,
+          this.config.bio.maxLength,
+      )
+      // Email error checking
+      this.emailErrorMsg = getErrorMessage(
+          this.config.email.name,
+          this.email,
+          this.config.email.minLength,
+          this.config.email.maxLength,
+          this.config.email.regexMessage,
+          this.config.email.regex
+      )
+      // Date of birth error checking
+      if (!this.dateOfBirth) {
+        this.dateOfBirthErrorMsg = "This field is required!"
+      } else if (!isValidDateOfBirth(this.dateOfBirth)) {
+        this.dateOfBirthErrorMsg = "Must be over 13, and not from the future."
+      } else {
+        this.dateOfBirthErrorMsg = "";
+      }
+      // Phone number error checking
+      this.phoneNumberErrorMsg = getErrorMessage(
+          this.config.phoneNumber.name,
+          this.phoneNumber,
+          this.config.phoneNumber.minLength,
+          this.config.phoneNumber.maxLength,
+          this.config.phoneNumber.regexMessage,
+          this.config.phoneNumber.regex
+      )
+    },
+    /**
+     * Checks validation for all name related fields and creates error messages as required
+     */
+    getNameErrorMsgs() {
+      // First name error checking
+      this.firstNameErrorMsg = getErrorMessage(
+          this.config.firstName.name,
+          this.firstName,
+          this.config.firstName.minLength,
+          this.config.firstName.maxLength,
+          this.config.firstName.regexMessage,
+          this.config.firstName.regex
+      )
+      // Middle name error checking
+      this.middleNameErrorMsg = getErrorMessage(
+          this.config.middleName.name,
+          this.middleName,
+          this.config.middleName.minLength,
+          this.config.middleName.maxLength,
+          this.config.middleName.regexMessage,
+          this.config.middleName.regex
+      )
+      // Last name error checking
+      this.lastNameErrorMsg = getErrorMessage(
+          this.config.lastName.name,
+          this.lastName,
+          this.config.lastName.minLength,
+          this.config.lastName.maxLength,
+          this.config.lastName.regexMessage,
+          this.config.lastName.regex
+      )
+      // Nickname error checking
+      this.nicknameErrorMsg = getErrorMessage(
+          this.config.nickname.name,
+          this.nickname,
+          this.config.nickname.minLength,
+          this.config.nickname.maxLength,
+          this.config.nickname.regexMessage,
+          this.config.nickname.regex
+      )
+    },
+    /**
+     * Checks validation for all password related fields and creates error messages as required
+     */
+    getPasswordErrorMsgs() {
+      if (this.password !== "") {
+        // Current Password error checking
+        this.currentPasswordErrorMsg = getErrorMessage(
+            this.config.password.name,
+            this.currentPassword,
+            this.config.password.minLength,
+            this.config.password.maxLength,
+            this.config.password.regexStrongMessage,
+            this.config.password.regexStrong,
+        )
+        // Password error checking
+        this.passwordErrorMsg = getErrorMessage(
+            this.config.password.name,
+            this.password,
+            this.config.password.minLength,
+            this.config.password.maxLength,
+            this.config.password.regexStrongMessage,
+            this.config.password.regexStrong,
+        )
+      } else {
+        this.passwordErrorMsg = ""
+        this.currentPasswordErrorMsg = ""
+      }
+      // Confirm password error checking
+      if (this.password !== this.confirmPassword) {
+        this.confirmPasswordErrorMsg = "Confirmation password does not equal password field."
+      } else {
+        this.confirmPasswordErrorMsg = ""
+      }
+    },
+    /**
+     * Checks validation for all address related fields and creates error messages as required
+     */
+    getAddressErrorMsgs() {
+      // Street number error checking
+      this.streetNumberErrorMsg = getErrorMessage(
+          this.config.streetNumber.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetNumber.value,
+          this.config.streetNumber.minLength,
+          this.config.streetNumber.maxLength
+      )
+      // Street name error checking
+      this.streetNameErrorMsg = getErrorMessage(
+          this.config.streetName.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetName.value,
+          this.config.streetName.minLength,
+          this.config.streetName.maxLength
+      )
+      // Suburb error checking
+      this.suburbErrorMsg = getErrorMessage(
+          this.config.suburb.name,
+          this.$refs.suburb.value,
+          this.config.suburb.minLength,
+          this.config.suburb.maxLength
+      )
+      // Postcode error checking
+      this.postcodeErrorMsg = getErrorMessage(
+          this.config.postcode.name,
+          this.$refs.postcode.value,
+          this.config.postcode.minLength,
+          this.config.postcode.maxLength
+      )
+      // City error checking
+      this.cityErrorMsg = getErrorMessage(
+          this.config.city.name,
+          this.$refs.city.value,
+          this.config.city.minLength,
+          this.config.city.maxLength
+      )
+      // Region error checking
+      this.regionErrorMsg = getErrorMessage(
+          this.config.region.name,
+          this.$refs.region.value,
+          this.config.region.minLength,
+          this.config.region.maxLength
+      )
+      // Country error checking
+      this.countryErrorMsg = getErrorMessage(
+          this.config.country.name,
+          this.$refs.country.value,
+          this.config.country.minLength,
+          this.config.country.maxLength
+      )
+    },
+    /**
+     * Checks if any error messages are displayed and returns a true/false
+     * @return T/F if request is valid
+     */
+    checkRequestValid() {
+      let valid = true
+      if (this.firstNameErrorMsg || this.middleNameErrorMsg || this.lastNameErrorMsg || this.nicknameErrorMsg) {
+        valid = false
+      }
+      if (this.streetNumberErrorMsg || this.streetNameErrorMsg || this.suburbErrorMsg || this.cityErrorMsg || this.regionErrorMsg || this.postcodeErrorMsg || this.countryErrorMsg) {
+        valid = false
+      }
+      if (this.dateOfBirthErrorMsg || this.bioErrorMsg || this.emailErrorMsg) {
+        valid = false
+      }
+      if (this.passwordErrorMsg || this.currentPasswordErrorMsg || this.confirmPasswordErrorMsg) {
+        valid = false
+      }
+      return valid
     },
 
     /**
@@ -771,6 +1045,25 @@ export default {
     },
 
     /**
+     * This method removes white space from the beginning and end of all the input field's input values.
+     */
+    trimTextInputFields () {
+      this.firstName = this.firstName.trim();
+      this.middleName = this.middleName.trim();
+      this.lastName = this.lastName.trim();
+      this.nickname = this.nickname.trim();
+      this.bio = this.bio.trim();
+      this.email = this.email.trim();
+      this.country = this.country.trim();
+      this.city = this.city.trim();
+      this.postcode = this.postcode.trim();
+      this.region = this.region.trim();
+      this.streetNumber = this.streetNumber.trim();
+      this.streetName = this.streetName.trim();
+      this.suburb = this.suburb.trim();
+    },
+
+    /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
      * https://www.w3schools.com/howto/howto_js_autocomplete.asp
      *
@@ -785,44 +1078,92 @@ export default {
       }
     },
     /**
-     * Retrieves the current url id's details and autofills details into the appropriate fields
-     * @param id User id to retrieve
+     * Retrieves the current url id's details and sets role/calls setFields() depending on user retrieving
+     * @param id Id to retrieve from backend
+     * @param isUrlID T/F if the id passed is Url Id or logged in user
      */
-    retrieveUser(id) {
-      Api.getUser(id).then((res) => {
-        this.bio = res.data.bio
-        this.dateOfBirth = res.data.dateOfBirth
-        this.email = res.data.email
-        this.phoneNumber = res.data.phoneNumber
-        // Names
-        this.firstName = res.data.firstName
-        this.middleName = res.data.middleName
-        this.lastName = res.data.lastName
-        this.nickname = res.data.nickname
-        // Address
-        this.streetNumber = res.data.homeAddress.streetNumber
-        this.streetName = res.data.homeAddress.streetName
-        this.suburb = res.data.homeAddress.suburb
-        this.city = res.data.homeAddress.city
-        this.region = res.data.homeAddress.region
-        this.postcode = res.data.homeAddress.postcode
-        this.country = res.data.homeAddress.country
+    async retrieveUser(id, isUrlID) {
+      await Api.getUser(id).then((res) => {
+        if (isUrlID) {
+          this.setFields(res)
+        } else {
+          this.currentRole = res.data.role
+        }
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 406) {
+            this.$router.push({name: "NoUser"})
+          } else if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          } else {
+            console.log(err.response)
+          }
+        } else {
+          console.log(err)
+        }
       })
+    },
+    /**
+     * Auto-fills the fields from API response that exist (this is done to prevent inputs being set as undefined)
+     * Also checks that a GAA isn't trying to edit a DGAA
+     * @param res API response
+     */
+    setFields(res) {
+      if (res.data.role === "DEFAULTGLOBALAPPLICATIONADMIN" && this.currentRole !== null) {
+        this.toProfile()
+      } else {
+        if (res.data.bio !== null) { this.bio = res.data.bio }
+        if (res.data.dateOfBirth !== null) { this.dateOfBirth = res.data.dateOfBirth }
+        if (res.data.email !== null) { this.email = res.data.email }
+        if (res.data.phoneNumber !== null) { this.phoneNumber = res.data.phoneNumber }
+        // Names
+        this.setNameFields(res.data);
+        // Address
+        this.setAddressFields(res.data.homeAddress);
+      }
+    },
+    /**
+     * Sets Address Fields if they exist (this is done to prevent setting inputs as undefined)
+     * @param address object containing address fields
+     */
+    setAddressFields(address) {
+      // Address
+      if (address.streetNumber !== null) { this.streetNumber = address.streetNumber }
+      if (address.streetName !== null) { this.streetName = address.streetName }
+      if (address.suburb !== null) { this.suburb = address.suburb }
+      if (address.city !== null) { this.city = address.city }
+      if (address.region !== null) { this.region = address.region }
+      if (address.postcode !== null) { this.postcode = address.postcode }
+      if (address.country !== null) { this.country = address.country }
+    },
+    /**
+     * Sets Name Fields if they exist (this is done to prevent setting inputs as undefined)
+     * @param names object containing name fields
+     */
+    setNameFields(names) {
+      if (names.firstName !== null) { this.firstName = names.firstName }
+      if (names.middleName !== null) { this.middleName = names.middleName}
+      if (names.lastName !== null) { this.lastName = names.lastName }
+      if (names.nickname !== null) { this.nickname = names.nickname }
     }
   },
-  beforeCreate() {
+  async created() {
     const currentID = Cookies.get('userID');
     if (currentID) {
       const id = this.$route.params.id
 
       if (currentID !== id) {
-        this.$router.push({name: "Profile", params: {id}})
+        await this.retrieveUser(currentID, false);
+        if (this.currentRole === null || this.currentRole === "USER") {
+          this.toProfile()
+        }
+
       }
     }
   },
   mounted() {
     const id = this.$route.params.id
-    this.retrieveUser(id);
+    this.retrieveUser(id, true);
   }
 }
 

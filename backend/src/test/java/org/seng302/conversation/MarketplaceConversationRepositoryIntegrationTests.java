@@ -144,7 +144,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
         entityManager.flush();
 
         // When
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(anotherUser.getId(), anotherUser.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(anotherUser.getId(), false, anotherUser.getId(), false);
 
         // Then
         Assertions.assertTrue(conversationList.isEmpty());
@@ -166,7 +166,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
         entityManager.flush();
 
         // When
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(user2.getId(), user2.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(user2.getId(), false, user2.getId(), false);
 
         // Then
         Assertions.assertEquals(1, conversationList.size());
@@ -192,7 +192,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
         entityManager.flush();
 
         // When
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(user1.getId(), user1.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(user1.getId(), false, user1.getId(), false);
 
         // Then
         Assertions.assertEquals(1, conversationList.size());
@@ -223,7 +223,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
         entityManager.flush();
 
         // When
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(user1.getId(), user1.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(user1.getId(), false, user1.getId(), false);
 
         // Then
         Assertions.assertEquals(2, conversationList.size());
@@ -262,7 +262,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
         entityManager.flush();
 
         // When
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(user1.getId(), user2.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(user1.getId(), false, user2.getId(), false);
 
         // Then
         Assertions.assertEquals(2, conversationList.size());
@@ -296,7 +296,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
         entityManager.flush();
 
         // When
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(user1.getId(), user2.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(user1.getId(), false, user2.getId(), false);
 
         // Then
         Assertions.assertEquals(1, conversationList.size());
@@ -319,7 +319,7 @@ class MarketplaceConversationRepositoryIntegrationTests {
         entityManager.flush();
 
         // When
-        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdOrReceiverId_OrderByCreatedDesc(user2.getId(), user1.getId());
+        List<Conversation> conversationList = marketplaceConversationRepository.findAllByInstigatorIdAndDeletedByInstigatorOrReceiverIdAndDeletedByReceiver_OrderByCreatedDesc(user2.getId(), false, user1.getId(), false);
 
         // Then
         Assertions.assertTrue(conversationList.isEmpty());

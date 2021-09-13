@@ -11,6 +11,7 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.Business;
+import org.seng302.model.UserImage;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
 
@@ -36,7 +37,8 @@ public class UserPayloadSecure extends UserPayloadParent {
                              AddressPayloadSecure homeAddress,
                              LocalDateTime created,
                              Role role,
-                             List<Business> businessesAdministeredObject) throws Exception {
+                             List<Business> businessesAdministeredObject,
+                             List<UserImage> userImages) throws Exception {
         super(id,
                 firstName,
                 lastName,
@@ -46,7 +48,8 @@ public class UserPayloadSecure extends UserPayloadParent {
                 email,
                 created,
                 role,
-                businessesAdministeredObject);
+                businessesAdministeredObject,
+                userImages);
 
         this.homeAddress = homeAddress;
     }
@@ -70,7 +73,9 @@ public class UserPayloadSecure extends UserPayloadParent {
                     user.getHomeAddress().toAddressPayloadSecure(),
                     user.getCreated(),
                     user.getRole(),
-                    user.getBusinessesAdministeredObjects());
+                    user.getBusinessesAdministeredObjects(),
+                    user.getUserImages()
+                    );
 
             payLoadsSecure.add(newPayload);
         }
@@ -101,6 +106,7 @@ public class UserPayloadSecure extends UserPayloadParent {
                 ",\"created\":\"" + super.getCreated() + "\"" +
                 ",\"role\":\"" + super.getRole() + "\"" +
                 ",\"businessesAdministered\":" + super.getBusinessesAdministered().toString() +
+                ",\"images\":" + super.getImages() +
                 ",\"homeAddress\":" + homeAddress +
                 "}";
     }

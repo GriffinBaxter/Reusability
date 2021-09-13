@@ -1,9 +1,6 @@
 <template>
   <div>
     <div id="main">
-      <!--nav bar-->
-      <Navbar></Navbar>
-
       Period:
       <div class="btn-group col d-inline-block p-2" role="group">
         <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
@@ -109,13 +106,10 @@
         </div>
       </div>
     </div>
-    <Footer/>
   </div>
 </template>
 
 <script>
-import Navbar from "../components/Navbar";
-import Footer from "../components/main/Footer";
 import Cookies from "js-cookie";
 import {checkAccessPermission} from "../views/helpFunction";
 import Api from "../Api";
@@ -127,8 +121,6 @@ import {format} from "date-fns";
 export default {
   name: "SaleHistory",
   components: {
-    Footer,
-    Navbar,
     PageButtons
   },
   data() {

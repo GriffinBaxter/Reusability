@@ -1,7 +1,6 @@
 package org.seng302.user;
 
 import org.junit.jupiter.api.*;
-import org.seng302.Validation;
 import org.seng302.model.Address;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
@@ -67,6 +66,7 @@ class UserResourceIntegrationTests {
                                     "\"created\":\"%s" + "\"," +
                                     "\"role\":%s," +
                                     "\"businessesAdministered\":%s," +
+                                    "\"images\":%s," +
                                     "\"dateOfBirth\":\"%s\"," +
                                     "\"phoneNumber\":\"%s\"," +
                                     "\"homeAddress\":%s"+
@@ -82,7 +82,8 @@ class UserResourceIntegrationTests {
             "\"created\":\"%s" + "\"," +
             "\"role\":%s," +
             "\"businessesAdministered\":%s," +
-            "\"homeAddress\":%s"+
+            "\"images\":%s," +
+            "\"homeAddress\":%s" +
             "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
@@ -216,8 +217,10 @@ class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser1.setId(4);
+        searchUser1.setSessionUUID(User.generateSessionUUID());
 
-        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China", "Barryville");
+        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi",
+                "China", "Barryville");
 
         searchUser2 = new User(
                 "Chad",
@@ -235,7 +238,8 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser2.setId(5);
 
-        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "Buri");
+        address3 = new Address("9205", "", "Monique Vista", "Bururi",
+                "Bigomogomo", "Africa", "Buri");
 
         searchUser3 = new User(
                 "Naomi",
@@ -253,7 +257,8 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser3.setId(6);
 
-        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand", "Ilam");
+        address4 = new Address("240", "", "", "Bernhard Run", "Southland",
+                "New Zealand", "Ilam");
 
         searchUser4 = new User(
                 "Seth",
@@ -271,7 +276,8 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser4.setId(7);
 
-        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand", "Ilam");
+        address5 = new Address("186", "Simpsons Road", "", "Ashburton",
+                "Canterbury", "New Zealand", "Ilam");
 
         searchUser5 = new User(
                 "Minttu",
@@ -398,9 +404,9 @@ class UserResourceIntegrationTests {
     @Test
     void canRegisterWhenUserDoesntExistAndDataValid() throws Exception {
         // given
-        User newUser = new User("Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                          "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
-                     address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        User newUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
         newUser.setId(4);
         newUser.setSessionUUID(User.generateSessionUUID());
         given(userRepository.findByEmail(newUser.getEmail())).willReturn(java.util.Optional.empty());
@@ -431,7 +437,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, 4));
-        assertThat(response.getCookie("JSESSIONID").getValue()).isNotNull();
+        assertThat(Objects.requireNonNull(response.getCookie("JSESSIONID")).getValue()).isNotNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -558,14 +564,16 @@ class UserResourceIntegrationTests {
     void canRetrieveUserWhenUserExistsWithDgaaCookie() throws Exception {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]",  user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress());
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
+                "\"" + user.getRole() + "\"", "[null]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID",
+                        dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -582,13 +590,14 @@ class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                ("\"" + user.getRole() + "\""), "[null]", user.getDateOfBirth(), user.getPhoneNumber(),  user.getHomeAddress());
+                ("\"" + user.getRole() + "\""), "[null]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-        response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+        response = mvc.perform(get(String.format("/users/%d", user.getId()))
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -602,30 +611,18 @@ class UserResourceIntegrationTests {
      */
     @Test
     void canRetrieveUserWhenUserExistsWithUserCookie() throws Exception {
-        String expectedUserJson = "{\"id\":%d," +
-                "\"firstName\":\"%s\"," +
-                "\"lastName\":\"%s\"," +
-                "\"middleName\":\"%s\"," +
-                "\"nickname\":\"%s\"," +
-                "\"bio\":\"%s\"," +
-                "\"email\":\"%s\"," +
-                "\"created\":\"%s" + "\"," +
-                "\"role\":%s," +
-                "\"businessesAdministered\":%s," +
-                "\"homeAddress\":%s"+
-                "}";
-
-
         // given
-        expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null, "[null]", user.getHomeAddress().toSecureString());
+        expectedJson = String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null,
+                "[null]", "[]", user.getHomeAddress().toSecureString());
 
         // when
-        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID()))
+                .thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
 
-        response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+        response = mvc.perform(get(String.format("/users/%d", user.getId()))
+                        .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -646,8 +643,8 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-        response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", nonExistingSessionUUID)))
+        response = mvc.perform(get(String.format("/users/%d", user.getId()))
+                        .cookie(new Cookie("JSESSIONID", nonExistingSessionUUID)))
                 .andReturn().getResponse();
 
         // then
@@ -716,21 +713,30 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" +
-                user.getRole() + "\"", "[null]",  user.getHomeAddress().toSecureString()) + "]";
+                user.getRole() + "\"", "[null]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging))
+                .thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -763,23 +769,33 @@ class UserResourceIntegrationTests {
                 "TESTFIRST TESTMIDDLE TESTLAST",
                 "TESTFIRST TESTLAST"
         );
-        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" +
-                        user.getRole() + "\"", "[null]",  user.getHomeAddress().toSecureString()) + "]";
+        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(),
+                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                user.getCreated(), "\"" + user.getRole() + "\"", "[null]", "[]",
+                user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging))
+                .thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -816,21 +832,24 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                null, "[null]",  user.getHomeAddress().toSecureString()) + "]";
+                null, "[null]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         for (String searchQuery: searchQueryList) {
@@ -865,27 +884,30 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                null, "[null]",  user.getHomeAddress().toSecureString()) + "]";
+                null, "[null]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID()))
+                .thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery)
-                            .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+            responseList.add(mvc.perform(get("/users/search").param("searchQuery", searchQuery)
+                    .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
         }
 
         // then
@@ -917,16 +939,19 @@ class UserResourceIntegrationTests {
         // when
         List<User> list = List.of();
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery)
@@ -1098,31 +1123,39 @@ class UserResourceIntegrationTests {
         expectedJson = "[" +
                 String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                         user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                        null, "[null]",  user.getHomeAddress().toSecureString()) + "," +
+                        null, "[null]", "[]", user.getHomeAddress().toSecureString()) + "," +
                 String.format(expectedSecureUserJson, searchUser1.getId(), searchUser1.getFirstName(),
                         searchUser1.getLastName(), searchUser1.getMiddleName(), searchUser1.getNickname(),
                         searchUser1.getBio(), searchUser1.getEmail(), searchUser1.getCreated(),
-                        null, "[null]",  searchUser1.getHomeAddress().toSecureString()) +
+                        null, "[null]", "[]", searchUser1.getHomeAddress().toSecureString()) +
                 "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user, searchUser1);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "ALEX"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("testfirst", "alex"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "alex"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "TESTLAST", "Alex"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "ALEX"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "ALEX"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("testfirst", "alex"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "alex"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "TESTLAST", "Alex"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "ALEX"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID()))
+                .thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery)
-                            .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+            responseList.add(mvc.perform(get("/users/search").param("searchQuery", searchQuery)
+                    .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
         }
 
         // then

@@ -103,6 +103,7 @@ class MarketplaceCardResourceIntegrationTests {
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
             "\"businessesAdministered\":[null]," +
+            "\"images\":[],"+
             "\"homeAddress\":%s" +
             "}," +
             "\"section\":\"%s\"," +
