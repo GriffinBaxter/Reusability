@@ -10,6 +10,8 @@
             <form class="needs-validation" novalidate @submit.prevent>
               <div class="form-group" id="date-filtering-container">
 
+                <!------------------------------------------- Date inputs --------------------------------------------->
+
                 <div class="row">
                   <div class="col" style="max-width: 60px">
                     <label for="start-date-input" class="p-2">Date </label>
@@ -37,10 +39,54 @@
                 </div>
               </div>
 
+              <!---------------------------------- Ordering by options menu ------------------------------------------->
+
+              <div class="row">
+                <label class="d-inline-block p-2 fs-5 text-center">Granularity: </label>
+
+                <div class="btn-group col d-inline-block p-2" role="group">
+
+                  <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                          data-bs-toggle="dropdown" aria-expanded="false">{{ granularityText }}
+                  </button>
+
+                  <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                    <!--order by price-->
+                    <li class="btn green-button-transparent col-12 order-by-options-btn"
+                        @click="setGranularityOption('total')">
+                      Total
+                    </li>
+
+                    <!--order by product name-->
+                    <li class="btn green-button-transparent col-12 order-by-options-btn"
+                        @click="setGranularityOption('yearly')">
+                      Yearly
+                    </li>
+
+                    <!--order by country-->
+                    <li class="btn green-button-transparent col-12 order-by-options-btn"
+                        @click="setGranularityOption('monthly')">
+                      Monthly
+                    </li>
+
+                    <!--order by city-->
+                    <li class="btn green-button-transparent col-12 order-by-options-btn"
+                        @click="setGranularityOption('daily')">
+                      Daily
+                    </li>
+
+                  </ul>
+                </div>
+
+              </div>
+
             </form>
 
           </div>
         </div>
+
+        <!----------------------------------------- Sale history table/rows ------------------------------------------->
+
         <div class="card p-3">
           Barry's stuff for task 723
         </div>
@@ -73,6 +119,7 @@ export default {
       startDate: null,
       endDate: null,
       invalidDateMsg: "",
+      granularityText: ""
     }
   },
   methods: {
@@ -97,6 +144,14 @@ export default {
         this.invalidDateMsg = "";
         // TODO: apply query method for task 723
       }
+    },
+
+    /**
+     * Sets the granularity option text on the button to match the selected granularity.
+     * @param granularity The chosen granularity, e.g. total, yearly, monthly, daily.
+     */
+    setGranularityOption(granularity) {
+      this.granularityText = granularity.charAt(0).toUpperCase() + granularity.slice(1);
     }
   }
 }
