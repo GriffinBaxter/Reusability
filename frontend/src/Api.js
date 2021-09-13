@@ -110,8 +110,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of inventory items for a business.
-    sortInventoryItems: (id, sortBy, page) => {
-        return instance.get(`/businesses/${id}/inventory?orderBy=${sortBy}&page=${page}`, {
+    sortInventoryItems: (id, sortBy, page, barcode) => {
+        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },
@@ -176,8 +176,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
-    sortListings: (businessId, sortBy, page) => {
-        return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
+    sortListings: (businessId, sortBy, page, barcode) => {
+        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true,
         })
     },
@@ -288,12 +288,13 @@ export default {
         })
     },
 
-    // Sends a delete request to the backend to delete the image of a selected product for a business.
-    deleteProductImage: (businessId, productId, imageId) => {
-        return instance.delete(`/businesses/${businessId}/products/${productId}/images/${imageId}`, {
+    // Sends a delete request to the backend to delete the image.
+    deleteImage: (query, imageId) => {
+        return instance.delete(`/images/${imageId}${query}`, {
             withCredentials: true
         })
     },
+
 
     // Uploads an image to a given product
     uploadImage: (query, image) => {
@@ -387,7 +388,6 @@ export default {
         return instance.post(`/home/conversation`, messagePayload, { withCredentials: true})
     },
 
-    // TODO needs to be updated when task 730 is done?
     // Sends a message to the backend with a card ID and user ID of the intended recipient
     sendMessage: (cardId, recipient, message) => {
         return instance.post(`/cards/${cardId}/message`, {
@@ -400,5 +400,21 @@ export default {
     // retrieves conversation entities
     getConversations() {
         return instance.get(`/home/conversation`, {withCredentials: true})
+    },
+
+    // Sends a DELETE request to the backend to delete a conversation with the given id.
+    deleteConversation: (id) => {
+        return instance.delete(`/users/conversation/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // retrieves a specific conversation
+    getConversation(id) {
+        return instance.get(`/home/conversation/${id}/messages`, {withCredentials: true})
+    },
+
+    sendReply: (conversationId, message) => {
+        return instance.post(`/home/conversation/${conversationId}`, message, {withCredentials: true})
     }
 }

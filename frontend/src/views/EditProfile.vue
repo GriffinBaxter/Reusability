@@ -574,7 +574,7 @@ export default {
 
       Api.editUser(id, new EditUser(userData)).then( (res) => {
         if (res.status === 200) {
-          this.$router.push({name: "Profile", params: {id}})
+          this.toProfile()
         }
       }).catch((error) => {
         if (error.response) {
@@ -1105,17 +1105,22 @@ export default {
     },
     /**
      * Auto-fills the fields from API response that exist (this is done to prevent inputs being set as undefined)
+     * Also checks that a GAA isn't trying to edit a DGAA
      * @param res API response
      */
     setFields(res) {
-      if (res.data.bio !== null) { this.bio = res.data.bio }
-      if (res.data.dateOfBirth !== null) { this.dateOfBirth = res.data.dateOfBirth }
-      if (res.data.email !== null) { this.email = res.data.email }
-      if (res.data.phoneNumber !== null) { this.phoneNumber = res.data.phoneNumber }
-      // Names
-      this.setNameFields(res.data);
-      // Address
-      this.setAddressFields(res.data.homeAddress);
+      if (res.data.role === "DEFAULTGLOBALAPPLICATIONADMIN" && this.currentRole !== null) {
+        this.toProfile()
+      } else {
+        if (res.data.bio !== null) { this.bio = res.data.bio }
+        if (res.data.dateOfBirth !== null) { this.dateOfBirth = res.data.dateOfBirth }
+        if (res.data.email !== null) { this.email = res.data.email }
+        if (res.data.phoneNumber !== null) { this.phoneNumber = res.data.phoneNumber }
+        // Names
+        this.setNameFields(res.data);
+        // Address
+        this.setAddressFields(res.data.homeAddress);
+      }
     },
     /**
      * Sets Address Fields if they exist (this is done to prevent setting inputs as undefined)
@@ -1149,9 +1154,10 @@ export default {
 
       if (currentID !== id) {
         await this.retrieveUser(currentID, false);
-        if (this.currentRole !== "DEFAULTGLOBALAPPLICATIONADMIN") {
-          await this.$router.push({name: "Profile", params: {id}})
+        if (this.currentRole === null || this.currentRole === "USER") {
+          this.toProfile()
         }
+
       }
     }
   },
