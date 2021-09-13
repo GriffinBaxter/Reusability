@@ -297,8 +297,13 @@ public class ProductImagesStepDefs {
                 .thenReturn(productImages);
         when(productImageRepository.findProductImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId))
                 .thenReturn(Optional.of(primaryProductImage));
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryProductImage
-                .getId())).cookie(cookie)).andReturn().getResponse();
+
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", productId))
+                .andReturn().getResponse();
     }
 
     @Then("this business has no images")

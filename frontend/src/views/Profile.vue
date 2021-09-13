@@ -588,7 +588,7 @@ export default {
       this.user = {
         data: {
           firstName: this.firstName,
-          id: this.id,
+          id: this.userId,
           images: this.images
         }
       }

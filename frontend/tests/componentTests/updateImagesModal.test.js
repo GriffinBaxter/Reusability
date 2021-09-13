@@ -70,12 +70,12 @@ describe("Testing the set primary image, delete and upload image functionality",
             }
         }
 
-        Api.deleteProductImage.mockImplementation(() => Promise.reject(data));
+        Api.deleteImage.mockImplementation(() => Promise.reject(data));
 
         await wrapper.vm.deleteSelectedImage();
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, you do not have permission to delete this image.");
+        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, you do not have permission to perform this action.");
 
     })
 
@@ -96,7 +96,7 @@ describe("Testing the set primary image, delete and upload image functionality",
             }
         }
 
-        Api.deleteProductImage.mockImplementation(() => Promise.reject(data));
+        Api.deleteImage.mockImplementation(() => Promise.reject(data));
 
         await wrapper.vm.deleteSelectedImage();
         await wrapper.vm.$nextTick();
@@ -127,7 +127,7 @@ describe("Testing the set primary image, delete and upload image functionality",
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.formErrorModalMessage).toBe(
-            "Sorry, you do not have permission to change the primary image."
+            "Sorry, you do not have permission to perform this action."
         );
 
     })
@@ -230,3 +230,27 @@ describe("Testing getQueryForParams() function", () => {
             expect(consoleSpy).toHaveBeenCalledWith('Location error!');
      })
 })
+
+describe("Testing setSelected() function", () => {
+
+    test('Testing setSelected() sets selected image to null when selectedImage equals id',
+        async () => {
+            const wrapper = await factory();
+            const id = 1;
+            wrapper.vm.$data.selectedImage = id;
+
+            wrapper.vm.setSelected(id);
+            expect(wrapper.vm.$data.selectedImage).toBeNull();
+        })
+
+    test('Testing setSelected() sets selected image to id when selectedImage does not equal id',
+        async () => {
+            const wrapper = await factory();
+            const id = 1;
+            wrapper.vm.$data.selectedImage = 2;
+
+            wrapper.vm.setSelected(id);
+            expect(wrapper.vm.$data.selectedImage).toEqual(id);
+        })
+})
+
