@@ -48,8 +48,6 @@
 </template>
 
 <script>
-import Cookies from "js-cookie";
-import {checkAccessPermission} from "../../views/helpFunction";
 import Api from "../../Api";
 import CurrencyAPI from "../../currencyInstance";
 import {formatDate} from "../../dateUtils";
@@ -60,11 +58,25 @@ export default {
   components: {
     PageButtons
   },
+  props: {
+    businessName: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessCountry: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessId: {
+      type: Number,
+      default: 0,
+      required: true
+    }
+  },
   data() {
     return {
-      businessId: 0,
-      businessName: "",
-      businessCountry: "",
       soldListings: [],
       columns: [
         {title: "Product Id"},
@@ -89,18 +101,8 @@ export default {
       totalListings: 0
     }
   },
+
   methods: {
-    /**
-     * Calls a GET request to the backend to retrieve the information of the current business.
-     */
-    async retrieveBusinessInfo() {
-      await Api.getBusiness(this.businessId).then(response => {
-        this.businessName = response.data.name;
-        this.businessCountry = response.data.address.country;
-      }).catch((error) => {
-        this.manageError(error);
-      })
-    },
     /**
      * Calls a GET request to the backend to retrieve the sold listings for the current business, and
      * then formats the retrieved data to be displayed.
@@ -185,24 +187,6 @@ export default {
      */
     goToCustomerProfile(userId) {
       this.$router.push({path: `/profile/${userId}`});
-    }
-  },
-  /**
-   * When mounted, initiate population of page.
-   * If cookies are invalid or not present, redirect to login page.
-   */
-  async mounted() {
-    const actAs = Cookies.get('actAs');
-    if (checkAccessPermission(this.$route.params.businessId, actAs)) {
-      await this.$router.push({path: `/businessProfile/${actAs}/saleHistory`});
-    } else {
-      const currentID = Cookies.get('userID');
-      if (currentID) {
-        this.businessId = parseInt(this.$route.params.businessId);
-        await this.retrieveBusinessInfo();
-        await this.retrieveCurrencyInfo();
-        await this.retrieveSoldListings();
-      }
     }
   }
 }

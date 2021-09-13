@@ -1,47 +1,49 @@
 <template>
   <div>
     <div class="main">
-      <div class="options">
-        <div class="row m-2">
+      <div class="container">
+        <div class="card p-3">
+          <h1 id="page-title">{{ businessName }} Sales Report</h1>
 
-          <form class="needs-validation" novalidate @submit.prevent>
-            <div class="form-group" id="date-filtering-container">
+          <div class="row m-2">
 
-              <div class="row">
-                <div class="col" style="max-width: 60px">
-                  <label for="start-date-input" class="p-2">Date </label>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                  <input type="date" class="form-control filter-input" id="start-date-input"
-                         v-model="startDate"
-                         :class="toggleInvalidClass(invalidDateMsg)">
-                  <div class="invalid-feedback">
-                    {{invalidDateMsg}}
+            <form class="needs-validation" novalidate @submit.prevent>
+              <div class="form-group" id="date-filtering-container">
+
+                <div class="row">
+                  <div class="col" style="max-width: 60px">
+                    <label for="start-date-input" class="p-2">Date </label>
                   </div>
-                </div>
-                <div class="col" style="max-width: 60px">
-                  <label for="end-date-input" class="p-2"> to </label>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                  <input type="date" class="form-control filter-input" id="end-date-input"
-                         v-model="endDate">
+                  <div class="col-xl-3 col-md-6">
+                    <input type="date" class="form-control filter-input" id="start-date-input"
+                           v-model="startDate"
+                           :class="toggleInvalidClass(invalidDateMsg)">
+                    <div class="invalid-feedback">
+                      {{invalidDateMsg}}
+                    </div>
+                  </div>
+                  <div class="col" style="max-width: 60px">
+                    <label for="end-date-input" class="p-2"> to </label>
+                  </div>
+                  <div class="col-xl-3 col-md-6">
+                    <input type="date" class="form-control filter-input" id="end-date-input"
+                           v-model="endDate">
+                  </div>
+                  <div class="col">
+                    <button class="btn green-button" @click="applyDate($event)">
+                      Apply
+                    </button>
+                  </div>
                 </div>
               </div>
 
-            </div>
+            </form>
 
-            <div>
-              <button class="btn green-button" @click="applyDate($event)">
-                Apply
-              </button>
-            </div>
-
-          </form>
-
+          </div>
         </div>
-      </div>
-      <div>
-        Barry's stuff for task 723
+        <div class="card p-3">
+          Barry's stuff for task 723
+        </div>
       </div>
      </div>
 
@@ -57,7 +59,13 @@ import {isFirstDateBeforeSecondDate} from "@/dateUtils";
 export default {
   name: "SalesReport",
   components: {
-
+  },
+  props: {
+    businessName: {
+      type: String,
+      default: "",
+      required: true
+    }
   },
   data() {
     return {
@@ -107,5 +115,10 @@ export default {
 </script>
 
 <style scoped>
+
+#page-title {
+  padding: 10px;
+  text-align: center;
+}
 
 </style>

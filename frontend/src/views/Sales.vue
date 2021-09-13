@@ -17,10 +17,15 @@
         </ul>
         <div class="tab-content" id="pills-tabContent">
           <div class="tab-pane fade show active" id="report-tab" role="tabpanel" aria-labelledby="pills-report-tab">
-            <SalesReport/>
+            <SalesReport
+                :business-name="businessName"/>
           </div>
           <div class="tab-pane fade" id="history-tab" role="tabpanel" aria-labelledby="pills-history-tab">
-            <SaleHistory/>
+            <SaleHistory
+                :business-id="businessId"
+                :business-country="businessCountry"
+                :business-name="businessName"
+                ref="saleHistory"/>
           </div>
         </div>
 
@@ -37,6 +42,9 @@ import SaleHistory from "../components/saleInsights/SaleHistory";
 import {Tab} from 'bootstrap';
 import Footer from "../components/main/Footer";
 import SalesReport from "../components/saleInsights/SalesReport";
+import Cookies from "js-cookie";
+import {checkAccessPermission} from "@/views/helpFunction";
+import Api from "../Api";
 
 export default {
   name: "Sales",
@@ -45,6 +53,13 @@ export default {
     Navbar,
     SaleHistory,
     SalesReport
+  },
+  data() {
+    return {
+      businessId: 0,
+      businessName: "",
+      businessCountry: ""
+    }
   },
   methods: {
     /**
@@ -61,8 +76,19 @@ export default {
       const triggerEl = document.querySelector(query)
       Tab.getInstance(triggerEl).show()
     },
+    /**
+     * Calls a GET request to the backend to retrieve the information of the current business.
+     */
+    async retrieveBusinessInfo() {
+      await Api.getBusiness(this.businessId).then(response => {
+        this.businessName = response.data.name;
+        this.businessCountry = response.data.address.country;
+      }).catch((error) => {
+        this.manageError(error);
+      })
+    },
   },
-  mounted() {
+  async mounted() {
 
 
     // Generate Bootstrap tabs upon mount
@@ -75,6 +101,19 @@ export default {
       })
     })
 
+
+    const actAs = Cookies.get('actAs');
+    if (checkAccessPermission(this.$route.params.businessId, actAs)) {
+      await this.$router.push({path: `/businessProfile/${actAs}/sales`});
+    } else {
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        this.businessId = parseInt(this.$route.params.businessId);
+        await this.retrieveBusinessInfo();
+        await this.$refs.saleHistory.retrieveCurrencyInfo();
+        await this.$refs.saleHistory.retrieveSoldListings();
+      }
+    }
   }
 }
 </script>
