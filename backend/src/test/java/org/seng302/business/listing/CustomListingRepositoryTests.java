@@ -3,6 +3,7 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.Main;
+import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.when;
 
 /**
  * ListingRepositoryCustomImpl test class
@@ -65,6 +68,7 @@ class CustomListingRepositoryTests {
     private Listing listing3;
     private Listing listing4;
     private Listing listing5;
+    private Listing nonListingListing;
     private List<Listing> listings;
 
     /**
@@ -278,6 +282,14 @@ class CustomListingRepositoryTests {
                 "",
                 LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
                 LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+
+        nonListingListing = new Listing(inventoryItem5,
+                1,
+                15.20,
+                "",
+                LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        nonListingListing.setId(255);
 
         listings = List.of(listing1, listing2, listing3, listing4, listing5);
         for (Listing listing : listings) {
@@ -845,4 +857,15 @@ class CustomListingRepositoryTests {
         // then
         assertThat(listingsPage.getContent().size()).isZero();
     }
+
+    /**
+     * When deleting a listing and the listing does not exist an error is thrown.
+     */
+    @Test
+    void whenDeleteListingCannotFindListingAnErrorIsThrown() {
+        assertThatExceptionOfType(FailedToDeleteListingException.class)
+                .isThrownBy(() -> {listingRepository.deleteListing(nonListingListing.getId());})
+                .withMessage(String.format("Listing with id (%d). Does not exist.", nonListingListing.getId()));
+    }
+
 }
