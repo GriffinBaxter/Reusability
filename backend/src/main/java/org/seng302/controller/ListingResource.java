@@ -925,7 +925,7 @@ public class ListingResource {
         }
 
         // Check that the listing is not closed --> 406
-        if (listing.get().getCloses().isAfter(LocalDateTime.now())) {
+        if (listing.get().getCloses().isBefore(LocalDateTime.now())) {
             String errorMessage = String.format("listing (id: %d) was provided by user (id: %d) for Business (id: %d) was closed", listingId, user.getId(), businessId);
             logger.error(errorMessage);
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Listing is closed.");
