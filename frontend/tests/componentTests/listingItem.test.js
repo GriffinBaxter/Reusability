@@ -62,5 +62,28 @@ describe("Testing the listing item functionality", () => {
 
     });
 
+    describe("Testing the visibility of the withdraw button and closed label", () => {
+
+        test("Testing that when closed is true and isAdmin is true then the closed label is visible and the withdraw button is not", () => {
+            listingItemWrapper.vm.closed = true;
+            listingItemWrapper.setProps({ isAdmin: true });
+
+            listingItemWrapper.vm.$nextTick(() => {
+                expect(listingItemWrapper.find("#closed-label").exists()).toBeTruthy();
+                expect(listingItemWrapper.find("#withdraw-button").exists()).toBeFalsy();
+            });
+        });
+
+        test("Testing that when closed is true and isAdmin is false then the closed label is visible and the withdraw button is not", () => {
+            listingItemWrapper.vm.closed = true;
+            listingItemWrapper.setProps({ isAdmin: false });
+
+            listingItemWrapper.vm.$nextTick(() => {
+                expect(listingItemWrapper.find("#closed-label").exists()).toBeTruthy();
+                expect(listingItemWrapper.find("#withdraw-button").exists()).toBeFalsy();
+            });
+        });
+
+    });
 
 })
