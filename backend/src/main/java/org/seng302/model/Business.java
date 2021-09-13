@@ -217,7 +217,7 @@ public class Business {
      * @param name name
      */
     public void setName(String name) throws IllegalBusinessArgumentException {
-        if (!Validation.isName(name)){
+        if (!isValidName(name)){
             throw new IllegalBusinessArgumentException("Invalid business name");
         }
         this.name = name;
