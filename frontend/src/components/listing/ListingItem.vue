@@ -51,6 +51,9 @@
                 <p v-if="barcode != null" class="card-text">
                   Barcode: {{ barcode }}
                 </p>
+                <label v-if="closed" id="closed-label" class="card-text" style="color: red">
+                  CLOSED
+                </label>
               </div>
             </div>
           </div>
@@ -116,6 +119,11 @@ export default {
       default: "None",
       required: true
     },
+    fullCloseDate: {
+      type: String,
+      default: "None",
+      required: true
+    },
     bestBefore: {
       type: String,
       default: "None",
@@ -150,12 +158,26 @@ export default {
       type: String,
       default: null,
       required: false
+  },
+  data() {
+    return {
+      closed: false
     }
   },
   methods: {
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     },
+
+    /**
+     * Checks if the closed date is before the current date and time
+     */
+    checkClosed() {
+      this.closed = (new Date(Date.now()).valueOf() >= Date.parse(this.fullCloseDate).valueOf());
+    }
+  },
+  mounted() {
+    this.checkClosed();
   }
 }
 </script>

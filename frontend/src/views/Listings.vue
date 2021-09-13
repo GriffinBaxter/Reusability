@@ -84,6 +84,7 @@
             v-bind:price="item.price"
             v-bind:listDate="item.listDate"
             v-bind:close-date="item.closeDate"
+            v-bind:full-close-date="item.fullCloseDate"
             v-bind:best-before="item.bestBefore"
             v-bind:expires="item.expires"
             v-bind:moreInfo="item.moreInfo"
@@ -388,6 +389,7 @@ name: "Listings",
             price: response.data[i].price,
             listDate: formatDate(response.data[i].created, false),
             closeDate: formatDate(response.data[i].closes, false),
+            fullCloseDate: response.data[i].closes,
             moreInfo: response.data[i].moreInfo,
             expires: formatDate(response.data[i].inventoryItem.expires, false),
             images: response.data[i].inventoryItem.product.images,
