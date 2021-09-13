@@ -88,6 +88,18 @@ describe('Tests methods in the SaleReport component.', () => {
             expect(wrapper.vm.$data.invalidDateMsg).toBe("Start date must be before end date");
         })
 
-    })
+    });
+
+    describe("Test the setGranularityOption method", () => {
+
+        test("Test the setGranularityOption method granularityText sets granularityText to the sentence case of " +
+            "the given granularity.", () => {
+            wrapper.vm.$data.granularityText = "";
+            const granularity = "total";
+            wrapper.vm.setGranularityOption(granularity)
+            expect(wrapper.vm.$data.granularityText).toBe("Total");
+        })
+
+    });
 
 })
