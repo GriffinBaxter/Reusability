@@ -12,34 +12,16 @@
     <div class="container p-4 mt-3" id="profileContainer">
       <div class="row">
 
-        <div class="col-xl-2 mb-2">
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
-
-              <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')"
-                   alt="Profile Image"/>
-
-              <!--business's name-->
-              <div class="mt-3">
-                <h5>{{ businessName }}</h5>
-                <div class="text-secondary">{{ businessDescription }}</div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
         <div class="col">
           <div class="card card-body">
-            <h1 style="text-align: center">Inventory</h1>
+            <h1 style="text-align: center">{{ businessName }}'s Inventory</h1>
 
             <hr/>
 
             <div class="row" role="group" aria-label="Button group with nested dropdown">
               <!--filter-->
-              <div class="btn-group col-md-3 py-1" role="group">
-                <button type="button" class="btn green-button dropdown-toggle"
+              <div class="btn-group col-md-3 py-1 align-self-center" role="group">
+                <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                         data-bs-toggle="dropdown" aria-expanded="false">Filter Option
                 </button>
 
@@ -102,15 +84,20 @@
                 </ul>
               </div>
 
-              <div class="col-md-3 py-1">
+              <div class="col-md-2 py-1 align-self-center">
                 <!--creation button-->
                 <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
-                        data-bs-target="#creationPopup">
+                        data-bs-target="#creationPopup" style="height: 38px">
                   Create New
                 </button>
               </div>
 
-              <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+              <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
+
+              <div class="col-md-3 py-1">
+                <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
+              </div>
+
             </div>
 
             <!--space-->
@@ -177,17 +164,19 @@
 
 
 <script>
+
 import Footer from "../components/main/Footer";
 import InventoryItem from "../components/inventory/InventoryItem";
 import Navbar from "../components/Navbar";
 import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
 import Api from "../Api";
 import Cookies from "js-cookie";
-import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
+import UpdateInventoryItemModal from "../components/inventory/UpdateInventoryItemModal";
 import PageButtons from "../components/PageButtons";
 import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
+import BarcodeSearchBar from "../components/BarcodeSearchBar";
 
 export default {
   components: {
@@ -196,7 +185,8 @@ export default {
     Navbar,
     InventoryItem,
     Footer,
-    PageButtons
+    PageButtons,
+    BarcodeSearchBar
   },
   data() {
     return {
@@ -237,6 +227,8 @@ export default {
       businessCountry: "", // used to retrieve the currency code and symbol
       currencyCode: "",
       currencySymbol: "",
+
+      barcode: "",
 
       // List of Business account current user account administrated
       linkBusinessAccount:[],
@@ -314,7 +306,7 @@ export default {
       this.currentPage = newPageNumber;
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
       })
       this.retrieveInventoryItems();
     },
@@ -512,7 +504,7 @@ export default {
 
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
       });
       this.retrieveInventoryItems();
     },
@@ -543,9 +535,14 @@ export default {
       // Getting query params from the route update.
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.barcode = this.$route.query["barcode"] || "";
+
+      if (this.barcode === undefined || null) {
+        this.barcode = "";
+      }
 
       // Perform the call to sort the products and get them back.
-      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage).then(response => {
+      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -557,6 +554,7 @@ export default {
 
         // No results
         if (this.InventoryItemList.length <= 0) {
+          this.inventories = [];
           this.currentPage = 0;
           this.maxPage = 0;
           this.totalRows = 0;
@@ -649,6 +647,17 @@ export default {
       this.currencyCode = response[0].currencies[0].code;
       this.currencySymbol = response[0].currencies[0].symbol;
     },
+
+    /**
+     * Routes to URL with event value as the barcode and triggers retrieveInventoryItems
+     */
+    barcodeSearch(event) {
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"barcode": event, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+      });
+      this.retrieveInventoryItems();
+    }
   },
 
   async mounted() {

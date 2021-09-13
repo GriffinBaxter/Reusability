@@ -110,8 +110,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of inventory items for a business.
-    sortInventoryItems: (id, sortBy, page) => {
-        return instance.get(`/businesses/${id}/inventory?orderBy=${sortBy}&page=${page}`, {
+    sortInventoryItems: (id, sortBy, page, barcode) => {
+        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },
@@ -176,8 +176,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
-    sortListings: (businessId, sortBy, page) => {
-        return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
+    sortListings: (businessId, sortBy, page, barcode) => {
+        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true,
         })
     },
