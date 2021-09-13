@@ -17,7 +17,7 @@
         </ul>
         <div class="tab-content" id="pills-tabContent">
           <div class="tab-pane fade show active" id="report-tab" role="tabpanel" aria-labelledby="pills-report-tab">
-            Insert Report Content
+            <SalesReport/>
           </div>
           <div class="tab-pane fade" id="history-tab" role="tabpanel" aria-labelledby="pills-history-tab">
             <SaleHistory/>
@@ -33,6 +33,7 @@
 
 <script>
 import Navbar from "../components/Navbar";
+import SalesReport from "../views/SalesReport";
 import SaleHistory from "../views/SaleHistory";
 import {Tab} from 'bootstrap';
 import Footer from "@/components/main/Footer";
@@ -42,6 +43,7 @@ export default {
   components: {
     Footer,
     Navbar,
+    SalesReport,
     SaleHistory
   },
   methods: {
