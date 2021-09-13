@@ -2206,4 +2206,19 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
+    /**
+     * When deleting a listing when providing a invalid listing id then an NOT_ACCEPTABLE is thrown.
+     */
+    @Test
+    void whenDeleteListingThatYouProvideInvalidListingIdANotAcceptableIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.empty());
+
+        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
 }
