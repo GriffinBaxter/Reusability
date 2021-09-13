@@ -54,7 +54,7 @@
 <script>
 
 import {isFuture, parseISO} from "date-fns";
-import {isFirstDateBeforeSecondDate} from "@/dateUtils";
+import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 
 export default {
   name: "SalesReport",

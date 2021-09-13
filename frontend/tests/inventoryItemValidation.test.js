@@ -28,7 +28,7 @@ test('Toggle invalid class with error message', () => {
  * Test for ensuring that when no error message is passed in, the is-invalid class is not added to the messages.
  * @result class list contains 'form-control'
  */
-test('Toggle invalid class with error message', () => {
+test('Toggle invalid class with no error message', () => {
     const testInputVal = "";
     const expectedOutput = ['form-control'];
 
