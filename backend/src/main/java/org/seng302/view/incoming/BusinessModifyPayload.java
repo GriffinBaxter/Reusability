@@ -44,6 +44,7 @@ public class BusinessModifyPayload {
         return currencyCode;
     }
 
+    @Override
     public String toString() {
         return  "{" +
                 "\"primaryAdministratorId\":" + primaryAdministratorId + "," +
