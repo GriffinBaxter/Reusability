@@ -4,13 +4,13 @@
  */
 import {shallowMount} from '@vue/test-utils';
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
-import Api from "../src/Api";
-import SaleHistory from "@/components/saleInsights/SaleHistory";
-import CurrencyAPI from "../src/currencyInstance";
+import Api from "../../src/Api";
+import SaleHistory from "../../src/components/saleInsights/SaleHistory";
+import CurrencyAPI from "../../src/currencyInstance";
 import Cookies from 'js-cookie';
 
-jest.mock("../src/Api");
-jest.mock("../src/currencyInstance");
+jest.mock("../../src/Api");
+jest.mock("../../src/currencyInstance");
 
 
 describe('Tests methods in the SaleHistory component.', () => {
@@ -34,6 +34,11 @@ describe('Tests methods in the SaleHistory component.', () => {
                 mocks: {
                     $router,
                     $route
+                },
+                propsData: {
+                    businessName: "Lumbridge General Store",
+                    businessCountry: "New Zealand",
+                    businessId: 1
                 }
             });
         Cookies.get = jest.fn().mockImplementation(() => 1);
@@ -177,11 +182,10 @@ describe('Tests methods in the SaleHistory component.', () => {
             };
             Api.getBusiness.mockImplementation(() => Promise.resolve(response));
 
-            await wrapper.vm.retrieveBusinessInfo();
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.vm.$data.businessName).toEqual(response.data.name);
-            expect(wrapper.vm.$data.businessCountry).toEqual(response.data.address.country);
+            expect(wrapper.vm.$props.businessName).toEqual(response.data.name);
+            expect(wrapper.vm.$props.businessCountry).toEqual(response.data.address.country);
         })
 
     })
