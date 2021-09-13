@@ -108,7 +108,7 @@
                         <input type="date" class="form-control filter-input" id="end-date-input"
                                v-model="endDate">
                       </div>
-                      <div class="col-xl-2">
+                      <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
                         <button class="btn green-button" @click="applyDate($event)">
                           Apply
                         </button>
