@@ -332,7 +332,7 @@ export default {
      * Refreshes dropdown list for interact as
      */
     refreshDropdown() {
-      if (this.currentUser.nickname == null) {
+      if (this.currentUser.nickname == null || this.currentUser.nickname === "") {
         this.interactAs = [{
           id: this.currentUser.id,
           name: this.omitName(this.currentUser.firstName, this.maxNameLength)
