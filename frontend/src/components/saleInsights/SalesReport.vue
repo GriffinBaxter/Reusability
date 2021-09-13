@@ -8,10 +8,16 @@
           <!------------------------------------------- Period dropdown menu ------------------------------------------>
 
           <div class="row m-2">
-            Period:
-            <div class="btn-group col d-inline-block p-2" role="group">
+
+            <div class="col-xl-1" style="max-width: 80px">
+              <label for="period-button" class="py-3">
+                Period:
+              </label>
+            </div>
+
+            <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
-                      data-bs-toggle="dropdown" aria-expanded="false">{{ period }}
+                      data-bs-toggle="dropdown" aria-expanded="false" id="period-button">{{ period }}
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
@@ -33,7 +39,7 @@
               </ul>
             </div>
 
-            <div v-if="period === 'Month'" class="btn-group col d-inline-block p-2" role="group">
+            <div v-if="period === 'Month'" class="btn-group col-xl-2 d-inline-block p-2" role="group">
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                       id="sales-period-select-month"
                       data-bs-toggle="dropdown" aria-expanded="false">{{ selectedMonth }}
@@ -56,7 +62,7 @@
               </ul>
             </div>
 
-            <div v-if="period === 'Year' || period === 'Month'" class="btn-group col d-inline-block p-2" role="group">
+            <div v-if="period === 'Year' || period === 'Month'" class="btn-group col-xl-2 d-inline-block p-2" role="group">
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                       id="sales-period-select-year"
                       data-bs-toggle="dropdown" aria-expanded="false">{{ selectedYear }}
@@ -70,24 +76,24 @@
               </ul>
             </div>
 
-            <div v-if="period === 'Day'" class="btn-group col d-inline-block p-2" role="group">
-              <input type="date" id="sales-period-select-day" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay">
+            <div v-if="period === 'Day'" class="btn-group col-xl-3 d-inline-block p-2" role="group">
+              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay">
             </div>
 
             <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
 
               <!-------------------------------------- Custom date inputs --------------------------------------------->
 
-              <div class="row m-2">
+
 
                 <form class="needs-validation" novalidate @submit.prevent>
                   <div class="form-group" id="date-filtering-container">
 
                     <div class="row">
-                      <div class="col" style="max-width: 60px">
+                      <div class="col-xl-1">
                         <label for="start-date-input" class="p-2">Date </label>
                       </div>
-                      <div class="col-xl-3 col-md-6">
+                      <div class="col-xl-4 col-md-6">
                         <input type="date" class="form-control filter-input" id="start-date-input"
                                v-model="startDate"
                                :class="toggleInvalidClass(invalidDateMsg)">
@@ -95,14 +101,14 @@
                           {{invalidDateMsg}}
                         </div>
                       </div>
-                      <div class="col" style="max-width: 60px">
+                      <div class="col-xl-1">
                         <label for="end-date-input" class="p-2"> to </label>
                       </div>
-                      <div class="col-xl-3 col-md-6">
+                      <div class="col-xl-4 col-md-6">
                         <input type="date" class="form-control filter-input" id="end-date-input"
                                v-model="endDate">
                       </div>
-                      <div class="col">
+                      <div class="col-xl-2">
                         <button class="btn green-button" @click="applyDate($event)">
                           Apply
                         </button>
@@ -110,47 +116,45 @@
                     </div>
                   </div>
                 </form>
-            </div>
-
           </div>
 
-          <!---------------------------------- Ordering by options menu ------------------------------------------->
+          <!---------------------------------- Granularity options menu ------------------------------------------->
 
-          <div class="row">
-            <label class="d-inline-block p-2 fs-5 text-center">Granularity: </label>
-
-            <div class="btn-group col d-inline-block p-2" role="group">
-
-              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
-                      data-bs-toggle="dropdown" aria-expanded="false">{{ granularity }}
-              </button>
-
-              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Total')">
-                  Total
-                </li>
-
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Yearly')">
-                  Yearly
-                </li>
-
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Monthly')">
-                  Monthly
-                </li>
-
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Daily')">
-                  Daily
-                </li>
-
-              </ul>
-            </div>
-
+          <div class="col-xl-1">
+            <label for="granularity-button" class="py-3">
+              Granularity:
+            </label>
           </div>
 
+          <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
+
+            <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                    data-bs-toggle="dropdown" aria-expanded="false" id="granularity-button">{{ granularity }}
+            </button>
+
+            <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+              <li class="btn green-button-transparent col-12 order-by-options-btn"
+                  @click="setGranularityOption('Total')">
+                Total
+              </li>
+
+              <li class="btn green-button-transparent col-12 order-by-options-btn"
+                  @click="setGranularityOption('Yearly')">
+                Yearly
+              </li>
+
+              <li class="btn green-button-transparent col-12 order-by-options-btn"
+                  @click="setGranularityOption('Monthly')">
+                Monthly
+              </li>
+
+              <li class="btn green-button-transparent col-12 order-by-options-btn"
+                  @click="setGranularityOption('Daily')">
+                Daily
+              </li>
+
+            </ul>
+          </div>
         </div>
       </div>
 
