@@ -122,7 +122,7 @@
             <div class="btn-group col d-inline-block p-2" role="group">
 
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
-                      data-bs-toggle="dropdown" aria-expanded="false">{{ granularityText }}
+                      data-bs-toggle="dropdown" aria-expanded="false">{{ granularity }}
               </button>
 
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
@@ -192,7 +192,7 @@ export default {
       startDate: null,
       endDate: null,
       invalidDateMsg: "",
-      granularityText: "",
+      granularity: "Total",
 
       // Sales Report Period Attributes
 
@@ -242,7 +242,7 @@ export default {
      * @param granularity The chosen granularity, e.g. total, yearly, monthly, daily.
      */
     setGranularityOption(granularity) {
-      this.granularityText = granularity;
+      this.granularity = granularity;
     },
 
     /**
