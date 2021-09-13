@@ -580,6 +580,14 @@ public class BusinessResource {
             logger.error(errorMessage);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address is required for modifying the business.");
         }
+
+        if (addressJSON.getCountry() == null) {
+            String errorMessage = String.format("User (id: %d) attempted to modify a business (id: %d)." +
+                    " But did not provide a new country.", user.getId(), business.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Country is required for modifying the business.");
+        }
+
         Address newAddress = null;
         Optional<Address> existingAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(addressJSON.getStreetNumber(),
                 addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
