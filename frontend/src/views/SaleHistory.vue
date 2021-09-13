@@ -1,9 +1,6 @@
 <template>
   <div>
     <div id="main">
-      <!--nav bar-->
-      <Navbar></Navbar>
-
       <div class="container mt-4">
         <div class="card p-3">
           <h1 id="page-title">{{ businessName }} Sale History</h1>
@@ -47,13 +44,10 @@
         </div>
       </div>
     </div>
-    <Footer/>
   </div>
 </template>
 
 <script>
-import Navbar from "../components/Navbar";
-import Footer from "../components/main/Footer";
 import Cookies from "js-cookie";
 import {checkAccessPermission} from "../views/helpFunction";
 import Api from "../Api";
@@ -64,8 +58,6 @@ import PageButtons from "../components/PageButtons";
 export default {
   name: "SaleHistory",
   components: {
-    Footer,
-    Navbar,
     PageButtons
   },
   data() {
