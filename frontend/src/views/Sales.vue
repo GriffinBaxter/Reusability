@@ -44,6 +44,10 @@ export default {
     SaleHistory
   },
   methods: {
+    /**
+     * Opens a Bootstrap tab upon click via the passed in name.
+     * @param tabName A string containing the name of the tab to switch to
+     */
     showTab(tabName) {
       let query;
       if (tabName === 'history') {
@@ -54,7 +58,6 @@ export default {
       const triggerEl = document.querySelector(query)
       Tab.getInstance(triggerEl).show()
     },
-
   },
   mounted() {
 
