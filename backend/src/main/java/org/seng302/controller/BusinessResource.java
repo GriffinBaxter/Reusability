@@ -1,7 +1,7 @@
 /**
  * Summary. This file contains the definition for the BusinessResource.
  *
- * Description. This file contains the defintion for the BusinessResource.
+ * Description. This file contains the definition for the BusinessResource.
  *
  * @link   team-400/src/main/java/org/seng302/business/BusinessResource
  * @file   This file contains the definition for BusinessResource.
@@ -513,7 +513,7 @@ public class BusinessResource {
     public void modifyBusiness(@CookieValue(value = "JSESSIONID", required = false) String session,
                                @PathVariable Integer id, @RequestBody BusinessModifyPayload businessModifyPayload) {
 
-        // Verify session token. fail --> 401 UAUTHORIZED
+        // Verify session token. fail --> 401 UNAUTHORIZED
         User user = Authorization.getUserVerifySession(session, userRepository);
 
         // verify business exists. fail --> 406 NOT_ACCEPTABLE
@@ -677,7 +677,7 @@ public class BusinessResource {
 
                     // Ensure the new id is valid
                     if (newPrimaryAdmin.isEmpty()) {
-                        String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
+                        String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary administrator. " +
                                 "But lacked permissions.", user.getId(), business.getId());
                         logger.error(errorMessage);
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESSAGE);
@@ -689,7 +689,7 @@ public class BusinessResource {
                     }
 
 
-                    String debugMessage = String.format("Updated business has a new primary adminstrator %d --> %d",
+                    String debugMessage = String.format("Updated business has a new primary administrator %d --> %d",
                             payload.getPrimaryAdministratorId(), business.getPrimaryAdministratorId());
                     logger.debug(debugMessage);
                     business.setPrimaryAdministratorId(payload.getPrimaryAdministratorId());
