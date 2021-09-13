@@ -92,6 +92,7 @@
             v-bind:currency-symbol="currencySymbol"
             v-bind:images="item.images"
             v-bind:barcode="item.barcode"
+            v-bind:isAdmin="businessAdmin"
         />
 
         <!--space-->
