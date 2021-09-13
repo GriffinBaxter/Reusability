@@ -51,8 +51,8 @@ export default {
   components: {
     Footer,
     Navbar,
-    SaleHistory,
-    SalesReport
+    SalesReport,
+    SaleHistory
   },
   data() {
     return {
@@ -88,9 +88,11 @@ export default {
       })
     },
   },
+  /**
+   * Runs after the component is mounted
+   * @return {Promise<void>}
+   */
   async mounted() {
-
-
     // Generate Bootstrap tabs upon mount
     const triggerTabList = [].slice.call(document.querySelectorAll('#report-tab-button, #history-tab-button'))
     triggerTabList.forEach(function (triggerEl) {
