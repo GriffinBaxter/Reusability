@@ -2192,4 +2192,18 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    /**
+     * Tests that when deleting a listing and providing a invalid business id a NOT_ACCEPTABLE is thrown
+     */
+    @Test
+    void whenDeleteListingThatYouProvideInvalidBusinessIdANotAcceptableIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.empty());
+
+        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
 }
