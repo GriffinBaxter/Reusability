@@ -840,6 +840,53 @@ class ProductResourceIntegrationTests {
     }
 
     /**
+     * Test that an OK status is returned along with a payload of valid Products when calling
+     * /businesses/{businessId}/productAll with a barcode parameter
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canRetrieveProductByBarcode() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "[" + String.format(expectedProductJson, product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(),
+                product.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode()) + "]";
+
+        // when
+        List<Product> list = List.of(product);
+        Page<Product> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+        String barcode = "9400547002634";
+        when(productRepository.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(List.of("PROD"), List.of("id"), 1, paging, barcode)).thenReturn(pagedResponse);
+
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                .param("searchQuery", "PROD")
+                .param("searchBy", "id")
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .param("barcode", barcode)
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+
+    }
+
+
+
+    /**
      * Tests that a BAD_REQUEST status and no product payloads are received when the business ID in the
      * /businesses/{id}/products API endpoint exists but the order by param is invalid.
      * Test specifically for when the order by param provided is invalid.
