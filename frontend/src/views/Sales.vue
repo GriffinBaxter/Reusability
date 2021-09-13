@@ -1,32 +1,33 @@
 <template>
-  <div id="main">
-    <!--nav bar-->
-    <Navbar></Navbar>
+  <div>
+    <div id="main">
+      <!--nav bar-->
+      <Navbar></Navbar>
 
-    <div id="sales-container">
+      <div id="sales-container">
 
-      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="report-tab-button" data-bs-toggle="pill" data-bs-target="#report-tab" type="button" role="tab" aria-controls="pills-home" aria-selected="true" @click="showTab('report')">Sales Report</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="history-tab-button" data-bs-toggle="pill" data-bs-target="#history-tab" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" @click="showTab('history')">Sales History</button>
-        </li>
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="report-tab-button" data-bs-toggle="pill" data-bs-target="#report-tab" type="button" role="tab" aria-controls="pills-home" aria-selected="true" @click="showTab('report')">Sales Report</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-tab-button" data-bs-toggle="pill" data-bs-target="#history-tab" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" @click="showTab('history')">Sales History</button>
+          </li>
 
-      </ul>
-      <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade show active" id="report-tab" role="tabpanel" aria-labelledby="pills-report-tab">
-          Insert Report Content
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="report-tab" role="tabpanel" aria-labelledby="pills-report-tab">
+            Insert Report Content
+          </div>
+          <div class="tab-pane fade" id="history-tab" role="tabpanel" aria-labelledby="pills-history-tab">
+            <SaleHistory/>
+          </div>
         </div>
-        <div class="tab-pane fade" id="history-tab" role="tabpanel" aria-labelledby="pills-history-tab">
-          <SaleHistory/>
-        </div>
+
       </div>
 
     </div>
-
     <Footer/>
-
   </div>
 </template>
 
@@ -79,7 +80,9 @@ export default {
 <style scoped>
 
 #sales-container {
-  margin: 4% 10% 10% 10%;
+  margin-top: 4%;
+  margin-right: 10%;
+  margin-left: 10%;
 }
 
 #history-tab, #report-tab {
