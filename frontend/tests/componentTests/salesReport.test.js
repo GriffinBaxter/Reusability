@@ -95,7 +95,7 @@ describe('Tests methods in the SaleReport component.', () => {
         test("Test the setGranularityOption method granularityText sets granularityText to the sentence case of " +
             "the given granularity.", () => {
             wrapper.vm.$data.granularityText = "";
-            const granularity = "total";
+            const granularity = "Total";
             wrapper.vm.setGranularityOption(granularity)
             expect(wrapper.vm.$data.granularityText).toBe("Total");
         })

@@ -12,7 +12,6 @@ import Cookies from 'js-cookie';
 jest.mock("../../src/Api");
 jest.mock("../../src/currencyInstance");
 
-
 describe('Tests methods in the SaleHistory component.', () => {
 
     let wrapper;

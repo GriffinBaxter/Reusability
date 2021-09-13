@@ -26,6 +26,10 @@
                     @click="period = 'Day'">
                   Day
                 </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="period = 'Custom'">
+                  Custom
+                </li>
               </ul>
             </div>
 
@@ -70,88 +74,85 @@
               <input type="date" id="sales-period-select-day" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay">
             </div>
 
-          </div>
+            <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
 
+              <!-------------------------------------- Custom date inputs --------------------------------------------->
 
-          <!------------------------------------------- Date inputs --------------------------------------------->
+              <div class="row m-2">
 
-          <div class="row m-2">
+                <form class="needs-validation" novalidate @submit.prevent>
+                  <div class="form-group" id="date-filtering-container">
 
-            <form class="needs-validation" novalidate @submit.prevent>
-              <div class="form-group" id="date-filtering-container">
-
-                <div class="row">
-                  <div class="col" style="max-width: 60px">
-                    <label for="start-date-input" class="p-2">Date </label>
-                  </div>
-                  <div class="col-xl-3 col-md-6">
-                    <input type="date" class="form-control filter-input" id="start-date-input"
-                           v-model="startDate"
-                           :class="toggleInvalidClass(invalidDateMsg)">
-                    <div class="invalid-feedback">
-                      {{invalidDateMsg}}
+                    <div class="row">
+                      <div class="col" style="max-width: 60px">
+                        <label for="start-date-input" class="p-2">Date </label>
+                      </div>
+                      <div class="col-xl-3 col-md-6">
+                        <input type="date" class="form-control filter-input" id="start-date-input"
+                               v-model="startDate"
+                               :class="toggleInvalidClass(invalidDateMsg)">
+                        <div class="invalid-feedback">
+                          {{invalidDateMsg}}
+                        </div>
+                      </div>
+                      <div class="col" style="max-width: 60px">
+                        <label for="end-date-input" class="p-2"> to </label>
+                      </div>
+                      <div class="col-xl-3 col-md-6">
+                        <input type="date" class="form-control filter-input" id="end-date-input"
+                               v-model="endDate">
+                      </div>
+                      <div class="col">
+                        <button class="btn green-button" @click="applyDate($event)">
+                          Apply
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div class="col" style="max-width: 60px">
-                    <label for="end-date-input" class="p-2"> to </label>
-                  </div>
-                  <div class="col-xl-3 col-md-6">
-                    <input type="date" class="form-control filter-input" id="end-date-input"
-                           v-model="endDate">
-                  </div>
-                  <div class="col">
-                    <button class="btn green-button" @click="applyDate($event)">
-                      Apply
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!---------------------------------- Ordering by options menu ------------------------------------------->
-
-              <div class="row">
-                <label class="d-inline-block p-2 fs-5 text-center">Granularity: </label>
-
-                <div class="btn-group col d-inline-block p-2" role="group">
-
-                  <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
-                          data-bs-toggle="dropdown" aria-expanded="false">{{ granularityText }}
-                  </button>
-
-                  <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                    <!--order by price-->
-                    <li class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setGranularityOption('total')">
-                      Total
-                    </li>
-
-                    <!--order by product name-->
-                    <li class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setGranularityOption('yearly')">
-                      Yearly
-                    </li>
-
-                    <!--order by country-->
-                    <li class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setGranularityOption('monthly')">
-                      Monthly
-                    </li>
-
-                    <!--order by city-->
-                    <li class="btn green-button-transparent col-12 order-by-options-btn"
-                        @click="setGranularityOption('daily')">
-                      Daily
-                    </li>
-
-                  </ul>
-                </div>
-
-              </div>
-
-            </form>
+                </form>
+            </div>
 
           </div>
+
+          <!---------------------------------- Ordering by options menu ------------------------------------------->
+
+          <div class="row">
+            <label class="d-inline-block p-2 fs-5 text-center">Granularity: </label>
+
+            <div class="btn-group col d-inline-block p-2" role="group">
+
+              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                      data-bs-toggle="dropdown" aria-expanded="false">{{ granularityText }}
+              </button>
+
+              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Total')">
+                  Total
+                </li>
+
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Yearly')">
+                  Yearly
+                </li>
+
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Monthly')">
+                  Monthly
+                </li>
+
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Daily')">
+                  Daily
+                </li>
+
+              </ul>
+            </div>
+
+          </div>
+
         </div>
+      </div>
 
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
@@ -241,7 +242,7 @@ export default {
      * @param granularity The chosen granularity, e.g. total, yearly, monthly, daily.
      */
     setGranularityOption(granularity) {
-      this.granularityText = granularity.charAt(0).toUpperCase() + granularity.slice(1);
+      this.granularityText = granularity;
     },
 
     /**
