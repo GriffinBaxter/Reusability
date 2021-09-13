@@ -2181,4 +2181,15 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    /**
+     * Tests that when deleting a listing and you do not provide a session token a 401 UNAUTHROIZED is returned.
+     */
+    @Test
+    void WhenDeleteListingThatYouDontProvideSessionTokenAnUnauthorizedIsReturned() throws Exception{
+
+        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
 }
