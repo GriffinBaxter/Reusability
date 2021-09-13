@@ -49,11 +49,11 @@
 
 <script>
 import Cookies from "js-cookie";
-import {checkAccessPermission} from "../views/helpFunction";
-import Api from "../Api";
-import CurrencyAPI from "../currencyInstance";
-import {formatDate} from "../dateUtils";
-import PageButtons from "../components/PageButtons";
+import {checkAccessPermission} from "../../views/helpFunction";
+import Api from "../../Api";
+import CurrencyAPI from "../../currencyInstance";
+import {formatDate} from "../../dateUtils";
+import PageButtons from "../PageButtons";
 
 export default {
   name: "SaleHistory",

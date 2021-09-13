@@ -5,7 +5,7 @@
 import {shallowMount} from '@vue/test-utils';
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
 import Api from "../src/Api";
-import SaleHistory from "../src/views/SaleHistory";
+import SaleHistory from "@/components/saleInsights/SaleHistory";
 import CurrencyAPI from "../src/currencyInstance";
 import Cookies from 'js-cookie';
 

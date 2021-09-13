@@ -33,10 +33,10 @@
 
 <script>
 import Navbar from "../components/Navbar";
-import SaleHistory from "../views/SaleHistory";
+import SaleHistory from "../components/saleInsights/SaleHistory";
 import {Tab} from 'bootstrap';
 import Footer from "../components/main/Footer";
-import SalesReport from "../views/SalesReport";
+import SalesReport from "../components/saleInsights/SalesReport";
 
 export default {
   name: "Sales",
