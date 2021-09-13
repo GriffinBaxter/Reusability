@@ -278,7 +278,6 @@ class ProductRepositoryCustomTests {
 
         // when
         Page<Product> productPage = productRepository.findProductsByBusinessId(businessId, pageable);
-        System.out.println(productPage.getContent());
 
         // then
         for (int i = 0; i < productPage.getContent().size(); i++) {
@@ -313,7 +312,6 @@ class ProductRepositoryCustomTests {
 
         // when
         Page<Product> productPage = productRepository.findProductsByBusinessId(businessId, pageable);
-        System.out.println(productPage.getContent());
 
         // then
         for (int i = 0; i < productPage.getContent().size(); i++) {
