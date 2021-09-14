@@ -198,7 +198,9 @@ class NotificationResourceIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
         user.setBusinessesAdministeredObjects(List.of(business));

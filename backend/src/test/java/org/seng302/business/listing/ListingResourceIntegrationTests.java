@@ -157,7 +157,9 @@ class ListingResourceIntegrationTests {
                                                     "\"description\":\"%s\"," +
                                                     "\"address\":%s," +
                                                     "\"businessType\":\"%s\"," +
-                                                    "\"created\":\"%s\"}," +
+                                                    "\"created\":\"%s\"," +
+                                                    "\"currencySymbol\":\"%s\"," +
+                                                    "\"currencyCode\":\"%s\"}," +
                                                     "\"barcode\":\"%s\"}," +
                                                 "\"quantity\":%d," +
                                                 "\"pricePerItem\":%.1f," +
@@ -208,7 +210,9 @@ class ListingResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\"}," +
+            "\"created\":\"%s\"," +
+            "\"currencySymbol\":\"%s\"," +
+            "\"currencyCode\":\"%s\"}," +
             "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.1f," +
@@ -311,7 +315,9 @@ class ListingResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
 
@@ -322,7 +328,9 @@ class ListingResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         anotherBusiness.setId(2);
         user.setBusinessesAdministeredObjects(List.of(business, anotherBusiness));
@@ -375,7 +383,9 @@ class ListingResourceIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                dGAA
+                dGAA,
+                "$",
+                "NZD"
         );
         adminBusiness.setId(3);
         dGAA.setBusinessesAdministeredObjects(List.of(adminBusiness));
@@ -757,8 +767,8 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
                 listing.isBookmarked(user), listing.getTotalBookmarks());
@@ -800,8 +810,8 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
                 listing.isBookmarked(user), listing.getTotalBookmarks());
@@ -920,8 +930,8 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
                 listing.isBookmarked(user), listing.getTotalBookmarks());
@@ -1022,7 +1032,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1065,7 +1075,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1110,7 +1120,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1275,7 +1285,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1322,7 +1332,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1371,7 +1381,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1382,7 +1392,7 @@ class ListingResourceIntegrationTests {
                 dGAA.getDateOfBirth(), dGAA.getPhoneNumber(), dGAA.getHomeAddress().getStreetNumber(), dGAA.getHomeAddress().getStreetName(),
                 dGAA.getHomeAddress().getSuburb(), dGAA.getHomeAddress().getCity(), dGAA.getHomeAddress().getRegion(), dGAA.getHomeAddress().getCountry(),
                 dGAA.getHomeAddress().getPostcode(), adminBusiness.getPrimaryAdministratorId(), adminBusiness.getName(),
-                adminBusiness.getDescription(), adminBusiness.getAddress(), adminBusiness.getBusinessType(), adminBusiness.getCreated(),
+                adminBusiness.getDescription(), adminBusiness.getAddress(), adminBusiness.getBusinessType(), adminBusiness.getCreated(), adminBusiness.getCurrencySymbol(), adminBusiness.getCurrencyCode(),
                 adminProduct.getBarcode(), adminInventoryItem.getQuantity(), adminInventoryItem.getPricePerItem(), adminInventoryItem.getTotalPrice(),
                 adminInventoryItem.getManufactured(), adminInventoryItem.getSellBy(), adminInventoryItem.getBestBefore(), adminInventoryItem.getExpires(),
                 adminListing.getQuantity(), adminListing.getPrice(), adminListing.getMoreInfo(), adminListing.getCreated().toString(), adminListing.getCloses().toString(),
@@ -1429,7 +1439,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1487,7 +1497,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1544,7 +1554,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1582,7 +1592,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1719,7 +1729,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),

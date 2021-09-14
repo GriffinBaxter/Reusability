@@ -107,7 +107,9 @@ class FindInventoryItemsByBusinessIdTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business = entityManager.persist(business);
         businessId = business.getId();
