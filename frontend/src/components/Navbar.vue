@@ -65,7 +65,7 @@
           </div>
 
           <button id="act-as-wrapper" @click="toggleInteractAs">
-            <img src="../../public/profile_icon_default.png"
+            <img :src="getPrimaryImageSrc(currentUser)"
                  class="rounded-circle img-fluid" id="act-as-image" alt="Acting as image"/>
           </button>
 
@@ -336,7 +336,7 @@ export default {
      * Refreshes dropdown list for interact as
      */
     refreshDropdown() {
-      if (this.currentUser.nickname == null) {
+      if (this.currentUser.nickname == null || this.currentUser.nickname === "") {
         this.interactAs = [{
           id: this.currentUser.id,
           name: this.omitName(this.currentUser.firstName, this.maxNameLength)
@@ -600,7 +600,17 @@ export default {
       setTimeout(() => {
         this.toggleMessages();
       }, 5);
-    }
+    },
+    getPrimaryImageSrc(currentUser) {
+      if (currentUser != null && currentUser.images.length > 0) {
+        for (let image of currentUser.images) {
+          if (image.isPrimary) {
+            return Api.getServerURL() + "/" + image.thumbnailFilename;
+          }
+        }
+      }
+      return require('../../public/profile_icon_default.png');
+    },
   },
   async beforeMount() {
     if (this.loginRequired) {

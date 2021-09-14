@@ -418,3 +418,23 @@ describe("Testing the retrieval of a user's cards", () => {
     });
 
 })
+
+// ********************************************** getImageSrc() Tests **************************************************
+
+describe("Testing the getImageSrc()", () => {
+
+    test("Testing the getImageSrc() will return default image when file name is ''", async () => {
+
+        const profileWrapper = await shallowMount(Profile);
+
+        expect(await profileWrapper.vm.getImageSrc('')).toBe("test-file-stub")
+    })
+
+    test("Testing the getImageSrc() will return image src when file name is given", async () => {
+
+        const profileWrapper = await shallowMount(Profile);
+
+        expect(await profileWrapper.vm.getImageSrc('userImage.jpg')).toBe("undefined/userImage.jpg")
+    })
+
+})
