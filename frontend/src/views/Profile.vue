@@ -71,7 +71,7 @@
                 <!--user's nickname and bio-->
                 <div class="mt-3">
                   <hr>
-                  <h4 v-if="nickname.length !== 0">{{ nickname }}</h4>
+                  <h4 v-if="nickname !== null && nickname.length !== 0">{{ nickname }}</h4>
                   <h4 v-else>{{ firstName }}</h4>
                   <div class="text-secondary">{{ bio }}</div>
                   <div id="edit-profile" style="padding-top: 10px" v-if="!otherUser">
