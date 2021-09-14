@@ -173,6 +173,7 @@ import Api from "../Api";
 import Cookies from "js-cookie";
 import UpdateInventoryItemModal from "../components/inventory/UpdateInventoryItemModal";
 import PageButtons from "../components/PageButtons";
+import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
@@ -324,8 +325,6 @@ export default {
         this.businessName = response.data.name;
         this.businessDescription = response.data.description;
         this.businessCountry = response.data.address.country;
-        this.currencySymbol = response.data.currencySymbol;
-        this.currencyCode = response.data.currencyCode;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -668,6 +667,7 @@ export default {
         this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
+        await this.currencyRequest();
       }
     }
   }

@@ -1,7 +1,7 @@
 /**
  * Summary. This file contains the definition for the BusinessResource.
  *
- * Description. This file contains the defintion for the BusinessResource.
+ * Description. This file contains the definition for the BusinessResource.
  *
  * @link   team-400/src/main/java/org/seng302/business/BusinessResource
  * @file   This file contains the definition for BusinessResource.
@@ -69,9 +69,11 @@ public class BusinessResource {
     private AddressRepository addressRepository;
 
     private Address address;
-    private List<Business> businesses;
 
     private static final Logger logger = LogManager.getLogger(BusinessResource.class.getName());
+
+    private static final String FORBIDDEN_MODIFY_ERROR_MESSAGE = "Forbidden: Returned when a user tries to " +
+            "update the business info for a business they do not administer AND the user is not a global application admin";
 
     public BusinessResource(
             BusinessRepository businessRepository, UserRepository userRepository, AddressRepository addressRepository
@@ -92,6 +94,7 @@ public class BusinessResource {
                                                             @RequestBody BusinessRegistrationPayload businessRegistrationPayload) {
         //access token invalid
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+        List<Business> businesses;
 
         String name = businessRegistrationPayload.getName();
         String description = businessRegistrationPayload.getDescription();
@@ -498,19 +501,19 @@ public class BusinessResource {
     }
 
     /**
-     * Modification of bussiness endpoint. Requires the user to have permission; business to exist and all the payload's
+     * Modification of business endpoint. Requires the user to have permission; business to exist and all the payload's
      * content to be still valid with the requirements. Then it will update the business.
      *
      * @param session User session token.
      * @param id Id of the business the user wants to update.
      * @param businessModifyPayload The changes made to the business.
      */
-    @PutMapping("/businesses/{id}/profile")
+    @PutMapping("/businesses/{id}")
     @ResponseStatus(value = HttpStatus.OK, reason = "Business updated successfully")
     public void modifyBusiness(@CookieValue(value = "JSESSIONID", required = false) String session,
                                @PathVariable Integer id, @RequestBody BusinessModifyPayload businessModifyPayload) {
 
-        // Verify session token. fail --> 401 UAUTHORIZED
+        // Verify session token. fail --> 401 UNAUTHORIZED
         User user = Authorization.getUserVerifySession(session, userRepository);
 
         // verify business exists. fail --> 406 NOT_ACCEPTABLE
@@ -527,8 +530,7 @@ public class BusinessResource {
                     "lacked permissions.", user.getId(), id);
 
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                    "update the business info for a business they do not administer AND the user is not a global application admin");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESSAGE);
         }
 
         // Verify payload content is still valid to the requirements of a business. fail --> 400 BAD REQUEST
@@ -556,14 +558,13 @@ public class BusinessResource {
         if (businessType == null) {
             String errorMessage = String.format("User (id: %d) attempted to update business type for business (id: %d). But the type was invalid.", user.getId(), business.getId());
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Business type is required.");
         }
         String debugMessage = String.format("User (id: %d) updated business type for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getBusinessType().toString(), businessType);
         logger.debug(debugMessage);
         business.setBusinessType(businessType);
     }
 
-    // TODO UPDATE the CURRENCY of the business. To suit the new address.
     /**
      * Updates the business address.
      *
@@ -573,26 +574,41 @@ public class BusinessResource {
      * @throws ResponseStatusException Is thrown when the new address does not meet the requirements.
      */
     private void updateBusinessAddress(Business business, User user, AddressPayload addressJSON) throws ResponseStatusException{
+        if (addressJSON == null) {
+            String errorMessage = String.format("User (id: %d) attempted to modify a business (id: %d)." +
+                    " But did not provide a new address.", user.getId(), business.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address is required for modifying the business.");
+        }
+
+        if (addressJSON.getCountry() == null || addressJSON.getCountry().isBlank()) {
+            String errorMessage = String.format("User (id: %d) attempted to modify a business (id: %d)." +
+                    " But did not provide a new country.", user.getId(), business.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Country is required for modifying the business.");
+        }
+
+        Address newAddress = null;
         Optional<Address> existingAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(addressJSON.getStreetNumber(),
                 addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
 
         // If the address is new, we need to first add it to the database.
         if (existingAddress.isEmpty()){
             try {
-                Address newAddress = new Address(addressJSON.getStreetNumber(),
+                newAddress = new Address(addressJSON.getStreetNumber(),
                         addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
                 addressRepository.save(newAddress);
-                business.setAddress(newAddress);
             } catch (IllegalAddressArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update address for business (id: %d). But the address was invalid", user.getId(), business.getId());
                 logger.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address provided is invalid.");
             }
         } else {
-            business.setAddress(existingAddress.get());
+            newAddress = existingAddress.get();
         }
         String debugMessage = String.format("User (id: %d) updated address for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getAddress().toString(), addressJSON);
         logger.debug(debugMessage);
+        business.setAddress(newAddress);
     }
 
     /**
@@ -604,15 +620,17 @@ public class BusinessResource {
      */
     private void updateBusinessDescription(Business business, User user, String description) {
         if (description != null) {
-            if (!business.isValidDescription(description)) {
+            try {
+                String debugMessage = String.format("User (id: %d) updated description for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getDescription(), description);
+                logger.debug(debugMessage);
+                business.setDescription(description);
+            } catch (IllegalBusinessArgumentException err) {
                 String errorMessage = String.format("User (id: %d) attempted to update description for business (id: %d). But the description was invalid", user.getId(), business.getId());
                 logger.error(errorMessage);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data supplied by the user, appropriate error message(s) should be shown to user");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Description provided is invalid.");
             }
 
-            String debugMessage = String.format("User (id: %d) updated description for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getDescription(), description);
-            logger.debug(debugMessage);
-            business.setDescription(description);
+
         }
     }
 
@@ -628,32 +646,26 @@ public class BusinessResource {
         try {
             // Check that it is present
             if (payload.getName() == null) {
-                throw new IllegalBusinessArgumentException("Cannot be null");
-            }
-
-            // Check that it is valid
-            if (!business.isValidName(payload.getName())) {
-                throw new IllegalBusinessArgumentException("invalid name provided.");
+                throw new IllegalBusinessArgumentException("Business name is required.");
             }
 
             // Perform the modification
-            business.setName(payload.getName());
-            String debugMessage = String.format("User (id: %d) modfied business (id: %d) name. %s --> %s.",
+            String debugMessage = String.format("User (id: %d) modified business (id: %d) name. %s --> %s.",
                     user.getId(), business.getId(), business.getName(), payload.getName());
             logger.debug(debugMessage);
+            business.setName(payload.getName());
 
         } catch (IllegalBusinessArgumentException err) {
             // If an error is thrown the data was invalid.
             String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d)'s name." +
                     " But it was invalid.", user.getId(), business.getId());
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There was some error with the data " +
-                    "supplied by the user, appropriate error message(s) should be shown to user");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, err.getMessage());
         }
     }
 
     /**
-     * Attempts to update the business primary adminstrator if there is a new value.
+     * Attempts to update the business primary administrator if there is a new value.
      *
      * @param user The user that requested update.
      * @param business The business that the update is performed on.
@@ -667,39 +679,37 @@ public class BusinessResource {
             throws ResponseStatusException {
         boolean userIsPrimaryAdmin = business.getPrimaryAdministratorId().equals(user.getId());
 
-        if (userIsPrimaryAdmin || Authorization.isGAAorDGAA(user)) {
-            if (payload.getPrimaryAdministratorId() != null) {
-                Optional<User> newPrimaryAdmin = userRepository.findById(payload.getPrimaryAdministratorId());
+        if (payload.getPrimaryAdministratorId() != null) {
+            if (userIsPrimaryAdmin || Authorization.isGAAorDGAA(user)) {
+                    Optional<User> newPrimaryAdmin = userRepository.findById(payload.getPrimaryAdministratorId());
 
-                // Ensure the new id is valid
-                if (newPrimaryAdmin.isEmpty()) {
-                    String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
-                            "But lacked permissions.", user.getId(), business.getId());
-                    logger.error(errorMessage);
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                            "update the business info for a business they do not administer AND the user is not a global application admin");
-                }
+                    // Ensure the new id is valid
+                    if (newPrimaryAdmin.isEmpty()) {
+                        String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary administrator. " +
+                                "But lacked permissions.", user.getId(), business.getId());
+                        logger.error(errorMessage);
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESSAGE);
+                    }
 
-                // If the new primary admin is not part of the business then add him in.
-                if (!business.isAnAdministratorOfThisBusiness(newPrimaryAdmin.get())) {
-                    business.addAdministrators(newPrimaryAdmin.get());
-                }
+                    // If the new primary admin is not part of the business then add him in.
+                    if (!business.isAnAdministratorOfThisBusiness(newPrimaryAdmin.get())) {
+                        business.addAdministrators(newPrimaryAdmin.get());
+                    }
 
 
-                String debugMessage = String.format("Updated business has a new primary adminstrator %d --> %d",
-                        payload.getPrimaryAdministratorId(), business.getPrimaryAdministratorId());
-                logger.debug(debugMessage);
-                business.setPrimaryAdministratorId(payload.getPrimaryAdministratorId());
+                    String debugMessage = String.format("Updated business has a new primary administrator %d --> %d",
+                            payload.getPrimaryAdministratorId(), business.getPrimaryAdministratorId());
+                    logger.debug(debugMessage);
+                    business.setPrimaryAdministratorId(payload.getPrimaryAdministratorId());
+
+            } else {
+                // Only the primary admin can change the primary admin (or the GAA and DGAA can as well).
+                String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary administrator. " +
+                        "But lacked permissions.", user.getId(), business.getId());
+                logger.error(errorMessage);
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, FORBIDDEN_MODIFY_ERROR_MESSAGE);
             }
-        } else {
-            // Only the primary admin can change the primary admin (or the GAA and DGAA can as well).
-            String errorMessage = String.format("User (id: %d) attempted to modify business (id: %d) primary adminsitrator. " +
-                    "But lacked permissions.", user.getId(), business.getId());
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to " +
-                    "update the business info for a business they do not administer AND the user is not a global application admin");
         }
-
         return business;
     }
 
@@ -729,7 +739,7 @@ public class BusinessResource {
         if (currencyCode != null) {
             String debugMessage = String.format("User (id: %d) updated currency code for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getCurrencyCode(), currencyCode);
             logger.debug(debugMessage);
-            business.setCurrencySymbol(currencyCode);
+            business.setCurrencyCode(currencyCode);
         }
     }
 

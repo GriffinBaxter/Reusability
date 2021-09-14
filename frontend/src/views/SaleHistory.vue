@@ -85,7 +85,7 @@ export default {
       currentPage: 0,
       noResults: false,
       numberListingsRetrieved: 0,
-      totalListings: 0
+      totalListings: 0,
     }
   },
   methods: {
@@ -182,7 +182,7 @@ export default {
      */
     goToCustomerProfile(userId) {
       this.$router.push({path: `/profile/${userId}`});
-    }
+    },
   },
   /**
    * When mounted, initiate population of page.

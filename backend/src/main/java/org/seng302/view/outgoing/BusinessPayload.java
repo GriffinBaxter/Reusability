@@ -10,7 +10,7 @@
  */
 package org.seng302.view.outgoing;
 
-import org.seng302.model.Address;
+
 import org.seng302.model.Business;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.User;
@@ -18,15 +18,9 @@ import org.seng302.model.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
- * Business Payload
- *
- * Business payload to send to the API.
- *
- * @link   team-400/src/main/java/org/seng302/business/BusinessPayload.java
- * @file   BusinessPayload.java.
- * @author team-400.
- * @since  5.5.2021
+ * Business payload
  */
 public class BusinessPayload {
 

@@ -149,7 +149,7 @@ export default {
           }
         }
       }
-      return require('../../../public/default-product.jpg')
+      return require('../../../public/default-image.jpg')
     },
     /**
      * Unpacks the address object into an HTML string.

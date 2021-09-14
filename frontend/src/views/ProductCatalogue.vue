@@ -244,6 +244,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
+import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
@@ -857,7 +858,7 @@ export default {
     },
 
     /**
-     * Retrieves the currency of the business from the backend.
+     * Requests business details from the backend to retrieve the currency of the business.
      */
     async currencyRequest() {
       this.businessId = parseInt(this.$route.params.id);

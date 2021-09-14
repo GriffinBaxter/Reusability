@@ -151,7 +151,7 @@
 <script>
 import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer"
-import DefaultImage from "../../public/default-product.jpg"
+import DefaultImage from "../../public/default-image.jpg"
 import Api from "../Api"
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
