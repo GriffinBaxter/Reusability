@@ -886,5 +886,3 @@ describe('Tests methods in the SaleHistory component.', () => {
 
     })
 })
-
-
