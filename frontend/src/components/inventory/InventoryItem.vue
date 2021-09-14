@@ -11,7 +11,7 @@
             </div>
           </div>
           <div v-else>
-            <img class="card-img" :src="require('../../../public/default-product.jpg')" alt="inventory item image">
+            <img class="card-img" :src="require('../../../public/default-image.jpg')" alt="inventory item image">
           </div>
         </div>
       </div>

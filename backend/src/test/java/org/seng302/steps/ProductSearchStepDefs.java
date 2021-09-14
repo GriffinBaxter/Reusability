@@ -108,7 +108,9 @@ public class ProductSearchStepDefs extends CucumberSpringConfiguration {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(businessId);
 
@@ -221,7 +223,9 @@ public class ProductSearchStepDefs extends CucumberSpringConfiguration {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                anotherUser
+                anotherUser,
+                "$",
+                "NZD"
         );
         business.setId(businessId);
 
@@ -268,7 +272,9 @@ public class ProductSearchStepDefs extends CucumberSpringConfiguration {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(businessId);
 

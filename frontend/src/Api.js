@@ -308,8 +308,8 @@ export default {
     },
 
     // Sets the primary image
-    setPrimaryImage: (unCheckImageType, userId, businessId, productId, imageId) => {
-        return instance.put(`/images/${imageId}/makePrimary?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
+    setPrimaryImage: (query, imageId) => {
+        return instance.put(`/images/${imageId}/makePrimary${query}`,
             {}, {
                 withCredentials: true
             })

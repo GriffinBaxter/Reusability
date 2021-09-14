@@ -11,7 +11,6 @@ import VueRouter from "vue-router";
 import Cookies from "js-cookie"
 
 
-
 let wrapper;
 
 jest.mock("../src/Api");
@@ -47,7 +46,8 @@ const cardResponse = {
             },
             "created": "2020-07-14T14:32:00Z",
             "role": "user",
-            "businessesAdministered": []
+            "businessesAdministered": [],
+            "images": {}
         },
         "section": "ForSale",
         "created": "2021-07-15T05:10:00Z",
@@ -65,7 +65,7 @@ const cardResponse = {
 };
 
 beforeEach(() => {
-    Api.getDetailForACard.mockImplementation(() => Promise.resolve(cardResponse));
+    Api.getDetailForACard.mockResolvedValue(cardResponse);
 });
 
 afterEach(() => {

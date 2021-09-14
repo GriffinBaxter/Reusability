@@ -103,7 +103,9 @@ class ProductRepositoryCustomTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business = entityManager.persist(business);
         businessId = business.getId();
@@ -116,7 +118,9 @@ class ProductRepositoryCustomTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business2 = entityManager.persist(business2);
         entityManager.flush();

@@ -26,7 +26,7 @@
             </div>
           </div>
           <div class="ratio ratio-1x1" v-else>
-            <img class="card-img" :src="require('../../../public/default-product.jpg')" id="listing-item-image" alt="listing default image">
+            <img class="card-img" :src="require('../../../public/default-image.jpg')" id="listing-item-image" alt="listing default image">
           </div>
         </div>
         <div class="col">
