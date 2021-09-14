@@ -157,7 +157,7 @@
 import {Modal, Popover} from "bootstrap"; //uncommenting means the test do not run
 import Api from "../../Api";
 import InventoryItem from "../../configs/InventoryItem";
-import DefaultProductImage from "../../../public/default-product.jpg";
+import DefaultProductImage from "../../../public/default-image.jpg";
 import Autofill from '../autofill';
 import {parseISO} from 'date-fns'
 import Vue from "vue";

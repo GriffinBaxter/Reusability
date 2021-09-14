@@ -118,7 +118,9 @@ class ProductRepositoryCustomTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business2 = entityManager.persist(business2);
         entityManager.flush();
