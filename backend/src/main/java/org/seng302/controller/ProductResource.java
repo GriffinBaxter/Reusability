@@ -143,6 +143,7 @@ public class ProductResource {
      * @param searchBy A list of fields to search by (Optional)
      * @param orderBy Column to order the results by
      * @param page Page number to return results from
+     * @param barcode Barcode number (Optional)
      * @return A list of ProductPayload objects representing the products belonging to the given business
      */
     @GetMapping("/businesses/{id}/products")
@@ -152,9 +153,11 @@ public class ProductResource {
             @RequestParam(defaultValue = "") String searchQuery,
             @RequestParam(required = false) List<String> searchBy,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(required = false) String barcode
     ) throws Exception {
-        logger.debug("Product retrieval request received with business ID {}, search query {}, search by {}, order by {}, page {}", id, searchQuery, searchBy, orderBy, page);
+        logger.debug("Product retrieval request received with business ID {}, search query {}, search by {}, " +
+                "order by {}, page {}, barcode {}", id, searchQuery, searchBy, orderBy, page, barcode);
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -218,7 +221,7 @@ public class ProductResource {
 
         Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
 
-        Page<Product> pagedResult = parseAndExecuteQuery(searchQuery, searchBy, id, paging);
+        Page<Product> pagedResult = parseAndExecuteQuery(searchQuery, searchBy, id, paging, barcode);
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -434,9 +437,10 @@ public class ProductResource {
      * @param searchBy The fields to match the criteria to.
      * @param businessId The ID of the business you want to retrieve products for.
      * @param paging Information used to paginate the retrieved listings.
+     * @param barcode Product barcode to search for.
      * @return Page<Product> A page of products matching the search criteria.
      */
-    private Page<Product> parseAndExecuteQuery(String searchQuery, List<String> searchBy, Integer businessId, Pageable paging) {
+    private Page<Product> parseAndExecuteQuery(String searchQuery, List<String> searchBy, Integer businessId, Pageable paging, String barcode) {
         if (searchBy == null) {
             searchBy = List.of("name");
         }
@@ -454,7 +458,12 @@ public class ProductResource {
 
         List<String> names = SearchUtils.convertSearchQueryToNames(searchQuery);
 
-        return productRepository.findAllProductsByBusinessIdAndIncludedFields(names, searchBy, businessId, paging);
+        if (barcode != null) {
+            return productRepository.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(names, searchBy, businessId, paging, barcode);
+
+        } else {
+            return productRepository.findAllProductsByBusinessIdAndIncludedFields(names, searchBy, businessId, paging);
+        }
     }
 
 }

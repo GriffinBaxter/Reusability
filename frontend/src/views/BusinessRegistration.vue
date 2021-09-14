@@ -163,6 +163,7 @@ import Footer from "../components/main/Footer";
 import AddressAPI from "../addressInstance";
 import Cookies from 'js-cookie';
 import {toggleInvalidClass} from "../validationUtils";
+import CurrencyAPI from "../currencyInstance";
 
 export default {
   name: "BusinessRegistration",
@@ -220,6 +221,9 @@ export default {
       // Description related variables
       description: "",
       descriptionErrorMsg: "",
+
+      currencyCode: "",
+      currencySymbol: "",
 
       // Toast related variables
       toastErrorMessage: "",
@@ -308,7 +312,7 @@ export default {
      * This method creates a new business.
      * @param e, the current event.
      */
-    addNewBusiness(e) {
+    async addNewBusiness(e) {
       // Steps required for the function before starting processing.
       e.preventDefault()  // prevents page from reloading
       this.trimBusinessTextInputFields()
@@ -462,6 +466,8 @@ export default {
         postcode: this.$refs.postcode.value
       }
 
+      await this.currencyRequest();
+
       // Wrapping up the business submitted fields into a class object (Business).
       const businessData = {
         primaryAdministratorId: Cookies.get('userID'),
@@ -472,7 +478,9 @@ export default {
          *       When we insert from our autocomplete list so it has been changed to use $refs
          */
         address: addressData,
-        businessType: this.businessType
+        businessType: this.businessType,
+        currencySymbol: this.currencySymbol,
+        currencyCode: this.currencyCode
       }
 
       const business = new Business(businessData)
@@ -480,7 +488,7 @@ export default {
        * Add the Business to the database by sending an API request to the backend to store the business' information.
        * Raise any errors and ensure they are displayed on the UI.
        */
-      Api.addNewBusiness(business
+      await Api.addNewBusiness(business
       ).then( (res) => {
             if (res.status === 201) {
               const businessId = res.data.businessId;
@@ -745,6 +753,26 @@ export default {
       for (let i = 0; i < elementList.length; i++) {
         elementList[i].classList.remove("autocomplete-active");
       }
+    },
+
+    /**
+     * Currency API requests.
+     * An asynchronous function that calls the REST Countries API with the given country input.
+     * Upon success, the filterResponse function is called with the response data.
+     */
+    async currencyRequest() {
+      await CurrencyAPI.currencyQuery(this.$refs.country.value).then((response) => {
+        this.filterCurrencyResponse(response.data);
+      }).catch((error) => console.log(error))
+    },
+
+    /**
+     * Retrieves the currency code and symbol that we want from the API response.
+     * @param response The response from the REST countries API
+     */
+    filterCurrencyResponse(response) {
+      this.currencyCode = response[0].currencies[0].code;
+      this.currencySymbol = response[0].currencies[0].symbol;
     }
   },
 

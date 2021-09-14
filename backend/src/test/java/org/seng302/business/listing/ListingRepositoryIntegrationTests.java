@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -120,7 +119,9 @@ class ListingRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business = entityManager.persist(business);
         businessId = business.getId();
@@ -133,7 +134,9 @@ class ListingRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business2 = entityManager.persist(business2);
         entityManager.flush();
@@ -145,7 +148,9 @@ class ListingRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         anotherBusiness = entityManager.persist(anotherBusiness);
         anotherBusinessId = anotherBusiness.getId();

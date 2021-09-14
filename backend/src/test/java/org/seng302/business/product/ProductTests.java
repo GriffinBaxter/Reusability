@@ -64,7 +64,9 @@ class ProductTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
         setProduct = new Product(

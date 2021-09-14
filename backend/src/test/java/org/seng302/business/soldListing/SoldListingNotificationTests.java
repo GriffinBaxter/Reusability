@@ -8,7 +8,6 @@ import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.NotificationType;
 import org.seng302.model.enums.Role;
-import org.seng302.view.outgoing.ListingNotificationPayload;
 import org.seng302.view.outgoing.SoldListingNotificationPayload;
 import org.seng302.view.outgoing.SoldListingPayload;
 
@@ -73,7 +72,9 @@ class SoldListingNotificationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         soldListing = new SoldListing(business,

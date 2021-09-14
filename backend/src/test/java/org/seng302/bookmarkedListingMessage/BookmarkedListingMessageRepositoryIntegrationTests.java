@@ -127,7 +127,9 @@ class BookmarkedListingMessageRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();

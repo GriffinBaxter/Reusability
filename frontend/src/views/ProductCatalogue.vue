@@ -845,28 +845,15 @@ export default {
     },
 
     /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
+     * Requests business details from the backend to retrieve the currency of the business.
      */
     async currencyRequest() {
       this.businessId = parseInt(this.$route.params.id);
 
-      // Request business from backend. If received assign the country of the business
-      // to a variable.
-      let country = "";
       await Api.getBusiness(this.businessId).then((response) => {
-        country = response.data.address.country;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
       }).catch((error) => console.log(error))
-
-      await CurrencyAPI.currencyQuery(country).then((response) => {
-        this.filterResponse(response.data);
-      }).catch((error) => console.log(error))
-    },
-
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
     },
 
     onUploadClick() {

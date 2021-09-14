@@ -66,7 +66,9 @@ class BusinessTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         businesses = new ArrayList<>();
     }
@@ -89,7 +91,9 @@ class BusinessTests {
                     BusinessType.RETAIL_TRADE,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
-                    user
+                    user,
+                    "$",
+                    "NZD"
             );
         } catch (IllegalBusinessArgumentException e) {
             Assertions.assertEquals("Invalid business name", e.getMessage());
@@ -114,7 +118,9 @@ class BusinessTests {
                     BusinessType.RETAIL_TRADE,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
-                    user
+                    user,
+                    "$",
+                    "NZD"
             );
         } catch (IllegalBusinessArgumentException e) {
             Assertions.assertEquals("Invalid business name", e.getMessage());
@@ -134,7 +140,9 @@ class BusinessTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         Assertions.assertNotNull(newBusiness);
         Assertions.assertEquals("Business123 ÖØǰǴ '#,.&()-", newBusiness.getName());
@@ -158,7 +166,9 @@ class BusinessTests {
                     BusinessType.RETAIL_TRADE,
                     LocalDateTime.of(LocalDate.of(2021, 2, 2),
                             LocalTime.of(0, 0)),
-                    user
+                    user,
+                    "$",
+                    "NZD"
             );
         } catch (IllegalBusinessArgumentException e) {
             Assertions.assertEquals("Invalid business description", e.getMessage());
@@ -178,7 +188,9 @@ class BusinessTests {
                     null,
                     BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                     LocalDateTime.now(),
-                    user
+                    user,
+                    "$",
+                    "NZD"
             );
         } catch (Exception e) {
             Assertions.assertEquals("Invalid address", e.getMessage());
@@ -194,7 +206,9 @@ class BusinessTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         Assertions.assertNull(businessAccount.getDescription());
     }
@@ -216,7 +230,9 @@ class BusinessTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         User user = new User("first",
                 "last",
@@ -265,7 +281,9 @@ class BusinessTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         business.removeAdministrators(user);
@@ -288,7 +306,9 @@ class BusinessTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         User user = new User("first",
                 "last",
@@ -322,7 +342,9 @@ class BusinessTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         User user = new User("first",
                 "last",

@@ -13,6 +13,7 @@ import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
 import org.seng302.model.repository.UserRepository;
+import org.seng302.view.outgoing.AddressPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,6 +77,8 @@ class BusinessResourceIntegrationTests {
 
     private User user;
 
+    private User gAA;
+
     private User anotherUser;
 
     private Business business;
@@ -89,7 +92,9 @@ class BusinessResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\""+
+            "\"created\":\"%s\","+
+            "\"currencySymbol\":\"%s\","+
+            "\"currencyCode\":\"%s\""+
             "}";
 
     private final String expectedAdministratorJson = "[{\"id\":%d," +
@@ -141,7 +146,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         anotherUser = new User(
@@ -176,6 +183,22 @@ class BusinessResourceIntegrationTests {
                 Role.DEFAULTGLOBALAPPLICATIONADMIN);
         dGAA.setId(2);
         dGAA.setSessionUUID(User.generateSessionUUID());
+        gAA = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "gaa@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.GLOBALAPPLICATIONADMIN);
+        gAA.setId(4);
+        gAA.setSessionUUID(User.generateSessionUUID());
         this.mvc = MockMvcBuilders.standaloneSetup(
                 new BusinessResource(businessRepository, userRepository, addressRepository)
         ).build();
@@ -203,7 +226,9 @@ class BusinessResourceIntegrationTests {
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         newBusiness.setId(3);
         newBusiness.addAdministrators(user);
@@ -259,7 +284,9 @@ class BusinessResourceIntegrationTests {
                 ),
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         newBusiness.setId(3);
         newBusiness.addAdministrators(user);
@@ -695,7 +722,9 @@ class BusinessResourceIntegrationTests {
                     "\"postcode\":\"" + address.getPostcode() + "\"" +
                     "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                "\"created\":\"" + business.getCreated() + "\"}";
+                "\"created\":\"" + business.getCreated() + "\"," +
+                "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -757,7 +786,9 @@ class BusinessResourceIntegrationTests {
                 "\"postcode\":\"" + address.getPostcode() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                "\"created\":\"" + business.getCreated() + "\"}";
+                "\"created\":\"" + business.getCreated() + "\"," +
+                "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
         sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -835,7 +866,9 @@ class BusinessResourceIntegrationTests {
                 "\"postcode\":\"" + address.getPostcode() + "\"" +
                 "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                "\"created\":\"" + business.getCreated() + "\"}";
+                "\"created\":\"" + business.getCreated() + "\"," +
+                "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
 
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -944,7 +977,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
 
@@ -1018,7 +1053,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1089,7 +1126,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1163,7 +1202,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1240,7 +1281,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1312,7 +1355,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1385,7 +1430,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1461,7 +1508,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1537,7 +1586,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1615,7 +1666,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1689,7 +1742,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1763,7 +1818,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1835,7 +1892,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1891,7 +1950,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -1963,7 +2024,9 @@ class BusinessResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         // given
@@ -2005,14 +2068,13 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = List.of(searchQuery);
 
-        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(),
-                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
-                user.getCreated(), user.getRole(), "[]", user.getDateOfBirth(), user.getPhoneNumber(),
-                address.getStreetNumber(), address.getStreetName(), address.getSuburb(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode());
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson,
-                business.getPrimaryAdministratorId(), business.getName(), business.getDescription(),
-                business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
@@ -2042,14 +2104,13 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = List.of(searchQuery);
 
-        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(),
-                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
-                user.getCreated(), user.getRole(), "[]", user.getDateOfBirth(), user.getPhoneNumber(),
-                address.getStreetNumber(), address.getStreetName(), address.getSuburb(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode());
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson,
-                business.getPrimaryAdministratorId(), business.getName(), business.getDescription(),
-                business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
 
         // when
@@ -2082,14 +2143,13 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = List.of(searchQuery);
 
-        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(),
-                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
-                user.getCreated(), user.getRole(), "[]", user.getDateOfBirth(), user.getPhoneNumber(),
-                address.getStreetNumber(), address.getStreetName(), address.getSuburb(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode());
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson,
-                business.getPrimaryAdministratorId(), business.getName(), business.getDescription(),
-                business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
@@ -2233,14 +2293,13 @@ class BusinessResourceIntegrationTests {
         String businessType = "ACCOMMODATION_AND_FOOD_SERVICES";
         BusinessType convertedBusinessType = BusinessType.ACCOMMODATION_AND_FOOD_SERVICES;
 
-        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(),
-                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
-                user.getCreated(), user.getRole(), "[]", user.getDateOfBirth(), user.getPhoneNumber(),
-                address.getStreetNumber(), address.getStreetName(), address.getSuburb(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode());
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson,
-                business.getPrimaryAdministratorId(), business.getName(), business.getDescription(),
-                business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
@@ -2272,14 +2331,13 @@ class BusinessResourceIntegrationTests {
         String searchQuery = "NAME";
         List<String> names = List.of(searchQuery);
 
-        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(),
-                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
-                user.getCreated(), user.getRole(), "[]", user.getDateOfBirth(), user.getPhoneNumber(),
-                address.getStreetNumber(), address.getStreetName(), address.getSuburb(), address.getCity(),
-                address.getRegion(), address.getCountry(), address.getPostcode());
-        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson,
-                business.getPrimaryAdministratorId(), business.getName(), business.getDescription(),
-                business.getAddress(), business.getBusinessType(), business.getCreated()) + "]";
+        expectedUserJson = String.format(expectedAdministratorJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), user.getRole(),
+                "[]", user.getDateOfBirth(), user.getPhoneNumber(), address.getStreetNumber(), address.getStreetName(), address.getSuburb(),
+                address.getCity(), address.getRegion(), address.getCountry(), address.getPostcode());
+        expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
+                business.getName(), business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
 
         // when
         List<Business> list = List.of(business);
@@ -2297,5 +2355,1145 @@ class BusinessResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
+
+    /**
+     * Testing that when changing all the fields of a business then all the changes occur. And that we
+     * receive a OK status message back.
+     */
+    @Test
+    void canUpdateTheBusinessWithAllFieldsBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
+    }
+
+    /**
+     * Testing that an UNAUTHROIZED is returned when failing to provide a session token.
+     */
+    @Test
+    void receivingUnauthorizedWhenNotProvidingASessionTokenModifyBusinessBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId()))
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * Testing that we receive an UNAUTHORIZED when providing an invalid session token. And the business
+     * is not modified.
+     */
+    @Test
+    void receivingAuthorizedWhentProvidingAInvalidSessionTokenModifyBusinessBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+
+        sessionToken = "ASNDAJSNDKJANSKJDNAKSJNKDJN DONT MAKE ME AN ACTUAL SESSION!";
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * Testing that a NOT_ACCEPTABLE is returned when we provide a invalud business id. And that the business is not modified.
+     */
+    @Test
+    void receivingANotAcceptableWhenProvidingInvalidBusinessIdBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", 12354665)).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * Testing that a GAA can modify a business that is not there own. And returning an OK status.
+     */
+    @Test
+    void updatingBusinessAsGaaBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
+
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
+    }
+
+    /**
+     * Testing that a business can be modified by a DGAA and returns an OK status.
+     */
+    @Test
+    void updatingBusinessAsDgaaBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
+    }
+
+    /**
+     * Testing that a non admin cannot modify a business as they do not have permissions and that it
+     * returns FORBIDDEN.
+     */
+    @Test
+    void updatingBusinessAsNonAdminUserBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "#",
+                "BED"
+        );
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(dGAA));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * Testing that an admin can modify all aspects of the business (not including the primary id). And returns
+     * OK status.
+     */
+    @Test
+    void updatingBusinessAsRegularAdminOfBusinessBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                dGAA.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                dGAA,
+                "#",
+                "BED"
+        );
+        someBusiness.addAdministrators(anotherUser);
+        Business newBusiness = new Business(
+                dGAA.getId(),
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
+
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
+    }
+
+    /**
+     * Testing that a business can be updated by the primary admin of the business (all fields). And
+     * that a OK status is returned.
+     */
+    @Test
+    void updatingBusinessAsPrimaryAdminBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
+    }
+
+    /**
+     * Testing that the primary admin id can be updated by the GAA. And that a OK status
+     * is returned.
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsGaaBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.ofNullable(gAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(newBusiness.getPrimaryAdministratorId());
+    }
+
+    /**
+     * Testing that the DGAA can change the primary admin id of a business. And that a OK status is returned.
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsDgaaBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(newBusiness.getPrimaryAdministratorId());
+    }
+
+    /**
+     * Testing that a non-admin user cannot change the primary admin id of a business. And returns a
+     * FORBIDDEN error.
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsUserAndFailingBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(someBusiness.getPrimaryAdministratorId());
+    }
+
+    /**
+     * Testing that a regular admin cannot change the primary admin of a business. And that a FORBIDDEN is returned.
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsAdminAndFailingBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        someBusiness.addAdministrators(anotherUser);
+
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(dGAA));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.of(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * Testing the primary admin can change the primary admin id of a business. And returns an OK status.
+     */
+    @Test
+    void updatingBusinessPrimaryAdminIdAsPrimaryAdminBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address oldAddress = new Address("1", "old", "old", "old", "old", "old", "old");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                oldAddress,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness.getPrimaryAdministratorId()).isEqualTo(newBusiness.getPrimaryAdministratorId());
+    }
+
+    /**
+     * Testing that a business can be modified without the primary id being mentioned.
+     */
+    @Test
+    void updatingBusinessWithNullPrimaryIdBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                user.getId(),
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
+    }
+
+    /**
+     * Testing that the name is updated when we include it in the payload. And that a OK status is returned.
+     */
+    @Test
+    void updatingBusinessWithNewNameBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness.getName()).hasToString(newBusiness.getName());
+    }
+
+    /**
+     * Testing that a name must be provided in the modify payload. And that it returns a BAD_REQUEST.
+     */
+    @Test
+    void updatingBusinessWithNullNameAndFailingAsItIsRequiredBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * Updating the business with a new description. Expecting an OK stats.
+     */
+    @Test
+    void updatingBusinessWithNewDescriptionBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness.getDescription()).hasToString(newBusiness.getDescription());
+    }
+
+    /**
+     * Testing with a null description that it still updates the business. And that it returns an OK status.
+     */
+    @Test
+    void updatingBusinessWithNullDescriptionBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "some text",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness).hasToString(newBusiness.toString());
+    }
+
+    /**
+     * Testing that the address changes when we include it in the payload. And that it reuturns OK status.
+     */
+    @Test
+    void updatingBusinessWithNewAddressBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address oldAddress = new Address("1", "old", "old", "old", "old", "old", "old");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                oldAddress,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness.getAddress()).isEqualTo(newBusiness.getAddress());
+    }
+
+    /**
+     * Testing that you require the address in the modify payload. And that it returns a BAD_REQUEST status.
+     */
+    @Test
+    void updatingBusinessWithNullAddressAndFailingAsItIsRequiredBusinessModify() throws Exception {
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * When updating a business with a null business type it will fail to update and return a BAD_REQUEST status.
+     */
+    @Test
+    void updatingBusinessWithNullBusinessTypeAndFailingAsItIsRequiredBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+    /**
+     * Testing that we can update the business type. And that it returns an OK status.
+     */
+    @Test
+    void updatingBusinessWithNewBusinessTypeBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND FOOD SERVICES" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+        Business newBusiness = new Business(
+                13,
+                "new",
+                "new",
+                newAddressObj,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                anotherUser,
+                "$",
+                "NZD");
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(someBusiness.getBusinessType()).isEqualTo(newBusiness.getBusinessType());
+    }
+
+    /**
+     * Testing that providing a invalid business type does not update the business and returns a BAD_REQUEST error code.
+     */
+    @Test
+    void updatingBusinessWithInvalidBusinessTypeBusinessModify() throws Exception {
+        AddressPayload newAddress = new AddressPayload("123", "new", "new", "new", "NZ", "123", "subur");
+        Address newAddressObj = new Address("123", "new", "new", "new", "NZ", "123", "subur");
+        payloadJson = "{" +
+                "\"primaryAdministratorId\":" + 13 + "," +
+                "\"name\":\"" + "new" + "\"," +
+                "\"description\":\"" + "new" + "\"," +
+                "\"address\":" + newAddress + "," +
+                "\"businessType\":\"" + "ACCOMMODATION AND SOMETHING NOT REAL!" + "\"," +
+                "\"currencySymbol\":\"" + "$" + "\"," +
+                "\"currencyCode\":\"" + "NZD" + "\"" +
+                "}";
+        Business someBusiness = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.RETAIL_TRADE,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "#",
+                "BED"
+        );
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(13)).thenReturn(Optional.ofNullable(anotherUser));
+        when(businessRepository.findBusinessById(someBusiness.getId())).thenReturn(Optional.ofNullable(someBusiness));
+
+        response = mvc.perform(put(String.format("/businesses/%d", someBusiness.getId())).cookie(cookie)
+                .content(payloadJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(someBusiness).hasToString(someBusiness.toString());
+    }
+
+
 
 }
