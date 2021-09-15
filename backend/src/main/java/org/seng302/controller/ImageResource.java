@@ -53,7 +53,7 @@ public class ImageResource {
     private BusinessImageRepository businessImageRepository;
 
     @Autowired
-    @Value("product-images")
+    @Value("images")
     private FileStorageService fileStorageService;
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
