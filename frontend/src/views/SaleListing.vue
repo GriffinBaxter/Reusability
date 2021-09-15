@@ -114,6 +114,9 @@
               <button v-if="canBuy" class="buy-button merryweather w-100" @click="buy">
                 Buy
               </button>
+              <button class="delete-button btn btn-danger w-100" v-else-if="actingBusinessId === businessId" @click="deleteListing">
+                Remove Listing
+              </button>
               <button v-else class="buy-button-disabled merryweather w-100" disabled>
                 Business cannot purchase listings.
               </button>
@@ -189,6 +192,7 @@ export default {
       manufacturer: "",
 
       // Business info
+      businessId: 0,
       businessName: "",
       businessAddress: "",
       businessAddressLine1: "",
@@ -219,6 +223,24 @@ export default {
     }
   },
   methods: {
+    deleteListing() {
+      Api.deleteListing(this.listingId).then(() => {
+        this.returnToSales();
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 406) {
+            this.$router.push({name: "NoListing"})
+          } else if (err.response.status === 403) {
+            this.actingBusinessId = null
+          } else if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          }
+        } else {
+          console.log(err)
+        }
+      })
+
+    },
     /**
      * Attempts to buy the viewed listing and if successful returns the user to their home page
      */
@@ -345,6 +367,7 @@ export default {
       this.manufacturer = data.inventoryItem.product.manufacturer;
 
       // Business info
+      this.businessId = data.inventoryItem.product.business.id;
       this.businessName = data.inventoryItem.product.business.name;
       this.businessAddress = data.inventoryItem.product.business.address;
       this.currencySymbol = (data.inventoryItem.product.business.currencySymbol === null ||
@@ -436,7 +459,7 @@ export default {
     const listingId = url.substring(url.lastIndexOf('/') + 1);
     const self = this;
     this.currentID = Cookies.get('userID');
-    this.actingBusinessId = Cookies.get("actAs");
+    this.actingBusinessId = parseInt(Cookies.get("actAs"));
 
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))
@@ -559,6 +582,21 @@ h6 {
   background-color: lightgray;
   border: 1px solid #19b092;
   color: #19b092;
+
+  padding: 0.65em 0;
+  margin: 1.45em 0;
+  border-radius: 0.25em;
+
+  cursor: pointer;
+  transition: 150ms ease-in-out;
+
+  font-size: 1.5em;
+}
+
+.delete-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   padding: 0.65em 0;
   margin: 1.45em 0;

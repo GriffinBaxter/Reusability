@@ -184,9 +184,11 @@ name: "Listings",
         this.getListings()
       }).catch((err) => {
         if (err.response) {
-          console.log(err.response)
-        } else if (err.request) {
-          console.log(err.request)
+          if (err.response.status === 406) {
+            this.getListings()
+          } else if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          }
         } else {
           console.log(err)
         }
