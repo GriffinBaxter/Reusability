@@ -486,7 +486,7 @@ export default {
       this.currentPage = event.newPageNumber;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
-        path: `/businessProfile/${this.businessId}/productCatalogue`,
+        path: `/businessProfile/${this.businessId}/productCatalogue `,
         query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       })
       this.requestProducts();
@@ -541,9 +541,10 @@ export default {
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
       this.loadingProducts = true;
+      this.barcode = this.$route.query["barcode"] || "";
 
       // Perform the call to sort the products and get them back.
-      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.searchBarcode, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.barcode, this.orderByString, this.currentPage).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -553,7 +554,9 @@ export default {
           return new Product(product);
         });
 
-        let newtableData = [];
+        let newTableData = [];
+
+        console.log(newTableData)
 
         // No results
         if (this.productList.length <= 0) {
@@ -565,15 +568,15 @@ export default {
           this.totalRows = parseInt(response.headers["total-rows"]);
 
           for (let i = 0; i < this.productList.length; i++) {
-            newtableData.push(this.productList[i].data.id);
-            newtableData.push(this.productList[i].data.name);
-            newtableData.push(this.productList[i].data.manufacturer);
-            newtableData.push(this.productList[i].data.recommendedRetailPrice);
-            newtableData.push(formatDate(this.productList[i].data.created));
-            newtableData.push(this.productList[i].data.barcode);
+            newTableData.push(this.productList[i].data.id);
+            newTableData.push(this.productList[i].data.name);
+            newTableData.push(this.productList[i].data.manufacturer);
+            newTableData.push(this.productList[i].data.recommendedRetailPrice);
+            newTableData.push(formatDate(this.productList[i].data.created));
+            newTableData.push(this.productList[i].data.barcode);
           }
         }
-        this.tableData = newtableData;
+        this.tableData = newTableData;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -602,7 +605,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestProducts();
     },
