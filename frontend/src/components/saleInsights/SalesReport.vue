@@ -48,14 +48,14 @@
                 <li v-if="selectedYear === currentYear">
                   <div class="btn green-button-transparent col-12 order-by-options-btn"
                       v-for="month in months.slice(0, this.currentMonth + 1)" v-bind:key="month"
-                      @click="selectedMonth = month">
+                      @click="selectedMonth = month; retrieveSalesReport()">
                     {{ month }}
                   </div>
                 </li>
                 <li v-else>
                   <div class="btn green-button-transparent col-12 order-by-options-btn"
                       v-for="month in months" v-bind:key="month"
-                      @click="selectedMonth = month">
+                      @click="selectedMonth = month; retrieveSalesReport()">
                     {{ month }}
                   </div>
                 </li>
@@ -70,14 +70,17 @@
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
                     v-for="validYear in validYears" v-bind:key="validYear"
-                    @click="selectedYear = validYear">
+                    @click="selectedYear = validYear; retrieveSalesReport()">
                   {{ validYear }}
                 </li>
               </ul>
             </div>
 
-            <div v-if="period === 'Day'" class="btn-group col-xl-3 d-inline-block p-2" role="group">
+            <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
               <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay">
+              <button class="btn green-button" @click="retrieveSalesReport()">
+                Apply
+              </button>
             </div>
 
             <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
@@ -160,6 +163,7 @@
 
         <div class="card p-3">
           Barry's stuff for task 723:
+          <br>
           <div>
             {{ salesReportData }}
           </div>
@@ -174,10 +178,9 @@
 
 <script>
 
-import {isFuture, parseISO} from "date-fns";
+import {isFuture, parseISO, formatISO, format, lastDayOfMonth} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
-import {formatISO, format} from "date-fns";
 import Api from "../../Api";
 
 export default {
@@ -280,7 +283,10 @@ export default {
      * @param year A year to give the dates of.
      */
     generateDatesFromYear(year) {
-      return year
+      return {
+        fromDate: `${year}-01-01T00:00`,
+        toDate: `${year}-12-31T23:59:59`
+      }
     },
 
     /**
@@ -288,7 +294,12 @@ export default {
      * @param month A month to give the dates of.
      */
     generateDatesFromMonth(month) {
-      return month
+      const monthNumber = this.months.indexOf(month)+1 < 10 ? '0' + (this.months.indexOf(month)+1).toString() : this.months.indexOf(month)+1;
+      let toDate = formatISO(lastDayOfMonth(parseISO(`${this.selectedYear}-${monthNumber}-01`)), { representation: 'date' }) + "T23:59:59";
+      return {
+        fromDate: `${this.selectedYear}-${monthNumber}-01T00:00`,
+        toDate: toDate
+      }
     },
 
     /**
@@ -296,7 +307,10 @@ export default {
      * @param day A year to give the dates of.
      */
     generateDatesFromDay(day) {
-      return day
+      return {
+        fromDate: `${day}T00:00`,
+        toDate: `${day}T23:59:59`
+      }
     },
 
     /**
@@ -305,15 +319,22 @@ export default {
     async retrieveSalesReport() {
       let fromDate = "";
       let toDate = "";
+      let returnedDates = null;
       if (this.period === 'Custom') {
         fromDate = formatISO(parseISO(this.startDate), { representation: 'date' }) + "T00:00";
         toDate = formatISO(parseISO(this.endDate), { representation: 'date' }) + "T23:59:59";
       } else if (this.period === 'Year') {
-        this.generateDatesFromYear(this.selectedYear);
+        returnedDates = this.generateDatesFromYear(this.selectedYear);
+        fromDate = returnedDates.fromDate;
+        toDate = returnedDates.toDate;
       } else if (this.period === 'Month') {
-        this.generateDatesFromMonth(this.selectedMonth);
+        returnedDates = this.generateDatesFromMonth(this.selectedMonth);
+        fromDate = returnedDates.fromDate;
+        toDate = returnedDates.toDate;
       } else if (this.period === 'Day') {
-        this.generateDatesFromDay(this.selectedDay);
+        returnedDates = this.generateDatesFromDay(this.selectedDay);
+        fromDate = returnedDates.fromDate;
+        toDate = returnedDates.toDate;
       }
 
       await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
@@ -328,12 +349,11 @@ export default {
      * @param error the error received from the backend.
      */
     async manageError(error) {
-      console.log(error)
-      // if (error.request && !error.response)      { await this.$router.push({path: '/timeout'});      }
-      // else if (error.response.status === 401)    { await this.$router.push({path: '/invalidtoken'}); }
-      // else if (error.response.status === 403)    { await this.$router.push({path: '/forbidden'});    }
-      // else if (error.response.status === 406)    { await this.$router.push({path: '/noBusiness'});   }
-      // else { await this.$router.push({path: '/noBusiness'}); console.log(error.message); }
+      if (error.request && !error.response)      { await this.$router.push({path: '/timeout'});      }
+      else if (error.response.status === 401)    { await this.$router.push({path: '/invalidtoken'}); }
+      else if (error.response.status === 403)    { await this.$router.push({path: '/forbidden'});    }
+      else if (error.response.status === 406)    { await this.$router.push({path: '/noBusiness'});   }
+      else { await this.$router.push({path: '/noBusiness'}); console.log(error.message); }
     },
 
     /**
