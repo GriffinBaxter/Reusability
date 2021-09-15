@@ -535,7 +535,6 @@ describe("Testing the keywords field", () => {
 
     test("Testing an empty keywords input field", async () => {
         // Checking all necessary elements are exist and do not.
-        console.log(createCardModalWrapper.html())
         expect(createCardModalWrapper.find("#card-keywords-create-default").exists()).toBe(true);
         expect(createCardModalWrapper.find("#card-keywords-invalid-feedback").exists()).toBe(false);
 
