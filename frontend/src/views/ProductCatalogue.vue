@@ -244,13 +244,13 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
-import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
 import UpdateImagesModal from "../components/UpdateImagesModal";
+import {toggleInvalidClass} from "../validationUtils";
 
 export default {
   name: "ProductCatalogue",
@@ -319,7 +319,7 @@ export default {
       // Product id related variables
       productID: "",
       productIDErrorMsg: "",
-      
+
       // Product barcode related variables
       barcode: "",
       barcodeErrorMsg: "",
@@ -366,6 +366,7 @@ export default {
     }
   },
   methods: {
+    toggleInvalidClass: toggleInvalidClass,
     /**
      * This method gets the list of attributes of a product that are to be searched for and
      * converts them to a string which can be used in the url.
@@ -457,21 +458,6 @@ export default {
       this.barcodeFound = false;
 
       this.modal.show();
-    },
-
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
     },
 
     /**

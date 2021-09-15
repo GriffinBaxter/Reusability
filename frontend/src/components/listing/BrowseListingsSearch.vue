@@ -256,8 +256,7 @@
 </template>
 
 <script>
-import compareAsc from 'date-fns/compareAsc'
-import {parseISO} from "date-fns";
+import {isFirstDateBeforeSecondDate} from "../../dateUtils"
 import BarcodeScannerModal from "../BarcodeScannerModal";
 
 export default {
@@ -286,6 +285,9 @@ export default {
     }
   },
   methods: {
+
+    validateDateInput: isFirstDateBeforeSecondDate,
+
     /**
      * When the enter key is pressed, the query is run with the search value.
      */
@@ -495,21 +497,6 @@ export default {
     },
 
     /**
-     * Checks that the second date is after the first date. Returns true if this is the case.
-     * @param firstDate first date
-     * @param secondDate second date
-     * @return {boolean}
-     */
-    validateDateInput(firstDate, secondDate) {
-      if (firstDate != null && secondDate != null) {
-        const outcome = compareAsc(parseISO(firstDate), parseISO(secondDate))
-        return (outcome === -1) // -1 if the first date is before the second
-      } else {
-        return true
-      }
-    },
-
-    /**
      * Resets the filters to their default values
      */
     clearFilters() {
@@ -518,7 +505,11 @@ export default {
       this.startDate = null
       this.endDate = null
     },
-    
+
+    /**
+     * Updates the barcode to the given one
+     * @param barcode The new barcode
+     */
     updateBarcode(barcode) {
       this.barcode = barcode;
     }

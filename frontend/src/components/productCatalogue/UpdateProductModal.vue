@@ -149,6 +149,7 @@ import { Modal } from 'bootstrap'
 import Product from "../../configs/Product"
 import Api from "../../Api";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../../barcodeUtils";
+import {toggleInvalidClass} from "../../validationUtils";
 
 
 export default {
@@ -193,12 +194,12 @@ export default {
 
       // Keeps track if there is an error or not in the form
       inputError: false,
-      
+
       editBarcode: false,
       liveStreamAvailable: false,
       liveStreaming: false,
       barcodeFound: false,
-      
+
       barcode: "",
       barcodeErrorMsg: "",
       productName: "",
@@ -208,26 +209,13 @@ export default {
     }
   },
   methods: {
+    toggleInvalidClass: toggleInvalidClass,
     /**
      * Emits an event that updates the v-model prop value.
      * @param value The new value of the value prop.
      */
     updateValue(value) {
       this.$emit('input', value);
-    },
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage !== "") {
-        classList.push('is-invalid')
-      }
-      return classList
     },
     /**
      * Prevents the default call onClick and updates the placeholder values before show the modal.
@@ -256,12 +244,12 @@ export default {
         this.errorsMessages.description = "";
         this.errorsMessages.barcode = "";
       }
-      
+
       this.editBarcode = this.newProduct.data.barcode !== null;
       this.barcode = ""
       this.liveStreaming = false;
       this.barcodeFound = false;
-      
+
       // Show the modal
       this.modal.show();
     },
@@ -437,7 +425,7 @@ export default {
               }
           )
     },
-    
+
     onUploadClick() {
       this.$refs.image.click();
     },
