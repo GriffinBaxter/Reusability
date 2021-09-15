@@ -1,4 +1,18 @@
-export default class Business{
+export const BusinessTypes = [
+    'Accommodation and Food Services' ,
+    'Retail Trade',
+    'Charitable Organisation',
+    'Non Profit Organisation'
+]
+
+export function convertToFrontendBusinessType(type) {
+    if (type === "ACCOMMODATION_AND_FOOD_SERVICES") { return BusinessTypes[0]; }
+    if (type === "RETAIL_TRADE") { return BusinessTypes[1]; }
+    if (type === "CHARITABLE_ORGANISATION") { return BusinessTypes[2]; }
+    return BusinessTypes[3];
+}
+
+export default class Business {
 
     // This is a config for the business requirement details
     static config = {

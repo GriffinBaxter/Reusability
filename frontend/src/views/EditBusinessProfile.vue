@@ -160,9 +160,10 @@
 
 <script>
 import Footer from "../components/main/Footer";
-import Business from "../configs/Business";
+import Business, {BusinessTypes, convertToFrontendBusinessType} from "../configs/Business";
 import AddressAPI from "../addressInstance";
 import {getAddressConcatenation} from "../views/helpFunction";
+import {getErrorMessage} from "../components/inventory/InventoryValidationHelper";
 import Api from "@/Api";
 
 export default {
@@ -182,10 +183,10 @@ export default {
       // Business type related variables
       businessType: "",
       types: [
-        { text: 'Accommodation and Food Services', value: 'ACCOMMODATION AND FOOD SERVICES' },
-        { text: 'Retail Trade', value:  'RETAIL TRADE'},
-        { text: 'Charitable Organisation', value: 'CHARITABLE ORGANISATION'},
-        { text: 'Non Profit Organisation', value: 'NON PROFIT ORGANISATION'}
+        { text: 'Accommodation and Food Services', value: 'Accommodation and Food Services' },
+        { text: 'Retail Trade', value:  'Retail Trade'},
+        { text: 'Charitable Organisation', value: 'Charitable Organisation'},
+        { text: 'Non Profit Organisation', value: 'Non Profit Organisation'}
       ],
       businessTypeErrorMsg: "",
 
@@ -426,7 +427,6 @@ export default {
      * @param event The keydown event
      */
     addressKeyDown(event) {
-
       let elementList = document.getElementById(this.$refs.businessAddressInput.id + "autocomplete-list");
       if (elementList) elementList = elementList.getElementsByTagName("div");
       if (event.keyCode === 40) {
@@ -468,22 +468,6 @@ export default {
     },
 
     /**
-     * This method removes white space from the beginning and end of all the input field's input values.
-     */
-    trimTextInputFields () {
-      this.businessName = this.businessName.trim();
-      this.businessType = this.businessType.trim();
-      this.description = this.description.trim();
-      this.$refs.country.value = this.$refs.country.value.trim();
-      this.$refs.city.value = this.$refs.city.value.trim();
-      this.$refs.postcode.value = this.$refs.postcode.value.trim();
-      this.$refs.region.value = this.$refs.region.value.trim();
-      this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
-      this.$refs.streetName.value = this.$refs.streetName.value.trim();
-      this.$refs.suburb.value = this.$refs.suburb.value.trim();
-    },
-
-    /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
      * https://www.w3schools.com/howto/howto_js_autocomplete.asp
      *
@@ -499,7 +483,7 @@ export default {
     },
 
     /**
-     * Retrieves the business info for the current url and autofills the form with existing business data.
+     * Retrieves the business info for the current url and autofill the form with existing business data.
      * @param id Id of business to retrieve from backend.
      */
     async retrieveBusiness(id) {
@@ -526,7 +510,7 @@ export default {
      */
     autoFillBusinessData(business) {
       if (business.name !== null) { this.businessName = business.name; }
-      if (business.businessType !== null) { this.businessType = business.businessType.replaceAll("_", " "); }
+      if (business.businessType !== null) { this.businessType = convertToFrontendBusinessType(business.businessType); }
       if (business.description !== null) { this.description = business.description; }
       if (business.address.streetNumber !== null) { this.$refs.streetNumber.value = business.address.streetNumber; }
       if (business.address.streetName !== null) { this.$refs.streetName.value = business.address.streetName; }
@@ -535,6 +519,142 @@ export default {
       if (business.address.region !== null) { this.$refs.region.value = business.address.region; }
       if (business.address.postcode !== null) { this.$refs.postcode.value = business.address.postcode; }
       if (business.address.country !== null) { this.$refs.country.value = business.address.country; }
+    },
+
+    /**
+     * This method checks the validation of all input fields and if all fields are valid sends a PUT request to
+     * the backend to modify the current business.
+     *
+     * @param e, the current event.
+     */
+    editBusiness(e) {
+      e.preventDefault(); // prevents page from reloading
+
+      this.trimTextInputFields();
+
+      // get error messages if input is invalid.
+      this.getErrorMessages();
+      // if an error message exists then return.
+      if (this.checkInvalidRequest()) { return; }
+
+      // TODO call to the backend.
+    },
+
+    /**
+     * This method removes white space from the beginning and end of all the input field's input values.
+     */
+    trimTextInputFields () {
+      this.businessName = this.businessName.trim();
+      this.businessType = this.businessType.trim();
+      this.description = this.description.trim();
+      this.$refs.country.value = this.$refs.country.value.trim();
+      this.$refs.city.value = this.$refs.city.value.trim();
+      this.$refs.postcode.value = this.$refs.postcode.value.trim();
+      this.$refs.region.value = this.$refs.region.value.trim();
+      this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
+      this.$refs.streetName.value = this.$refs.streetName.value.trim();
+      this.$refs.suburb.value = this.$refs.suburb.value.trim();
+    },
+
+    /**
+     * This method gets the inputs from the the form and validates them based on the criteria in the Business config file.
+     * If a field is not valid then an error message is set in the modal.
+     */
+    getErrorMessages() {
+      // Business type error checking.
+      if (BusinessTypes.includes(this.businessType)) {
+        this.businessTypeErrorMsg = "";
+      } else {
+        this.businessTypeErrorMsg = "This field is required!";
+      }
+      // Business name error checking
+      this.businessNameErrorMsg = getErrorMessage(
+          this.config.businessName.name,
+          this.businessName,
+          this.config.businessName.minLength,
+          this.config.businessName.maxLength,
+          this.config.businessName.regexMessage,
+          this.config.businessName.regex
+      );
+      // Description error checking
+      this.descriptionErrorMsg = getErrorMessage(
+          this.config.description.name,
+          this.description,
+          this.config.description.minLength,
+          this.config.description.maxLength,
+      );
+      // Business address error checking
+      this.businessAddressErrorMsg = getErrorMessage(
+          this.config.businessAddress.name,
+          this.$refs.businessAddressInput.value,
+          this.config.businessAddress.minLength,
+          this.config.businessAddress.maxLength
+      );
+      // Street number error checking
+      this.businessStreetNumberErrorMsg = getErrorMessage(
+          this.config.streetNumber.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetNumber.value,
+          this.config.streetNumber.minLength,
+          this.config.streetNumber.maxLength
+      );
+      // Street name error checking
+      this.businessStreetNameErrorMsg = getErrorMessage(
+          this.config.streetName.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetName.value,
+          this.config.streetName.minLength,
+          this.config.streetName.maxLength
+      );
+      // Suburb error checking
+      this.businessSuburbErrorMsg = getErrorMessage(
+          this.config.suburb.name,
+          this.$refs.suburb.value,
+          this.config.suburb.minLength,
+          this.config.suburb.maxLength
+      );
+      // Postcode error checking
+      this.businessPostcodeErrorMsg = getErrorMessage(
+          this.config.postcode.name,
+          this.$refs.postcode.value,
+          this.config.postcode.minLength,
+          this.config.postcode.maxLength
+      );
+      // City error checking
+      this.businessCityErrorMsg = getErrorMessage(
+          this.config.city.name,
+          this.$refs.city.value,
+          this.config.city.minLength,
+          this.config.city.maxLength
+      );
+      // Region error checking
+      this.businessRegionErrorMsg = getErrorMessage(
+          this.config.region.name,
+          this.$refs.region.value,
+          this.config.region.minLength,
+          this.config.region.maxLength
+      );
+      // Country error checking
+      this.businessCountryErrorMsg = getErrorMessage(
+          this.config.country.name,
+          this.$refs.country.value,
+          this.config.country.minLength,
+          this.config.country.maxLength
+      );
+    },
+
+    /**
+     * If an error message exists then the input fields have not been correctly filled out and changes
+     * must not be made to the business.
+     * @return boolean true if changes are invalid, false otherwise.
+     */
+    checkInvalidRequest() {
+      return (this.businessTypeErrorMsg || this.businessNameErrorMsg || this.descriptionErrorMsg ||
+          this.businessAddressErrorMsg || this.businessStreetNumberErrorMsg || this.businessStreetNameErrorMsg ||
+          this.businessSuburbErrorMsg || this.businessPostcodeErrorMsg || this.businessCityErrorMsg ||
+          this.businessRegionErrorMsg || this.businessCountryErrorMsg);
     },
   },
   mounted() {
