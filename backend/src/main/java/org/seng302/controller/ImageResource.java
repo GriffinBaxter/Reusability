@@ -192,23 +192,13 @@ public class ImageResource {
         List<ProductImage> primaryProductImages = new ArrayList<>();
         switch (uncheckedImageType) {
             case USER_IMAGE_STRING:
-                // Verify userId parameter
-                getVerifiedUser(userId);
-
-                if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User have no permission to do this.");
-                }
+                validateUserImageParams(userId, currentUser);
                 imageType = ImageType.USER_IMAGE;
                 imageOwnerInfo = String.format("for product (id: %s)", userId);
                 primaryUserImages = userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true);
                 break;
             case BUSINESS_IMAGE_STRING:
-                // Verify businessId parameter
-                getVerifiedBusiness(businessId);
-
-                // Verify access rights of the user to the business
-                Authorization.verifyBusinessAdmin(currentUser, businessId);
-
+                validateBusinessImageParams(businessId, currentUser);
                 imageType = ImageType.BUSINESS_IMAGE;
                 imageOwnerInfo = String.format("for business (id: %s)", businessId);
                 primaryBusinessImages = businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(
@@ -216,15 +206,7 @@ public class ImageResource {
                 );
                 break;
             case PRODUCT_IMAGE_STRING:
-                // Verify businessId parameter
-                Business business = getVerifiedBusiness(businessId);
-
-                // Verify access rights of the user to the business
-                Authorization.verifyBusinessAdmin(currentUser, businessId);
-
-                // Verify Product id
-                verifyProductId(productId, business);
-
+                validateProductImageParams(businessId, currentUser, productId);
                 imageType = ImageType.PRODUCT_IMAGE;
                 imageOwnerInfo = String.format("for business (id: %s), product (id: %s)", businessId, productId);
                 primaryProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(
@@ -333,14 +315,7 @@ public class ImageResource {
 
         switch (uncheckedImageType) {
             case USER_IMAGE_STRING:
-                // Verify userId parameter
-                getVerifiedUser(userId);
-
-                // Verify current user permission
-                if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                            "User does not have permission to update this image.");
-                }
+                validateUserImageParams(userId, currentUser);
 
                 // Verify image id
                 Optional<UserImage> optionalUserImage = userImageRepository.findById(imageId);
@@ -366,11 +341,7 @@ public class ImageResource {
                 userImageRepository.saveAndFlush(newPrimaryUserImage);
                 break;
             case BUSINESS_IMAGE_STRING:
-                // Verify businessId parameter
-                getVerifiedBusiness(businessId);
-
-                // Verify access rights of the user to the business
-                Authorization.verifyBusinessAdmin(currentUser, businessId);
+                validateBusinessImageParams(businessId, currentUser);
 
                 // Verify image id
                 Optional<BusinessImage> optionalBusinessImage = businessImageRepository.findById(imageId);
@@ -398,14 +369,7 @@ public class ImageResource {
                 businessImageRepository.saveAndFlush(newPrimaryBusinessImage);
                 break;
             case PRODUCT_IMAGE_STRING:
-                // Verify businessId parameter
-                Business business = getVerifiedBusiness(businessId);
-
-                // Verify access rights of the user to the business
-                Authorization.verifyBusinessAdmin(currentUser, businessId);
-
-                // Verify Product id
-                verifyProductId(productId, business);
+                validateProductImageParams(businessId, currentUser, productId);
 
                 // Verify image id
                 Optional<ProductImage> optionalProductImage = productImageRepository.findById(imageId);
@@ -565,14 +529,7 @@ public class ImageResource {
      * @param imageId the id of the image for a product.
      */
     private void handleProductImageDeletion(Integer businessId, User user, String productId, Integer imageId) {
-        // Verify business parameter
-        Business business = getVerifiedBusiness(businessId);
-
-        // Verify access rights of the user to the business
-        Authorization.verifyBusinessAdmin(user, businessId);
-
-        // Verify Product id
-        verifyProductId(productId, business);
+        validateProductImageParams(businessId, user, productId);
 
         // Verify image id
         ProductImage productImage = verifyProductImageId(imageId, businessId, productId, user);
@@ -606,14 +563,7 @@ public class ImageResource {
      * @param imageId the id of the image for a user.
      */
     private void handleUserImageDeletion(User currentUser, Integer userId, Integer imageId) {
-        // Verify userId parameter
-        getVerifiedUser(userId);
-
-        // 403 - Forbidden
-        if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to delete image.");
-        }
-        // If user is able to delete image then continue
+        validateUserImageParams(userId, currentUser);
 
         // Verify image id
         UserImage userImage = verifyUserImageId(imageId, userId, currentUser);
@@ -635,11 +585,7 @@ public class ImageResource {
     }
 
     private void handleBusinessImageDeletion(Integer businessId, User user, Integer imageId) {
-        // Verify business parameter
-        getVerifiedBusiness(businessId);
-
-        // Verify access rights of the user to the business
-        Authorization.verifyBusinessAdmin(user, businessId);
+        validateBusinessImageParams(businessId, user);
 
         // Verify image id
         BusinessImage businessImage = verifyBusinessImageId(imageId, businessId, user);
@@ -722,6 +668,34 @@ public class ImageResource {
                 userImageRepository.save(userImages.get(0));
             }
         }
+    }
+
+    void validateUserImageParams(Integer userId, User currentUser) {
+        // Verify userId parameter
+        getVerifiedUser(userId);
+
+        if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to modify this user's images.");
+        }
+    }
+
+    void validateBusinessImageParams(Integer businessId, User currentUser) {
+        // Verify businessId parameter
+        getVerifiedBusiness(businessId);
+
+        // Verify access rights of the user to the business
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
+    }
+
+    void validateProductImageParams(Integer businessId, User currentUser, String productId) {
+        // Verify businessId parameter
+        Business business = getVerifiedBusiness(businessId);
+
+        // Verify access rights of the user to the business
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
+
+        // Verify Product id
+        verifyProductId(productId, business);
     }
 
 }
