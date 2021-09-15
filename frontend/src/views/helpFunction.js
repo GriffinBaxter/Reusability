@@ -77,6 +77,30 @@ export function isValidDateOfBirth(selectedDate) {
 }
 
 /**
+ * This method converts the components of the address received from the Komoot Photon API
+ * to a single line string.
+ *
+ * @param properties the components of address received from the Komoot Photon API.
+ * @return address a string representation of the address returned by the Komoot Photon API
+ */
+export function getAddressConcatenation(properties) {
+    let address = "";
+
+    let {country, city, postcode, state, street, housenumber, name, district} = properties;
+
+    if (name) { address += name + ", "; }
+    if (housenumber) { address += housenumber; }
+    if (street) { address += " " + street + ", "; }
+    if (district) { address += " " + district + ", "; }
+    if (city) { address += city + ", "; }
+    if (postcode) { address += postcode + ", "; }
+    if (state) { address += state + ", "; }
+    if (country) { address += country; }
+
+    return address;
+}
+
+/**
  * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
  * the expected format.
  *

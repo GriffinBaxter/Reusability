@@ -163,6 +163,7 @@ import Footer from "../components/main/Footer";
 import AddressAPI from "../addressInstance";
 import Cookies from 'js-cookie';
 import CurrencyAPI from "../currencyInstance";
+import {getAddressConcatenation} from "../views/helpFunction";
 
 export default {
   name: "BusinessRegistration",
@@ -569,7 +570,7 @@ export default {
       while ((numInList < maxL) && (index < fLength)) {
         let { properties } = features[index];
         if (properties) {
-          let address = this.getAddressConcatenation(properties);
+          let address = getAddressConcatenation(properties);
           if (!autoCompleteOptions.includes(address.trim())) {
             // Add to both the string to display and the variable for later use.
             autoCompleteOptions.push(address.trim());
@@ -580,28 +581,6 @@ export default {
         index++;
       }
       return autoCompleteOptions;
-    },
-
-    /**
-     * This method converts the components of the address received from the Komoot Photon API
-     * to a single line string.
-     * @return address a string representation of the address returned by the Komoot Photon API
-     */
-    getAddressConcatenation(properties) {
-      let address = "";
-
-      let {country, city, postcode, state, street, housenumber, name, district} = properties;
-
-      if (name) { address += name + ", "; }
-      if (housenumber) { address += housenumber; }
-      if (street) { address += " " + street + ", "; }
-      if (district) { address += " " + district + ", "; }
-      if (city) { address += city + ", "; }
-      if (postcode) { address += postcode + ", "; }
-      if (state) { address += state + ", "; }
-      if (country) { address += country; }
-
-      return address;
     },
 
     /**
