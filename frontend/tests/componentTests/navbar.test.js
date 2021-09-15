@@ -46,6 +46,7 @@ describe('Tests for admin rights methods.', () => {
                 "businessesAdministered": [
                     null
                 ],
+                "images": [],
                 "dateOfBirth": "2000-02-02",
                 "phoneNumber": "0271316",
                 "homeAddress": {
@@ -142,6 +143,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
                 "businessesAdministered": [
                     null
                 ],
+                "images": [],
                 "dateOfBirth": "2000-02-02",
                 "phoneNumber": "0271316",
                 "homeAddress": {
@@ -251,6 +253,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
             "businessesAdministered": [
                 null
             ],
+            "images": [],
             "dateOfBirth": "2000-02-02",
             "phoneNumber": "0271316",
             "homeAddress": {
@@ -304,6 +307,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
                     "created": "2021-09-08T21:22:53.130650"
                 }
             ],
+            "images": [],
             "dateOfBirth": "2000-02-02",
             "phoneNumber": "0271316",
             "homeAddress": {
