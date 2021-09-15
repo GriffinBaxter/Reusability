@@ -228,6 +228,7 @@ export default {
      * For the date range to be applied:
      *       1. start date must be in the past or today
      *       2. end date must be after start date
+     * @param event The click event passed in from the Vue template button click.
      */
     applyDate(event) {
       event.preventDefault();
@@ -251,6 +252,7 @@ export default {
 
     /**
      * Sets the dates based on the current date (selectable years, months and days).
+     * @param date A date object containing the current date.
      */
     setDates(date) {
       // Sets validYears to a list of years from 2021 to the current year
