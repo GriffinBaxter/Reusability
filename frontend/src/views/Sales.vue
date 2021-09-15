@@ -17,10 +17,17 @@
         </ul>
         <div class="tab-content" id="pills-tabContent">
           <div class="tab-pane fade show active" id="report-tab" role="tabpanel" aria-labelledby="pills-report-tab">
-            <SalesReport/>
+            <SalesReport
+                :business-name="businessName"/>
           </div>
           <div class="tab-pane fade" id="history-tab" role="tabpanel" aria-labelledby="pills-history-tab">
-            <SaleHistory/>
+            <SaleHistory
+                :business-id="businessId"
+                :business-country="businessCountry"
+                :business-name="businessName"
+                :currency-symbol="currencySymbol"
+                :currency-code="currencyCode"
+                ref="saleHistory"/>
           </div>
         </div>
 
@@ -33,10 +40,13 @@
 
 <script>
 import Navbar from "../components/Navbar";
-import SalesReport from "../views/SalesReport";
-import SaleHistory from "../views/SaleHistory";
+import SaleHistory from "../components/saleInsights/SaleHistory";
 import {Tab} from 'bootstrap';
-import Footer from "@/components/main/Footer";
+import Footer from "../components/main/Footer";
+import SalesReport from "../components/saleInsights/SalesReport";
+import Cookies from "js-cookie";
+import {checkAccessPermission} from "@/views/helpFunction";
+import Api from "../Api";
 
 export default {
   name: "Sales",
@@ -45,6 +55,15 @@ export default {
     Navbar,
     SalesReport,
     SaleHistory
+  },
+  data() {
+    return {
+      businessId: 0,
+      businessName: "",
+      businessCountry: "",
+      currencySymbol: "",
+      currencyCode: "",
+    }
   },
   methods: {
     /**
@@ -61,10 +80,25 @@ export default {
       const triggerEl = document.querySelector(query)
       Tab.getInstance(triggerEl).show()
     },
+    /**
+     * Calls a GET request to the backend to retrieve the information of the current business.
+     */
+    async retrieveBusinessInfo() {
+      await Api.getBusiness(this.businessId).then(response => {
+        this.businessName = response.data.name;
+        this.businessCountry = response.data.address.country;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
+      }).catch((error) => {
+        this.manageError(error);
+      })
+    },
   },
-  mounted() {
-
-
+  /**
+   * Runs after the component is mounted
+   * @return {Promise<void>}
+   */
+  async mounted() {
     // Generate Bootstrap tabs upon mount
     const triggerTabList = [].slice.call(document.querySelectorAll('#report-tab-button, #history-tab-button'))
     triggerTabList.forEach(function (triggerEl) {
@@ -75,6 +109,18 @@ export default {
       })
     })
 
+
+    const actAs = Cookies.get('actAs');
+    if (checkAccessPermission(this.$route.params.businessId, actAs)) {
+      await this.$router.push({path: `/businessProfile/${actAs}/sales`});
+    } else {
+      const currentID = Cookies.get('userID');
+      if (currentID) {
+        this.businessId = parseInt(this.$route.params.businessId);
+        await this.retrieveBusinessInfo();
+        await this.$refs.saleHistory.retrieveSoldListings();
+      }
+    }
   }
 }
 </script>
@@ -90,6 +136,14 @@ export default {
 #history-tab, #report-tab {
   font-family: 'Roboto', sans-serif;
   color: black;
+}
+
+.nav-link.active {
+  background-color: #1EBA8C;
+}
+
+.nav-link {
+  color: darkgreen;
 }
 
 </style>
