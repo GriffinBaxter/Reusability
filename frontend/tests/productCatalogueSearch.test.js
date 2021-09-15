@@ -183,7 +183,7 @@ describe("Testing the ProductSearchBar methods", () => {
             });
         });
 
-        test('Testing that pressing enter populates the URL correctly', async() => {
+        test('Testing that pressing enter populates prompts the search', async() => {
             const inputQuery = 'Product Catalogue Search Enter Test';
             const barcode = 123457891234;
             productCatalogueSearchWrapper.vm.$refs.searchInput.value = inputQuery;
@@ -201,7 +201,7 @@ describe("Testing the ProductSearchBar methods", () => {
             expect(productCatalogueSearchWrapper.emitted().search[0]).toEqual([["name"], inputQuery, barcode]);
         });
 
-        test('Testing that clicking the search button populates the URL correctly', async () => {
+        test('Testing that clicking the search button prompts the search', async () => {
             const inputQuery = 'Product Catalogue Search Click Test';
             const barcode = 123457891234;
 
@@ -272,11 +272,6 @@ describe("Testing the ProductSearchBar methods", () => {
 
             expect(scannerModalBtn.exists()).toBeTruthy();
             expect(modal.vm.hasBeenShown).toBe(false);
-
-        });
-
-        test('Testing that the barcode input box is filled with the barcode from the barcode scanner', () => {
-            // TODO
 
         });
 
