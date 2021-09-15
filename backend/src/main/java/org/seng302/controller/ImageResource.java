@@ -50,6 +50,9 @@ public class ImageResource {
     private UserImageRepository userImageRepository;
 
     @Autowired
+    private BusinessImageRepository businessImageRepository;
+
+    @Autowired
     @Value("product-images")
     private FileStorageService fileStorageService;
 
@@ -185,6 +188,7 @@ public class ImageResource {
         ImageType imageType;
         String imageOwnerInfo;
         List<UserImage> allUserImages = new ArrayList<>();
+        List<BusinessImage> allBusinessImages = new ArrayList<>();
         List<ProductImage> allProductImages = new ArrayList<>();
         switch (uncheckedImageType) {
             case USER_IMAGE_STRING:
@@ -199,9 +203,15 @@ public class ImageResource {
                 allUserImages = userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true);
                 break;
             case BUSINESS_IMAGE_STRING:
+                // Verify businessId parameter
+                getVerifiedBusiness(businessId);
+
+                // Verify access rights of the user to the business
+                Authorization.verifyBusinessAdmin(currentUser, businessId);
+
                 imageType = ImageType.BUSINESS_IMAGE;
                 imageOwnerInfo = String.format("for business (id: %s)", businessId);
-                //TODO: allBusinessImages
+                allBusinessImages = businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true);
                 break;
             case PRODUCT_IMAGE_STRING:
                 // Verify businessId parameter
@@ -236,8 +246,12 @@ public class ImageResource {
                     new UserImage(userId, imageFilePath, thumbnailFilePath, isFirstImage));
             storedImageId = storedUserImage.getId();
             storedImageFileName = storedUserImage.getFilename();
-//        } else if (imageType.equals(ImageType.BUSINESS_IMAGE)) {
-            //TODO:
+        } else if (imageType.equals(ImageType.BUSINESS_IMAGE)) {
+            boolean isFirstImage = allBusinessImages.isEmpty();
+            BusinessImage storedBusinessImage = businessImageRepository.saveAndFlush(
+                    new BusinessImage(businessId, imageFilePath, thumbnailFilePath, isFirstImage));
+            storedImageId = storedBusinessImage.getId();
+            storedImageFileName = storedBusinessImage.getFilename();
         } else {
             boolean isFirstImage = allProductImages.isEmpty();
             ProductImage storedProductImage = productImageRepository.saveAndFlush(
