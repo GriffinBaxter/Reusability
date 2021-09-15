@@ -343,7 +343,7 @@ export default {
       const toDate = dates.toDate;
 
       await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
-        this.salesReportData = [...response.data]
+        this.salesReportData = response.data;
       }).catch((error) => {
         this.manageError(error);
       })
@@ -367,7 +367,6 @@ export default {
     setDates(date) {
       // Sets validYears to a list of years from 2021 to the current year
       this.currentYear = date.getFullYear();
-      console.log(this.currentYear);
       this.selectedYear = this.currentYear;
       this.validYears = [];
       this.validYears.push(2021);

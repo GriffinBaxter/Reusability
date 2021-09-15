@@ -4,7 +4,6 @@
  */
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
 import {shallowMount} from "@vue/test-utils";
-import Cookies from "js-cookie";
 import SalesReport from "../../src/components/saleInsights/SalesReport";
 import Api from "../../src/Api";
 
@@ -40,7 +39,13 @@ describe('Tests methods in the SaleReport component.', () => {
                     currencySymbol: "$"
                 }
             });
-        Cookies.get = jest.fn().mockImplementation(() => 1);
+
+        const response = {
+            status: 200,
+            data: []
+        }
+
+        Api.getSalesReport.mockImplementation(() => Promise.resolve(response));
     });
 
     describe("Test the applyDate method", () => {
@@ -287,7 +292,6 @@ describe('Tests methods in the SaleReport component.', () => {
             await wrapper.vm.retrieveSalesReport();
             await wrapper.vm.$nextTick();
 
-            console.log(response.data.length)
             expect(wrapper.vm.$data.salesReportData.length).toEqual(response.data.length)
             expect(wrapper.vm.$data.salesReportData).toEqual(response.data);
 
