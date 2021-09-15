@@ -49,7 +49,6 @@
 
 <script>
 import Api from "../../Api";
-import CurrencyAPI from "../../currencyInstance";
 import {formatDate} from "../../dateUtils";
 import PageButtons from "../PageButtons";
 
@@ -73,6 +72,16 @@ export default {
       type: Number,
       default: 0,
       required: true
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: true
+    },
+    currencyCode: {
+      type: String,
+      default: "",
+      required: true
     }
   },
   data() {
@@ -87,9 +96,6 @@ export default {
         {title: "Bookmarks"},
         {title: "Buyer"}
       ],
-      // Currency related variables
-      currencyCode: "",
-      currencySymbol: "",
 
       // Table
       maxSoldListings: 10,

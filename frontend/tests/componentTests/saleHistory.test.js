@@ -37,7 +37,9 @@ describe('Tests methods in the SaleHistory component.', () => {
                 propsData: {
                     businessName: "Lumbridge General Store",
                     businessCountry: "New Zealand",
-                    businessId: 1
+                    businessId: 1,
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             });
         Cookies.get = jest.fn().mockImplementation(() => 1);
@@ -47,30 +49,30 @@ describe('Tests methods in the SaleHistory component.', () => {
 
         test("Test when currency symbol and code are both empty", () => {
             const price = 2.99;
-            wrapper.vm.$data.currencySymbol = "";
-            wrapper.vm.$data.currencyCode = "";
+            wrapper.vm.$props.currencySymbol = "";
+            wrapper.vm.$props.currencyCode = "";
             expect(wrapper.vm.formatPrice(price)).toEqual(price);
         })
 
         test("Test when currency symbol is not empty and code is empty", () => {
             const price = 2.99;
-            wrapper.vm.$data.currencySymbol = "$";
-            wrapper.vm.$data.currencyCode = "";
+            wrapper.vm.$props.currencySymbol = "$";
+            wrapper.vm.$props.currencyCode = "";
             expect(wrapper.vm.formatPrice(price)).toEqual("$" + price);
         })
 
         test("Test when currency symbol is empty and code is not empty", () => {
             const price = 2.99;
-            wrapper.vm.$data.currencySymbol = "";
-            wrapper.vm.$data.currencyCode = "NZD";
+            wrapper.vm.$props.currencySymbol = "";
+            wrapper.vm.$props.currencyCode = "NZD";
             expect(wrapper.vm.formatPrice(price)).toEqual(price + " NZD");
         })
 
         test("Test when currency symbol is not empty and code is not empty", () => {
             const price = 2.99;
             const formattedPrice = "$" + price + " NZD";
-            wrapper.vm.$data.currencySymbol = "$";
-            wrapper.vm.$data.currencyCode = "NZD";
+            wrapper.vm.$props.currencySymbol = "$";
+            wrapper.vm.$props.currencyCode = "NZD";
             expect(wrapper.vm.formatPrice(price)).toEqual(formattedPrice);
         })
 
@@ -185,8 +187,8 @@ describe('Tests methods in the SaleHistory component.', () => {
 
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.vm.$data.currencySymbol).toEqual(response.data.currencySymbol);
-            expect(wrapper.vm.$data.currencyCode).toEqual(response.data.currencyCode);
+            expect(wrapper.vm.$props.currencySymbol).toEqual(response.data.currencySymbol);
+            expect(wrapper.vm.$props.currencyCode).toEqual(response.data.currencyCode);
             expect(wrapper.vm.$props.businessName).toEqual(response.data.name);
             expect(wrapper.vm.$props.businessCountry).toEqual(response.data.address.country);
         })
@@ -207,11 +209,8 @@ describe('Tests methods in the SaleHistory component.', () => {
             };
             CurrencyAPI.currencyQuery.mockImplementation(() => Promise.resolve(response));
 
-            await wrapper.vm.retrieveCurrencyInfo();
-            await wrapper.vm.$nextTick();
-
-            expect(wrapper.vm.$data.currencyCode).toEqual(response.data[0].currencies[0].code);
-            expect(wrapper.vm.$data.currencySymbol).toEqual(response.data[0].currencies[0].symbol);
+            expect(wrapper.vm.$props.currencyCode).toEqual(response.data[0].currencies[0].code);
+            expect(wrapper.vm.$props.currencySymbol).toEqual(response.data[0].currencies[0].symbol);
         })
 
     })
@@ -869,8 +868,8 @@ describe('Tests methods in the SaleHistory component.', () => {
             Api.getSoldListings.mockImplementation(() => Promise.resolve(response));
 
             // "mock" the currency request
-            wrapper.vm.$data.currencyCode = "USD";
-            wrapper.vm.$data.currencySymbol = "$";
+            wrapper.vm.$props.currencyCode = "USD";
+            wrapper.vm.$props.currencySymbol = "$";
 
             await wrapper.vm.retrieveSoldListings();
             await wrapper.vm.$nextTick();

@@ -25,6 +25,8 @@
                 :business-id="businessId"
                 :business-country="businessCountry"
                 :business-name="businessName"
+                :currency-symbol="currencySymbol"
+                :currency-code="currencyCode"
                 ref="saleHistory"/>
           </div>
         </div>
@@ -58,7 +60,9 @@ export default {
     return {
       businessId: 0,
       businessName: "",
-      businessCountry: ""
+      businessCountry: "",
+      currencySymbol: "",
+      currencyCode: "",
     }
   },
   methods: {
@@ -83,6 +87,8 @@ export default {
       await Api.getBusiness(this.businessId).then(response => {
         this.businessName = response.data.name;
         this.businessCountry = response.data.address.country;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
       }).catch((error) => {
         this.manageError(error);
       })
@@ -112,7 +118,6 @@ export default {
       if (currentID) {
         this.businessId = parseInt(this.$route.params.businessId);
         await this.retrieveBusinessInfo();
-        await this.$refs.saleHistory.retrieveCurrencyInfo();
         await this.$refs.saleHistory.retrieveSoldListings();
       }
     }
