@@ -56,14 +56,14 @@ describe('Tests methods in the SaleHistory component.', () => {
             const price = 2.99;
             wrapper.vm.$data.currencySymbol = "$";
             wrapper.vm.$data.currencyCode = "";
-            expect(wrapper.vm.formatPrice(price)).toEqual(price);
+            expect(wrapper.vm.formatPrice(price)).toEqual("$" + price);
         })
 
         test("Test when currency symbol is empty and code is not empty", () => {
             const price = 2.99;
             wrapper.vm.$data.currencySymbol = "";
             wrapper.vm.$data.currencyCode = "NZD";
-            expect(wrapper.vm.formatPrice(price)).toEqual(price);
+            expect(wrapper.vm.formatPrice(price)).toEqual(price + " NZD");
         })
 
         test("Test when currency symbol is not empty and code is not empty", () => {
@@ -176,13 +176,17 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "postcode": "90210"
                     },
                     "businessType": "Accommodation and Food Services",
-                    "created": "2020-07-14T14:52:00Z"
+                    "created": "2020-07-14T14:52:00Z",
+                    "currencySymbol": "$",
+                    "currencyCode": "NZD"
                 }
             };
             Api.getBusiness.mockImplementation(() => Promise.resolve(response));
 
             await wrapper.vm.$nextTick();
 
+            expect(wrapper.vm.$data.currencySymbol).toEqual(response.data.currencySymbol);
+            expect(wrapper.vm.$data.currencyCode).toEqual(response.data.currencyCode);
             expect(wrapper.vm.$props.businessName).toEqual(response.data.name);
             expect(wrapper.vm.$props.businessCountry).toEqual(response.data.address.country);
         })

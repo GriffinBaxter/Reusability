@@ -148,18 +148,22 @@ class MarketplaceConversationMessageRepositoryIntegrationTests {
         entityManager.flush();
         content = "Here is a message";
         message = new Message(conversation, user1, content);
+        message.setCreated(LocalDateTime.of(LocalDate.of(2019, Month.JANUARY, 1), LocalTime.of(0, 0)));
         entityManager.persist(message);
         entityManager.flush();
         content2 = "Here is another new message";
         message2 = new Message(conversation, user2, content2);
+        message2.setCreated(LocalDateTime.of(LocalDate.of(2019, Month.JANUARY, 1), LocalTime.of(1, 0)));
         entityManager.persist(message2);
         entityManager.flush();
         content3 = "Here is a third new message";
         message3 = new Message(conversation, user1, content3);
+        message3.setCreated(LocalDateTime.of(LocalDate.of(2019, Month.JANUARY, 1), LocalTime.of(2, 0)));
         entityManager.persist(message3);
         entityManager.flush();
         content4 = "Here is a fourth new message";
         message4 = new Message(conversation, user2, content4);
+        message4.setCreated(LocalDateTime.of(LocalDate.of(2019, Month.JANUARY, 1), LocalTime.of(3, 0)));
         entityManager.persist(message4);
         entityManager.flush();
     }
