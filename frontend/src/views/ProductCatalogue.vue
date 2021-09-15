@@ -556,8 +556,6 @@ export default {
 
         let newTableData = [];
 
-        console.log(newTableData)
-
         // No results
         if (this.productList.length <= 0) {
           this.currentPage = 1;
