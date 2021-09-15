@@ -314,28 +314,33 @@ export default {
     },
 
     /**
+     * Generates the From and To dates for the retrieve sales report API call based on the selected options
+     * @return {fromDate, toDate} An object containing a fromDate and a toDate to complete a range for the API call
+     */
+    generateDates() {
+      let dates = null;
+      if (this.period === 'Custom') {
+        dates = {
+          fromDate: formatISO(parseISO(this.startDate), { representation: 'date' }) + "T00:00",
+          toDate: formatISO(parseISO(this.endDate), { representation: 'date' }) + "T23:59:59"
+        }
+      } else if (this.period === 'Year') {
+        dates = this.generateDatesFromYear(this.selectedYear);
+      } else if (this.period === 'Month') {
+        dates = this.generateDatesFromMonth(this.selectedMonth);
+      } else if (this.period === 'Day') {
+        dates = this.generateDatesFromDay(this.selectedDay);
+      }
+      return dates;
+    },
+
+    /**
      * Sends an API request to the backend to retrieve the sales report for the currently selected options
      */
     async retrieveSalesReport() {
-      let fromDate = "";
-      let toDate = "";
-      let returnedDates = null;
-      if (this.period === 'Custom') {
-        fromDate = formatISO(parseISO(this.startDate), { representation: 'date' }) + "T00:00";
-        toDate = formatISO(parseISO(this.endDate), { representation: 'date' }) + "T23:59:59";
-      } else if (this.period === 'Year') {
-        returnedDates = this.generateDatesFromYear(this.selectedYear);
-        fromDate = returnedDates.fromDate;
-        toDate = returnedDates.toDate;
-      } else if (this.period === 'Month') {
-        returnedDates = this.generateDatesFromMonth(this.selectedMonth);
-        fromDate = returnedDates.fromDate;
-        toDate = returnedDates.toDate;
-      } else if (this.period === 'Day') {
-        returnedDates = this.generateDatesFromDay(this.selectedDay);
-        fromDate = returnedDates.fromDate;
-        toDate = returnedDates.toDate;
-      }
+      const dates = this.generateDates();
+      const fromDate = dates.fromDate;
+      const toDate = dates.toDate;
 
       await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
         this.salesReportData = [...response.data]
