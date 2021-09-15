@@ -20,19 +20,19 @@
                       data-bs-toggle="dropdown" aria-expanded="false" id="period-button">{{ period }}
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                <li id="year-option" class="btn green-button-transparent col-12 order-by-options-btn"
                     @click="period = 'Year'">
                   Year
                 </li>
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                <li id="month-option" class="btn green-button-transparent col-12 order-by-options-btn"
                     @click="period = 'Month'">
                   Month
                 </li>
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                <li id="day-option" class="btn green-button-transparent col-12 order-by-options-btn"
                     @click="period = 'Day'">
                   Day
                 </li>
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                <li id="custom-option" class="btn green-button-transparent col-12 order-by-options-btn"
                     @click="period = 'Custom'">
                   Custom
                 </li>
@@ -401,6 +401,7 @@ export default {
     setDates(date) {
       // Sets validYears to a list of years from 2021 to the current year
       this.currentYear = date.getFullYear();
+      console.log(this.currentYear);
       this.selectedYear = this.currentYear;
       this.validYears = [];
       this.validYears.push(2021);
