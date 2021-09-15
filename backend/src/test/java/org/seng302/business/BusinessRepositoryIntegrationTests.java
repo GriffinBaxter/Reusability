@@ -87,7 +87,9 @@ class BusinessRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         entityManager.persist(business);
@@ -130,7 +132,9 @@ class BusinessRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         entityManager.persist(business);
@@ -168,7 +172,9 @@ class BusinessRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         entityManager.persist(business);
@@ -205,7 +211,9 @@ class BusinessRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         entityManager.persist(business);
@@ -243,7 +251,9 @@ class BusinessRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         entityManager.persist(business);
@@ -295,7 +305,9 @@ class BusinessRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         entityManager.persist(business);

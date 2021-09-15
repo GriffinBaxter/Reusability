@@ -65,7 +65,7 @@
           </div>
 
           <button id="act-as-wrapper" @click="toggleInteractAs">
-            <img src="../../public/profile_icon_default.png"
+            <img :src="getPrimaryImageSrc(currentUser)"
                  class="rounded-circle img-fluid" id="act-as-image" alt="Acting as image"/>
           </button>
 
@@ -152,11 +152,11 @@
                 </router-link>
               </li>
               <li class="a-nav-item">
-                <router-link :to="'/businessProfile/' + businessAccountId + '/saleHistory'" class="router-nav-link" active-class="active-link">
+                <router-link :to="'/businessProfile/' + businessAccountId + '/sales'" class="router-nav-link" active-class="active-link">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-line-fill side-nav-link-icon" viewBox="0 0 16 16">
                     <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2z"/>
                   </svg>
-                  Sale History
+                  Sales
                 </router-link>
               </li>
             </ul>
@@ -336,7 +336,7 @@ export default {
      * Refreshes dropdown list for interact as
      */
     refreshDropdown() {
-      if (this.currentUser.nickname == null) {
+      if (this.currentUser.nickname == null || this.currentUser.nickname === "") {
         this.interactAs = [{
           id: this.currentUser.id,
           name: this.omitName(this.currentUser.firstName, this.maxNameLength)
@@ -600,7 +600,17 @@ export default {
       setTimeout(() => {
         this.toggleMessages();
       }, 5);
-    }
+    },
+    getPrimaryImageSrc(currentUser) {
+      if (currentUser != null && currentUser.images.length > 0) {
+        for (let image of currentUser.images) {
+          if (image.isPrimary) {
+            return Api.getServerURL() + "/" + image.thumbnailFilename;
+          }
+        }
+      }
+      return require('../../public/profile_icon_default.png');
+    },
   },
   async beforeMount() {
     if (this.loginRequired) {

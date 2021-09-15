@@ -1,12 +1,12 @@
 /**
  * Summary. This file contains the definition for the UserResource.
- *
+ * <p>
  * Description. This file contains the defintion for the UserResource.
  *
- * @link   team-400/src/main/java/org/seng302/user/UserResource
- * @file   This file contains the definition for UserResource.
+ * @link team-400/src/main/java/org/seng302/user/UserResource
+ * @file This file contains the definition for UserResource.
  * @author team-400.
- * @since  5.5.2021
+ * @since 5.5.2021
  */
 package org.seng302.controller;
 
@@ -116,8 +116,8 @@ public class UserResource {
             user.get().setSessionUUID(sessionUUID);
             userRepository.save(user.get());
 
-                ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
-                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Login - User Id: {}", user.get().getId());
             return new UserIdPayload(user.get().getId());
@@ -288,7 +288,8 @@ public class UserResource {
                     selectUser.getHomeAddress().toAddressPayload(),
                     selectUser.getCreated(),
                     role,
-                    administrators
+                    administrators,
+                    selectUser.getUserImages()
             );
         } else {
             // Otherwise, return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
@@ -303,7 +304,8 @@ public class UserResource {
                     selectUser.getHomeAddress().toAddressPayloadSecure(),
                     selectUser.getCreated(),
                     null,
-                    administrators
+                    administrators,
+                    selectUser.getUserImages()
             );
         }
 
@@ -421,7 +423,7 @@ public class UserResource {
         List<UserPayloadSecure> userPayloadList;
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
-        for (UserPayloadSecure userPayloadSecure: userPayloadList) {
+        for (UserPayloadSecure userPayloadSecure : userPayloadList) {
             Role role = null;
             if (verifyRole(user, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
                 role = userPayloadSecure.getRole();
@@ -438,7 +440,7 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void setGAA(@PathVariable int id, @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken){
+    public void setGAA(@PathVariable int id, @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken) {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
@@ -451,7 +453,7 @@ public class UserResource {
             );
         } else {
             User selectedUser = optionalSelectedUser.get();
-            if (selectedUser.getRole() == USER && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN){
+            if (selectedUser.getRole() == USER && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN) {
                 selectedUser.setRole(GLOBALAPPLICATIONADMIN);
                 userRepository.saveAndFlush(selectedUser);
                 logger.info("User with Id: {} is now GAA.", selectedUser.getId());
@@ -477,7 +479,7 @@ public class UserResource {
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
-        if (optionalSelectedUser.isEmpty()){
+        if (optionalSelectedUser.isEmpty()) {
             logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
@@ -508,7 +510,7 @@ public class UserResource {
      */
     private User updateUserInfo(User currentUser, User selectedUser, UserProfileModifyPayload userProfileModifyPayload) {
         String newEmailAddress = userProfileModifyPayload.getEmail();
-        if (userRepository.findByEmail(newEmailAddress).isPresent() && !selectedUser.getEmail().equals(newEmailAddress)){
+        if (userRepository.findByEmail(newEmailAddress).isPresent() && !selectedUser.getEmail().equals(newEmailAddress)) {
             logger.error("Registration Failure - {}", "Email address used");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -587,7 +589,7 @@ public class UserResource {
     @ResponseStatus(value = HttpStatus.OK, reason = "Account updated successfully")
     public void modifiedUserProfile(@PathVariable int id,
                                     @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                    @RequestBody(required = false) UserProfileModifyPayload userProfileModifyPayload){
+                                    @RequestBody(required = false) UserProfileModifyPayload userProfileModifyPayload) {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
@@ -603,7 +605,7 @@ public class UserResource {
         User selectedUser = optionalSelectedUser.get();
         logger.debug("Selected user (ID: {}) retrieve successfully.", selectedUser.getId());
 
-        if (selectedUser.getId() != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)){
+        if (selectedUser.getId() != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
             logger.error("User does not have permission to perform action.");
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,

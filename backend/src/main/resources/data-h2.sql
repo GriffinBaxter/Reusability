@@ -49,9 +49,9 @@ INSERT INTO `address` (street_number, street_name, city, region, country, postco
 
 
 /* Businesses (3) */
-INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id) VALUES ('RETAIL_TRADE', DATE'2021-02-12', 'Description', 'Brink Food', 1, 21);
-INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id) VALUES ('CHARITABLE_ORGANISATION', DATE'2021-02-14', 'Description', 'Sunburst Waste', 10, 22);
-INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id) VALUES ('RETAIL_TRADE', DATE'2021-02-01', 'Description', 'Fringe Wasteless', 6, 23);
+INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id, currency_symbol, currency_code) VALUES ('RETAIL_TRADE', DATE'2021-02-12', 'Description', 'Brink Food', 1, 21, '$', 'NZD');
+INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id, currency_symbol, currency_code) VALUES ('CHARITABLE_ORGANISATION', DATE'2021-02-14', 'Description', 'Sunburst Waste', 10, 22, '$', 'USD');
+INSERT INTO `business` (business_type, created, description, name, primary_administrator_id, address_id, currency_symbol, currency_code) VALUES ('RETAIL_TRADE', DATE'2021-02-01', 'Description', 'Fringe Wasteless', 6, 23, '', 'CNY');
 
 /* Link Users to Businesses */
 INSERT INTO `users_businesses` (user_id, businesses_id) VALUES (1, 1);

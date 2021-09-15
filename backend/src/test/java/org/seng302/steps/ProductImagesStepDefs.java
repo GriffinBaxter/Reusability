@@ -135,7 +135,9 @@ public class ProductImagesStepDefs {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(2);
         businessId = business.getId();
@@ -297,8 +299,13 @@ public class ProductImagesStepDefs {
                 .thenReturn(productImages);
         when(productImageRepository.findProductImageByIdAndBusinessIdAndProductId(primaryProductImage.getId(), businessId, productId))
                 .thenReturn(Optional.of(primaryProductImage));
-        response = mvc.perform(delete(String.format("/businesses/%d/products/%s/images/%d", businessId, productId, primaryProductImage
-                .getId())).cookie(cookie)).andReturn().getResponse();
+
+        response = mvc.perform(delete(String.format("/images/%d", primaryProductImage.getId())).cookie(cookie)
+                .param("uncheckedImageType", "PRODUCT_IMAGE")
+                .param("userId", "")
+                .param("businessId", String.valueOf(businessId))
+                .param("productId", productId))
+                .andReturn().getResponse();
     }
 
     @Then("this business has no images")

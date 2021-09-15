@@ -14,8 +14,8 @@
         <hr>
         <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
-          <div class="btn-group col-md-3 py-1" role="group">
-            <button type="button" class="btn green-button dropdown-toggle"
+          <div class="btn-group col-md-3 py-1 align-self-center" role="group">
+            <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                     data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
 
@@ -51,11 +51,15 @@
           </div>
 
           <!-- Create New Button -->
-          <div class="col-md-3 py-1" v-if="businessAdmin">
-            <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Create New</button>
+          <div class="col-md-2 py-1 align-self-center" v-if="businessAdmin">
+            <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup" style="height: 38px">Create New</button>
           </div>
 
-          <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+          <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
+
+          <div class="col-md-3 py-1">
+            <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
+          </div>
 
         </div>
 
@@ -121,14 +125,13 @@ import Api from "../Api";
 import Cookies from "js-cookie";
 import CreateListing from "../components/listing/CreateListingModal";
 import Footer from "../components/main/Footer";
-import CurrencyAPI from "../currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
-
+import BarcodeSearchBar from "../components/BarcodeSearchBar";
 
 export default {
 name: "Listings",
-  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons},
+  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons, BarcodeSearchBar},
   data() {
     return {
       allListings: [],
@@ -157,6 +160,8 @@ name: "Listings",
       businessCountry: "", // used to retrieve the currency code and symbol
       currencyCode: "",
       currencySymbol: "",
+
+      barcode: "",
 
       creationSuccess: false
     }
@@ -189,7 +194,7 @@ name: "Listings",
      */
     updatePage(newPageNumber) {
       this.currentPage = newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
       this.getListings();
     },
 
@@ -273,7 +278,7 @@ name: "Listings",
 
       }
 
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}});
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}});
       this.getListings();
     },
 
@@ -295,8 +300,13 @@ name: "Listings",
       */
       this.orderBy = this.$route.query["orderBy"] || "closesASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.barcode = this.$route.query["barcode"] || "";
 
-      await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
+      if (this.barcode === undefined || null) {
+        this.barcode = "";
+      }
+
+      await Api.sortListings(this.businessId, this.orderBy, this.currentPage, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -339,6 +349,8 @@ name: "Listings",
     getBusinessData(data) {
       this.businessName = data.name;
       this.businessCountry = data.address.country;
+      this.currencySymbol = data.currencySymbol;
+      this.currencyCode = data.currencyCode;
       // Checks if user is acting as business
       const actAs = Cookies.get('actAs');
       this.businessAdmin = actAs === String(data.id);
@@ -356,6 +368,7 @@ name: "Listings",
     },
     populatePage(response) {
       if (response.data.length <= 0) {
+        this.listings = [];
         this.currentPage = 0;
         this.maxPage = 0;
         this.totalRows = 0;
@@ -385,26 +398,6 @@ name: "Listings",
       }
     },
 
-    /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
-     */
-    async currencyRequest() {
-      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
-        this.filterResponse(response.data);
-      }).catch((error) => console.log(error))
-    },
-
-    /**
-     * Retrieves the currency code and symbol that we want from the API response.
-     * @param response The response from the REST countries API
-     */
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
-    },
-
     async getUserRole(id) {
       await Api.getUser(id).then(response => {
         this.role = response.data.role;
@@ -421,6 +414,15 @@ name: "Listings",
       }, 5000);
       this.getListings();
     },
+
+    /**
+     * Routes to URL with event value as the barcode and triggers getListings
+     */
+    barcodeSearch(event) {
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`,
+        query: {"barcode": event, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.getListings();
+    }
   },
   async mounted() {
     /**
@@ -436,7 +438,6 @@ name: "Listings",
       this.getListings().catch(
           (e) => console.log(e)
       );
-      await this.currencyRequest();
     }
   }
 }

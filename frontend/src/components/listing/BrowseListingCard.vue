@@ -17,7 +17,8 @@
       <div class="col p-0">
         <div class="row">
           <div class="card-body" id="price-div">
-            <h3>{{ '$' + price }}</h3>
+            <h4><strong>{{ (inventoryItem.product.business.currencySymbol === null || inventoryItem.product.business.currencySymbol === "")
+                        ? "$" : inventoryItem.product.business.currencySymbol }}{{ price }} {{ inventoryItem.product.business.currencyCode }}</strong></h4>
           </div>
         </div>
         <div class="row">
@@ -148,7 +149,7 @@ export default {
           }
         }
       }
-      return require('../../../public/default-product.jpg')
+      return require('../../../public/default-image.jpg')
     },
     /**
      * Unpacks the address object into an HTML string.

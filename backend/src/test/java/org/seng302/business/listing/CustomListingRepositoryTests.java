@@ -123,7 +123,9 @@ class CustomListingRepositoryTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business = entityManager.persist(business);
         entityManager.flush();
@@ -135,7 +137,9 @@ class CustomListingRepositoryTests {
                 anotherAddress,
                 BusinessType.NON_PROFIT_ORGANISATION,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         anotherBusiness = entityManager.persist(anotherBusiness);
         entityManager.flush();

@@ -185,7 +185,7 @@ public class ListingResource {
 
         Page<Listing> pagedResult;
 
-        if (barcode != null) {
+        if (barcode != null && !barcode.equals("")) {
             pagedResult = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(id, barcode, paging);
         } else {
             pagedResult = listingRepository.findListingsByBusinessId(id, paging);

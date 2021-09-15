@@ -6,11 +6,9 @@ import {shallowMount} from '@vue/test-utils';
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
 import Api from "../src/Api";
 import SaleHistory from "../src/views/SaleHistory";
-import CurrencyAPI from "../src/currencyInstance";
 import Cookies from 'js-cookie';
 
 jest.mock("../src/Api");
-jest.mock("../src/currencyInstance");
 
 
 describe('Tests methods in the SaleHistory component.', () => {
@@ -52,14 +50,14 @@ describe('Tests methods in the SaleHistory component.', () => {
             const price = 2.99;
             wrapper.vm.$data.currencySymbol = "$";
             wrapper.vm.$data.currencyCode = "";
-            expect(wrapper.vm.formatPrice(price)).toEqual(price);
+            expect(wrapper.vm.formatPrice(price)).toEqual("$" + price);
         })
 
         test("Test when currency symbol is empty and code is not empty", () => {
             const price = 2.99;
             wrapper.vm.$data.currencySymbol = "";
             wrapper.vm.$data.currencyCode = "NZD";
-            expect(wrapper.vm.formatPrice(price)).toEqual(price);
+            expect(wrapper.vm.formatPrice(price)).toEqual(price + " NZD");
         })
 
         test("Test when currency symbol is not empty and code is not empty", () => {
@@ -172,7 +170,9 @@ describe('Tests methods in the SaleHistory component.', () => {
                         "postcode": "90210"
                     },
                     "businessType": "Accommodation and Food Services",
-                    "created": "2020-07-14T14:52:00Z"
+                    "created": "2020-07-14T14:52:00Z",
+                    "currencySymbol": "$",
+                    "currencyCode": "NZD"
                 }
             };
             Api.getBusiness.mockImplementation(() => Promise.resolve(response));
@@ -182,29 +182,8 @@ describe('Tests methods in the SaleHistory component.', () => {
 
             expect(wrapper.vm.$data.businessName).toEqual(response.data.name);
             expect(wrapper.vm.$data.businessCountry).toEqual(response.data.address.country);
-        })
-
-    })
-
-    describe("Test retrieveCurrencyInfo method", () => {
-
-        test("Test retrieveCurrencyInfo method correctly sets data when a 200 response with data is returned.", async () => {
-            const response = {
-                status: 200,
-                data: [{
-                        currencies: [{
-                            code: "NZD",
-                            symbol: "$"
-                        }]
-                }]
-            };
-            CurrencyAPI.currencyQuery.mockImplementation(() => Promise.resolve(response));
-
-            await wrapper.vm.retrieveCurrencyInfo();
-            await wrapper.vm.$nextTick();
-
-            expect(wrapper.vm.$data.currencyCode).toEqual(response.data[0].currencies[0].code);
-            expect(wrapper.vm.$data.currencySymbol).toEqual(response.data[0].currencies[0].symbol);
+            expect(wrapper.vm.$data.currencySymbol).toEqual(response.data.currencySymbol);
+            expect(wrapper.vm.$data.currencyCode).toEqual(response.data.currencyCode);
         })
 
     })
@@ -886,5 +865,3 @@ describe('Tests methods in the SaleHistory component.', () => {
 
     })
 })
-
-

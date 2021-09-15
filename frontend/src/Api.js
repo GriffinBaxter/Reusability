@@ -110,8 +110,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of inventory items for a business.
-    sortInventoryItems: (id, sortBy, page) => {
-        return instance.get(`/businesses/${id}/inventory?orderBy=${sortBy}&page=${page}`, {
+    sortInventoryItems: (id, sortBy, page, barcode) => {
+        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
     },
@@ -176,8 +176,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
-    sortListings: (businessId, sortBy, page) => {
-        return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
+    sortListings: (businessId, sortBy, page, barcode) => {
+        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true,
         })
     },
@@ -288,16 +288,17 @@ export default {
         })
     },
 
-    // Sends a delete request to the backend to delete the image of a selected product for a business.
-    deleteProductImage: (businessId, productId, imageId) => {
-        return instance.delete(`/businesses/${businessId}/products/${productId}/images/${imageId}`, {
+    // Sends a delete request to the backend to delete the image.
+    deleteImage: (query, imageId) => {
+        return instance.delete(`/images/${imageId}${query}`, {
             withCredentials: true
         })
     },
 
+
     // Uploads an image to a given product
-    uploadProductImage: (unCheckImageType, userId, businessId, productId, image) => {
-        return instance.post(`/images?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
+    uploadImage: (query, image) => {
+        return instance.post(`/images${query}`,
             image, {
             withCredentials: true,
             headers: {
@@ -307,8 +308,8 @@ export default {
     },
 
     // Sets the primary image
-    setPrimaryImage: (unCheckImageType, userId, businessId, productId, imageId) => {
-        return instance.put(`/images/${imageId}/makePrimary?uncheckedImageType=${unCheckImageType}&userId=${userId}&businessId=${businessId}&productId=${productId}`,
+    setPrimaryImage: (query, imageId) => {
+        return instance.put(`/images/${imageId}/makePrimary${query}`,
             {}, {
                 withCredentials: true
             })

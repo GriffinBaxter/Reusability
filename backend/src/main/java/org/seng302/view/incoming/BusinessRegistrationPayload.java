@@ -14,11 +14,14 @@ import org.seng302.model.enums.BusinessType;
 import org.seng302.view.outgoing.AddressPayload;
 
 public class BusinessRegistrationPayload {
+
     private Integer primaryAdministratorId;
     private String name;
     private String description;
     private AddressPayload address;
     private String businessType;
+    private String currencySymbol;
+    private String currencyCode;
 
     public Integer getPrimaryAdministratorId() {
         return primaryAdministratorId;
@@ -38,6 +41,14 @@ public class BusinessRegistrationPayload {
 
     public BusinessType getBusinessType() {
         return businessTypeTranslate(businessType);
+    }
+
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
     }
 
     /**
