@@ -39,7 +39,7 @@
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
-        <UpdateProductImagesModal ref="updateProductImagesModal" :business-id="businessId" v-model="currentProduct"/>
+        <UpdateImagesModal ref="updateImagesModal" location="Product" :id="businessId" v-model="currentProduct"/>
 
         <div v-if="showModal">
           <transition name="fade">
@@ -65,7 +65,7 @@
                     <div class="modal-footer">
                       <button class="btn btn-primary" @click="(event) => {
                       this.showModal = false;
-                      this.$refs.updateProductImagesModal.showModel(event);
+                      this.$refs.updateImagesModal.showModel(event);
                     }">Update Photos</button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
@@ -246,18 +246,18 @@ import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
 import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
-import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
 import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
+import UpdateImagesModal from "../components/UpdateImagesModal";
 
 export default {
   name: "ProductCatalogue",
   components: {
     ProductSearchBar,
     UpdateProductModal,
-    UpdateProductImagesModal,
+    UpdateImagesModal,
     Table,
     ProductModal,
     Navbar,
@@ -861,31 +861,15 @@ export default {
     },
 
     /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
+     * Requests business details from the backend to retrieve the currency of the business.
      */
     async currencyRequest() {
       this.businessId = parseInt(this.$route.params.id);
 
-      // Request business from backend. If received assign the country of the business
-      // to a variable.
-      let country = "";
       await Api.getBusiness(this.businessId).then((response) => {
-        country = response.data.address.country;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
       }).catch((error) => console.log(error))
-
-      await CurrencyAPI.currencyQuery(country).then((response) => {
-        this.filterResponse(response.data);
-      }).catch((error) => console.log(error))
-    },
-
-    /**
-     * Gets the currency code and symbol from the REST countries API response.
-     */
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
     },
 
     /**
@@ -1034,10 +1018,6 @@ export default {
 #create-product-button:focus {
   background-color: transparent;
   color: #1EBA8C;
-}
-
-.modal {
-  background: rgba(17, 78, 60, 0.4);
 }
 
 .modal-content {

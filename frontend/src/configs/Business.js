@@ -61,15 +61,23 @@ export default class Business{
             regexMessage: "Must be alphanumeric (spaces, -, ' optional)",
             regex: /^[a-zA-ZÀ-ÖØ-öø-įĴ-őŔ-žǍ-ǰǴ-ǵǸ-țȞ-ȟȤ-ȳɃɆ-ɏḀ-ẞƀ-ƓƗ-ƚƝ-ơƤ-ƥƫ-ưƲ-ƶẠ-ỿ '-]+$/
         },
+        currencySymbol: {
+            name: "Currency symbol"
+        },
+        currencyCode: {
+            name: "Currency code"
+        },
     };
 
-    constructor({primaryAdministratorId, name, description, address, businessType}) {
+    constructor({primaryAdministratorId, name, description, address, businessType, currencySymbol, currencyCode}) {
         this.data = {
             primaryAdministratorId,
             name,
             description,
             address,
-            businessType
+            businessType,
+            currencySymbol,
+            currencyCode
         }
 
     }

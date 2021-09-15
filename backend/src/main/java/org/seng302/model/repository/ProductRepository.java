@@ -1,7 +1,7 @@
 /**
  * Summary. This file contains the definition for the ProductRepository.
  *
- * Description. This file contains the defintion for the ProductRepository.
+ * Description. This file contains the definition for the ProductRepository.
  *
  * @link   team-400/src/main/java/org/seng302/business/product/ProductRepository
  * @file   This file contains the definition for ProductRepository.

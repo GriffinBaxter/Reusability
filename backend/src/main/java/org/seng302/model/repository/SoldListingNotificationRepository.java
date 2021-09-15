@@ -1,6 +1,5 @@
 package org.seng302.model.repository;
 
-import org.seng302.model.ListingNotification;
 import org.seng302.model.SoldListingNotification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;

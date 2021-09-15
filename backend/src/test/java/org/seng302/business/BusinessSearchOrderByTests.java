@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,7 +106,9 @@ class BusinessSearchOrderByTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness2 = new Business(
@@ -117,7 +118,9 @@ class BusinessSearchOrderByTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness3 = new Business(
@@ -127,7 +130,9 @@ class BusinessSearchOrderByTests {
                 anotherAddress,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness4 = new Business(
@@ -137,7 +142,9 @@ class BusinessSearchOrderByTests {
                 anotherAddress,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness5 = new Business(
@@ -147,7 +154,9 @@ class BusinessSearchOrderByTests {
                 anotherAnotherAddress,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness6 = new Business(
@@ -157,7 +166,9 @@ class BusinessSearchOrderByTests {
                 anotherAnotherAddress,
                 BusinessType.CHARITABLE_ORGANISATION,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness7 = new Business(
@@ -167,7 +178,9 @@ class BusinessSearchOrderByTests {
                 address,
                 BusinessType.CHARITABLE_ORGANISATION,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness8 = new Business(
@@ -177,7 +190,9 @@ class BusinessSearchOrderByTests {
                 address,
                 BusinessType.NON_PROFIT_ORGANISATION,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness9 = new Business(
@@ -187,7 +202,9 @@ class BusinessSearchOrderByTests {
                 anotherAddress,
                 BusinessType.NON_PROFIT_ORGANISATION,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         searchBusiness10 = new Business(
@@ -197,7 +214,9 @@ class BusinessSearchOrderByTests {
                 anotherAnotherAddress,
                 BusinessType.NON_PROFIT_ORGANISATION,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
 

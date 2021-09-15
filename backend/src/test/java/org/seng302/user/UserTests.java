@@ -2,7 +2,6 @@ package org.seng302.user;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.exceptions.*;
 import org.seng302.model.*;
@@ -66,7 +65,9 @@ class UserTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
         product = new Product(
@@ -114,7 +115,9 @@ class UserTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         User newUser = new User("NEWUSER",
                 "testlast",
@@ -1371,7 +1374,9 @@ class UserTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         business.addAdministrators(user);

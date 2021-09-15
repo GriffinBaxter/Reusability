@@ -1,7 +1,6 @@
 package org.seng302.view.outgoing;
 
 import org.seng302.model.Image;
-import org.seng302.model.ProductImage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +19,12 @@ public class ImagePayload {
         this.isPrimary = isPrimary;
     }
 
-    public static List<ImagePayload> convertToImagePayload(List<ProductImage> productImages) {
+    public static List<ImagePayload> convertToImagePayload(List<Image> images) {
         List<ImagePayload> payloads = new ArrayList<>();
-        if (productImages != null) {
-            for (Image productImage : productImages) {
+        if (images != null) {
+            for (Image image : images) {
                 ImagePayload newPayload = new ImagePayload(
-                        productImage.getId(), productImage.getFilename(), productImage.getThumbnailFilename(), productImage.getIsPrimary()
+                        image.getId(), image.getFilename(), image.getThumbnailFilename(), image.getIsPrimary()
                 );
                 payloads.add(newPayload);
             }
@@ -63,5 +62,15 @@ public class ImagePayload {
 
     public void setIsPrimary(boolean isPrimary) {
         this.isPrimary = isPrimary;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + id +
+                "\"filename\":\"" + filename + "\"," +
+                "\"thumbnailFilename\":\"" + thumbnailFilename + "\"," +
+                "\"isPrimary\":" + isPrimary + "," +
+                " }";
     }
 }

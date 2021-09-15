@@ -22,7 +22,7 @@
           </div>
         </div>
         <div v-else>
-          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image" alt="product image">
+          <img class="card-img mt-4" :src="require('../../../public/default-image.jpg')" id="product-image" alt="product image">
         </div>
       </div>
       <div class="col-md-9">

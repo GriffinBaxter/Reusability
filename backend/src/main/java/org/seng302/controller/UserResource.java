@@ -1,12 +1,12 @@
 /**
  * Summary. This file contains the definition for the UserResource.
- *
+ * <p>
  * Description. This file contains the defintion for the UserResource.
  *
- * @link   team-400/src/main/java/org/seng302/user/UserResource
- * @file   This file contains the definition for UserResource.
+ * @link team-400/src/main/java/org/seng302/user/UserResource
+ * @file This file contains the definition for UserResource.
  * @author team-400.
- * @since  5.5.2021
+ * @since 5.5.2021
  */
 package org.seng302.controller;
 
@@ -73,6 +73,16 @@ public class UserResource {
 
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
+    // the name of the cookie used for authentication.
+    private static final String COOKIE_AUTH = "JSESSIONID";
+    // the value of same site attribute.
+    private static final String SAME_SITE_STRICT = "strict";
+    // the error message to be logged when requested route does not exist.
+    private static final String LOGGER_ERROR_REQUESTED_ROUTE = "Requested route does exist, but some part of the request is not acceptable";
+    // the message to be returned when there is a 406 error.
+    private static final String HTTP_NOT_ACCEPTABLE_MESSAGE = "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
+            "for example trying to access a resource by an ID that does not exist.";
+
     public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
@@ -106,8 +116,8 @@ public class UserResource {
             user.get().setSessionUUID(sessionUUID);
             userRepository.save(user.get());
 
-                ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionUUID).maxAge(28800).sameSite("strict").httpOnly(true).build();
-                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Login - User Id: {}", user.get().getId());
             return new UserIdPayload(user.get().getId());
@@ -124,11 +134,11 @@ public class UserResource {
      * @param response HTTP Response
      */
     @PostMapping("/logout")
-    public void logoutUser(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+    public void logoutUser(@CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
                            HttpServletResponse response) {
         if (sessionToken != null) {
 
-            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionToken).maxAge(0).sameSite("strict").httpOnly(true).build(); // maxAge 0 deletes the cookie
+            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionToken).maxAge(0).sameSite(SAME_SITE_STRICT).httpOnly(true).build(); // maxAge 0 deletes the cookie
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
 
@@ -214,7 +224,7 @@ public class UserResource {
             newUser.setSessionUUID(getUniqueSessionUUID());
             User createdUser = userRepository.save(newUser);
 
-            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", createdUser.getSessionUUID()).maxAge(3600).sameSite("strict").httpOnly(true).build();
+            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, createdUser.getSessionUUID()).maxAge(3600).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Registration - User Id {}", createdUser.getId());
@@ -236,25 +246,21 @@ public class UserResource {
      */
     @GetMapping("/users/{id}")
     public UserPayloadParent retrieveUser(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken, @PathVariable Integer id
+            @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken, @PathVariable Integer id
     ) throws Exception {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectUser = userRepository.findById(id);
 
         if (optionalSelectUser.isEmpty()) {
-            logger.error("Requested route does exist, but some part of the request is not acceptable");
+            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HTTP_NOT_ACCEPTABLE_MESSAGE
             );
         }
 
         User selectUser = optionalSelectUser.get();
-
-        //base info
-        Role role = null;
 
         //stop payload loop
         List<Business> administrators;
@@ -264,14 +270,10 @@ public class UserResource {
         }
 
         logger.info("User Found - {}", selectUser);
-        if (currentUser.getId() == id || verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)){
+        if (currentUser.getId() == id || isGAAorDGAA(currentUser)){
 
-            // If the current user is a DGAA, show the role of the user
-            if (verifyRole(currentUser, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
-                role = selectUser.getRole();
-            } else if (currentUser.getId() == id){
-                role = currentUser.getRole();
-            }
+            Role role = selectUser.getRole();
+
             // If the current ID matches the retrieved user's ID or the current user is the DGAA, return a normal UserPayload with everything in it.
             return new UserPayload(
                     selectUser.getId(),
@@ -286,7 +288,8 @@ public class UserResource {
                     selectUser.getHomeAddress().toAddressPayload(),
                     selectUser.getCreated(),
                     role,
-                    administrators
+                    administrators,
+                    selectUser.getUserImages()
             );
         } else {
             // Otherwise, return a UserPayloadSecure without the phone number, date of birth and a secure address with only the city, region, and country.
@@ -300,8 +303,9 @@ public class UserResource {
                     selectUser.getEmail(),
                     selectUser.getHomeAddress().toAddressPayloadSecure(),
                     selectUser.getCreated(),
-                    role,
-                    administrators
+                    null,
+                    administrators,
+                    selectUser.getUserImages()
             );
         }
 
@@ -319,7 +323,7 @@ public class UserResource {
      */
     @GetMapping("/users/search")
     public ResponseEntity<List<UserPayloadSecure>> searchUsers(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
             @RequestParam String searchQuery,
             @RequestParam(defaultValue = "fullNameASC") String orderBy,
             @RequestParam(defaultValue = "0") String page
@@ -419,7 +423,7 @@ public class UserResource {
         List<UserPayloadSecure> userPayloadList;
         userPayloadList = UserPayloadSecure.convertToPayloadSecure(userList);
 
-        for (UserPayloadSecure userPayloadSecure: userPayloadList) {
+        for (UserPayloadSecure userPayloadSecure : userPayloadList) {
             Role role = null;
             if (verifyRole(user, Role.DEFAULTGLOBALAPPLICATIONADMIN)) {
                 role = userPayloadSecure.getRole();
@@ -436,21 +440,20 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/makeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void setGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken){
+    public void setGAA(@PathVariable int id, @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken) {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
         if (optionalSelectedUser.isEmpty()) {
-            logger.error("Requested route does exist, but some part of the request is not acceptable");
+            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HTTP_NOT_ACCEPTABLE_MESSAGE
             );
         } else {
             User selectedUser = optionalSelectedUser.get();
-            if (selectedUser.getRole() == USER && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN){
+            if (selectedUser.getRole() == USER && currentUser.getRole() == DEFAULTGLOBALAPPLICATIONADMIN) {
                 selectedUser.setRole(GLOBALAPPLICATIONADMIN);
                 userRepository.saveAndFlush(selectedUser);
                 logger.info("User with Id: {} is now GAA.", selectedUser.getId());
@@ -471,17 +474,16 @@ public class UserResource {
      */
     @PutMapping("/users/{id}/revokeAdmin")
     @ResponseStatus(value = HttpStatus.OK, reason = "Action completed successfully")
-    public void revokeGAA(@PathVariable int id, @CookieValue(value = "JSESSIONID", required = false) String sessionToken) {
+    public void revokeGAA(@PathVariable int id, @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken) {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
 
-        if (optionalSelectedUser.isEmpty()){
-            logger.error("Requested route does exist, but some part of the request is not acceptable");
+        if (optionalSelectedUser.isEmpty()) {
+            logger.error(LOGGER_ERROR_REQUESTED_ROUTE);
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                            "for example trying to access a resource by an ID that does not exist."
+                    HTTP_NOT_ACCEPTABLE_MESSAGE
             );
         } else {
             User selectedUser = optionalSelectedUser.get();
@@ -501,13 +503,14 @@ public class UserResource {
 
     /**
      * Update given user by given user payload
-     * @param user user
+     * @param currentUser current user logged in
+     * @param selectedUser user to edit
      * @param userProfileModifyPayload user payload
      * @return updated User
      */
     private User updateUserInfo(User currentUser, User selectedUser, UserProfileModifyPayload userProfileModifyPayload) {
         String newEmailAddress = userProfileModifyPayload.getEmail();
-        if (userRepository.findByEmail(newEmailAddress).isPresent() && !selectedUser.getEmail().equals(newEmailAddress)){
+        if (userRepository.findByEmail(newEmailAddress).isPresent() && !selectedUser.getEmail().equals(newEmailAddress)) {
             logger.error("Registration Failure - {}", "Email address used");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -525,18 +528,25 @@ public class UserResource {
             selectedUser.updateEmail(userProfileModifyPayload.getEmail());
             selectedUser.updateDateOfBirth(userProfileModifyPayload.getDateOfBirth());
             selectedUser.updatePhoneNumber(userProfileModifyPayload.getPhoneNumber());
-            if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())
-                    || (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser))
-                    || (currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN)
-                        && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN))) {
-                selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
-            } else if (userProfileModifyPayload.getCurrentPassword() != null
-                    && !userProfileModifyPayload.getCurrentPassword().isEmpty()){
-                logger.error("Registration Failure - {}", "current password error");
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Wrong Password"
-                );
+            if (userProfileModifyPayload.getNewPassword() != null) {
+                if (userProfileModifyPayload.getCurrentPassword() != null) {
+                    if (validPasswordOrHavePermission(selectedUser, currentUser, userProfileModifyPayload)) {
+                        selectedUser.updatePassword(userProfileModifyPayload.getNewPassword());
+                    } else if (userProfileModifyPayload.getCurrentPassword() != null
+                            && !userProfileModifyPayload.getCurrentPassword().isEmpty()) {
+                        logger.error("User Update Failure - {}", "current password error");
+                        throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Wrong Password"
+                        );
+                    }
+                } else {
+                    logger.error("User Update Failure - {}", "current password not sent");
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Current password not sent"
+                    );
+                }
             }
         } catch (IllegalUserArgumentException e) {
             logger.error("Registration Failure - {}", e.getMessage());
@@ -550,6 +560,26 @@ public class UserResource {
     }
 
     /**
+     * Checks if the current user can change the password of the selected user
+     * @param selectedUser User the password is changing for
+     * @param currentUser User changing the password
+     * @param userProfileModifyPayload Payload containing the modify user data
+     * @return boolean T/F if the current user can change the password
+     */
+    private boolean validPasswordOrHavePermission(User selectedUser, User currentUser, UserProfileModifyPayload userProfileModifyPayload) {
+        // Case 1: Valid Password
+        if (selectedUser.verifyPassword(userProfileModifyPayload.getCurrentPassword())) {
+            return true;
+        }
+        // Case 2: User is Admin & selected User is not
+        if (Authorization.isGAAorDGAA(currentUser) && !Authorization.isGAAorDGAA(selectedUser)) {
+            return true;
+        }
+        // Case 3: User is DGAA & selected user is GAA, if not, returns false
+        return currentUser.getRole().equals(DEFAULTGLOBALAPPLICATIONADMIN) && selectedUser.getRole().equals(GLOBALAPPLICATIONADMIN);
+    }
+
+    /**
      * Put method to modify user profile.
      * @param id current user id
      * @param sessionToken sessionToken for current user
@@ -559,7 +589,7 @@ public class UserResource {
     @ResponseStatus(value = HttpStatus.OK, reason = "Account updated successfully")
     public void modifiedUserProfile(@PathVariable int id,
                                     @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-                                    @RequestBody(required = false) UserProfileModifyPayload userProfileModifyPayload){
+                                    @RequestBody(required = false) UserProfileModifyPayload userProfileModifyPayload) {
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         Optional<User> optionalSelectedUser = userRepository.findById(id);
@@ -575,7 +605,7 @@ public class UserResource {
         User selectedUser = optionalSelectedUser.get();
         logger.debug("Selected user (ID: {}) retrieve successfully.", selectedUser.getId());
 
-        if (selectedUser.getId() != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)){
+        if (selectedUser.getId() != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
             logger.error("User does not have permission to perform action.");
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,

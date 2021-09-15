@@ -3,7 +3,7 @@
  */
 
 import {shallowMount} from '@vue/test-utils';
-import updateProductImagesModal from "../../src/components/productCatalogue/UpdateProductImagesModal";
+import updateImagesModal from "../../src/components/UpdateImagesModal";
 import Api from "../../src/Api";
 import {describe, expect, jest, test} from "@jest/globals";
 import Product from "../../src/configs/Product";
@@ -12,7 +12,7 @@ const endOfToday = require('date-fns/endOfToday');
 jest.mock("../../src/Api");
 
 const factory = (values = {}) => {
-    return shallowMount(updateProductImagesModal, {
+    return shallowMount(updateImagesModal, {
         data () {
             return {
                 ...values
@@ -31,7 +31,8 @@ const factory = (values = {}) => {
                     {filename: "/fakeImage2.png", id: 2, isPrimary: false}
                 ]
             }),
-            businessId: 1
+            businessId: 1,
+            location: "Product"
         }
     })
 }
@@ -69,12 +70,12 @@ describe("Testing the set primary image, delete and upload image functionality",
             }
         }
 
-        Api.deleteProductImage.mockImplementation(() => Promise.reject(data));
+        Api.deleteImage.mockImplementation(() => Promise.reject(data));
 
         await wrapper.vm.deleteSelectedImage();
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, you do not have permission to delete this image.");
+        expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, you do not have permission to perform this action.");
 
     })
 
@@ -95,7 +96,7 @@ describe("Testing the set primary image, delete and upload image functionality",
             }
         }
 
-        Api.deleteProductImage.mockImplementation(() => Promise.reject(data));
+        Api.deleteImage.mockImplementation(() => Promise.reject(data));
 
         await wrapper.vm.deleteSelectedImage();
         await wrapper.vm.$nextTick();
@@ -126,7 +127,7 @@ describe("Testing the set primary image, delete and upload image functionality",
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.formErrorModalMessage).toBe(
-            "Sorry, you do not have permission to change the primary image."
+            "Sorry, you do not have permission to perform this action."
         );
 
     })
@@ -173,9 +174,9 @@ describe("Testing the set primary image, delete and upload image functionality",
             }
         }
 
-        Api.uploadProductImage.mockImplementation(() => Promise.reject(data));
+        Api.uploadImage.mockImplementation(() => Promise.reject(data));
 
-        await wrapper.vm.getImage();
+        await wrapper.vm.uploadImage();
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.formErrorModalMessage).toBe(
@@ -184,3 +185,72 @@ describe("Testing the set primary image, delete and upload image functionality",
 
     })
 })
+
+describe("Testing getQueryForParams() function", () => {
+
+    test('Testing when location is User, query will use id as a userId and image type is USER_IMAGE',
+        async () => {
+
+        const wrapper = await factory();
+        await wrapper.setProps({location : "User", id: 1});
+
+        let query = await wrapper.vm.getQueryForParams();
+        expect(query).toEqual("?uncheckedImageType=USER_IMAGE&userId=1")
+    })
+
+    test('Testing when location is Business, query will use id as a businessId and image type is BUSINESS_IMAGE',
+        async () => {
+
+        const wrapper = await factory();
+        await wrapper.setProps({location : "Business", id: 1});
+
+        let query = await wrapper.vm.getQueryForParams();
+        expect(query).toEqual("?uncheckedImageType=BUSINESS_IMAGE&businessId=1")
+    })
+
+    test('Testing when location is Product, query will use id as a businessId and image type is PRODUCT_IMAGE',
+        async () => {
+
+            const wrapper = await factory();
+            await wrapper.setProps({location : "Product", id: 1});
+
+            let query = await wrapper.vm.getQueryForParams();
+            expect(query).toEqual("?uncheckedImageType=PRODUCT_IMAGE&businessId=1&productId=VEGE")
+        })
+
+    test('Testing when location is not one of "Product", "Business", "User", query will return "" and a error will be print in console',
+        async () => {
+
+            const wrapper = await factory();
+            await wrapper.setProps({location : "", id: 1});
+            const consoleSpy = jest.spyOn(console, 'log');
+
+            let query = await wrapper.vm.getQueryForParams();
+            expect(query).toEqual("");
+            expect(consoleSpy).toHaveBeenCalledWith('Location error!');
+     })
+})
+
+describe("Testing setSelected() function", () => {
+
+    test('Testing setSelected() sets selected image to null when selectedImage equals id',
+        async () => {
+            const wrapper = await factory();
+            const id = 1;
+            wrapper.vm.$data.selectedImage = id;
+
+            wrapper.vm.setSelected(id);
+            expect(wrapper.vm.$data.selectedImage).toBeNull();
+        })
+
+    test('Testing setSelected() sets selected image to id when selectedImage does not equal id',
+        async () => {
+            const wrapper = await factory();
+            const id = 1;
+            wrapper.vm.$data.selectedImage = 2;
+
+            wrapper.vm.setSelected(id);
+            expect(wrapper.vm.$data.selectedImage).toEqual(id);
+        })
+})
+

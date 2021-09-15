@@ -79,7 +79,7 @@
           <!-- Buy Button -->
           <div class="buy-button-section">
             <h6 id="price" class="merryweather">
-              $ {{ price }}
+              {{ currencySymbol }}{{ price }} {{ currencyCode }}
             </h6>
             <div style="width: fit-content">
               <h6 id="bookmarks" class="merryweather" @click="changeBookmarkStatus" v-if="actingBusinessId == null">
@@ -151,7 +151,7 @@
 <script>
 import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer"
-import DefaultImage from "../../public/default-product.jpg"
+import DefaultImage from "../../public/default-image.jpg"
 import Api from "../Api"
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
@@ -196,6 +196,8 @@ export default {
       businessAddressLine3: "",
       businessAddressLine4: "",
       businessAdmins: [],
+      currencySymbol: "",
+      currencyCode: "",
 
       listingId: null,
       isBookmarked: null,
@@ -345,9 +347,12 @@ export default {
       // Business info
       this.businessName = data.inventoryItem.product.business.name;
       this.businessAddress = data.inventoryItem.product.business.address;
+      this.currencySymbol = (data.inventoryItem.product.business.currencySymbol === null ||
+                            data.inventoryItem.product.business.currencySymbol === "") ? "$" : data.inventoryItem.product.business.currencySymbol;
+      this.currencyCode = data.inventoryItem.product.business.currencyCode;
 
       // Administrators
-      this.businessAdmins = data.inventoryItem.product.business.administrators
+      this.businessAdmins = data.inventoryItem.product.business.administrators;
 
       // Testing that we are acting as a user.
       this.canBuy = this.actingBusinessId === undefined || this.actingBusinessId === null;

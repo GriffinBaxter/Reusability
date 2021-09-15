@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.1
+  version: 6.2.6
   title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -50,6 +50,7 @@ tags:
   - name: 'U29: Browse/Search Sale Listings'
   - name: 'U30: Individual Full Sale Listing'
   - name: 'U31: Purchases'
+  - name: 'U40: Withdraw sale listings'
   - name: 'U41: Sales report'
   # Entities
   - name: 'Users'
@@ -337,6 +338,36 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
+    put:
+      tags:
+        - 'U11 Modifying Businesses'
+        - 'Business Accounts'
+      summary: Modify an existing business
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Business'
+      responses:
+        '200':
+          description: Business updated successfully
+        '400':
+          description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
+        '403':
+          description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
+        '406':
+          description: 'Selected Business does not exist'
 
   '/businesses/{id}/makeAdministrator':
     put:
@@ -563,15 +594,17 @@ paths:
     post:
       tags:
         - 'U16: Product Images'
+        - 'U10 Modifying Individuals'
+        - 'U11 Modifying Businesses'
         - 'Catalogue / Products'
-      summary: Upload a new image for some photo
+      summary: Upload a new image
       security:
         - CookieAuth:
             - user
             - globalApplicationAdmin
             - defaultGlobalApplicationAdmin
       parameters:
-        - name: imageType
+        - name: uncheckedImageType
           in: query
           required: true
           schema:
@@ -643,8 +676,10 @@ paths:
     delete:
       tags:
         - 'U16: Product Images'
+        - 'U10 Modifying Individuals'
+        - 'U11 Modifying Businesses'
         - 'Catalogue / Products'
-      summary: Delete an image of a product
+      summary: Delete an image
       security:
         - CookieAuth:
             - user
@@ -657,7 +692,7 @@ paths:
           required: true
           schema:
             type: integer
-        - name: imageType
+        - name: uncheckedImageType
           in: query
           required: true
           schema:
@@ -707,6 +742,8 @@ paths:
     put:
       tags:
         - 'U16: Product Images'
+        - 'U10 Modifying Individuals'
+        - 'U11 Modifying Businesses'
         - 'Catalogue / Products'
       summary: Set an existing image to be the new primary image
       security:
@@ -721,7 +758,7 @@ paths:
           required: true
           schema:
             type: integer
-        - name: imageType
+        - name: uncheckedImageType
           in: query
           required: true
           schema:
@@ -745,13 +782,13 @@ paths:
         - name: businessId
           in: query
           description: ID of business that owns product
-          required: true
+          required: false
           schema:
             type: integer
         - name: productId
           in: query
           description: ID (Product Code) of product to update primary image for
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -1275,6 +1312,39 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
+    delete:
+      tags:
+        - 'U40: Withdraw sale listings'
+        - 'Listings / sales'
+      summary: 'Delete a single sale listing'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: businessId
+          in: path
+          description: Business ID
+          required: true
+          schema:
+            type: integer
+        - name: listingId
+          in: path
+          description: Listing ID
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: 'Successfully deleted'
+        '401':
+          description: 'User not logged in'
+        '406':
+          description: 'Business with ID doesn’t exist, listing with ID doesn’t exist, listing with ID is closed'
+        '403':
+          description: 'User not a business administrator or a global application administrator'
 
   '/businesses/search':
     get:
@@ -2034,38 +2104,6 @@ paths:
         '406':
           description: 'Selected User not exist'
 
-  '/businesses/{id}/profile':
-    put:
-      tags:
-        - 'U11 Modifying Businesses'
-        - 'Business Accounts'
-      summary: Modify an existing business
-      security:
-        - CookieAuth:
-            - user
-            - globalApplicationAdmin
-            - defaultGlobalApplicationAdmin
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Business'
-      responses:
-        '200':
-          description: Business updated successfully
-        '400':
-          description: There was some error with the data supplied by the user, appropriate error message(s) should be shown to user
-        '403':
-          description: 'Forbidden: Returned when a user tries to update the business info for a business they do not administer AND the user is not a global application admin'
-        '406':
-          description: 'Selected Business not exist'
-
   '/businesses/{businessId}/salesReport':
     get:
       tags:
@@ -2088,7 +2126,7 @@ paths:
             example: 118
         - name: fromDate
           in: query
-          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021 
+          description: 'The date the sales report should be from. Will be set to the start of 2021 if before 2021
           (the year that the app was first deployed), must be before or at the "to date".'
           required: true
           schema:
@@ -2096,7 +2134,7 @@ paths:
             format: date-time
         - name: toDate
           in: query
-          description: 'The date the sales report should be to. Will be set to the current date if in the future, 
+          description: 'The date the sales report should be to. Will be set to the current date if in the future,
           must be at or after the start of 2021 (the year that the app was first deployed).'
           required: true
           schema:
@@ -2144,6 +2182,40 @@ paths:
         '403':
           description: 'Forbidden: Returned when a user is neither a Global Application Administrator nor an
           administrator of the business.'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
+
+  '/home/conversation/{conversationId}/messages':
+    get:
+      tags:
+        - 'UCM8: Contacting Other Marketplace Users'
+        - 'Marketplace conversation message'
+      summary: 'Retrieve all messages in a conversation'
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: conversationId
+          in: path
+          description: Conversation ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Conversation retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when the user is not a member of the conversation'
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
@@ -2249,6 +2321,34 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Message'
+
+  '/users/conversation/{conversationId}':
+    delete:
+      tags:
+        - 'UCM8: Contacting Other Marketplace Users'
+        - 'Conversations'
+      summary: Delete a marketplace conversation
+      security:
+        - CookieAuth:
+            - user
+            - globalApplicationAdmin
+            - defaultGlobalApplicationAdmin
+      parameters:
+        - name: conversationId
+          in: path
+          description: ID of conversation to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Conversation successfully deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: 'Forbidden: Returned when a user tries to delete a conversation that does not involve them AND the user is not an admin'
+        '406':
+          $ref: '#/components/responses/NotAcceptableError'
 
 
 components:
@@ -2712,6 +2812,13 @@ components:
           description: '(Implemented in U6): A list of businesses for which the user is an administrator'
           items:
             $ref: '#/components/schemas/Business'
+        images:
+          type: array
+          readOnly: true
+          description: 'user images'
+          items:
+            $ref: '#/components/schemas/Image'
+
 
     MarketplaceCardNotification:
       type: object
@@ -2949,16 +3056,39 @@ components:
           example: 100
           readOnly: true
           description: User that started the conversation (from a card)
+        instigatorName:
+          type: string
+          example: Tom Edwards
+          readOnly: true
+          description: The name of the user that started the conversation (from a card)
         receiverId:
           type: integer
-          example: 100
+          example: 101
           readOnly: true
           description: User that created the card
+        receiverName:
+          type: string
+          example: Billy Bob
+          readOnly: true
+          description: The name of the user that created the card
         marketplaceCardId:
           type: integer
           example: 100
           readOnly: true
           description: The marketplace card of the conversation
+        marketplaceCardTitle:
+          type: string
+          example: Royal Gala Apples For Sale
+          readOnly: true
+          description: The marketplace card title of the conversation
+        deletedByInstigator:
+          type: boolean
+          example: false
+          description: A boolean value used to keep track of whether the instigator has deleted/left the conversation. true if they have, false if they have not.
+        deletedByReceiver:
+          type: boolean
+          example: false
+          description: A boolean value used to keep track of whether the receiver has deleted/left the conversation. true if they have, false if they have not.
         created:
           type: string
           format: date-time
@@ -2982,19 +3112,19 @@ components:
           description: ID of the sender
         receiverId:
           type: integer
-          example: 101
-          description: ID of the reciever
+          example: 200
+          description: ID of the message recipient
+          writeOnly: true
         marketplaceCardId:
           type: integer
           example: 408
           description: ID of the marketplace card involved in the conversation
         content:
-          type: String
+          type: string
           example: "Hi, I am interested in exchanging some apples for some pears."
-          description: message content
+          description: Message content
         created:
           type: string
           format: date-time
           example: '2021-07-15T05:10:00Z'
-          description: date and time of the conversation creation
-
+          description: Date and time message was created/sent

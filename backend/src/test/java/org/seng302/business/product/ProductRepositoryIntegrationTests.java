@@ -85,7 +85,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -159,7 +161,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -227,7 +231,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -301,7 +307,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -368,7 +376,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -436,7 +446,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -504,7 +516,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -572,7 +586,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -640,7 +656,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -707,7 +725,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
@@ -785,7 +805,9 @@ class ProductRepositoryIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         entityManager.persist(business);
         entityManager.flush();
