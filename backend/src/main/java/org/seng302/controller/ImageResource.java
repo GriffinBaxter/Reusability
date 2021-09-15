@@ -366,7 +366,36 @@ public class ImageResource {
                 userImageRepository.saveAndFlush(newPrimaryUserImage);
                 break;
             case BUSINESS_IMAGE_STRING:
-                //TODO: allBusinessImages
+                // Verify businessId parameter
+                getVerifiedBusiness(businessId);
+
+                // Verify access rights of the user to the business
+                Authorization.verifyBusinessAdmin(currentUser, businessId);
+
+                // Verify image id
+                Optional<BusinessImage> optionalBusinessImage = businessImageRepository.findById(imageId);
+
+                if (optionalBusinessImage.isEmpty()) {
+                    logger.error("Given business image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given business image does not exist.");
+                }
+
+                BusinessImage newPrimaryBusinessImage = optionalBusinessImage.get();
+                logger.info("Business image (ID: {}) retrieved", imageId);
+
+                // Set existing primary image to non-primary
+                List<BusinessImage> allBusinessImages = businessImageRepository
+                        .findBusinessImageByBusinessIdAndIsPrimary(businessId, true);
+                for (BusinessImage businessImage : allBusinessImages) {
+                    businessImage.setIsPrimary(false);
+                    businessImageRepository.saveAndFlush(businessImage);
+                }
+
+                // Set desired image to primary image
+                newPrimaryBusinessImage.setIsPrimary(true);
+
+                // Save the image in the repository
+                businessImageRepository.saveAndFlush(newPrimaryBusinessImage);
                 break;
             case PRODUCT_IMAGE_STRING:
                 // Verify businessId parameter
