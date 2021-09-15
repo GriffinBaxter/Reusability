@@ -51,7 +51,6 @@
 import Cookies from "js-cookie";
 import {checkAccessPermission} from "../views/helpFunction";
 import Api from "../Api";
-import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
 import PageButtons from "../components/PageButtons";
 
@@ -97,6 +96,8 @@ export default {
       await Api.getBusiness(this.businessId).then(response => {
         this.businessName = response.data.name;
         this.businessCountry = response.data.address.country;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
       }).catch((error) => {
         this.manageError(error);
       })
@@ -144,16 +145,6 @@ export default {
       })
     },
     /**
-     * Calls a GET request to the REST Countries API to retrieve the currency code and symbol for the business
-     * based on its country.
-     */
-    async retrieveCurrencyInfo() {
-      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
-        this.currencyCode = response.data[0].currencies[0].code;
-        this.currencySymbol = response.data[0].currencies[0].symbol;
-      }).catch((error) => console.log(error))
-    },
-    /**
      * If a request in to the backend results in an error, then this method will deal with the error.
      * @param error the error received from the backend.
      */
@@ -169,7 +160,13 @@ export default {
      * An example of the returned format is $24 USD
      */
     formatPrice(price) {
-      if (this.currencySymbol !=="" && this.currencyCode !== "") { return this.currencySymbol + price +  " " + this.currencyCode; }
+      if ((this.currencySymbol !== "" && this.currencySymbol !== null) && (this.currencyCode !== "" && this.currencyCode !== null)) {
+        return this.currencySymbol + price +  " " + this.currencyCode;
+      } else if (this.currencySymbol !== "" && this.currencySymbol !== null) {
+        return this.currencySymbol + price;
+      } else if (this.currencyCode !== "" && this.currencyCode !== null) {
+        return price + " " + this.currencyCode;
+      }
       return price;
     },
     /**
@@ -200,7 +197,6 @@ export default {
       if (currentID) {
         this.businessId = parseInt(this.$route.params.businessId);
         await this.retrieveBusinessInfo();
-        await this.retrieveCurrencyInfo();
         await this.retrieveSoldListings();
       }
     }
