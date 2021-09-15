@@ -486,7 +486,7 @@ export default {
       this.currentPage = event.newPageNumber;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
-        path: `/businessProfile/${this.businessId}/productCatalogue `,
+        path: `/businessProfile/${this.businessId}/productCatalogue`,
         query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       })
       this.requestProducts();
