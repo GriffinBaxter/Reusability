@@ -138,4 +138,12 @@ export default {
   color: black;
 }
 
+.nav-link.active {
+  background-color: #1EBA8C;
+}
+
+.nav-link {
+  color: darkgreen;
+}
+
 </style>
