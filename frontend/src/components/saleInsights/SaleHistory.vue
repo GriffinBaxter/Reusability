@@ -134,7 +134,7 @@ export default {
           for (let j = this.soldListings.length; j < this.maxSoldListings; j++) {
             this.soldListings.push({
               bookmarks: "",
-              id: j,
+              id: j - this.maxSoldListings,
               listingDate: "",
               price: "",
               productId: "",
