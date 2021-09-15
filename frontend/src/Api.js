@@ -426,6 +426,8 @@ export default {
 
     // Retrieves the business's sales report for the given dates and granularity
     getSalesReport(id, fromDate, toDate, granularity) {
-        return instance.get(`businesses/${id}/salesReport?fromDate=${fromDate}&toDate=${toDate}&granularity=${granularity}`)
+        return instance.get(`businesses/${id}/salesReport?fromDate=${fromDate}&toDate=${toDate}&granularity=${granularity}`, {
+            withCredentials: true
+        })
     }
 }

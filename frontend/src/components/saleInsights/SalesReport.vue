@@ -45,20 +45,20 @@
                       data-bs-toggle="dropdown" aria-expanded="false">{{ selectedMonth }}
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                <div v-if="selectedYear === currentYear">
-                  <li class="btn green-button-transparent col-12 order-by-options-btn"
+                <li v-if="selectedYear === currentYear">
+                  <div class="btn green-button-transparent col-12 order-by-options-btn"
                       v-for="month in months.slice(0, this.currentMonth + 1)" v-bind:key="month"
                       @click="selectedMonth = month">
                     {{ month }}
-                  </li>
-                </div>
-                <div v-else>
-                  <li class="btn green-button-transparent col-12 order-by-options-btn"
+                  </div>
+                </li>
+                <li v-else>
+                  <div class="btn green-button-transparent col-12 order-by-options-btn"
                       v-for="month in months" v-bind:key="month"
                       @click="selectedMonth = month">
                     {{ month }}
-                  </li>
-                </div>
+                  </div>
+                </li>
               </ul>
             </div>
 
@@ -83,8 +83,6 @@
             <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
 
               <!-------------------------------------- Custom date inputs --------------------------------------------->
-
-
 
                 <form class="needs-validation" novalidate @submit.prevent>
                   <div class="form-group" id="date-filtering-container">
@@ -161,8 +159,12 @@
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
         <div class="card p-3">
-          Barry's stuff for task 723
+          Barry's stuff for task 723:
+          <div>
+            {{ salesReportData }}
+          </div>
         </div>
+
       </div>
      </div>
 
@@ -175,7 +177,8 @@
 import {isFuture, parseISO} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
-import {format} from "date-fns";
+import {formatISO, format} from "date-fns";
+import Api from "../../Api";
 
 export default {
   name: "SalesReport",
@@ -183,6 +186,26 @@ export default {
   },
   props: {
     businessName: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessCountry: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessId: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: true
+    },
+    currencyCode: {
       type: String,
       default: "",
       required: true
@@ -215,6 +238,8 @@ export default {
 
       currentDay: "",
       selectedDay: "",
+
+      salesReportData: null
     }
   },
   methods: {
@@ -237,7 +262,7 @@ export default {
         this.invalidDateMsg = "Start date cannot be in the future";
       } else {
         this.invalidDateMsg = "";
-        // TODO: apply query method for task 723
+        this.retrieveSalesReport();
       }
     },
 
@@ -247,6 +272,68 @@ export default {
      */
     setGranularityOption(granularity) {
       this.granularity = granularity;
+      this.retrieveSalesReport();
+    },
+
+    /**
+     * Returns the start date and end date for the given year.
+     * @param year A year to give the dates of.
+     */
+    generateDatesFromYear(year) {
+      return year
+    },
+
+    /**
+     * Returns the start date and end date for the given month.
+     * @param month A month to give the dates of.
+     */
+    generateDatesFromMonth(month) {
+      return month
+    },
+
+    /**
+     * Returns the start date and end date for the day.
+     * @param day A year to give the dates of.
+     */
+    generateDatesFromDay(day) {
+      return day
+    },
+
+    /**
+     * Sends an API request to the backend to retrieve the sales report for the currently selected options
+     */
+    async retrieveSalesReport() {
+      let fromDate = "";
+      let toDate = "";
+      if (this.period === 'Custom') {
+        fromDate = formatISO(parseISO(this.startDate), { representation: 'date' }) + "T00:00";
+        toDate = formatISO(parseISO(this.endDate), { representation: 'date' }) + "T23:59:59";
+      } else if (this.period === 'Year') {
+        this.generateDatesFromYear(this.selectedYear);
+      } else if (this.period === 'Month') {
+        this.generateDatesFromMonth(this.selectedMonth);
+      } else if (this.period === 'Day') {
+        this.generateDatesFromDay(this.selectedDay);
+      }
+
+      await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
+        this.salesReportData = [...response.data]
+      }).catch((error) => {
+        this.manageError(error);
+      })
+    },
+
+    /**
+     * If a request in to the backend results in an error, then this method will deal with the error.
+     * @param error the error received from the backend.
+     */
+    async manageError(error) {
+      console.log(error)
+      // if (error.request && !error.response)      { await this.$router.push({path: '/timeout'});      }
+      // else if (error.response.status === 401)    { await this.$router.push({path: '/invalidtoken'}); }
+      // else if (error.response.status === 403)    { await this.$router.push({path: '/forbidden'});    }
+      // else if (error.response.status === 406)    { await this.$router.push({path: '/noBusiness'});   }
+      // else { await this.$router.push({path: '/noBusiness'}); console.log(error.message); }
     },
 
     /**
