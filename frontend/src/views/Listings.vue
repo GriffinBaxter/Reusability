@@ -77,6 +77,7 @@
         <ListingItem
             v-for="item in listings"
             v-bind:key="item.index"
+            v-bind:listing-id="item.id"
             v-bind:product-name="item.productName"
             v-bind:description="item.description"
             v-bind:product-id="item.productId"
@@ -174,6 +175,23 @@ name: "Listings",
   }
   },
   methods: {
+    /**
+     * Delete a listing at ID
+     * @param id ID of listing to be deleted
+     */
+    deleteListing(id) {
+      Api.deleteListing(id).then(() => {
+        this.getListings()
+      }).catch((err) => {
+        if (err.response) {
+          console.log(err.response)
+        } else if (err.request) {
+          console.log(err.request)
+        } else {
+          console.log(err)
+        }
+      })
+    },
     /**
      * convert orderByString to more readable for user
      */
@@ -384,6 +402,7 @@ name: "Listings",
             return
           }
           this.listings.push({
+            id: response.data[i].id,
             productName: response.data[i].inventoryItem.product.name,
             description: response.data[i].inventoryItem.product.description,
             productId: response.data[i].inventoryItem.product.id,
