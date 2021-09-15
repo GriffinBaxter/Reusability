@@ -73,11 +73,14 @@ public class ImageResource {
 
     public ImageResource(BusinessRepository businessRepository, UserRepository userRepository,
                          ProductRepository productRepository, ProductImageRepository productImageRepository,
-                         UserImageRepository userImageRepository, FileStorageService fileStorageService) {
+                         UserImageRepository userImageRepository, BusinessImageRepository businessImageRepository,
+                         FileStorageService fileStorageService
+    ) {
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
+        this.businessImageRepository = businessImageRepository;
         this.userImageRepository = userImageRepository;
         this.fileStorageService = fileStorageService;
     }
