@@ -104,6 +104,7 @@ export default {
 
     // Sends a get request to the backend asking for a sorted and paginated list of products matching the given search criteria for a business.
     searchProducts: (businessID, searchQuery, searchBy, barcode, sortBy, page) => {
+        console.log(barcode)
         return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
             withCredentials: true
         })
