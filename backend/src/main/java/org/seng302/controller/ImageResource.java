@@ -187,9 +187,9 @@ public class ImageResource {
 
         ImageType imageType;
         String imageOwnerInfo;
-        List<UserImage> allUserImages = new ArrayList<>();
-        List<BusinessImage> allBusinessImages = new ArrayList<>();
-        List<ProductImage> allProductImages = new ArrayList<>();
+        List<UserImage> primaryUserImages = new ArrayList<>();
+        List<BusinessImage> primaryBusinessImages = new ArrayList<>();
+        List<ProductImage> primaryProductImages = new ArrayList<>();
         switch (uncheckedImageType) {
             case USER_IMAGE_STRING:
                 // Verify userId parameter
@@ -200,7 +200,7 @@ public class ImageResource {
                 }
                 imageType = ImageType.USER_IMAGE;
                 imageOwnerInfo = String.format("for product (id: %s)", userId);
-                allUserImages = userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true);
+                primaryUserImages = userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true);
                 break;
             case BUSINESS_IMAGE_STRING:
                 // Verify businessId parameter
@@ -211,7 +211,9 @@ public class ImageResource {
 
                 imageType = ImageType.BUSINESS_IMAGE;
                 imageOwnerInfo = String.format("for business (id: %s)", businessId);
-                allBusinessImages = businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true);
+                primaryBusinessImages = businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(
+                        businessId, true
+                );
                 break;
             case PRODUCT_IMAGE_STRING:
                 // Verify businessId parameter
@@ -225,7 +227,9 @@ public class ImageResource {
 
                 imageType = ImageType.PRODUCT_IMAGE;
                 imageOwnerInfo = String.format("for business (id: %s), product (id: %s)", businessId, productId);
-                allProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+                primaryProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(
+                        businessId, productId, true
+                );
                 break;
             default:
                 logger.error(LOGGER_INVALID_IMAGE_TYPE, uncheckedImageType);
@@ -236,29 +240,25 @@ public class ImageResource {
         List<String> imageInfo = processImage(image, imageOwnerInfo);
         String imageFilePath = imageInfo.get(0);
         String thumbnailFilePath = imageInfo.get(1);
+        Image storedImage;
 
-        Integer storedImageId;
-        String storedImageFileName;
         // Store the image data in an object
         if (imageType.equals(ImageType.USER_IMAGE)) {
-            boolean isFirstImage = allUserImages.isEmpty();
-            UserImage storedUserImage = userImageRepository.saveAndFlush(
+            boolean isFirstImage = primaryUserImages.isEmpty();
+            storedImage = userImageRepository.saveAndFlush(
                     new UserImage(userId, imageFilePath, thumbnailFilePath, isFirstImage));
-            storedImageId = storedUserImage.getId();
-            storedImageFileName = storedUserImage.getFilename();
         } else if (imageType.equals(ImageType.BUSINESS_IMAGE)) {
-            boolean isFirstImage = allBusinessImages.isEmpty();
-            BusinessImage storedBusinessImage = businessImageRepository.saveAndFlush(
+            boolean isFirstImage = primaryBusinessImages.isEmpty();
+            storedImage = businessImageRepository.saveAndFlush(
                     new BusinessImage(businessId, imageFilePath, thumbnailFilePath, isFirstImage));
-            storedImageId = storedBusinessImage.getId();
-            storedImageFileName = storedBusinessImage.getFilename();
         } else {
-            boolean isFirstImage = allProductImages.isEmpty();
-            ProductImage storedProductImage = productImageRepository.saveAndFlush(
+            boolean isFirstImage = primaryProductImages.isEmpty();
+            storedImage = productImageRepository.saveAndFlush(
                     new ProductImage(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage));
-            storedImageId = storedProductImage.getId();
-            storedImageFileName = storedProductImage.getFilename();
         }
+
+        Integer storedImageId = storedImage.getId();
+        String storedImageFileName = storedImage.getFilename();
 
         logger.info("Successfully uploaded and stored image under filename \"{}\", {}, by a user (id: {})",
                 storedImageFileName, imageOwnerInfo, currentUser.getId());
