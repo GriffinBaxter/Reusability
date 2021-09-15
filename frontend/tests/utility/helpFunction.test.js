@@ -1,5 +1,10 @@
 import {expect, test, describe, beforeEach} from "@jest/globals";
-import {checkAccessPermission, checkNullity, getFormattedAddress} from "../../src/views/helpFunction";
+import {
+    checkAccessPermission,
+    checkNullity,
+    getAddressConcatenation,
+    getFormattedAddress
+} from "../../src/views/helpFunction";
 
 describe("Test the checkAccessPermission method", () => {
 
@@ -109,5 +114,25 @@ describe("Test getFormattedAddress method", () => {
         ];
         expect(getFormattedAddress(number, streetName, suburb, city, postcode, region, country)).toStrictEqual(address);
     })
+
+})
+
+describe("Test getAddressConcatenation method", () => {
+
+    test("Test when properties contains valid strings for each address component.", () => {
+        const country = "New Zealand";
+        const city = "Christchurch";
+        const postcode = "8041";
+        const state = "Canterbury";
+        const street = "Kirkwood Avenue";
+        const housenumber = 20;
+        const name = "University of Canterbury" ;
+        const district = "Upper Riccarton";
+        const properties = {country, city, postcode, state, street, housenumber, name, district};
+        const expectedAddressString = name + ", " + housenumber + " " + street + ", " + " " +  district + ", " + city + ", " +
+            postcode + ", " + state +  ", " + country;
+        expect(getAddressConcatenation(properties)).toEqual(expectedAddressString);
+    })
+
 
 })
