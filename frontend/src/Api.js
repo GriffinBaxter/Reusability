@@ -364,6 +364,13 @@ export default {
         })
     },
 
+    // Delete a listing
+    deleteListing: (id) => {
+        return instance.delete(`/listings/${id}`, {
+            withCredentials: true
+        })
+    },
+
     deleteBookmarkMessage: (id) => {
         return instance.delete(`/home/bookmarkMessages/${id}`, {
             withCredentials: true
