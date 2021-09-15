@@ -31,8 +31,8 @@
                   <select id="business-type" name="business-type" tabindex="2" :class="toggleInvalidSelectClass(businessTypeErrorMsg)"
                           v-model="businessType" required>
                     <option value="" disabled>Select Business Type</option>
-                    <option v-for="option in types" :key="option.bType" :value="option.value">
-                      {{ option.value }}
+                    <option v-for="option in types" :key="option.text" :value="option.value">
+                      {{ option.text }}
                     </option>
                   </select>
                   <div class="invalid-feedback">
@@ -182,10 +182,10 @@ export default {
       // Business type related variables
       businessType: "",
       types: [
-        { bType: 'ACCOMMODATION AND FOOD SERVICES', value: 'Accommodation and Food Services' },
-        { bType: 'RETAIL TRADE', value: 'Retail Trade' },
-        { bType: 'CHARITABLE ORGANISATION', value: 'Charitable Organisation' },
-        { bType: 'NON PROFIT ORGANISATION', value: 'Non Profit Organisation' }
+        { text: 'Accommodation and Food Services', value: 'ACCOMMODATION AND FOOD SERVICES' },
+        { text: 'Retail Trade', value:  'RETAIL TRADE'},
+        { text: 'Charitable Organisation', value: 'CHARITABLE ORGANISATION'},
+        { text: 'Non Profit Organisation', value: 'NON PROFIT ORGANISATION'}
       ],
       businessTypeErrorMsg: "",
 
@@ -526,7 +526,7 @@ export default {
      */
     autoFillBusinessData(business) {
       if (business.name !== null) { this.businessName = business.name; }
-      if (business.businessType !== null) { this.businessType = business.businessType; }
+      if (business.businessType !== null) { this.businessType = business.businessType.replaceAll("_", " "); }
       if (business.description !== null) { this.description = business.description; }
       if (business.address.streetNumber !== null) { this.$refs.streetNumber.value = business.address.streetNumber; }
       if (business.address.streetName !== null) { this.$refs.streetName.value = business.address.streetName; }
