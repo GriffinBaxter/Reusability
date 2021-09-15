@@ -301,7 +301,7 @@ public class ImageResource {
                 handleUserImageDeletion(user, userId, imageId);
                 break;
             case BUSINESS_IMAGE_STRING:
-                //TODO: Business Image Deletion
+                handleBusinessImageDeletion(businessId, user, imageId);
                 break;
             default:
                 logger.error(LOGGER_INVALID_IMAGE_TYPE, uncheckedImageType);
@@ -603,6 +603,57 @@ public class ImageResource {
         userImageRepository.flush();
         // Check if primary image and update primary image if it is
         updatePrimaryUserImage(userId);
+    }
+
+    private void handleBusinessImageDeletion(Integer businessId, User user, Integer imageId) {
+        // Verify business parameter
+        getVerifiedBusiness(businessId);
+
+        // Verify access rights of the user to the business
+        Authorization.verifyBusinessAdmin(user, businessId);
+
+        // Verify image id
+        BusinessImage businessImage = verifyBusinessImageId(imageId, businessId, user);
+
+        // verify file exists & delete image
+        boolean imageDeleted = fileStorageService.deleteFile(businessImage.getFilename());
+        boolean thumbnailDeleted = fileStorageService.deleteFile(businessImage.getThumbnailFilename());
+        if (!imageDeleted || !thumbnailDeleted) {
+            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d.", user.getId(), imageId, businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+
+        // Delete from database
+        businessImageRepository.deleteByIdAndBusinessId(imageId, businessId);
+        businessImageRepository.flush();
+        // Check if primary image and update primary image if it is
+        updatePrimaryBusinessImage(businessId);
+    }
+
+    private BusinessImage verifyBusinessImageId(Integer imageId, Integer businessId, User user) throws ResponseStatusException {
+        Optional<BusinessImage> image = businessImageRepository.findBusinessImageByIdAndBusinessId(imageId, businessId);
+        if (image.isEmpty()) {
+            String errorMessage =
+                    String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d.",
+                            user.getId(), imageId, businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+        return image.get();
+    }
+
+    private void updatePrimaryBusinessImage(Integer businessId) {
+        List<BusinessImage> primaryBusinessImages = businessImageRepository
+                .findBusinessImageByBusinessIdAndIsPrimary(businessId, true);
+        if (primaryBusinessImages.isEmpty()) {
+            List<BusinessImage> businessImages = businessImageRepository
+                    .findBusinessImageByBusinessId(businessId);
+            if (!businessImages.isEmpty()) {
+                businessImages.get(0).setIsPrimary(true);
+                businessImageRepository.save(businessImages.get(0));
+            }
+        }
     }
 
     /**
