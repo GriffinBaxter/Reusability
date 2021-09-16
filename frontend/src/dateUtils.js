@@ -1,4 +1,5 @@
 import {format, parseISO} from "date-fns";
+import compareAsc from "date-fns/compareAsc";
 
 /**
  * Converts a string that is a date in the ISO format to a format of e.g. "17th May 2021 8:30 PM".
@@ -23,5 +24,20 @@ export function formatDate(dateString, dateAndTime=true) {
         } else {
             return dateString ? format(dateString, "do MMM yyyy") : null
         }
+    }
+}
+
+/**
+ * Checks that the second date is after the first date. Returns true if this is the case.
+ * @param firstDate first date
+ * @param secondDate second date
+ * @return {boolean}
+ */
+export function isFirstDateBeforeSecondDate(firstDate, secondDate) {
+    if (firstDate != null && secondDate != null) {
+        const outcome = compareAsc(parseISO(firstDate), parseISO(secondDate))
+        return (outcome === -1) // -1 if the first date is before the second
+    } else {
+        return true
     }
 }

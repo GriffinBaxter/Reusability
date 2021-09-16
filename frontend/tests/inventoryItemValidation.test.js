@@ -10,33 +10,6 @@ import InventoryItem from '../src/configs/InventoryItem'
 const endOfToday = require('date-fns/endOfToday');
 const format = require('date-fns/format');
 
-// ***************************************** toggleInvalidClass() Tests ***************************************************
-/**
- * Test for ensuring that when an error message is passed in, the is-invalid class is added to the messages.
- * @result class list contains 'form-control' and 'is-invalid'
- */
-test('Toggle invalid class with error message', () => {
-    const testInputVal = "Error message";
-    const expectedOutput = ['form-control', 'is-invalid'];
-
-    expect(
-        reg.toggleInvalidClass(testInputVal)
-    ).toEqual(expectedOutput);
-})
-
-/**
- * Test for ensuring that when no error message is passed in, the is-invalid class is not added to the messages.
- * @result class list contains 'form-control'
- */
-test('Toggle invalid class with error message', () => {
-    const testInputVal = "";
-    const expectedOutput = ['form-control'];
-
-    expect(
-        reg.toggleInvalidClass(testInputVal)
-    ).toEqual(expectedOutput);
-})
-
 // ***************************************** between() Tests ***************************************************
 /**
  * Test for ensuring that when the value is less than the minimum that between() returns false.
