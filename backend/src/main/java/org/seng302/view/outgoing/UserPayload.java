@@ -157,8 +157,8 @@ public class UserPayload extends UserPayloadParent {
                 "\"email\":\"" + super.getEmail() + "\"," +
                 "\"created\":\"" + super.getCreated() + "\"," +
                 "\"role\":\"" + super.getRole() + "\"," +
-                "\"businessesAdministered\":[null]," +
-                "\"images\":" + super.getImages() + "," +
+                "\"businessesAdministered\":" + super.getBusinessesAdministered() +
+                ",\"images\":" + super.getImages() + "," +
                 "\"dateOfBirth\":\"" + dateOfBirth + "\"," +
                 "\"phoneNumber\":\"" + phoneNumber + "\"," +
                 "\"homeAddress\":" + homeAddress +
