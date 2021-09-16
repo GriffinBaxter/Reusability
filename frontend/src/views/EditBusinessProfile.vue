@@ -528,14 +528,16 @@ export default {
      * @param e, the current event.
      */
     editBusiness(e) {
-      e.preventDefault(); // prevents page from reloading
-
+      // prevents page from reloading
+      e.preventDefault();
+      // remove whitespace from input fields.
       this.trimTextInputFields();
-
       // get error messages if input is invalid.
       this.getErrorMessages();
       // if an error message exists then return.
       if (this.checkInvalidRequest()) { return; }
+      // alert user about currency change.
+      if (this.checkCancelCurrencyChange()) { return; }
 
       // TODO call to the backend.
     },
