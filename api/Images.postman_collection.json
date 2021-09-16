@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "71b9d5a3-befa-4709-8598-b03000398555",
+		"_postman_id": "e865a44e-2b4b-4e55-aef6-22ea50f137d3",
 		"name": "Images",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -649,6 +649,292 @@
 					]
 				},
 				{
+					"name": "business-image",
+					"item": [
+						{
+							"name": "create-business-image-invalid-business-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-no-image",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "anythingElse",
+											"value": "asd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-txt",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-gif",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-gif.gif"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-jpeg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpeg.jpeg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "create-image-invalid-unchecked-image-type",
 					"request": {
 						"method": "POST",
@@ -1012,6 +1298,141 @@
 										{
 											"key": "productId",
 											"value": "NOT-EXISTING"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "business-image",
+					"item": [
+						{
+							"name": "create-business-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-business-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-business-no-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/0?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"0"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-business-no-business",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=BUSINESS_IMAGE&businessId=0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "0"
 										}
 									]
 								}
@@ -1454,6 +1875,184 @@
 										{
 											"key": "productId",
 											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "business-image",
+					"item": [
+						{
+							"name": "create-primary-business-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-non-primary-business-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-image-id-2-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-image-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/100/makePrimary?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"100",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-business-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=BUSINESS_IMAGE&businessId=100",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "100"
 										}
 									]
 								}
