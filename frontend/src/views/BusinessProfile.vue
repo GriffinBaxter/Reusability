@@ -4,6 +4,7 @@
     <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
+      <UpdateImagesModal ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
 
     <!--profile container-->
     <div class="container p-5" id="profileContainer">
@@ -25,6 +26,14 @@
               <!--business's profile image-->
               <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
                    alt="Profile Image"/>
+
+            <div id="change-profile-picture-button" style="padding-top: 10px" v-if="isAdministrator && business.data.id">
+              <button type="button" style="width: 252px; max-width: 100%"
+                      class="btn btn-md btn-outline-primary green-button"
+                      @click="(event) => {this.$refs.updateImagesModal.showModel(event)}">
+                Change Profile Picture
+              </button>
+            </div>
 
               <!--business's name-->
               <div class="mt-3">
@@ -162,6 +171,7 @@
 
 <script>
 import ProfileHeader from "@/components/ProfileHeader";
+import UpdateImagesModal from "@/components/UpdateImagesModal"
 import Footer from "@/components/main/Footer";
 import Navbar from "@/components/Navbar";
 import Api from "@/Api";
@@ -174,7 +184,8 @@ export default {
   components: {
     Footer,
     ProfileHeader,
-    Navbar
+    Navbar,
+    UpdateImagesModal
   },
   data() {
     return {
@@ -198,7 +209,14 @@ export default {
 
       isAdministrator: false,
       // keep track of if user came from individual listing page so they can return.
-      fromListing: false
+      fromListing: false,
+      business: {
+        data: {
+          name: "",
+          id: 0,
+          images: []
+        }
+      }
     }
   },
   methods: {
@@ -259,6 +277,7 @@ export default {
 
       //basic data unpack
       this.name = data.name;
+      this.business.data.name = this.name;
       this.description = data.description;
       let businessTypeLowerCaseAndSplit = data.businessType.replaceAll("_", " ").toLowerCase().split(" ");
       for (let i = 0; i < businessTypeLowerCaseAndSplit.length; i++) {
@@ -348,6 +367,7 @@ export default {
   },
   mounted() {
     const currentID = Cookies.get('userID');
+    const actAsId = Cookies.get("actAs");
     if (currentID) {
       this.checkIsAdmin(currentID);
       const url = document.URL;
@@ -358,12 +378,18 @@ export default {
       } else {
         this.retrieveBusiness(urlID);
         this.urlID = urlID;
+        try {
+          this.business.data.id = parseInt(actAsId, 10);
+        } catch (err) {
+          this.business.data.id = null;
+        }
       }
     }
   },
   beforeRouteUpdate (to, from, next) {
     // Reset variables
     this.name = "";
+    this.business.data.name = this.name;
     this.description = "";
     this.businessType = "";
     this.created = "";
