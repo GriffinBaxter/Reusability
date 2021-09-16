@@ -114,7 +114,7 @@
               <button v-if="canBuy" class="buy-button merryweather w-100" @click="buy">
                 Buy
               </button>
-              <button class="delete-button btn btn-danger w-100" v-else-if="actingBusinessId === businessId" @click="deleteListing">
+              <button class="delete-button btn btn-danger w-100" v-else-if="actingBusinessId == businessId" @click="deleteListing">
                 Remove Listing
               </button>
               <button v-else class="buy-button-disabled merryweather w-100" disabled>
@@ -459,7 +459,7 @@ export default {
     const listingId = url.substring(url.lastIndexOf('/') + 1);
     const self = this;
     this.currentID = Cookies.get('userID');
-    this.actingBusinessId = parseInt(Cookies.get("actAs"));
+    this.actingBusinessId = Cookies.get("actAs");
 
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))

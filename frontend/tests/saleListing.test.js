@@ -15,7 +15,8 @@ jest.mock("../src/Api");
 jest.mock("js-cookie");
 
 let $router = {
-    push: jest.fn()
+    push: jest.fn(),
+    back: jest.fn()
 };
 
 let response = {
@@ -933,3 +934,113 @@ describe("Testing the getBarcodeImage method", () => {
         expect(wrapper.vm.getBarcodeImage()).toEqual(expected_url);
     });
 });
+
+describe("Test delete button", () => {
+
+    test("Test delete button appears when user is acting as a business", async () => {
+        Cookies.get.mockReturnValue(1);
+        wrapper = shallowMount(listing, {
+            localVue,
+        });
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find(".delete-button").exists()).toBe(true);
+    })
+
+    test("Test delete button doesn't appear when user is acting as a user", async () => {
+        Cookies.get.mockReturnValueOnce(1);
+        Cookies.get.mockReturnValueOnce(undefined);
+        wrapper = shallowMount(listing, {
+            localVue,
+        });
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find(".delete-button").exists()).toBe(false);
+    })
+
+    test("Test delete button doesn't appear when user is acting as a different business", async () => {
+        Cookies.get.mockReturnValueOnce("1");
+        Cookies.get.mockReturnValueOnce("2");
+        wrapper = shallowMount(listing, {
+            localVue,
+        });
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find(".delete-button").exists()).toBe(false);
+    })
+
+    describe("Test delete button functionality", () => {
+        let apiResponse;
+
+        beforeEach(async () => {
+            Cookies.get.mockReturnValue(1)
+            wrapper = shallowMount(listing, {
+                localVue,
+                mocks: {
+                    $router
+                }
+            });
+            await wrapper.vm.$nextTick();
+        })
+
+        test("Test a successful delete", async () => {
+            apiResponse = {
+                status: 200,
+            }
+            Api.deleteListing.mockImplementation(() => Promise.resolve(apiResponse));
+
+            wrapper.vm.deleteListing(1);
+            await wrapper.vm.$nextTick();
+
+            expect($router.back).toBeCalled();
+        })
+
+        test("Test a 401 response when deleting", async () => {
+            apiResponse = {
+                response: {
+                    status: 401
+                }
+            }
+            Api.deleteListing.mockImplementation(() => Promise.reject(apiResponse));
+
+            wrapper.vm.deleteListing(1);
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toBeCalled();
+            expect($router.push).toBeCalledWith({name: "InvalidToken"});
+        })
+
+        test("Test a 406 response when deleting", async () => {
+            apiResponse = {
+                response: {
+                    status: 406
+                }
+            }
+            Api.deleteListing.mockImplementation(() => Promise.reject(apiResponse));
+
+            wrapper.vm.deleteListing(1);
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toBeCalled();
+            expect($router.push).toBeCalledWith({name: "NoListing"});
+        })
+
+        test("Test a 403 response when deleting makes delete button disappear and removes actingAs", async () => {
+            apiResponse = {
+                response: {
+                    status: 403
+                }
+            }
+            Api.deleteListing.mockImplementation(() => Promise.reject(apiResponse));
+
+            expect(wrapper.find(".delete-button").exists()).toBeTruthy();
+
+            wrapper.vm.deleteListing(1);
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.$data.actingBusinessId).toBe(null);
+            expect(wrapper.find(".delete-button").exists()).toBeFalsy();
+        })
+    })
+})
