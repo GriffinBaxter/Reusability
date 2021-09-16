@@ -179,8 +179,8 @@ name: "Listings",
      * Delete a listing at ID
      * @param id ID of listing to be deleted
      */
-    deleteListing(id) {
-      Api.deleteListing(id).then(() => {
+    async deleteListing(id) {
+      await Api.deleteListing(id).then(() => {
         this.getListings()
       }).catch((err) => {
         if (err.response) {
@@ -188,6 +188,10 @@ name: "Listings",
             this.getListings()
           } else if (err.response.status === 401) {
             this.$router.push({name: "InvalidToken"})
+          } else if (err.response.status === 403) {
+            this.businessAdmin = false
+          } else {
+            console.log(err)
           }
         } else {
           console.log(err)
@@ -324,7 +328,7 @@ name: "Listings",
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
       this.barcode = this.$route.query["barcode"] || "";
 
-      if (this.barcode === undefined || null) {
+      if (this.barcode === undefined || this.barcode === null) {
         this.barcode = "";
       }
 
