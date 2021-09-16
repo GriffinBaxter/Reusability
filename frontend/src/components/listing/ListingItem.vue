@@ -198,6 +198,11 @@ export default {
       this.$parent.deleteListing(this.listingId)
     }
   },
+  watch: {
+    closeDate: function () {
+      this.checkClosed();
+    }
+  },
   mounted() {
     this.checkClosed();
   }

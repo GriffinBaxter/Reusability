@@ -148,7 +148,7 @@ class ListingResourceIntegrationTests {
                                                         "\"email\":\"%s\"," +
                                                         "\"created\":\"%s\"," +
                                                         "\"role\":\"%s\"," +
-                                                        "\"businessesAdministered\":[null]," +
+                                                        "\"businessesAdministered\":[]," +
                                                         "\"images\":[]," +
                                                         "\"dateOfBirth\":\"%s\"," +
                                                         "\"phoneNumber\":\"%s\"," +
@@ -201,7 +201,7 @@ class ListingResourceIntegrationTests {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
             "\"images\":[]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
