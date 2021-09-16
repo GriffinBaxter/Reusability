@@ -188,6 +188,11 @@ export default {
       this.closed = (new Date(Date.now()).valueOf() >= Date.parse(this.fullCloseDate).valueOf());
     }
   },
+  watch: {
+    closeDate: function () {
+      this.checkClosed();
+    }
+  },
   mounted() {
     this.checkClosed();
   }
