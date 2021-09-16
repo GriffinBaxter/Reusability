@@ -24,8 +24,34 @@
             <div class="card-body">
 
               <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
-                   alt="Profile Image"/>
+              <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div v-if="business.data.images === null || business.data.images.length === 0">
+                    <img :src="getImageSrc()"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
+                  </div>
+                  <div v-for="image of business.data.images"
+                       v-bind:key="image.id"
+                       :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
+                    <img :src="getImageSrc(image.thumbnailFilename)"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
+                  </div>
+                </div>
+                <div v-if="business.data.images.length > 1">
+                  <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+              </div>
 
             <div id="change-profile-picture-button" style="padding-top: 10px" v-if="isAdministrator && business.data.id">
               <button type="button" style="width: 252px; max-width: 100%"
@@ -331,6 +357,18 @@ export default {
        */
       let id = this.$route.params.id;
       this.$router.push({name: name, params: {id}});
+    },
+    /**
+     * Returns the src property for a img tag.
+     *
+     * @param filename Optional image source name. Defaults to an empty string.
+     * @return {String} returns the src link.
+     */
+    getImageSrc(filename = "") {
+      if (filename === "") {
+        return require('../../public/default-image.jpg')
+      }
+      return Api.getServerURL() + "/" + filename;
     },
     checkIsAdmin(currentID) {
       Api.getUser(currentID).then(response => {
