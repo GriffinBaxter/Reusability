@@ -102,7 +102,7 @@ class MarketplaceCardResourceIntegrationTests {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
             "\"images\":[],"+
             "\"homeAddress\":%s" +
             "}," +
