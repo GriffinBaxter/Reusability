@@ -24,6 +24,7 @@ describe('Test No Listings Found message is displayed correctly.',  () => {
         const wrapper = factory({
             listings: [
                 {
+                    id: 1,
                     closeDate: "21st Jul 2021",
                     description: null,
                     expires: "21st Jul 2021",
