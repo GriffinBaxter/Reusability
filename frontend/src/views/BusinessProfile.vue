@@ -54,7 +54,7 @@
               </div>
 
             <div id="change-profile-picture-button" style="padding-top: 10px" v-if="isAdministrator && business.data.id">
-              <button type="button" style="width: 252px; max-width: 100%"
+              <button type="button" style="width: 252px; max-width: 100%" id="update-business-image-button"
                       class="btn btn-md btn-outline-primary green-button"
                       @click="(event) => {this.$refs.updateImagesModal.showModel(event)}">
                 Change Profile Picture
