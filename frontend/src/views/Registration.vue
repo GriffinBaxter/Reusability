@@ -437,7 +437,6 @@ export default {
     }
   },
   methods: {
-
     toggleInvalidClass: toggleInvalidClass,
 
     /**

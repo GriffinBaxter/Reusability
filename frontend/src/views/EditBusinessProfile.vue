@@ -169,6 +169,7 @@ import {getAddressConcatenation} from "../views/helpFunction";
 import {getErrorMessage} from "../components/inventory/InventoryValidationHelper";
 import Api from "../Api";
 import CurrencyChangeModal from "../components/business/CurrencyChangeModal";
+import {toggleInvalidClass, toggleInvalidSelectClass} from "../validationUtils";
 
 export default {
   name: "EditBusinessProfile",
@@ -240,43 +241,16 @@ export default {
     }
   },
   methods: {
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
-
-    /**
-     * This method toggles the appearance of the error message for select boxes, where the is-invalid
-     * class is added to the messages if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidSelectClass(errorMessage) {
-      let classList = ['form-select']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
+    toggleInvalidClass: toggleInvalidClass,
+    toggleInvalidSelectClass: toggleInvalidSelectClass,
 
     /**
      * This method returns the currently logged in administrator to the business profile of the business
      * they are currently acting as.
      */
     toBusinessProfile() {
-      const id = this.$route.params.id
-      this.$router.push({name: "BusinessProfile", params: {id}})
+      const id = this.$route.params.id;
+      this.$router.push({name: "BusinessProfile", params: {id}});
     },
 
     /**

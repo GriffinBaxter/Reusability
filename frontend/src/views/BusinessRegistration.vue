@@ -162,7 +162,7 @@ import Business, {BusinessTypes} from "../configs/Business"
 import Footer from "../components/main/Footer";
 import AddressAPI from "../addressInstance";
 import Cookies from 'js-cookie';
-import {toggleInvalidClass} from "../validationUtils";
+import {toggleInvalidClass, toggleInvalidSelectClass} from "../validationUtils";
 import CurrencyAPI from "../currencyInstance";
 import {getAddressConcatenation} from "../views/helpFunction";
 
@@ -240,21 +240,7 @@ export default {
 
   methods: {
     toggleInvalidClass: toggleInvalidClass,
-
-    /**
-     * This method toggles the appearance of the error message for select boxes, where the is-invalid
-     * class is added to the messages if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidSelectClass(errorMessage) {
-      let classList = ['form-select']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
+    toggleInvalidSelectClass: toggleInvalidSelectClass,
 
     /**
      * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
