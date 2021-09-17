@@ -171,7 +171,9 @@ public class DeleteListingStepdefs {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(id);
         user.setBusinessesAdministeredObjects(List.of(business));
@@ -224,7 +226,7 @@ public class DeleteListingStepdefs {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listingId)).thenReturn(Optional.of(listing));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
     }
 
     @When("As an GAA I delete the listing with id {int}")
@@ -234,7 +236,7 @@ public class DeleteListingStepdefs {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listingId)).thenReturn(Optional.of(listing));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
     }
 
     @When("As an DGAA I delete the listing with id {int}")
@@ -244,7 +246,7 @@ public class DeleteListingStepdefs {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listingId)).thenReturn(Optional.of(listing));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
     }
 
     @Then("An OK response is returned")

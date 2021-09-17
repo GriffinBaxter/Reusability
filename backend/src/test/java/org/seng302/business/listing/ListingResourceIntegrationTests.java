@@ -2200,7 +2200,7 @@ class ListingResourceIntegrationTests {
     @Test
     void WhenDeleteListingThatYouDontProvideSessionTokenAnUnauthorizedIsReturned() throws Exception{
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId()))).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
@@ -2214,7 +2214,7 @@ class ListingResourceIntegrationTests {
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.empty());
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
@@ -2229,7 +2229,7 @@ class ListingResourceIntegrationTests {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.empty());
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
@@ -2245,7 +2245,7 @@ class ListingResourceIntegrationTests {
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
         listing.setCloses(LocalDateTime.of(2020, 12, 12, 12, 12));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
@@ -2260,7 +2260,7 @@ class ListingResourceIntegrationTests {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -2275,7 +2275,7 @@ class ListingResourceIntegrationTests {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
@@ -2290,7 +2290,7 @@ class ListingResourceIntegrationTests {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
@@ -2305,7 +2305,7 @@ class ListingResourceIntegrationTests {
         when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
@@ -2321,7 +2321,7 @@ class ListingResourceIntegrationTests {
         when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
         when(listingRepository.deleteListing(listing.getId())).thenThrow(new FailedToDeleteListingException(""));
 
-        response = mvc.perform(delete(String.format("/business/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
