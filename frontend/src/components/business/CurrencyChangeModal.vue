@@ -75,7 +75,8 @@ export default {
      * does not want to change the currency for the business.
      */
     keepCurrency() {
-      this.$emit('keepCurrency');
+      this.$emit('currencyChange', null, null);
+      this.modal.hide();
     },
     /**
      * Make a call to REST Countries API to retrieve currency code and symbol for country of business.
@@ -86,7 +87,8 @@ export default {
       CurrencyAPI.currencyQuery(this.$parent.$refs.country.value).then((response) => {
         const code = response.data[0].currencies[0].code;
         const symbol = response.data[0].currencies[0].symbol;
-        this.$emit('updateCurrency', code, symbol);
+        this.$emit('currencyChange', code, symbol);
+        this.modal.hide();
       }).catch((error) => console.log(error))
     }
   },

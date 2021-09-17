@@ -3,7 +3,7 @@
     <div id="main">
       <div class="container">
         <!-- Currency change modal -->
-        <CurrencyChangeModal ref="currencyChangeModal" :business-name="businessName" @keepCurrency="keepCurrency" @updateCurrency="updateCurrency"/>
+        <CurrencyChangeModal ref="currencyChangeModal" :business-name="businessName" v-on:currencyChange="currencyChange"/>
 
         <div class="row justify-content-center">
           <div class="col-3 m-3">
@@ -147,7 +147,7 @@
 
               <div class="d-grid gap-2 d-lg-block">
                 <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="13" @click="toBusinessProfile()">Cancel Changes</button>
-                <button id="register-button" tabindex="12" class="btn btn-lg float-lg-end green-button" type="button" @click="editBusiness($event)">Save Changes</button>
+                <button id="register-button" tabindex="12" class="btn btn-lg float-lg-end green-button" type="button" @click="processEdit($event)">Save Changes</button>
               </div>
 
             </form>
@@ -534,12 +534,13 @@ export default {
     },
 
     /**
-     * This method checks the validation of all input fields and if all fields are valid sends a PUT request to
-     * the backend to modify the current business.
+     * This method checks the validation of all input fields. If a user has changed the country for a business
+     * then the currency changes are processed (using helper methods). Once all fields are valid then a
+     * PUT request will be made to the backend using another helper method.
      *
      * @param e, the current event.
      */
-    editBusiness(e) {
+    processEdit(e) {
       // prevents page from reloading
       e.preventDefault();
       // remove whitespace from input fields.
@@ -548,10 +549,11 @@ export default {
       this.getErrorMessages();
       // if an error message exists then return.
       if (this.checkInvalidRequest()) { return; }
-      // alert user about currency change. if the user wishes to make additional changes then return.
-      if (this.checkCancelCurrencyChange()) { return; }
-
-      // TODO call to the backend.
+      // if there has been a country change for the business, then the user may wish to update currency information.
+      // currency change options are performed in a modal so we need to return.
+      if (this.checkCurrencyChange()) { return; }
+      // make PUT call to backend.
+      this.editBusiness();
     },
 
     /**
@@ -674,14 +676,38 @@ export default {
     /**
      * When a user edits the country for a business, they will need to be notified about the currency change.
      * This is done by opening a modal with currency change information.
-     * @return boolean false if the user doesn't want to make additional changes, true otherwise
+     * @return boolean false if there has not been a country change, true if country has been changed.
      */
-    checkCancelCurrencyChange() {
+    checkCurrencyChange() {
       // if the user has not changed the country for the business then the user does not have to be notified about
       // currency change.
       if (this.originalCountry === this.$refs.country.value) { return false; }
+      // user needs to be notified about currency change using modal.
       this.$refs.currencyChangeModal.showModal(event);
+      return true;
+    },
 
+    /**
+     * This method is called when a custom event "currencyChange" is emitted from the CurrencyChangeModal.
+     * The currency code and symbol are set to updated values if the user decided to update them.
+     * Once the currency changes have been processed then a call can be made to the backend to update the business.
+     *
+     * @param code null if user decided not to update, otherwise it is the currency code matching currency of new country.
+     * @param symbol null if user decided not to update, otherwise it is the currency symbol matching currency of new country.
+     */
+    currencyChange(code, symbol) {
+      // only change currency code and symbol if they have been updated using modal (i.e. they are not null)
+      if (code && symbol) {
+        this.currencyCode = code;
+        this.currencySymbol = symbol;
+      }
+      // update business since currency changes have now been processed.
+      this.editBusiness();
+    },
+
+    editBusiness() {
+      //TODO call to backend.
+      return;
     }
   },
   mounted() {
