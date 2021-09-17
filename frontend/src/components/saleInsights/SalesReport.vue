@@ -201,6 +201,7 @@ import {isFuture, parseISO, formatISO, format, lastDayOfMonth} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
+import {manageError} from "../../views/helpFunction"
 
 export default {
   name: "SalesReport",
@@ -371,27 +372,8 @@ export default {
           })
         });
       }).catch((error) => {
-        this.manageError(error);
+        manageError(error);
       })
-    },
-
-    /**
-     * If a request in to the backend results in an error, then this method will deal with the error.
-     * @param error the error received from the backend.
-     */
-    async manageError(error) {
-      if (error.request && !error.response) {
-        await this.$router.push({path: '/timeout'});
-      } else if (error.response.status === 401) {
-        await this.$router.push({path: '/invalidtoken'});
-      } else if (error.response.status === 403) {
-        await this.$router.push({path: '/forbidden'});
-      } else if (error.response.status === 406) {
-        await this.$router.push({path: '/noBusiness'});
-      } else {
-        await this.$router.push({path: '/noBusiness'});
-        console.log(error.message);
-      }
     },
 
     /**
