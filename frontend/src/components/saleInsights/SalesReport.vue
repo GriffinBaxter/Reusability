@@ -184,7 +184,8 @@
             </tbody>
           </table>
           <div v-else>
-            Billie's task 725
+            <h3><strong>Total Sales:</strong> {{ salesReportData[0] ? salesReportData[0].totalSales : "0" }}</h3>
+            <h3><strong>Total Revenue:</strong> {{currencySymbol}}{{ salesReportData[0] ? salesReportData[0].totalRevenue : "0" }} {{currencyCode}}</h3>
           </div>
         </div>
 
@@ -398,8 +399,9 @@ export default {
     }
   },
 
-  mounted() {
-    this.setDates(new Date());
+  async mounted() {
+    await this.setDates(new Date());
+    await this.retrieveSalesReport();
   }
 }
 </script>
