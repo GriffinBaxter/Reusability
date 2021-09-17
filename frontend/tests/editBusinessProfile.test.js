@@ -233,4 +233,88 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         expect(wrapper.vm.addresses).toEqual([]);
     })
+
+    test('Test user is pushed to NoBusiness page when retrieving a business results in a 406.',  async () => {
+        const error = {
+            response: {
+                status: 406
+            }
+        }
+        Api.getBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.retrieveBusiness(2);
+        await wrapper.vm.$nextTick();
+
+        expect($router.push).toHaveBeenCalledWith({name: "NoBusiness"});
+    })
+
+    test('Test user is pushed to InvalidToken page when retrieving a business results in a 401.',  async () => {
+        const error = {
+            response: {
+                status: 401
+            }
+        }
+        Api.getBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.retrieveBusiness(2);
+        await wrapper.vm.$nextTick();
+
+        expect($router.push).toHaveBeenCalledWith({name: "InvalidToken"});
+    })
+
+    test('Test the trimTextInputFields method correctly trims various fields.', async () => {
+        const name = "New World";
+        const type = "Retail Trade";
+        const description = "This is a description.";
+        const country = "New     Zealand";
+        const city = "Christchurch";
+        const postcode = "8 0 4 1";
+        const region = "";
+        const streetNumber = " ";
+        const streetName = "   ";
+        const suburb = "Upper Riccarton";
+
+        wrapper.vm.$data.businessName = "  " + name + "  "; // leading and trailing whitespace
+        wrapper.vm.$data.businessType = "   " + type; // leading whitespace
+        wrapper.vm.$data.description = description + "     "; // trailing whitespace
+        wrapper.vm.$refs.country.value = country; // whitespace in the middle should not be trimmed
+        wrapper.vm.$refs.city.value = city; // no whitespace
+        wrapper.vm.$refs.postcode.value = postcode; // whitespace in the middle should not be trimmed
+        wrapper.vm.$refs.region.value = region; // empty string
+        wrapper.vm.$refs.streetNumber.value = streetNumber; // all whitespace
+        wrapper.vm.$refs.streetName.value = streetName; // all whitespace
+        wrapper.vm.$refs.suburb.value = suburb; // whitespace in the middle should not be trimmed
+
+        wrapper.vm.trimTextInputFields();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.businessName).toEqual(name);
+        expect(wrapper.vm.$data.businessType).toEqual(type);
+        expect(wrapper.vm.$data.description).toEqual(description);
+        expect(wrapper.vm.$refs.country.value).toEqual(country);
+        expect(wrapper.vm.$refs.city.value).toEqual(city);
+        expect(wrapper.vm.$refs.postcode.value).toEqual(postcode);
+        expect(wrapper.vm.$refs.region.value).toEqual(region);
+        expect(wrapper.vm.$refs.streetNumber.value).toEqual("");
+        expect(wrapper.vm.$refs.streetName.value).toEqual("");
+        expect(wrapper.vm.$refs.suburb.value).toEqual(suburb);
+    })
+
+    test('Test the getErrorMessages method when business type is a valid business type.', async () => {
+        wrapper.vm.$data.businessType = "Retail Trade"; // valid business type
+
+        wrapper.vm.getErrorMessages();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.businessTypeErrorMsg).toEqual(""); // empty string since no error.
+    })
+
+    test('Test the getErrorMessages method when business type is a invalid business type.', async () => {
+        wrapper.vm.$data.businessType = "Not Valid"; // invalid business type
+
+        wrapper.vm.getErrorMessages();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.businessTypeErrorMsg).toEqual("This field is required!");
+    })
 })

@@ -641,10 +641,12 @@ export default {
      * @return boolean true if changes are invalid, false otherwise.
      */
     checkInvalidRequest() {
-      return (this.businessTypeErrorMsg || this.businessNameErrorMsg || this.descriptionErrorMsg ||
+      return (
+          this.businessTypeErrorMsg || this.businessNameErrorMsg || this.descriptionErrorMsg ||
           this.businessAddressErrorMsg || this.businessStreetNumberErrorMsg || this.businessStreetNameErrorMsg ||
           this.businessSuburbErrorMsg || this.businessPostcodeErrorMsg || this.businessCityErrorMsg ||
-          this.businessRegionErrorMsg || this.businessCountryErrorMsg);
+          this.businessRegionErrorMsg || this.businessCountryErrorMsg
+      );
     },
 
     /**
