@@ -13,7 +13,6 @@ import Api from "../src/Api";
 import OpenFoodFactsApi from "../src/openFoodFactsInstance";
 
 jest.mock("../src/Api");
-jest.mock("../src/currencyInstance");
 jest.mock("../src/openFoodFactsInstance");
 jest.mock("js-cookie");
 

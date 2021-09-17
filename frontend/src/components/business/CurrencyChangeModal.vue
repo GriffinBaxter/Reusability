@@ -40,7 +40,7 @@
 
 <script>
 import {Modal} from "bootstrap";
-import CurrencyAPI from "@/currencyInstance";
+import CurrencyAPI from "../../currencyInstance";
 
 export default {
   name: "CurrencyChangeModal",

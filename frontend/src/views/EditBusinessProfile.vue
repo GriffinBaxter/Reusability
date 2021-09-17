@@ -167,7 +167,7 @@ import Business, {BusinessTypes, convertToFrontendBusinessType} from "../configs
 import AddressAPI from "../addressInstance";
 import {getAddressConcatenation} from "../views/helpFunction";
 import {getErrorMessage} from "../components/inventory/InventoryValidationHelper";
-import Api from "@/Api";
+import Api from "../Api";
 import CurrencyChangeModal from "../components/business/CurrencyChangeModal";
 
 export default {
