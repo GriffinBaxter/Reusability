@@ -4,7 +4,6 @@ import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.model.Listing;
 import org.seng302.model.ListingNotification;
-import org.seng302.model.User;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Custom Implementation of Listing Repository for searching
@@ -28,6 +26,15 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
     @Autowired
     private EntityManager entityManager;
+
+
+    private static final String BUSINESS_STRING = "business";
+
+    private static final String INVENTORY_ITEM_STRING = "inventoryItem";
+
+    private static final String PRODUCT_STRING = "product";
+
+    private static final String CLOSES_STRING = "closes";
 
     /**
      * Search for listings by product name and optional filters.
@@ -58,7 +65,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
         Root<Listing> listing = query.from(Listing.class);
 
-        Path<String> namePath = listing.get("inventoryItem").get("product").get("name");
+        Path<String> namePath = listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get("name");
 
         ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, namePath, criteriaBuilder);
 
@@ -89,12 +96,12 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         Root<Listing> listing = query.from(Listing.class);
 
-        Path<String> addressPath = listing.get("inventoryItem").get("product").get("business").get("address");
+        Path<String> addressPath = listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get(BUSINESS_STRING).get("address");
 
         ArrayList<Predicate> predicates = new ArrayList<>();
         for (String location : locations) {
             if (location.startsWith("\"") && location.endsWith("\"")) {
-                location = location.replaceAll("^\"+|\"+$", ""); // Remove quotations.
+                location = location.replace("\"", "");
                 predicates.add(criteriaBuilder.equal(addressPath.get("suburb"), location));
                 predicates.add(criteriaBuilder.equal(addressPath.get("region"), location));
                 predicates.add(criteriaBuilder.equal(addressPath.get("city"), location));
@@ -133,7 +140,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
 
         Root<Listing> listing = query.from(Listing.class);
 
-        Path<String> businessNamePath = listing.get("inventoryItem").get("product").get("business").get("name");
+        Path<String> businessNamePath = listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get(BUSINESS_STRING).get("name");
 
         ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, businessNamePath, criteriaBuilder);
 
@@ -167,7 +174,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         ArrayList<Predicate> predicateList = new ArrayList<>();
         if (businessTypes != null) {
             // where businessType = type
-            Predicate predicateForBusinessType = criteriaBuilder.isTrue(listing.get("inventoryItem").get("product").get("business").get("businessType").in(businessTypes));
+            Predicate predicateForBusinessType = criteriaBuilder.isTrue(listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get(BUSINESS_STRING).get("businessType").in(businessTypes));
             predicateList.add(predicateForBusinessType);
         }
         if (minimumPrice != null) {
@@ -180,29 +187,29 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         }
         if (fromDate != null) {
             Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
-                    listing.get("closes").as(LocalDateTime.class), fromDate
+                    listing.get(CLOSES_STRING).as(LocalDateTime.class), fromDate
             );
             predicateList.add(predicateForFromDate);
         }
         if (toDate != null) {
             Predicate predicateForToDate = criteriaBuilder.lessThanOrEqualTo(
-                    listing.get("closes").as(LocalDateTime.class), toDate
+                    listing.get(CLOSES_STRING).as(LocalDateTime.class), toDate
             );
             predicateList.add(predicateForToDate);
         }
         if (barcode != null && !barcode.equals("")) {
             // where businessType = type
-            Predicate predicateForBarcode = criteriaBuilder.equal(listing.get("inventoryItem").get("product").get("barcode"), barcode);
+            Predicate predicateForBarcode = criteriaBuilder.equal(listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get("barcode"), barcode);
             predicateList.add(predicateForBarcode);
         }
 
         Predicate predicateExpireDate = criteriaBuilder.greaterThanOrEqualTo(
-                listing.get("inventoryItem").get("expires").as(LocalDateTime.class), LocalDateTime.now()
+                listing.get(INVENTORY_ITEM_STRING).get("expires").as(LocalDateTime.class), LocalDateTime.now()
         );
         predicateList.add(predicateExpireDate);
 
         Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
-                listing.get("closes").as(LocalDateTime.class), LocalDateTime.now()
+                listing.get(CLOSES_STRING).as(LocalDateTime.class), LocalDateTime.now()
         );
         predicateList.add(predicateForFromDate);
 
@@ -252,9 +259,10 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         // Try to create a notification
         ListingNotification notification;
         try {
-            notification = new ListingNotification(String.format("Failed to create listing notification for listing (%d) delete.", id));
+            notification = new ListingNotification(String.format("Listing for '%s' from business '%s' has been deleted. Sorry for the inconvenience.", listing.getInventoryItem().getProduct().getName(), listing.getInventoryItem().getProduct().getBusiness().getName()));
         } catch (IllegalListingNotificationArgumentException err) {
-            throw new FailedToDeleteListingException(err.getMessage());
+            String errMessage = String.format("Failed to create listing notification for listing (%d) delete.", id);
+            throw new FailedToDeleteListingException(errMessage);
         }
 
         // Add the users to it.

@@ -2,13 +2,11 @@ package org.seng302.model.repository;
 
 import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.model.Listing;
-import org.seng302.model.ListingNotification;
 import org.seng302.model.enums.BusinessType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface ListingRepositoryCustom {
