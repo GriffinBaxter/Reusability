@@ -2,6 +2,9 @@
   <div>
     <div id="main">
       <div class="container">
+        <!-- Currency change modal -->
+        <CurrencyChangeModal ref="currencyChangeModal" :business-name="businessName" @keepCurrency="keepCurrency" @updateCurrency="updateCurrency"/>
+
         <div class="row justify-content-center">
           <div class="col-3 m-3">
             <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
@@ -165,11 +168,13 @@ import AddressAPI from "../addressInstance";
 import {getAddressConcatenation} from "../views/helpFunction";
 import {getErrorMessage} from "../components/inventory/InventoryValidationHelper";
 import Api from "@/Api";
+import CurrencyChangeModal from "../components/business/CurrencyChangeModal";
 
 export default {
   name: "EditBusinessProfile",
   components: {
     Footer,
+    CurrencyChangeModal
   },
   data() {
     return {
@@ -218,9 +223,6 @@ export default {
       description: "",
       descriptionErrorMsg: "",
 
-      currencyCode: "",
-      currencySymbol: "",
-
       // Toast related variables
       toastErrorMessage: "",
       cannotProceed: false,
@@ -229,7 +231,12 @@ export default {
       address: "",
       addresses: [],
       autocompleteFocusIndex: 0,
-      addressResultProperties: []
+      addressResultProperties: [],
+
+      // Currency change details.
+      currencyCode: "",
+      currencySymbol: "",
+      originalCountry: ""
     }
   },
   methods: {
@@ -488,6 +495,11 @@ export default {
      */
     async retrieveBusiness(id) {
       await Api.getBusiness(id).then((res) => {
+        // currency change information
+        this.originalCountry = res.data.address.country;
+        this.currencyCode = res.data.currencyCode;
+        this.currencySymbol = res.data.currencySymbol;
+        // autofill form
         this.autoFillBusinessData(res.data);
       }).catch((err) => {
         if (err.response) {
@@ -536,7 +548,7 @@ export default {
       this.getErrorMessages();
       // if an error message exists then return.
       if (this.checkInvalidRequest()) { return; }
-      // alert user about currency change.
+      // alert user about currency change. if the user wishes to make additional changes then return.
       if (this.checkCancelCurrencyChange()) { return; }
 
       // TODO call to the backend.
@@ -658,6 +670,19 @@ export default {
           this.businessSuburbErrorMsg || this.businessPostcodeErrorMsg || this.businessCityErrorMsg ||
           this.businessRegionErrorMsg || this.businessCountryErrorMsg);
     },
+
+    /**
+     * When a user edits the country for a business, they will need to be notified about the currency change.
+     * This is done by opening a modal with currency change information.
+     * @return boolean false if the user doesn't want to make additional changes, true otherwise
+     */
+    checkCancelCurrencyChange() {
+      // if the user has not changed the country for the business then the user does not have to be notified about
+      // currency change.
+      if (this.originalCountry === this.$refs.country.value) { return false; }
+      this.$refs.currencyChangeModal.showModal(event);
+
+    }
   },
   mounted() {
     const id = this.$route.params.id;
