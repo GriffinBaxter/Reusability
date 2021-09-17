@@ -1,3 +1,7 @@
+/**
+ * This file contains Jest tests for the helpFunction file.
+ */
+
 import {expect, test, describe, beforeEach} from "@jest/globals";
 import {
     checkAccessPermission,

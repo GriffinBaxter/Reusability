@@ -154,7 +154,6 @@ export default {
   },
 
   async mounted() {
-
     this.actingBusinessId = Cookies.get("actAs");
     await this.requestListings();
 

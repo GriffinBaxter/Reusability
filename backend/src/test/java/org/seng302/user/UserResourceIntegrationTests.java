@@ -565,7 +565,7 @@ class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                "\"" + user.getRole() + "\"", "[null]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
+                "\"" + user.getRole() + "\"", "[]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
                 user.getHomeAddress());
 
         // when
@@ -590,7 +590,7 @@ class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                ("\"" + user.getRole() + "\""), "[null]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
+                ("\"" + user.getRole() + "\""), "[]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
                 user.getHomeAddress());
 
         // when
@@ -614,7 +614,7 @@ class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null,
-                "[null]", "[]", user.getHomeAddress().toSecureString());
+                "[]", "[]", user.getHomeAddress().toSecureString());
 
         // when
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID()))
@@ -713,7 +713,7 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" +
-                user.getRole() + "\"", "[null]", "[]", user.getHomeAddress().toSecureString()) + "]";
+                user.getRole() + "\"", "[]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
@@ -771,7 +771,7 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(),
                 user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
-                user.getCreated(), "\"" + user.getRole() + "\"", "[null]", "[]",
+                user.getCreated(), "\"" + user.getRole() + "\"", "[]", "[]",
                 user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
@@ -832,7 +832,7 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                null, "[null]", "[]", user.getHomeAddress().toSecureString()) + "]";
+                null, "[]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
@@ -884,7 +884,7 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                null, "[null]", "[]", user.getHomeAddress().toSecureString()) + "]";
+                null, "[]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
@@ -1123,11 +1123,11 @@ class UserResourceIntegrationTests {
         expectedJson = "[" +
                 String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                         user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                        null, "[null]", "[]", user.getHomeAddress().toSecureString()) + "," +
+                        null, "[]", "[]", user.getHomeAddress().toSecureString()) + "," +
                 String.format(expectedSecureUserJson, searchUser1.getId(), searchUser1.getFirstName(),
                         searchUser1.getLastName(), searchUser1.getMiddleName(), searchUser1.getNickname(),
                         searchUser1.getBio(), searchUser1.getEmail(), searchUser1.getCreated(),
-                        null, "[null]", "[]", searchUser1.getHomeAddress().toSecureString()) +
+                        null, "[]", "[]", searchUser1.getHomeAddress().toSecureString()) +
                 "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
