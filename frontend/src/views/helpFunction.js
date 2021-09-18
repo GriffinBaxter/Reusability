@@ -106,15 +106,15 @@ function parseSelectedDate(dateString) {
  */
 export function manageError(error) {
     if (error.request && !error.response) {
-         this.$router.push({path: '/timeout'});
+        return {path: '/timeout'};
     } else if (error.response.status === 401) {
-         this.$router.push({path: '/invalidtoken'});
+        return {path: '/invalidtoken'};
     } else if (error.response.status === 403) {
-         this.$router.push({path: '/forbidden'});
+        return {path: '/forbidden'};
     } else if (error.response.status === 406) {
-         this.$router.push({path: '/noBusiness'});
+        return {path: '/noBusiness'};
     } else {
-         this.$router.push({path: '/noBusiness'});
         console.log(error.message);
+        return {path: '/noBusiness'};
     }
 }

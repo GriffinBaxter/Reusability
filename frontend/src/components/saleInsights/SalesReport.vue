@@ -372,7 +372,7 @@ export default {
           })
         });
       }).catch((error) => {
-        manageError(error);
+        this.$router.push(manageError(error));
       })
     },
 
