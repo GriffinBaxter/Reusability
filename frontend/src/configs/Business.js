@@ -5,6 +5,14 @@ export const BusinessTypes = [
     'Non Profit Organisation'
 ]
 
+/**
+ * This method converts a business type that is stored in the backend into the format that is used
+ * in the frontend. It is assumed that the business type received from the backend will be of a valid type and will
+ * therefore, always return a valid business type in the frontend.
+ *
+ * @param type a business type as stored in the backend.
+ * @return {string} the frontend format of business type.
+ */
 export function convertToFrontendBusinessType(type) {
     if (type === "ACCOMMODATION_AND_FOOD_SERVICES") { return BusinessTypes[0]; }
     if (type === "RETAIL_TRADE") { return BusinessTypes[1]; }
