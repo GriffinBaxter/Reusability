@@ -196,14 +196,14 @@
 </template>
 
 <script>
-import ProfileHeader from "@/components/ProfileHeader";
-import UpdateImagesModal from "@/components/UpdateImagesModal"
-import Footer from "@/components/main/Footer";
-import Navbar from "@/components/Navbar";
-import Api from "@/Api";
+import ProfileHeader from "../components/ProfileHeader";
+import UpdateImagesModal from "../components/UpdateImagesModal"
+import Footer from "../components/main/Footer";
+import Navbar from "../components/Navbar";
+import Api from "../Api";
 import Cookies from 'js-cookie';
-import {UserRole} from "@/configs/User";
-import {checkNullity, getFormattedAddress} from "@/views/helpFunction";
+import {UserRole} from "../configs/User";
+import {checkNullity, getFormattedAddress} from "./helpFunction";
 
 export default {
   name: "BusinessProfile",
