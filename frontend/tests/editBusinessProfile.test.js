@@ -27,36 +27,59 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         $route = {
             params: {
-                id: 1
+                id: "1"
             }
         };
 
         const userResponse = {
             "data": {
                 "id": 1,
-                "firstName": "John",
-                "lastName": "Doe",
-                "middleName": "S",
-                "nickname": "Johnny",
-                "bio": "Biography",
-                "email": "email@email.com",
-                "created": "2021-02-02T00:00",
-                "role": "DEFAULTGLOBALAPPLICATIONADMIN",
-                "businessesAdministered": [],
+                "firstName": "Evelia",
+                "lastName": "Blanxart",
+                "middleName": "Robert",
+                "nickname": "Robby",
+                "bio": "I like art!",
+                "email": "everblanxart@gmail.com",
+                "created": "2019-05-20T00:00",
+                "role": "USER",
+                "businessesAdministered": [
+                    {
+                        "id": 1,
+                        "administrators": [
+                            null
+                        ],
+                        "primaryAdministratorId": 10,
+                        "name": "Sunburst Waste",
+                        "description": "Description",
+                        "address": {
+                            "streetNumber": "1849",
+                            "streetName": "C Street Northwest",
+                            "suburb": null,
+                            "city": "Washington",
+                            "region": "District of Columbia",
+                            "country": "United States",
+                            "postcode": "20240"
+                        },
+                        "businessType": "CHARITABLE_ORGANISATION",
+                        "created": "2021-02-14T00:00",
+                        "currencySymbol": "$",
+                        "currencyCode": "USD"
+                    }
+                ],
                 "images": [],
-                "dateOfBirth": "2000-02-02",
-                "phoneNumber": "0271316",
+                "dateOfBirth": "2007-04-13",
+                "phoneNumber": "0272331323",
                 "homeAddress": {
-                    "streetNumber": "3/24",
-                    "streetName": "Ilam Road",
-                    "suburb": "Ilam",
-                    "city": "Christchurch",
-                    "region": "Canterbury",
-                    "country": "New Zealand",
-                    "postcode": "90210"
+                    "streetNumber": "190",
+                    "streetName": "Fort Washington Avenue",
+                    "suburb": null,
+                    "city": "New York",
+                    "region": "New York",
+                    "country": "United States",
+                    "postcode": "10040"
                 }
             },
-            "status": 200
+            "status": 200,
         }
         Api.getUser.mockImplementation( () => Promise.resolve(userResponse));
 
@@ -65,7 +88,7 @@ describe("Testing methods in EditBusinessProfile", () => {
                 "id": 1,
                 "administrators": [
                     {
-                        "id": 10,
+                        "id": 1,
                         "firstName": "Evelia",
                         "lastName": "Blanxart",
                         "middleName": "Robert",
@@ -229,7 +252,7 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         editBusinessSpy = jest.spyOn(EditBusinessProfile.methods, 'editBusiness');
 
-        Cookies.get = jest.fn().mockImplementation(() => 1); // mock all cookies
+        Cookies.get = jest.fn().mockImplementation(() => "1"); // mock all cookies
 
         wrapper = shallowMount(
             EditBusinessProfile,
@@ -374,7 +397,7 @@ describe("Testing methods in EditBusinessProfile", () => {
         expect(editBusinessSpy).toHaveBeenCalledTimes(0); // should not have been called
     })
 
-    test('Test the processEdit method calls editBusiness method when country has not been changed, and there are' +
+    test('Test the processEdit method calls editBusiness method when country has not been changed, and there are ' +
         'no input fields that are invalid.', async () => {
         wrapper.vm.$data.orginalCountry = "United States";
         wrapper.vm.$refs.country.value = "United States"; // has not been changed
@@ -413,5 +436,63 @@ describe("Testing methods in EditBusinessProfile", () => {
         expect(wrapper.vm.$data.currencyCode).toEqual(originalCode);
         expect(wrapper.vm.$data.currencySymbol).toEqual(originalSymbol);
         expect(editBusinessSpy).toHaveBeenCalledTimes(1); // should have been called (editBusiness method)
+    })
+
+    test('Test checkIsAdmin method takes user to timeout page when no response is received', async () => {
+        const error = {
+            request: "Hello"
+        }
+
+        Api.getUser.mockImplementation(() => Promise.reject(error));
+
+        wrapper.vm.checkIsAdmin(1, 1);
+        await wrapper.vm.$nextTick();
+
+        expect($router.push).toHaveBeenCalledWith({path: "/timeout"});
+    })
+
+    test('Test checkIsAdmin method takes user to noUser page when 406 is received', async () => {
+        const error = {
+            response: {
+                status: 406
+            }
+        }
+
+        Api.getUser.mockImplementation(() => Promise.reject(error));
+
+        wrapper.vm.checkIsAdmin(1, 1);
+        await wrapper.vm.$nextTick();
+
+        expect($router.push).toHaveBeenCalledWith({path: "/noUser"});
+    })
+
+    test('Test checkIsAdmin method takes user to invalidtoken page when 401 is received', async () => {
+        const error = {
+            response: {
+                status: 401
+            }
+        }
+
+        Api.getUser.mockImplementation(() => Promise.reject(error));
+
+        wrapper.vm.checkIsAdmin(1, 1);
+        await wrapper.vm.$nextTick();
+
+        expect($router.push).toHaveBeenCalledWith({path: "/invalidtoken"});
+    })
+
+    test('Test checkIsAdmin method takes user to noUser page when random error (500) is received', async () => {
+        const error = {
+            response: {
+                status: 500
+            }
+        }
+
+        Api.getUser.mockImplementation(() => Promise.reject(error));
+
+        wrapper.vm.checkIsAdmin(1, 1);
+        await wrapper.vm.$nextTick();
+
+        expect($router.push).toHaveBeenCalledWith({path: "/noUser"});
     })
 })
