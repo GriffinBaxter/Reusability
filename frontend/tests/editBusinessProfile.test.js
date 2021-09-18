@@ -7,9 +7,11 @@ import EditBusinessProfile from "../src/views/EditBusinessProfile";
 import AddressAPI from "../src/addressInstance";
 import Api from "../src/Api";
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
+import Cookies from "js-cookie";
 
 jest.mock("../src/addressInstance");
 jest.mock("../src/Api");
+jest.mock("js-cookie");
 
 describe("Testing methods in EditBusinessProfile", () => {
 
@@ -25,13 +27,42 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         $route = {
             params: {
-                id: 2
+                id: 1
             }
         };
 
+        const userResponse = {
+            "data": {
+                "id": 1,
+                "firstName": "John",
+                "lastName": "Doe",
+                "middleName": "S",
+                "nickname": "Johnny",
+                "bio": "Biography",
+                "email": "email@email.com",
+                "created": "2021-02-02T00:00",
+                "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+                "businessesAdministered": [],
+                "images": [],
+                "dateOfBirth": "2000-02-02",
+                "phoneNumber": "0271316",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Ilam",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                }
+            },
+            "status": 200
+        }
+        Api.getUser.mockImplementation( () => Promise.resolve(userResponse));
+
         const businessResponse = {
             data: {
-                "id": 2,
+                "id": 1,
                 "administrators": [
                     {
                         "id": 10,
@@ -198,6 +229,8 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         editBusinessSpy = jest.spyOn(EditBusinessProfile.methods, 'editBusiness');
 
+        Cookies.get = jest.fn().mockImplementation(() => 1); // mock all cookies
+
         wrapper = shallowMount(
             EditBusinessProfile,
             {
@@ -245,7 +278,7 @@ describe("Testing methods in EditBusinessProfile", () => {
         }
         Api.getBusiness.mockImplementation(() => Promise.reject(error));
 
-        await wrapper.vm.retrieveBusiness(2);
+        await wrapper.vm.retrieveBusiness(1);
         await wrapper.vm.$nextTick();
 
         expect($router.push).toHaveBeenCalledWith({name: "NoBusiness"});
@@ -259,7 +292,7 @@ describe("Testing methods in EditBusinessProfile", () => {
         }
         Api.getBusiness.mockImplementation(() => Promise.reject(error));
 
-        await wrapper.vm.retrieveBusiness(2);
+        await wrapper.vm.retrieveBusiness(1);
         await wrapper.vm.$nextTick();
 
         expect($router.push).toHaveBeenCalledWith({name: "InvalidToken"});
@@ -289,7 +322,6 @@ describe("Testing methods in EditBusinessProfile", () => {
         wrapper.vm.$refs.suburb.value = suburb; // whitespace in the middle should not be trimmed
 
         wrapper.vm.trimTextInputFields();
-        await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.businessName).toEqual(name);
         expect(wrapper.vm.$data.businessType).toEqual(type);
@@ -326,7 +358,6 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         const event = { preventDefault: jest.fn() };
         wrapper.vm.processEdit(event);
-        await wrapper.vm.$nextTick();
 
         expect(editBusinessSpy).toHaveBeenCalledTimes(0); // should not have been called
     })
@@ -339,7 +370,6 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         const event = { preventDefault: jest.fn() };
         wrapper.vm.processEdit(event);
-        await wrapper.vm.$nextTick();
 
         expect(editBusinessSpy).toHaveBeenCalledTimes(0); // should not have been called
     })
@@ -349,6 +379,7 @@ describe("Testing methods in EditBusinessProfile", () => {
         wrapper.vm.$data.orginalCountry = "United States";
         wrapper.vm.$refs.country.value = "United States"; // has not been changed
 
+        await wrapper.vm.$nextTick();
         const event = { preventDefault: jest.fn() };
         wrapper.vm.processEdit(event);
         await wrapper.vm.$nextTick();
@@ -361,7 +392,6 @@ describe("Testing methods in EditBusinessProfile", () => {
         const symbol = "$";
 
         wrapper.vm.currencyChange(code, symbol);
-        await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.currencyCode).toEqual(code);
         expect(wrapper.vm.$data.currencySymbol).toEqual(symbol);
@@ -379,7 +409,6 @@ describe("Testing methods in EditBusinessProfile", () => {
         const symbol = null;
 
         wrapper.vm.currencyChange(code, symbol);
-        await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.currencyCode).toEqual(originalCode);
         expect(wrapper.vm.$data.currencySymbol).toEqual(originalSymbol);

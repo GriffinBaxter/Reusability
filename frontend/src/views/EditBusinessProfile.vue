@@ -170,6 +170,8 @@ import {getErrorMessage} from "../components/inventory/InventoryValidationHelper
 import Api from "../Api";
 import CurrencyChangeModal from "../components/business/CurrencyChangeModal";
 import {toggleInvalidClass, toggleInvalidSelectClass} from "../validationUtils";
+import Cookies from "js-cookie";
+import {UserRole} from "../configs/User";
 
 export default {
   name: "EditBusinessProfile",
@@ -237,7 +239,11 @@ export default {
       // Currency change details.
       currencyCode: "",
       currencySymbol: "",
-      originalCountry: ""
+      originalCountry: "",
+
+      // Used to keep track of whether logged in user is a business or global admin.
+      // true if admin, false otherwise. Initially not set.
+      isAdministrator: false
     }
   },
   methods: {
@@ -684,11 +690,52 @@ export default {
     editBusiness() {
       //TODO call to backend.
       return;
-    }
+    },
+
+    /**
+     * This method retrieves the details of the currently logged in user. If they are a business or global administrator
+     * then they are able to edit the current business.
+     *
+     * @param userId the id of the currently logged in user.
+     * @param businessId the id of the current business.
+     * @return {Promise<void>} a promise containing the results of retrieving the logged in user details from the backend.
+     */
+    async checkIsAdmin(userId, businessId) {
+      await Api.getUser(userId).then(response => {
+        response.data.businessesAdministered.forEach(business => {
+          if (business.id.toString() === businessId) { this.isAdministrator = true; }
+        });
+        this.isAdministrator = this.isAdministrator ? true :
+            (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
+        // if user is not acting as a business, or acting for another business
+        const actAs = Cookies.get('actAs');
+        if (actAs !== undefined && businessId !== actAs) { this.isAdministrator = false; }
+      }).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 406) {
+          this.$router.push({path: '/noUser'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else {
+          this.$router.push({path: '/noUser'});
+          console.log(error.message);
+        }
+      })
+    },
   },
-  mounted() {
-    const id = this.$route.params.id;
-    this.retrieveBusiness(id);
+  async mounted() {
+    // check currently logged in user is a business or global administrator.
+    // if not an administrator then redirect them to forbidden page.
+    // if an administrator then autofill business data (continue loading page).
+    const userId = Cookies.get("userID");
+    const businessId = this.$route.params.id;
+    await this.checkIsAdmin(userId, businessId);
+    if (this.isAdministrator) {
+      await this.retrieveBusiness(businessId);
+    } else {
+      await this.$router.push({name: "Forbidden"});
+    }
   }
 }
 </script>
