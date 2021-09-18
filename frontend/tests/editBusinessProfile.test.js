@@ -16,6 +16,7 @@ describe("Testing methods in EditBusinessProfile", () => {
     let wrapper;
     let $router;
     let $route;
+    let editBusinessSpy;
 
     beforeEach(() => {
         $router = {
@@ -195,6 +196,8 @@ describe("Testing methods in EditBusinessProfile", () => {
         }
         AddressAPI.addressQuery.mockImplementation(() => Promise.resolve(response));
 
+        editBusinessSpy = jest.spyOn(EditBusinessProfile.methods, 'editBusiness');
+
         wrapper = shallowMount(
             EditBusinessProfile,
             {
@@ -316,5 +319,70 @@ describe("Testing methods in EditBusinessProfile", () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.businessTypeErrorMsg).toEqual("This field is required!");
+    })
+
+    test('Test the processEdit method does not call editBusiness method when an input field is invalid.', async () => {
+        wrapper.vm.$data.businessType = "Not Valid"; // invalid business type
+
+        const event = { preventDefault: jest.fn() };
+        wrapper.vm.processEdit(event);
+        await wrapper.vm.$nextTick();
+
+        expect(editBusinessSpy).toHaveBeenCalledTimes(0); // should not have been called
+    })
+
+    test('Test the processEdit method does not call editBusiness method when country has been change because' +
+        'the user needs to be notified about currency changes', async () => {
+        wrapper.vm.$data.orginalCountry = "United States";
+        wrapper.vm.$refs.country.value = "New Zealand"; // country has been changed
+        wrapper.vm.$refs.currencyChangeModal.showModal = jest.fn(); // mock opening modal
+
+        const event = { preventDefault: jest.fn() };
+        wrapper.vm.processEdit(event);
+        await wrapper.vm.$nextTick();
+
+        expect(editBusinessSpy).toHaveBeenCalledTimes(0); // should not have been called
+    })
+
+    test('Test the processEdit method calls editBusiness method when country has not been changed, and there are' +
+        'no input fields that are invalid.', async () => {
+        wrapper.vm.$data.orginalCountry = "United States";
+        wrapper.vm.$refs.country.value = "United States"; // has not been changed
+
+        const event = { preventDefault: jest.fn() };
+        wrapper.vm.processEdit(event);
+        await wrapper.vm.$nextTick();
+
+        expect(editBusinessSpy).toHaveBeenCalledTimes(1); // should have been called
+    })
+
+    test('Test the currencyChange method sets currency code and symbol when not null.', async () => {
+        const code = "NZD";
+        const symbol = "$";
+
+        wrapper.vm.currencyChange(code, symbol);
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.currencyCode).toEqual(code);
+        expect(wrapper.vm.$data.currencySymbol).toEqual(symbol);
+        expect(editBusinessSpy).toHaveBeenCalledTimes(1); // should have been called (editBusiness method)
+    })
+
+    test('Test the currencyChange method does not set currency code and symbol when they are null.', async () => {
+        const originalCode = "USD";
+        const originalSymbol = "$";
+
+        wrapper.vm.$data.currencyCode = originalCode;
+        wrapper.vm.$data.currencySymbol = originalSymbol;
+
+        const code = null;
+        const symbol = null;
+
+        wrapper.vm.currencyChange(code, symbol);
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.currencyCode).toEqual(originalCode);
+        expect(wrapper.vm.$data.currencySymbol).toEqual(originalSymbol);
+        expect(editBusinessSpy).toHaveBeenCalledTimes(1); // should have been called (editBusiness method)
     })
 })
