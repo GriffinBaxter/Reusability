@@ -73,27 +73,29 @@ const setupCookies = async (userId, actAsId) => {
     ));
 }
 
+let $route;
+let $router;
+
+beforeEach(() => {
+    $route = {
+        path: '/businessProfile/4',
+        name: 'BusinessProfile',
+        params: {
+            id: 4
+        }
+    }
+
+    $router = {
+        push: jest.fn()
+    }
+})
+
+afterEach(() => {
+    jest.clearAllMocks();
+});
+
 describe("Testing that the change profile button appears only when allowed to.", () => {
-    let $route;
-    let $router;
 
-    beforeEach(() => {
-        $route = {
-            path: '/businessProfile/4',
-            name: 'BusinessProfile',
-            params: {
-                id: 4
-            }
-        }
-
-        $router = {
-            push: jest.fn()
-        }
-    })
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
 
     test("Testing that if you are not acting as a business then the button does not appear.", async () => {
         await setupCookies(21, undefined);
@@ -129,6 +131,29 @@ describe("Testing that the change profile button appears only when allowed to.",
 
         expect(button.exists()).toBeTruthy();
     });
-
-
 });
+
+describe("Testing getImageSrc()", () => {
+
+    test("Testing the getImageSrc() will return default image when file name is ''", async () => {
+
+        const wrapper = await shallowMount(BusinessProfile);
+
+        expect(await wrapper.vm.getImageSrc('')).toBe("test-file-stub")
+    })
+
+    test("Testing the getImageSrc() will return default image when file name is not provided", async () => {
+
+        const wrapper = await shallowMount(BusinessProfile);
+
+        expect(await wrapper.vm.getImageSrc()).toBe("test-file-stub")
+    })
+
+    test("Testing the getImageSrc() will return image src when file name is given", async () => {
+
+        const wrapper = await shallowMount(BusinessProfile);
+
+        expect(await wrapper.vm.getImageSrc('userImage.jpg')).toBe("undefined/userImage.jpg")
+    })
+
+})
