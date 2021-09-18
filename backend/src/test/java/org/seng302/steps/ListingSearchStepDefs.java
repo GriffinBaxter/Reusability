@@ -122,7 +122,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     "\"email\":\"%s\"," +
                     "\"created\":\"%s\"," +
                     "\"role\":\"%s\"," +
-                    "\"businessesAdministered\":[null]," +
+                    "\"businessesAdministered\":[]," +
                     "\"images\":[]," +
                     "\"dateOfBirth\":\"%s\"," +
                     "\"phoneNumber\":\"%s\"," +

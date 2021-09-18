@@ -4,6 +4,7 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.repository.*;
@@ -147,7 +148,7 @@ class ListingResourceIntegrationTests {
                                                         "\"email\":\"%s\"," +
                                                         "\"created\":\"%s\"," +
                                                         "\"role\":\"%s\"," +
-                                                        "\"businessesAdministered\":[null]," +
+                                                        "\"businessesAdministered\":[]," +
                                                         "\"images\":[]," +
                                                         "\"dateOfBirth\":\"%s\"," +
                                                         "\"phoneNumber\":\"%s\"," +
@@ -200,7 +201,7 @@ class ListingResourceIntegrationTests {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
             "\"images\":[]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
@@ -2193,4 +2194,135 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    /**
+     * Tests that when deleting a listing and you do not provide a session token a 401 UNAUTHROIZED is returned.
+     */
+    @Test
+    void WhenDeleteListingThatYouDontProvideSessionTokenAnUnauthorizedIsReturned() throws Exception{
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that when deleting a listing and providing a invalid business id a NOT_ACCEPTABLE is thrown
+     */
+    @Test
+    void whenDeleteListingThatYouProvideInvalidBusinessIdANotAcceptableIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.empty());
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * When deleting a listing when providing a invalid listing id then an NOT_ACCEPTABLE is thrown.
+     */
+    @Test
+    void whenDeleteListingThatYouProvideInvalidListingIdANotAcceptableIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.empty());
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Testing that a when deleting a listing and providing a closed listing that then a NOT_ACEEPTABLE is thrown.
+     */
+    @Test
+    void whenDeleteListingThatTheListingIsAlreadyClosedThrowANotAcceptable() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+        listing.setCloses(LocalDateTime.of(2020, 12, 12, 12, 12));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Testing that when deleting a listing and you are not an admin then a FORBIDDEN is thrown
+     */
+    @Test
+    void whenDeletingListingAndYouAreNotAdminAForbiddenIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.of(anotherUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * When deleting a listing as a admin then a OK status is returned.
+     */
+    @Test
+    void whenDeletingListingAndYouAreAdminAOkIsReturned() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When deleting a listing as a GAA then a OK status is returned.
+     */
+    @Test
+    void whenDeletingListingAndYouAreGaaAOkIsReturned() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", gAA.getSessionUUID());
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When deleting a listing as a DGAA then a OK status is returned.
+     */
+    @Test
+    void whenDeletingListingAndYouAreDgaaAOkIsReturned() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When an error is thrown when trying to delete the listing then an internal server error is thrown.
+     */
+    @Test
+    void whenDeletingListingAndListingRepositoryFailsToDeleteThenServerErrorIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+        when(listingRepository.deleteListing(listing.getId())).thenThrow(new FailedToDeleteListingException(""));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }
