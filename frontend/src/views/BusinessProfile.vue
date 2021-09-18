@@ -246,24 +246,28 @@ export default {
     }
   },
   methods: {
-    formatAge(ageString) {
-      /*
-      Formats the given age string using a Date object and removes the day from the result.
-      Returns a formatted string.
-       */
+    /**
+     * Formats the given age string using a Date object and removes the day from the result.
+     * Returns a formatted string.
+     *
+     * @param ageString The age string returned.
+     * @return {string} Returns the formatted age string.
+     */
+    formatDate(ageString) {
       let array = (new Date(ageString)).toDateString().split(" ");
       array.shift();
       return array.join(' ')
     },
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     *
+     * @param createdDate the created date.
+     */
     getCreatedDate(createdDate) {
-      /*
-      Calculates the months between the given date and the current date, then formats the given date and months.
-      Finally it sets the join date on the page to the formatted string.
-       */
-
       const dateJoined = new Date(createdDate);
 
-      const currentDate = new Date();
+      const currentDate = new Date(Date.now());
       let months = (currentDate.getFullYear() - dateJoined.getFullYear()) * 12
           + (currentDate.getMonth() - dateJoined.getMonth());
 
@@ -275,14 +279,16 @@ export default {
         months -= 1;
       }
 
-      const finalDate = this.formatAge(createdDate);
+      const finalDate = this.formatDate(createdDate);
       this.created = `${finalDate} (${months} months ago)`;
     },
+    /**
+     * try to send a request to backend, and use populatePage() function to unpack data returned,
+     * if fail, push to a page show the error.
+     *
+     * @param businessID The business id we want to retrieve.
+     */
     retrieveBusiness(businessID) {
-      /*
-      try to send a request to backend, and use populatePage() function to unpack data returned,
-      if fail, push to a page show the error.
-      */
       Api.getBusiness(businessID).then(response => (this.populatePage(response.data))).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
