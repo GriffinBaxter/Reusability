@@ -483,7 +483,13 @@ export default {
     const listingId = url.substring(url.lastIndexOf('/') + 1);
     const self = this;
     this.currentID = Cookies.get('userID');
-    this.actingBusinessId = parseInt(Cookies.get("actAs"));
+
+    const actAsInt = parseInt(Cookies.get("actAs"));
+    if (!isNaN(actAsInt)) {
+      this.actingBusinessId = actAsInt;
+    } else {
+      this.actingBusinessId = null;
+    }
 
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))
