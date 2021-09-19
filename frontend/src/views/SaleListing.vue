@@ -220,6 +220,8 @@ export default {
       EAN_LENGTH: 13,
 
       actingBusinessId: null,
+
+      isAdmin: false
     }
   },
   methods: {
