@@ -157,6 +157,7 @@
                                       :price="price.toString()"
                                       :currencySymbol="currencySymbol"
                                       :currencyCode="currencyCode"
+                                      v-on:deleteListing="deleteListing()"
     />
   </div>
 </template>
@@ -235,10 +236,17 @@ export default {
     }
   },
   methods: {
+    /**
+     * Opens the withdraw listing confirmation modal.
+     * @param event The click event.
+     */
     withdrawListingConfirmation(event) {
       this.$refs.withdrawListingConfirmationModal.showModal(event);
     },
 
+    /**
+     * Sends a request to the back-end to withdraw the current listing and upon success returns to the sale lisings page.
+     */
     deleteListing() {
       Api.deleteListing(this.listingId).then(() => {
         this.returnToSales();
@@ -280,7 +288,7 @@ export default {
       })
     },
     /**
-     * change bookmark status
+     * Change bookmark status
      */
     changeBookmarkStatus() {
       this.isBookmarked = !this.isBookmarked

@@ -18,9 +18,9 @@
             <div class="row">
               <h5>{{ productName }}</h5>
               <br>
-              <b>Quantity:</b> {{ quantity }}
+              <strong>Quantity:</strong> {{ quantity }}
               <br><br>
-              <b>Price:</b> {{ currencySymbol }}{{ price }} {{ currencyCode }}
+              <strong>Price:</strong> {{ currencySymbol }}{{ price }} {{ currencyCode }}
             </div>
           </form>
         </div>
@@ -28,7 +28,7 @@
           <button class="btn btn-outline-primary green-button-transparent me-auto" data-bs-dismiss="modal">
             Cancel
           </button>
-          <button type="button" class="btn btn-danger">Withdraw Listing</button>
+          <button type="button" class="btn btn-danger" @click="withdrawListing()">Withdraw Listing</button>
         </div>
       </div>
     </div>
@@ -82,6 +82,13 @@ export default {
       // Show the modal
       this.modal.show();
     },
+    /**
+     * Emits and event to the parent class to confirm listing withdrawal
+     */
+    withdrawListing() {
+      this.modal.hide();
+      this.$emit('deleteListing');
+    }
   },
   /**
    * When mounted create the instance of the modal.
@@ -100,7 +107,7 @@ export default {
   text-align: center;
 }
 
-b {
+strong {
   padding: 0;
 }
 
