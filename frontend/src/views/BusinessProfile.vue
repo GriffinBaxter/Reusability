@@ -391,6 +391,16 @@ export default {
       return Api.getServerURL() + "/" + filename;
     },
     /**
+     * Given a role see if it is a DGAA or GAA.
+     *
+     * @param role The role we want to test against.
+     * @return {Boolean} Returns true if the role is a DGAA or GAA. Otherwise false.
+     */
+    isGaaOrDgaa(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
+          || role === UserRole.GLOBALAPPLICATIONADMIN
+    },
+    /**
      * Given a id we attempt to see if the yser is an admin. And update the isAdministrator variable.
      *
      * @param currentID The user's id we are testing against.
@@ -402,9 +412,7 @@ export default {
             this.isAdministrator = true;
           }
         });
-        this.isAdministrator = this.isAdministrator ? true :
-            (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
-            || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
+        this.isAdministrator = this.isAdministrator || this.isGaaOrDgaa(response.data.role);
         if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
           this.isAdministrator = false;
         }
