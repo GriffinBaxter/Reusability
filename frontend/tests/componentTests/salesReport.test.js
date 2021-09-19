@@ -52,7 +52,7 @@ describe('Tests methods in the SaleReport component.', () => {
 
         test("Test the applyDate method sets invalidDateMsg when the start date is after the end date", () => {
             wrapper.vm.$data.startDate = '2021-03-20';
-            wrapper.vm.$data.endDate = '2020-03-20';
+            wrapper.vm.$data.endDate = '2021-01-20';
             let event = {
                 preventDefault: jest.fn()
             }
@@ -71,8 +71,8 @@ describe('Tests methods in the SaleReport component.', () => {
         })
 
         test("Test the applyDate method sets invalidDateMsg to an empty string when the dates are valid", () => {
-            wrapper.vm.$data.startDate = '2019-03-20';
-            wrapper.vm.$data.endDate = '2020-03-20';
+            wrapper.vm.$data.startDate = '2021-04-20';
+            wrapper.vm.$data.endDate = '2021-05-20';
             let event = {
                 preventDefault: jest.fn()
             }
@@ -81,8 +81,8 @@ describe('Tests methods in the SaleReport component.', () => {
         })
 
         test("Test the applyDate method sets invalidDateMsg to an empty string when the dates are one day apart", () => {
-            wrapper.vm.$data.startDate = '2020-03-19';
-            wrapper.vm.$data.endDate = '2020-03-20';
+            wrapper.vm.$data.startDate = '2021-03-19';
+            wrapper.vm.$data.endDate = '2021-03-20';
             let event = {
                 preventDefault: jest.fn()
             }
@@ -91,13 +91,69 @@ describe('Tests methods in the SaleReport component.', () => {
         })
 
         test("Test the applyDate method sets invalidDateMsg when the start date is the same as the end date", () => {
-            wrapper.vm.$data.startDate = '2020-03-20';
-            wrapper.vm.$data.endDate = '2020-03-20';
+            wrapper.vm.$data.startDate = '2021-03-20';
+            wrapper.vm.$data.endDate = '2021-03-20';
             let event = {
                 preventDefault: jest.fn()
             }
             wrapper.vm.applyDate(event)
             expect(wrapper.vm.$data.invalidDateMsg).toBe("Start date must be before end date");
+        })
+
+        test("Test the applyDate method sets invalidDateMsg when the start date is before 2021", () => {
+            wrapper.vm.$data.startDate = '2020-12-31';
+            wrapper.vm.$data.endDate = '2021-03-20';
+            let event = {
+                preventDefault: jest.fn()
+            }
+            wrapper.vm.applyDate(event)
+            expect(wrapper.vm.$data.invalidDateMsg).toBe("Dates must be after 2020");
+        })
+
+        test("Test the applyDate method sets invalidDateMsg when the end date is before 2021", () => {
+            wrapper.vm.$data.startDate = '2021-12-31';
+            wrapper.vm.$data.endDate = '2020-12-31';
+            let event = {
+                preventDefault: jest.fn()
+            }
+            wrapper.vm.applyDate(event)
+            expect(wrapper.vm.$data.invalidDateMsg).toBe("Dates must be after 2020");
+        })
+
+        test("Test the applyDate method sets invalidDateMsg when the both the start and end dates are before 2021", () => {
+            wrapper.vm.$data.startDate = '2020-12-31';
+            wrapper.vm.$data.endDate = '2020-12-31';
+            let event = {
+                preventDefault: jest.fn()
+            }
+            wrapper.vm.applyDate(event)
+            expect(wrapper.vm.$data.invalidDateMsg).toBe("Dates must be after 2020");
+        })
+
+        test("Test the applyDate method sets invalidDateMsg when the start date has not been entered", () => {
+            wrapper.vm.$data.endDate = '2021-12-31';
+            let event = {
+                preventDefault: jest.fn()
+            }
+            wrapper.vm.applyDate(event)
+            expect(wrapper.vm.$data.invalidDateMsg).toBe("Please enter two dates");
+        })
+
+        test("Test the applyDate method sets invalidDateMsg when the end date has not been entered", () => {
+            wrapper.vm.$data.startDate = '2021-12-31';
+            let event = {
+                preventDefault: jest.fn()
+            }
+            wrapper.vm.applyDate(event)
+            expect(wrapper.vm.$data.invalidDateMsg).toBe("Please enter two dates");
+        })
+
+        test("Test the applyDate method sets invalidDateMsg when both the start and end dates have not been entered", () => {
+            let event = {
+                preventDefault: jest.fn()
+            }
+            wrapper.vm.applyDate(event)
+            expect(wrapper.vm.$data.invalidDateMsg).toBe("Please enter two dates");
         })
 
     });
@@ -294,6 +350,16 @@ describe('Tests methods in the SaleReport component.', () => {
 
             expect(wrapper.vm.$data.salesReportData.length).toEqual(response.data.length)
             expect(wrapper.vm.$data.salesReportData).toEqual(response.data);
+
+        })
+
+        test("Test the retrieveSalesReport method correctly sets the invalidDayMsg when a section of the single day selector is empty", async () => {
+            wrapper.vm.$data.selectedDay = '';
+
+            await wrapper.vm.retrieveSalesReport();
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.vm.$data.invalidDayMsg).toBe("Please enter a date");
 
         })
 

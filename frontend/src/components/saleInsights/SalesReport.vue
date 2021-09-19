@@ -78,12 +78,14 @@
             </div>
 
             <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
-              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay"
-                     :min="'2021-01-01'" :max="currentDay">
+              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
+
               <button class="btn green-button" @click="retrieveSalesReport()">
                 Apply
               </button>
+
             </div>
+
 
             <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
 
@@ -92,42 +94,44 @@
               <form class="needs-validation" novalidate @submit.prevent>
                 <div class="form-group" id="date-filtering-container">
 
-                  <div class="row">
-                    <div class="col-xl-1">
-                      <label for="start-date-input" class="p-2">Date </label>
-                    </div>
-                    <div class="col-xl-4 col-md-6">
-                      <input type="date" class="form-control filter-input" id="start-date-input"
-                             v-model="startDate"
-                             :class="toggleInvalidClass(invalidDateMsg)">
-                      <div class="invalid-feedback">
-                        {{ invalidDateMsg }}
+                    <div class="row">
+                      <div class="col-xl-1">
+                        <label for="start-date-input" class="py-2">Date </label>
+                      </div>
+                      <div class="col-xl-4 col-md-6">
+                        <input type="date" class="form-control filter-input" id="start-date-input"
+                               v-model="startDate"
+                               :class="toggleInvalidClass(invalidDateMsg)"
+                               :min="'2021-01-01'">
+                        <div class="invalid-feedback">
+                          {{invalidDateMsg}}
+                        </div>
+                      </div>
+                      <div class="col-xl-1">
+                        <label for="end-date-input" class="p-2"> to </label>
+                      </div>
+                      <div class="col-xl-4 col-md-6">
+                        <input type="date" class="form-control filter-input" id="end-date-input"
+                               v-model="endDate"
+                               :min="'2021-01-01'">
+                      </div>
+                      <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
+                        <button class="btn green-button" @click="applyDate($event)">
+                          Apply
+                        </button>
                       </div>
                     </div>
-                    <div class="col-xl-1">
-                      <label for="end-date-input" class="p-2"> to </label>
-                    </div>
-                    <div class="col-xl-4 col-md-6">
-                      <input type="date" class="form-control filter-input" id="end-date-input"
-                             v-model="endDate">
-                    </div>
-                    <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
-                      <button class="btn green-button" @click="applyDate($event)">
-                        Apply
-                      </button>
-                    </div>
                   </div>
-                </div>
-              </form>
-            </div>
+                </form>
+          </div>
 
             <!---------------------------------- Granularity options menu ------------------------------------------->
 
-            <div class="col-xl-1">
-              <label for="granularity-button" class="py-3">
-                Granularity:
-              </label>
-            </div>
+          <div class="col-xl-1" style="width: auto">
+            <label for="granularity-button" class="py-3">
+              Granularity:
+            </label>
+          </div>
 
             <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
 
@@ -197,11 +201,11 @@
 
 <script>
 
-import {isFuture, parseISO, formatISO, format, lastDayOfMonth} from "date-fns";
+import {isFuture, parseISO, formatISO, format, lastDayOfMonth, isBefore} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
-import {manageError} from "../../views/helpFunction"
+import {manageError} from "../../errorHandler";
 
 export default {
   name: "SalesReport",
@@ -261,7 +265,8 @@ export default {
       currentDay: "",
       selectedDay: "",
 
-      salesReportData: []
+      salesReportData: [],
+      invalidDayMsg: ""
     }
   },
   methods: {
@@ -269,6 +274,8 @@ export default {
     isFirstDateBeforeSecondDate: isFirstDateBeforeSecondDate,
 
     toggleInvalidClass: toggleInvalidClass,
+
+    manageError: manageError,
 
     /**
      * Validates the start and end dates before applying the date range to the report.
@@ -279,7 +286,11 @@ export default {
      */
     applyDate(event) {
       event.preventDefault();
-      if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
+      if (this.startDate === null || this.endDate === null) {
+        this.invalidDateMsg = "Please enter two dates"
+      } else if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
+        this.invalidDateMsg = "Dates must be after 2020"
+      } else if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
         this.invalidDateMsg = "Start date must be before end date"
       } else if (isFuture(parseISO(this.startDate))) {
         this.invalidDateMsg = "Start date cannot be in the future";
@@ -358,9 +369,14 @@ export default {
      * Sends an API request to the backend to retrieve the sales report for the currently selected options
      */
     async retrieveSalesReport() {
-      const dates = this.generateDates();
-      const fromDate = dates.fromDate;
-      const toDate = dates.toDate;
+      // Check that selected day is not partially empty (unlikely case)
+      if (this.selectedDay === '') {
+        this.invalidDayMsg = 'Please enter a date';
+      } else {
+        this.invalidDayMsg = "";
+        const dates = this.generateDates();
+        const fromDate = dates.fromDate;
+        const toDate = dates.toDate;
 
       await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
         this.salesReportData = [];
@@ -374,6 +390,17 @@ export default {
       }).catch((error) => {
         this.$router.push(manageError(error));
       })
+    },
+
+    /**
+     * Checks if a date is before the year 2021.
+     * Dates before 2021 are not accepted by the sales report back-end endpoint
+     * so this must be validated here.
+     * @param date A date to check
+     */
+    isBefore2021(date) {
+      const dateToCompare = parseISO('2021-01-01');
+      return isBefore(parseISO(date), dateToCompare);
     },
 
     /**
