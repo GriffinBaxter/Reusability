@@ -302,10 +302,12 @@ export default {
         }
       })
     },
+    /**
+     * Unpacks the data into the correct data attributes.
+     *
+     * @param data The data to be unpacked from a Api.getBusiness(id) call.
+     */
     populatePage(data) {
-      /*
-      unpack data
-      */
 
       //basic data unpack
       this.name = data.name;

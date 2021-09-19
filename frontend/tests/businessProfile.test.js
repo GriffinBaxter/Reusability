@@ -86,7 +86,7 @@ beforeEach(() => {
     }
 
     $router = {
-        push: jest.fn().mockImplementation((content) => {console.log(content)})
+        push: jest.fn()
     }
 })
 
@@ -227,5 +227,55 @@ describe("Testing the retieveBusiness function", () => {
         await wrapper.vm.$nextTick();
     }
 
+    test("Testing that a timeout is thrown when the getBusiness api call has a timeout error", async () => {
+        await setupCookies(21, 4);
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            request: true
+        }));
+        await createWrapper();
+        expect($router.push).toHaveBeenCalledWith({path: '/timeout'});
+    })
 
+    test("Testing that a 401 status error routes you to the /invalidtoken", async () => {
+        await setupCookies(21, 4);
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            response: {
+                status: 401
+            }
+        }));
+        await createWrapper();
+        expect($router.push).toHaveBeenCalledWith({path: '/invalidtoken'});
+    })
+
+    test("Testing that a 406 status error routes you to the /noBusiness route", async () => {
+        await setupCookies(21, 4);
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            response: {
+                status: 406
+            }
+        }));
+        await createWrapper();
+        expect($router.push).toHaveBeenCalledWith({path: '/noBusiness'});
+    })
+
+    test("Testing that if the response has a 500 error code then we are taken to /noBusiness by default", async () => {
+        await setupCookies(21, 4);
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            response: {
+                status: 500
+            }
+        }));
+        await createWrapper();
+        expect($router.push).toHaveBeenCalledWith({path: '/noBusiness'});
+    })
+
+    test("Testing that has no response then we are taken to /noBusiness by default", async () => {
+        await setupCookies(21, 4);
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            request: true,
+            response: true
+        }));
+        await createWrapper();
+        expect($router.push).toHaveBeenCalledWith({path: '/noBusiness'});
+    })
 })
