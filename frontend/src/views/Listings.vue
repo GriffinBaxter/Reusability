@@ -94,6 +94,7 @@
             v-bind:images="item.images"
             v-bind:barcode="item.barcode"
             v-bind:isAdmin="businessAdmin"
+            @deleteListing="deleteListing"
         />
 
         <!--space-->

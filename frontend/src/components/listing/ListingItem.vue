@@ -195,7 +195,7 @@ export default {
      * Makes a call to the parent to delete the current listing
      */
     deleteListing() {
-      this.$parent.deleteListing(this.listingId)
+      this.$emit('deleteListing', this.listingId);
     }
   },
   watch: {
