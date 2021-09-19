@@ -18,7 +18,11 @@
         <div class="tab-content" id="pills-tabContent">
           <div class="tab-pane fade show active" id="report-tab" role="tabpanel" aria-labelledby="pills-report-tab">
             <SalesReport
-                :business-name="businessName"/>
+                :business-id="businessId"
+                :business-country="businessCountry"
+                :business-name="businessName"
+                :currency-symbol="currencySymbol"
+                :currency-code="currencyCode"/>
           </div>
           <div class="tab-pane fade" id="history-tab" role="tabpanel" aria-labelledby="pills-history-tab">
             <SaleHistory
