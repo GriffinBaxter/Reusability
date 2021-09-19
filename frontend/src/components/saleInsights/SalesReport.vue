@@ -77,11 +77,14 @@
             </div>
 
             <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
-              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay">
+              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
+
               <button class="btn green-button" @click="retrieveSalesReport()">
                 Apply
               </button>
+
             </div>
+
 
             <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
 
@@ -244,7 +247,8 @@ export default {
       currentDay: "",
       selectedDay: "",
 
-      salesReportData: null
+      salesReportData: null,
+      invalidDayMsg: ""
     }
   },
   methods: {
@@ -261,7 +265,9 @@ export default {
      */
     applyDate(event) {
       event.preventDefault();
-      if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
+      if (this.startDate === null || this.endDate === null) {
+        this.invalidDateMsg = "Please enter two dates"
+      } else if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
         this.invalidDateMsg = "Dates must be after 2020"
       } else if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
         this.invalidDateMsg = "Start date must be before end date"
@@ -342,15 +348,21 @@ export default {
      * Sends an API request to the backend to retrieve the sales report for the currently selected options
      */
     async retrieveSalesReport() {
-      const dates = this.generateDates();
-      const fromDate = dates.fromDate;
-      const toDate = dates.toDate;
+      // Check that selected day is not partially empty (unlikely case)
+      if (this.selectedDay === '') {
+        this.invalidDayMsg = 'Please enter a date';
+      } else {
+        this.invalidDayMsg = "";
+        const dates = this.generateDates();
+        const fromDate = dates.fromDate;
+        const toDate = dates.toDate;
 
-      await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
-        this.salesReportData = response.data;
-      }).catch((error) => {
-        this.manageError(error);
-      })
+        await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
+          this.salesReportData = response.data;
+        }).catch((error) => {
+          this.manageError(error);
+        })
+      }
     },
 
     /**
