@@ -6,6 +6,7 @@ import Cookies from "js-cookie"
 import Api from "../src/Api";
 
 import VueLogger from "vuejs-logger";
+import {UserRole} from "../src/configs/User";
 const localVue = createLocalVue();
 localVue.use(VueLogger, {isEnabled: false});
 
@@ -376,5 +377,24 @@ describe("Testing pushToUser function", () => {
         await createWrapper();
         await wrapper.vm.pushToUser('123');
         expect($router.push).toHaveBeenCalledWith({name: "Profile", params: {id: '123'}})
+    })
+})
+
+describe("Testing the isGaaOrDgaa function", () => {
+
+    test("Testing that DGAA returns true.", async () => {
+        expect(BusinessProfile.methods.isGaaOrDgaa(UserRole.DEFAULTGLOBALAPPLICATIONADMIN)).toBeTruthy();
+    })
+
+    test("Testing that GAA returns true.", async () => {
+        expect(BusinessProfile.methods.isGaaOrDgaa(UserRole.GLOBALAPPLICATIONADMIN)).toBeTruthy();
+    })
+
+    test("Testing that USER returns false.", async () => {
+        expect(BusinessProfile.methods.isGaaOrDgaa(UserRole.USER)).toBeFalsy();
+    })
+
+    test("Testing that '1231231' returns false.", async () => {
+        expect(BusinessProfile.methods.isGaaOrDgaa("1231231")).toBeFalsy();
     })
 })
