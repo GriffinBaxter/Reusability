@@ -95,7 +95,7 @@
 
                     <div class="row">
                       <div class="col-xl-1">
-                        <label for="start-date-input" class="p-2">Date </label>
+                        <label for="start-date-input" class="py-2">Date </label>
                       </div>
                       <div class="col-xl-4 col-md-6">
                         <input type="date" class="form-control filter-input" id="start-date-input"
@@ -126,7 +126,7 @@
 
           <!---------------------------------- Granularity options menu ------------------------------------------->
 
-          <div class="col-xl-1">
+          <div class="col-xl-1" style="width: auto">
             <label for="granularity-button" class="py-3">
               Granularity:
             </label>
