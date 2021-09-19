@@ -308,28 +308,29 @@ export default {
      * @param data The data to be unpacked from a Api.getBusiness(id) call.
      */
     populatePage(data) {
-
       //basic data unpack
       this.name = data.name;
       this.business.data.name = this.name;
       this.description = data.description;
-      let businessTypeLowerCaseAndSplit = data.businessType.replaceAll("_", " ").toLowerCase().split(" ");
+      let businessTypeLowerCaseAndSplit = data.businessType.replace(/_/g, ' ').toLowerCase().split(" ");
+
       for (let i = 0; i < businessTypeLowerCaseAndSplit.length; i++) {
         businessTypeLowerCaseAndSplit[i] = businessTypeLowerCaseAndSplit[i][0].toUpperCase() + businessTypeLowerCaseAndSplit[i].slice(1);
       }
       this.businessType = businessTypeLowerCaseAndSplit.join(" ");
+
       this.getCreatedDate(data.created);
 
       //address unpack
       this.streetNumber = checkNullity(data.address.streetNumber);
       this.streetName = checkNullity(data.address.streetName);
-      this.suburb = checkNullity(data.address.suburb);
+      const suburb = checkNullity(data.address.suburb);
       this.city = checkNullity(data.address.city);
       this.region = checkNullity(data.address.region);
       this.country = checkNullity(data.address.country);
       this.postcode = checkNullity(data.address.postcode);
 
-      this.address = getFormattedAddress(this.streetNumber, this.streetName, this.suburb, this.city, this.postcode, this.region, this.country);
+      this.address = getFormattedAddress(this.streetNumber, this.streetName, suburb, this.city, this.postcode, this.region, this.country);
 
       // administrators unpack
       this.primaryAdministratorId = data.primaryAdministratorId;
@@ -356,9 +357,20 @@ export default {
         })
       })
     },
+    /**
+     * When called the page will route you to the profile page for a user with a given id.
+     *
+     * @param id The id of the user we want to see the profile page of.
+     */
     pushToUser(id) {
       this.$router.push({name: 'Profile', params: {id}});
     },
+    /**
+     * Navigates to a page with a given name. This includes also the params id.
+     * This is intended for the product catalogue, inventory and listings pages.
+     *
+     * @param name The name of the page.
+     */
     navigateTo(name) {
       /*
       Navigates to the product catalogue of the business
