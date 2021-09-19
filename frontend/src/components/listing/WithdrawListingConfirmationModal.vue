@@ -25,10 +25,13 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline-primary green-button-transparent me-auto" data-bs-dismiss="modal">
+          <button class="btn btn-outline-primary green-button-transparent me-auto" id="cancel-button"
+                  data-bs-dismiss="modal">
             Cancel
           </button>
-          <button type="button" class="btn btn-danger" @click="withdrawListing()">Withdraw Listing</button>
+          <button type="button" class="btn btn-danger" id="withdraw-listing" @click="withdrawListing()">
+            Withdraw Listing
+          </button>
         </div>
       </div>
     </div>
