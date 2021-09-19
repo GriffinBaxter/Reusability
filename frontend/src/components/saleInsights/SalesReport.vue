@@ -97,7 +97,8 @@
                       <div class="col-xl-4 col-md-6">
                         <input type="date" class="form-control filter-input" id="start-date-input"
                                v-model="startDate"
-                               :class="toggleInvalidClass(invalidDateMsg)">
+                               :class="toggleInvalidClass(invalidDateMsg)"
+                               :min="'2021-01-01'">
                         <div class="invalid-feedback">
                           {{invalidDateMsg}}
                         </div>
@@ -107,7 +108,8 @@
                       </div>
                       <div class="col-xl-4 col-md-6">
                         <input type="date" class="form-control filter-input" id="end-date-input"
-                               v-model="endDate">
+                               v-model="endDate"
+                               :min="'2021-01-01'">
                       </div>
                       <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
                         <button class="btn green-button" @click="applyDate($event)">
@@ -178,7 +180,7 @@
 
 <script>
 
-import {isFuture, parseISO, formatISO, format, lastDayOfMonth} from "date-fns";
+import {isFuture, parseISO, formatISO, format, lastDayOfMonth, isBefore} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
@@ -259,7 +261,9 @@ export default {
      */
     applyDate(event) {
       event.preventDefault();
-      if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
+      if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
+        this.invalidDateMsg = "Dates must be after 2020"
+      } else if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
         this.invalidDateMsg = "Start date must be before end date"
       } else if (isFuture(parseISO(this.startDate))) {
         this.invalidDateMsg = "Start date cannot be in the future";
@@ -359,6 +363,17 @@ export default {
       else if (error.response.status === 403)    { await this.$router.push({path: '/forbidden'});    }
       else if (error.response.status === 406)    { await this.$router.push({path: '/noBusiness'});   }
       else { await this.$router.push({path: '/noBusiness'}); console.log(error.message); }
+    },
+
+    /**
+     * Checks if a date is before the year 2021.
+     * Dates before 2021 are not accepted by the sales report back-end endpoint
+     * so this must be validated here.
+     * @param date A date to check
+     */
+    isBefore2021(date) {
+      const dateToCompare = parseISO('2021-01-01');
+      return isBefore(parseISO(date), dateToCompare);
     },
 
     /**
