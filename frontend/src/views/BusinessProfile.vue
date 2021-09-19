@@ -390,6 +390,11 @@ export default {
       }
       return Api.getServerURL() + "/" + filename;
     },
+    /**
+     * Given a id we attempt to see if the yser is an admin. And update the isAdministrator variable.
+     *
+     * @param currentID The user's id we are testing against.
+     */
     checkIsAdmin(currentID) {
       Api.getUser(currentID).then(response => {
         response.data.businessesAdministered.forEach(business => {
