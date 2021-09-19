@@ -444,6 +444,10 @@ export default {
       // return the url which can be used to retrieve the barcode image.
       return "https://bwipjs-api.metafloor.com/?bcid=" + type + "&text=" + this.barcode;
     },
+    /**
+     * Gets the role of the current user at and checks if they are an admin
+     * @param id ID of user to get the role of
+     */
     getRole(id) {
       Api.getUser(id).then((res) => {
         const role = res.data.role
