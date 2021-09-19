@@ -99,22 +99,3 @@ function parseSelectedDate(dateString) {
         return null
     }
 }
-
-/**
- * If a request in to the backend results in an error, then this method will deal with the error.
- * @param error the error received from the backend.
- */
-export function manageError(error) {
-    if (error.request && !error.response) {
-        return {path: '/timeout'};
-    } else if (error.response.status === 401) {
-        return {path: '/invalidtoken'};
-    } else if (error.response.status === 403) {
-        return {path: '/forbidden'};
-    } else if (error.response.status === 406) {
-        return {path: '/noBusiness'};
-    } else {
-        console.log(error.message);
-        return {path: '/noBusiness'};
-    }
-}

@@ -78,7 +78,8 @@
             </div>
 
             <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
-              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
+              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay"
+                     :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
 
               <button class="btn green-button" @click="retrieveSalesReport()">
                 Apply
@@ -94,44 +95,44 @@
               <form class="needs-validation" novalidate @submit.prevent>
                 <div class="form-group" id="date-filtering-container">
 
-                    <div class="row">
-                      <div class="col-xl-1">
-                        <label for="start-date-input" class="py-2">Date </label>
-                      </div>
-                      <div class="col-xl-4 col-md-6">
-                        <input type="date" class="form-control filter-input" id="start-date-input"
-                               v-model="startDate"
-                               :class="toggleInvalidClass(invalidDateMsg)"
-                               :min="'2021-01-01'">
-                        <div class="invalid-feedback">
-                          {{invalidDateMsg}}
-                        </div>
-                      </div>
-                      <div class="col-xl-1">
-                        <label for="end-date-input" class="p-2"> to </label>
-                      </div>
-                      <div class="col-xl-4 col-md-6">
-                        <input type="date" class="form-control filter-input" id="end-date-input"
-                               v-model="endDate"
-                               :min="'2021-01-01'">
-                      </div>
-                      <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
-                        <button class="btn green-button" @click="applyDate($event)">
-                          Apply
-                        </button>
+                  <div class="row">
+                    <div class="col-xl-1">
+                      <label for="start-date-input" class="py-2">Date </label>
+                    </div>
+                    <div class="col-xl-4 col-md-6">
+                      <input type="date" class="form-control filter-input" id="start-date-input"
+                             v-model="startDate"
+                             :class="toggleInvalidClass(invalidDateMsg)"
+                             :min="'2021-01-01'">
+                      <div class="invalid-feedback">
+                        {{ invalidDateMsg }}
                       </div>
                     </div>
+                    <div class="col-xl-1">
+                      <label for="end-date-input" class="p-2"> to </label>
+                    </div>
+                    <div class="col-xl-4 col-md-6">
+                      <input type="date" class="form-control filter-input" id="end-date-input"
+                             v-model="endDate"
+                             :min="'2021-01-01'">
+                    </div>
+                    <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
+                      <button class="btn green-button" @click="applyDate($event)">
+                        Apply
+                      </button>
+                    </div>
                   </div>
-                </form>
-          </div>
+                </div>
+              </form>
+            </div>
 
             <!---------------------------------- Granularity options menu ------------------------------------------->
 
-          <div class="col-xl-1" style="width: auto">
-            <label for="granularity-button" class="py-3">
-              Granularity:
-            </label>
-          </div>
+            <div class="col-xl-1" style="width: auto">
+              <label for="granularity-button" class="py-3">
+                Granularity:
+              </label>
+            </div>
 
             <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
 
@@ -183,7 +184,7 @@
             <tr v-for="line in salesReportData" v-bind:key="line.granularityName">
               <td>{{ line.granularityName }}</td>
               <td>{{ line.totalSales }}</td>
-              <td>{{currencySymbol}} {{ line.totalRevenue }}</td>
+              <td>{{ currencySymbol }} {{ line.totalRevenue }}</td>
             </tr>
             </tbody>
           </table>
@@ -378,18 +379,19 @@ export default {
         const fromDate = dates.fromDate;
         const toDate = dates.toDate;
 
-      await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
-        this.salesReportData = [];
-        response.data.forEach((line) => {
-          this.salesReportData.push({
-            granularityName: line.granularityName,
-            totalSales: line.totalSales,
-            totalRevenue: line.totalRevenue
-          })
-        });
-      }).catch((error) => {
-        this.$router.push(manageError(error));
-      })
+        await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
+          this.salesReportData = [];
+          response.data.forEach((line) => {
+            this.salesReportData.push({
+              granularityName: line.granularityName,
+              totalSales: line.totalSales,
+              totalRevenue: line.totalRevenue
+            })
+          });
+        }).catch((error) => {
+          this.$router.push(manageError(error));
+        })
+      }
     },
 
     /**
