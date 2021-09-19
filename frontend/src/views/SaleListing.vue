@@ -226,7 +226,7 @@ export default {
   },
   methods: {
     deleteListing() {
-      Api.deleteListing(this.listingId).then(() => {
+      Api.deleteListing(this.businessId, this.listingId).then(() => {
         this.returnToSales();
       }).catch((err) => {
         if (err.response) {

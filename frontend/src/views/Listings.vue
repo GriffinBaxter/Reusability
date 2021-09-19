@@ -181,7 +181,7 @@ name: "Listings",
      * @param id ID of listing to be deleted
      */
     async deleteListing(id) {
-      await Api.deleteListing(id).then(() => {
+      await Api.deleteListing(this.businessId, id).then(() => {
         this.getListings()
       }).catch((err) => {
         if (err.response) {

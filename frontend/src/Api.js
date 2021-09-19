@@ -368,8 +368,8 @@ export default {
     },
 
     // Delete a listing
-    deleteListing: (id) => {
-        return instance.delete(`/listings/${id}`, {
+    deleteListing: (businessId, id) => {
+        return instance.delete(`businesses/${businessId}/listings/${id}`, {
             withCredentials: true
         })
     },
