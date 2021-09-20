@@ -2707,6 +2707,12 @@ components:
             - Retail Trade
             - Charitable organisation
             - Non-profit organisation
+        currencyCode:
+          type: string
+          example: 'NZD'
+        currencySymbol:
+          type: string
+          example: '$'
         created:
           type: string
           format: date-time
