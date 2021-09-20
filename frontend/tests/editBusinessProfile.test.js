@@ -8,6 +8,7 @@ import AddressAPI from "../src/addressInstance";
 import Api from "../src/Api";
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
 import Cookies from "js-cookie";
+import EditProfile from "@/views/EditProfile";
 
 jest.mock("../src/addressInstance");
 jest.mock("../src/Api");
@@ -494,5 +495,58 @@ describe("Testing methods in EditBusinessProfile", () => {
         await wrapper.vm.$nextTick();
 
         expect($router.push).toHaveBeenCalledWith({path: "/noUser"});
+    })
+
+    //TODO: finish this
+    describe("Testing the response on save attempt", () => {
+
+        let editProfileWrapper;
+        let mockEditResponse;
+        let id;
+        let $router;
+
+        beforeEach(async () => {
+
+            id = 1;
+
+            let $route = {
+                params: {
+                    id: id
+                }
+            }
+
+            $router = {
+                push: jest.fn()
+            }
+
+            Api.getUser.mockImplementation(() => Promise.resolve(mockFullApiResponse));
+            Cookies.get.mockReturnValue(id);
+
+            editProfileWrapper = shallowMount(EditProfile, {
+                localVue,
+                mocks: {
+                    $route,
+                    $router
+                }
+            });
+            await editProfileWrapper.vm.$nextTick();
+        })
+
+        test("Application routes to business profile on 200 response", async () => {
+            mockEditResponse = {
+                status: 200
+            }
+
+            editProfileWrapper.vm.$data.description = "Current description"
+            editProfileWrapper.vm.$data.confirmPassword = "New description"
+
+            Api.editBusiness.mockImplementation(() => Promise.resolve(mockEditResponse))
+
+            await editProfileWrapper.vm.editBusiness({preventDefault: jest.fn()});
+
+            await editProfileWrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({name: "BusinessProfile", params: {id: id}})
+        })
     })
 })
