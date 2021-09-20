@@ -713,8 +713,6 @@ export default {
         postcode: this.$refs.postcode.value
       }
 
-      // await this.currencyRequest();
-
       // Wrapping up the business submitted fields into a class object (Business).
       const businessData = {
         primaryAdministratorId: Cookies.get('userID'),
@@ -730,14 +728,13 @@ export default {
 
       const id = this.$route.params.id;
 
-      console.log(businessData);
-
       // Add the Business to the database by sending an API request to the backend to store the business' information.
       // Raise any errors and ensure they are displayed on the UI.
-
       await Api.editBusiness(id, new Business(businessData)).then( (res) => {
         if (res.status === 200) {
-          this.toProfile()
+          if (id) {
+            this.$router.push('/businessProfile/' + id);
+          }
         }
       }).catch((error) => {
         this.cannotProceed = true;

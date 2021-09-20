@@ -103,7 +103,7 @@ export default {
     }),
 
     // Sends a post request to the backend with a new business object to store
-    editBusiness: (id, business) => instance.put('/businesses/${id}', {
+    editBusiness: (id, business) => instance.put(`/businesses/${id}`, {
         ...business.data
     }, {
         withCredentials: true
