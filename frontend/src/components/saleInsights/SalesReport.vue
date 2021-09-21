@@ -33,7 +33,7 @@
                   Day
                 </li>
                 <li id="custom-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Custom'; retrieveSalesReport()">
+                    @click="period = 'Custom'; showTable = false">
                   Custom
                 </li>
               </ul>
@@ -168,7 +168,7 @@
 
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
-        <div class="card p-3" style="margin: 10px 0 75px 0">
+        <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
           <br>
 
           <table class="table table-hover" aria-describedby="page-title" v-if="this.granularity !== 'Total'">
@@ -267,7 +267,8 @@ export default {
       selectedDay: "",
 
       salesReportData: [],
-      invalidDayMsg: ""
+      invalidDayMsg: "",
+      showTable: false
     }
   },
   methods: {
@@ -388,6 +389,7 @@ export default {
               totalRevenue: line.totalRevenue
             })
           });
+          this.showTable = true;
         }).catch((error) => {
           this.$router.push(manageError(error));
         })
