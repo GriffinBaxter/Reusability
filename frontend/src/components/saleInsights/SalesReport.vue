@@ -21,19 +21,19 @@
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li id="year-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Year'">
+                    @click="period = 'Year'; retrieveSalesReport()">
                   Year
                 </li>
                 <li id="month-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Month'">
+                    @click="period = 'Month'; retrieveSalesReport()">
                   Month
                 </li>
                 <li id="day-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Day'">
+                    @click="period = 'Day'; retrieveSalesReport()">
                   Day
                 </li>
                 <li id="custom-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Custom'">
+                    @click="period = 'Custom'; retrieveSalesReport()">
                   Custom
                 </li>
               </ul>
