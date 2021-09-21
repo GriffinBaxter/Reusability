@@ -2,17 +2,20 @@
  * @jest-environment jsdom
  */
 
-import {shallowMount} from '@vue/test-utils';
+import {createLocalVue, shallowMount} from '@vue/test-utils';
 import EditBusinessProfile from "../src/views/EditBusinessProfile";
 import AddressAPI from "../src/addressInstance";
 import Api from "../src/Api";
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
 import Cookies from "js-cookie";
-import EditProfile from "@/views/EditProfile";
+import VueLogger from "vuejs-logger";
 
 jest.mock("../src/addressInstance");
 jest.mock("../src/Api");
 jest.mock("js-cookie");
+
+const localVue = createLocalVue();
+localVue.use(VueLogger, {isEnabled: false})
 
 describe("Testing methods in EditBusinessProfile", () => {
 
@@ -500,7 +503,81 @@ describe("Testing methods in EditBusinessProfile", () => {
     //TODO: finish this
     describe("Testing the response on save attempt", () => {
 
-        let editProfileWrapper;
+        const mockFullApiResponse = {
+            status: 200,
+            data: {
+                firstName: "first",
+                middleName: "second",
+                lastName: "third",
+                nickname: "nick",
+                homeAddress: {
+                    streetNumber: "123",
+                    streetName: "Road Street",
+                    suburb: "Suburb",
+                    city: "City",
+                    postcode: "1234",
+                    region: "Region",
+                    country: "Country"
+                },
+                email: "email@example.com",
+                bio: "Biography",
+                phoneNumber: "0210210210",
+                dateOfBirth: "1999-2-5"
+            }
+        }
+
+        const userResponse = {
+            "data": {
+                "id": 1,
+                "firstName": "Evelia",
+                "lastName": "Blanxart",
+                "middleName": "Robert",
+                "nickname": "Robby",
+                "bio": "I like art!",
+                "email": "everblanxart@gmail.com",
+                "created": "2019-05-20T00:00",
+                "role": "USER",
+                "businessesAdministered": [
+                    {
+                        "id": 1,
+                        "administrators": [
+                            null
+                        ],
+                        "primaryAdministratorId": 10,
+                        "name": "Sunburst Waste",
+                        "description": "Description",
+                        "address": {
+                            "streetNumber": "1849",
+                            "streetName": "C Street Northwest",
+                            "suburb": null,
+                            "city": "Washington",
+                            "region": "District of Columbia",
+                            "country": "United States",
+                            "postcode": "20240"
+                        },
+                        "businessType": "CHARITABLE_ORGANISATION",
+                        "created": "2021-02-14T00:00",
+                        "currencySymbol": "$",
+                        "currencyCode": "USD"
+                    }
+                ],
+                "images": [],
+                "dateOfBirth": "2007-04-13",
+                "phoneNumber": "0272331323",
+                "homeAddress": {
+                    "streetNumber": "190",
+                    "streetName": "Fort Washington Avenue",
+                    "suburb": null,
+                    "city": "New York",
+                    "region": "New York",
+                    "country": "United States",
+                    "postcode": "10040"
+                }
+            },
+            "status": 200,
+        }
+
+        let editBusinessProfileWrapper;
         let mockEditResponse;
         let id;
         let $router;
@@ -522,14 +599,14 @@ describe("Testing methods in EditBusinessProfile", () => {
             Api.getUser.mockImplementation(() => Promise.resolve(mockFullApiResponse));
             Cookies.get.mockReturnValue(id);
 
-            editProfileWrapper = shallowMount(EditProfile, {
+            editBusinessProfileWrapper = shallowMount(EditBusinessProfile, {
                 localVue,
                 mocks: {
                     $route,
                     $router
                 }
             });
-            await editProfileWrapper.vm.$nextTick();
+            await editBusinessProfileWrapper.vm.$nextTick();
         })
 
         test("Application routes to business profile on 200 response", async () => {
@@ -537,16 +614,17 @@ describe("Testing methods in EditBusinessProfile", () => {
                 status: 200
             }
 
-            editProfileWrapper.vm.$data.description = "Current description"
-            editProfileWrapper.vm.$data.confirmPassword = "New description"
+            Api.getUser.mockImplementation(() => Promise.resolve(userResponse))
+
+            editBusinessProfileWrapper.vm.$data.description = "New description"
 
             Api.editBusiness.mockImplementation(() => Promise.resolve(mockEditResponse))
 
-            await editProfileWrapper.vm.editBusiness({preventDefault: jest.fn()});
+            await editBusinessProfileWrapper.vm.editBusiness({preventDefault: jest.fn()});
 
-            await editProfileWrapper.vm.$nextTick();
+            await editBusinessProfileWrapper.vm.$nextTick();
 
-            expect($router.push).toHaveBeenCalledWith({name: "BusinessProfile", params: {id: id}})
+            expect($router.push).toHaveBeenCalledWith(`/businessProfile/${1}`)
         })
     })
 })

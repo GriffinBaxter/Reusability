@@ -775,10 +775,10 @@ export default {
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 406) {
-          this.$router.push({path: '/noUser'});
-        } else if (error.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
+        } else if (error.response !== undefined && error.response.status === 406) {
+            this.$router.push({path: '/noUser'});
+        } else if (error.response !== undefined && error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
         } else {
           this.$router.push({path: '/noUser'});
           console.log(error.message);
