@@ -67,7 +67,8 @@
       </div>
       <!---------------------------------------------- page buttons ------------------------------------------------>
 
-      <div id="page-button-container">
+      <div id="page-button-container"
+           v-if="tableData.length > totalRows">
         <PageButtons
             v-bind:totalPages="totalPages"
             v-bind:currentPage="currentPage"
