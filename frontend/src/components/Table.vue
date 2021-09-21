@@ -59,7 +59,13 @@
     <!-- Table footer -->
     <div :id="`${tableId}-footer-row`" class="row flex-column-reverse flex-lg-row">
       <!-- Showing results out of total results section-->
-      <div class="col-lg" v-if="totalRows > 0">
+      <div class="col-lg"
+           v-if="tableData.length / 6 <= maxRowsPerPage && totalRows <= maxRowsPerPage">
+           Showing {{currentPage+1}}-{{currentPageRows.length+currentPage}} of {{tableData.length / 6}} results
+      </div>
+      <div v-else-if="totalRows > 0">
+        {{totalRows}}
+        {{maxRowsPerPage}}
         Showing {{currentPage*maxRowsPerPage+1}}-{{currentPageRows.length+currentPage*maxRowsPerPage}} of {{totalRows}} results
       </div>
       <div v-else>
@@ -90,7 +96,7 @@ export default {
     PageButtons,
   },
   props: {
-    // Table ID must be unqiue within the page it is placed!
+    // Table ID must be unique within the page it is placed!
     // This is used to identify the icons per table.
     tableId: {
       type: String,
@@ -180,7 +186,6 @@ export default {
       required: false,
       default() { return null; }
     }
-
 
   },
   data() {
