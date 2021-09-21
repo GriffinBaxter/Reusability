@@ -258,6 +258,12 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         Cookies.get = jest.fn().mockImplementation(() => "1"); // mock all cookies
 
+        const mockEditResponse = {
+            status: 200
+        }
+
+        Api.editBusiness.mockImplementation(() => Promise.resolve(mockEditResponse))
+
         wrapper = shallowMount(
             EditBusinessProfile,
             {
@@ -500,131 +506,83 @@ describe("Testing methods in EditBusinessProfile", () => {
         expect($router.push).toHaveBeenCalledWith({path: "/noUser"});
     })
 
-    //TODO: finish this
-    describe("Testing the response on save attempt", () => {
+    test("Test application routes to business profile on 200 response when editing business", async () => {
+            wrapper.vm.$data.description = "New description";
 
-        const mockFullApiResponse = {
-            status: 200,
-            data: {
-                firstName: "first",
-                middleName: "second",
-                lastName: "third",
-                nickname: "nick",
-                homeAddress: {
-                    streetNumber: "123",
-                    streetName: "Road Street",
-                    suburb: "Suburb",
-                    city: "City",
-                    postcode: "1234",
-                    region: "Region",
-                    country: "Country"
-                },
-                email: "email@example.com",
-                bio: "Biography",
-                phoneNumber: "0210210210",
-                dateOfBirth: "1999-2-5"
-            }
-        }
-
-        const userResponse = {
-            "data": {
-                "id": 1,
-                "firstName": "Evelia",
-                "lastName": "Blanxart",
-                "middleName": "Robert",
-                "nickname": "Robby",
-                "bio": "I like art!",
-                "email": "everblanxart@gmail.com",
-                "created": "2019-05-20T00:00",
-                "role": "USER",
-                "businessesAdministered": [
-                    {
-                        "id": 1,
-                        "administrators": [
-                            null
-                        ],
-                        "primaryAdministratorId": 10,
-                        "name": "Sunburst Waste",
-                        "description": "Description",
-                        "address": {
-                            "streetNumber": "1849",
-                            "streetName": "C Street Northwest",
-                            "suburb": null,
-                            "city": "Washington",
-                            "region": "District of Columbia",
-                            "country": "United States",
-                            "postcode": "20240"
-                        },
-                        "businessType": "CHARITABLE_ORGANISATION",
-                        "created": "2021-02-14T00:00",
-                        "currencySymbol": "$",
-                        "currencyCode": "USD"
-                    }
-                ],
-                "images": [],
-                "dateOfBirth": "2007-04-13",
-                "phoneNumber": "0272331323",
-                "homeAddress": {
-                    "streetNumber": "190",
-                    "streetName": "Fort Washington Avenue",
-                    "suburb": null,
-                    "city": "New York",
-                    "region": "New York",
-                    "country": "United States",
-                    "postcode": "10040"
-                }
-            },
-            "status": 200,
-        }
-
-        let editBusinessProfileWrapper;
-        let mockEditResponse;
-        let id;
-        let $router;
-
-        beforeEach(async () => {
-
-            id = 1;
-
-            let $route = {
-                params: {
-                    id: id
-                }
-            }
-
-            $router = {
-                push: jest.fn()
-            }
-
-            Api.getUser.mockImplementation(() => Promise.resolve(mockFullApiResponse));
-            Cookies.get.mockReturnValue(id);
-
-            editBusinessProfileWrapper = shallowMount(EditBusinessProfile, {
-                localVue,
-                mocks: {
-                    $route,
-                    $router
-                }
-            });
-            await editBusinessProfileWrapper.vm.$nextTick();
-        })
-
-        test("Application routes to business profile on 200 response", async () => {
-            mockEditResponse = {
-                status: 200
-            }
-
-            Api.getUser.mockImplementation(() => Promise.resolve(userResponse))
-
-            editBusinessProfileWrapper.vm.$data.description = "New description"
-
-            Api.editBusiness.mockImplementation(() => Promise.resolve(mockEditResponse))
-
-            await editBusinessProfileWrapper.vm.editBusiness({preventDefault: jest.fn()});
-
-            await editBusinessProfileWrapper.vm.$nextTick();
+            await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+            await wrapper.vm.$nextTick();
 
             expect($router.push).toHaveBeenCalledWith(`/businessProfile/${1}`)
-        })
+    })
+
+    test("Test error message is displayed and application does not route to business profile on 400 response when editing business", async () => {
+        const error = {
+            response: {
+                status: 400
+            }
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('400 Bad request; invalid business data');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile on 409 response when editing business", async () => {
+        const error = {
+            response: {
+                status: 409
+            }
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.businessNameErrorMsg).toEqual('Business with name already exists');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile on a random (500) response when editing business", async () => {
+        const error = {
+            response: {
+                status: 500
+            }
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('500 Unexpected error occurred!');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile on a timeout when editing business", async () => {
+        const error = {
+            request: "Hello"
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('Timeout occurred');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile when an unexpected error occurs when editing business", async () => {
+        const error = {
+            random: "Unexpected"
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('Unexpected error occurred!');
+        expect($router.push).toHaveBeenCalledTimes(0);
     })
 })

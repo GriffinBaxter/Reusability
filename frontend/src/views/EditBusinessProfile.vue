@@ -227,7 +227,6 @@ export default {
 
       // Toast related variables
       toastErrorMessage: "",
-      cannotProceed: false,
 
       // Address autocompletion related variables
       address: "",
@@ -737,7 +736,6 @@ export default {
           }
         }
       }).catch((error) => {
-        this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
             this.toastErrorMessage = '400 Bad request; invalid business data';
