@@ -585,4 +585,16 @@ describe("Testing methods in EditBusinessProfile", () => {
         expect(wrapper.vm.$data.toastErrorMessage).toEqual('Unexpected error occurred!');
         expect($router.push).toHaveBeenCalledTimes(0);
     })
+
+    test("Test the input method returns false when there is no input value", async () => {
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return { value: "20 Kirkwood Avenue, Upper"};
+        }); // spy on the getElementById call made by the request method
+
+        jest.spyOn(document, 'getElementsByClassName').mockImplementation( () => {
+            return {}
+        }) // spy on getElementsByClassName call made by the closeAllLists method
+
+        expect(await wrapper.vm.input()).toBeFalsy();
+    })
 })
