@@ -142,22 +142,22 @@
 
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Total')">
+                    @click="setGranularityOption('Total', $event)">
                   Total
                 </li>
 
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Yearly')">
+                    @click="setGranularityOption('Yearly', $event)">
                   Yearly
                 </li>
 
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Monthly')">
+                    @click="setGranularityOption('Monthly', $event)">
                   Monthly
                 </li>
 
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Daily')">
+                    @click="setGranularityOption('Daily', $event)">
                   Daily
                 </li>
 
@@ -305,10 +305,11 @@ export default {
     /**
      * Sets the granularity option text on the button to match the selected granularity.
      * @param granularity The chosen granularity, e.g. total, yearly, monthly, daily.
+     * @param event The click event passed in from the Vue template button click.
      */
-    setGranularityOption(granularity) {
+    setGranularityOption(granularity, event) {
       this.granularity = granularity;
-      this.retrieveSalesReport();
+      this.applyDate(event)
     },
 
     /**
