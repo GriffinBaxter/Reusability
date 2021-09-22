@@ -77,6 +77,7 @@
         <ListingItem
             v-for="item in listings"
             v-bind:key="item.index"
+            v-bind:listing-id="item.id"
             v-bind:product-name="item.productName"
             v-bind:description="item.description"
             v-bind:product-id="item.productId"
@@ -93,6 +94,7 @@
             v-bind:images="item.images"
             v-bind:barcode="item.barcode"
             v-bind:isAdmin="businessAdmin"
+            @deleteListing="deleteListing"
         />
 
         <!--space-->
@@ -174,6 +176,29 @@ name: "Listings",
   }
   },
   methods: {
+    /**
+     * Delete a listing at ID
+     * @param id ID of listing to be deleted
+     */
+    async deleteListing(id) {
+      await Api.deleteListing(this.businessId, id).then(() => {
+        this.getListings()
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 406) {
+            this.getListings()
+          } else if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          } else if (err.response.status === 403) {
+            this.businessAdmin = false
+          } else {
+            console.log(err)
+          }
+        } else {
+          console.log(err)
+        }
+      })
+    },
     /**
      * convert orderByString to more readable for user
      */
@@ -304,7 +329,7 @@ name: "Listings",
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
       this.barcode = this.$route.query["barcode"] || "";
 
-      if (this.barcode === undefined || null) {
+      if (this.barcode === undefined || this.barcode === null) {
         this.barcode = "";
       }
 
@@ -384,6 +409,7 @@ name: "Listings",
             return
           }
           this.listings.push({
+            id: response.data[i].id,
             productName: response.data[i].inventoryItem.product.name,
             description: response.data[i].inventoryItem.product.description,
             productId: response.data[i].inventoryItem.product.id,
