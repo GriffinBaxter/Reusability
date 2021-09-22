@@ -2395,7 +2395,7 @@ paths:
           description: Successfully updated password
         '400':
           description: Invalid Password
-        '403':
+        '406':
           description: Invalid Token
 
 
