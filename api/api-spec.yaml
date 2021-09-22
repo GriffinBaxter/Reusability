@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.7
+  version: 6.2.8
   title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -3061,6 +3061,12 @@ components:
           example: Tom Edwards
           readOnly: true
           description: The name of the user that started the conversation (from a card)
+        instigatorImages:
+          type: array
+          readOnly: true
+          description: 'Instigator user images'
+          items:
+            $ref: '#/components/schemas/Image'
         receiverId:
           type: integer
           example: 101
@@ -3071,6 +3077,12 @@ components:
           example: Billy Bob
           readOnly: true
           description: The name of the user that created the card
+        receiverImages:
+          type: array
+          readOnly: true
+          description: 'Receiver user images'
+          items:
+            $ref: '#/components/schemas/Image'
         marketplaceCardId:
           type: integer
           example: 100

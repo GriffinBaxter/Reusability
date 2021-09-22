@@ -121,6 +121,7 @@ export default {
       this.isLoading = true;
       Api.getConversations().then(
           (res) => {
+            console.log(res.data)
             this.conversations = res.data.map( (conversation) => {
               let userImage;
               let userName;
@@ -150,6 +151,7 @@ export default {
                 deleted: deleted
               };
             });
+            console.log(this.conversations);
             if (this.conversations.length === 0) {
               this.errorMessage = "No messages found.";
             }
