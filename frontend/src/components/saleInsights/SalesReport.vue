@@ -289,7 +289,9 @@ export default {
      */
     applyDate(event) {
       event.preventDefault();
-      if (this.startDate === null || this.endDate === null) {
+      if (this.period !== 'Custom') {
+        this.retrieveSalesReport();
+      } else if (this.startDate === null || this.endDate === null) {
         this.invalidDateMsg = "Please enter two dates"
       } else if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
         this.invalidDateMsg = "Dates must be after 2020"
