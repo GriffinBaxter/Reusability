@@ -5,7 +5,7 @@
         <div class="new-message-icon" v-if="newMessage"></div>
       </div>
       <div class="user-icon-wrap">
-        <img :src="image" :alt="`seller ${userName}'s profile image`" class="user-icon">
+        <img :src="getImageSrc()" :alt="`seller ${userName}'s profile image`" class="user-icon rounded-circle">
       </div>
       <div class="conversation-details">
         <div class="card-name">{{limitStringLength(cardName, MAX_CARD_LENGTH)}}</div>
@@ -24,6 +24,8 @@
 
 <script>
 
+import Api from "@/Api";
+
 export default {
   name: "MessageOption",
   props: {
@@ -31,8 +33,8 @@ export default {
       type: String,
       required: true
     },
-    image: {
-      type: String,
+    images: {
+      type: Array,
       required: true
     },
     newMessage: {
@@ -67,7 +69,19 @@ export default {
         return str.substr(0, maxLength-3) + "...";
       }
       return str;
-    }
+    },
+
+    /**
+     * Adds the backend server URL to the user's primary profile image URL if they have images.
+     * @return String a full URL to the primary image of the user (or the default image if they don't have one)
+     */
+    getImageSrc() {
+      if (this.images.length === 0) {
+        return require('../../../public/default-image.jpg')
+      }
+      const primaryImage = this.images.filter((image) => image.isPrimary);
+      return Api.getServerURL() + "/" + primaryImage[0].thumbnailFilename;
+    },
   }
 }
 </script>
@@ -103,6 +117,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: auto;
   }
 
   .new-message-icon {
@@ -115,7 +130,7 @@ export default {
   .user-icon-wrap {
     width: 18%;
     height: 100%;
-    margin: 0 0.35em;
+    margin: auto 0.35em;
 
     display: flex;
     justify-content: center;

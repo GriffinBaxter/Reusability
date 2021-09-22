@@ -9,7 +9,7 @@
       <div id="content-wrapper" v-else>
         <div v-if="!conversationIsOpen">
           <div v-for="(conv) in conversations" :key="conv.id" @click="openConversation(conv)">
-            <MessageOption v-on:deleteConversation="emitDeleteConversation" :id="`conversation-${conv.id}`" :userName="conv.userName" :image="conv.image"
+            <MessageOption v-on:deleteConversation="emitDeleteConversation" :id="`conversation-${conv.id}`" :userName="conv.userName" :images="conv.images"
                            :new-message="conv.newMessage" :card-name="conv.cardName" :conversation-id="conv.id"></MessageOption>
           </div>
         </div>
@@ -31,7 +31,6 @@
 import MessageOption from "./MessageOption";
 import Api from "../../Api"
 import LoadingDots from "../LoadingDots";
-import DefaultImage from "../../../public/profile_icon_default.png";
 import Cookies from "js-cookie";
 import MessageConversation from "./MessageConversation";
 import MessageTitle from "./MessageTitle";
@@ -121,27 +120,26 @@ export default {
       this.isLoading = true;
       Api.getConversations().then(
           (res) => {
-            console.log(res.data)
             this.conversations = res.data.map( (conversation) => {
-              let userImage;
+              let userImages = [];
               let userName;
               let userId;
               let deleted;
               // comparison between a string and an int
               if (conversation.instigatorId === this.currentId) {
-                userImage = conversation.receiverImage;
+                userImages = conversation.receiverImages;
                 userName = conversation.receiverName;
                 userId = conversation.receiverId;
                 deleted = conversation.deletedByReceiver;
               } else {
-                userImage = conversation.instigatorImage;
+                userImages = conversation.instigatorImages;
                 userName = conversation.instigatorName;
                 userId = conversation.instigatorId;
                 deleted = conversation.deletedByInstigator;
               }
               return {
                 id: conversation.id,
-                image: userImage || DefaultImage,
+                images: userImages,
                 userName: userName,
                 userId: userId,
                 cardName: conversation.marketplaceCardTitle,
@@ -151,7 +149,6 @@ export default {
                 deleted: deleted
               };
             });
-            console.log(this.conversations);
             if (this.conversations.length === 0) {
               this.errorMessage = "No messages found.";
             }
