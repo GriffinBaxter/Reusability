@@ -3,7 +3,7 @@
  */
 
 import {expect, test, describe, beforeEach} from "@jest/globals";
-import {checkAccessPermission, checkNullity, getAddressConcatenation, getFormattedAddress, manageError} from "../../src/views/helpFunction";
+import {checkAccessPermission, checkNullity, getAddressConcatenation, getFormattedAddress} from "../../src/views/helpFunction";
 
 describe("Test the checkAccessPermission method", () => {
 
