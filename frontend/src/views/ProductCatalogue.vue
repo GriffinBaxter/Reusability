@@ -31,6 +31,7 @@
                  :table-headers="tableHeaders" :table-data="tableData"
                  :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
                  :order-by-override="tableOrderBy" :loading-data="loadingProducts" :table-data-is-page="true"
+                 :hide-pagination="barcodeSearched"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
                  @row-selected="event => showRowModal(event.index)"
@@ -292,6 +293,8 @@ export default {
       // The attributes to search by barcode in the required url format.
       searchBarcode: "",
 
+      // For pagination buttons
+      barcodeSearched: false,
 
       // Product modal variables
       productId: null,
@@ -933,6 +936,7 @@ export default {
         query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0"}
       });
       this.requestProducts();
+      this.barcodeSearched = this.$route.query.barcode !== "" && this.$route.query.barcode !== null
     }
   },
 
@@ -970,6 +974,8 @@ export default {
     }
 
     this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
+    this.barcodeSearched = this.$route.query.barcode !== "" && this.$route.query.barcode !== null
+
   },
   watch: {
     // If the current Product was updated we update the table.
