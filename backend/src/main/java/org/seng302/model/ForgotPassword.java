@@ -43,19 +43,20 @@ public class ForgotPassword {
     /**
      * Constructor method for the ForgotPassword Class.
      * @param userId Id of associated user
-     * @param expiry Date/Time token will expire
+     * @throws IllegalForgotPasswordArgumentException Exception for invalid parameter
      */
-    public ForgotPassword(Integer userId, LocalDateTime expiry) throws IllegalForgotPasswordArgumentException {
+    public ForgotPassword(Integer userId) throws IllegalForgotPasswordArgumentException {
         if (!validUserId(userId)) {
             throw new IllegalForgotPasswordArgumentException("Invalid userId");
         }
-        if (!validExpiry(expiry)) {
-            throw new IllegalForgotPasswordArgumentException("Invalid expiry");
-        }
 
         this.userId = userId;
+
+        // Generates token
         this.token = generateForgotPasswordToken();
-        this.expiry = expiry;
+
+        // Set expiry to 1 hour by default
+        this.expiry = LocalDateTime.now().plusHours(1);
     }
 
     /**
@@ -97,15 +98,6 @@ public class ForgotPassword {
      */
     private boolean validUserId(Integer userId) {
         return (userId != null && userId > 0);
-    }
-
-    /**
-     * Checks the expiry date is in the future
-     * @param expiry date of expiry
-     * @return T/F if expiry is valid
-     */
-    private boolean validExpiry(LocalDateTime expiry) {
-        return (expiry != null && expiry.isAfter(LocalDateTime.now()));
     }
 
     /**
