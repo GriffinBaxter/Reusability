@@ -32,6 +32,13 @@ describe('Testing the period selection of the sales report page', function () {
                 mocks: {
                     $router,
                     $route
+                },
+                propsData: {
+                    businessName: "Lumbridge General Store",
+                    businessCountry: "New Zealand",
+                    businessId: 1,
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             });
         Cookies.get = jest.fn().mockImplementation(() => 1);

@@ -20,20 +20,20 @@
                       data-bs-toggle="dropdown" aria-expanded="false" id="period-button">{{ period }}
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Year'">
+                <li id="year-option" class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="period = 'Year'; retrieveSalesReport()">
                   Year
                 </li>
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Month'">
+                <li id="month-option" class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="period = 'Month'; retrieveSalesReport()">
                   Month
                 </li>
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Day'">
+                <li id="day-option" class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="period = 'Day'; retrieveSalesReport()">
                   Day
                 </li>
-                <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Custom'">
+                <li id="custom-option" class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="period = 'Custom'; showTable = false">
                   Custom
                 </li>
               </ul>
@@ -45,24 +45,25 @@
                       data-bs-toggle="dropdown" aria-expanded="false">{{ selectedMonth }}
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-                <div v-if="selectedYear === currentYear">
-                  <li class="btn green-button-transparent col-12 order-by-options-btn"
-                      v-for="month in months.slice(0, this.currentMonth + 1)" v-bind:key="month"
-                      @click="selectedMonth = month">
+                <li v-if="selectedYear === currentYear">
+                  <div class="btn green-button-transparent col-12 order-by-options-btn"
+                       v-for="month in months.slice(0, this.currentMonth + 1)" v-bind:key="month"
+                       @click="selectedMonth = month; retrieveSalesReport()">
                     {{ month }}
-                  </li>
-                </div>
-                <div v-else>
-                  <li class="btn green-button-transparent col-12 order-by-options-btn"
-                      v-for="month in months" v-bind:key="month"
-                      @click="selectedMonth = month">
+                  </div>
+                </li>
+                <li v-else>
+                  <div class="btn green-button-transparent col-12 order-by-options-btn"
+                       v-for="month in months" v-bind:key="month"
+                       @click="selectedMonth = month; retrieveSalesReport()">
                     {{ month }}
-                  </li>
-                </div>
+                  </div>
+                </li>
               </ul>
             </div>
 
-            <div v-if="period === 'Year' || period === 'Month'" class="btn-group col-xl-2 d-inline-block p-2" role="group">
+            <div v-if="period === 'Year' || period === 'Month'" class="btn-group col-xl-2 d-inline-block p-2"
+                 role="group">
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                       id="sales-period-select-year"
                       data-bs-toggle="dropdown" aria-expanded="false">{{ selectedYear }}
@@ -70,101 +71,130 @@
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
                     v-for="validYear in validYears" v-bind:key="validYear"
-                    @click="selectedYear = validYear">
+                    @click="selectedYear = validYear; retrieveSalesReport()">
                   {{ validYear }}
                 </li>
               </ul>
             </div>
 
-            <div v-if="period === 'Day'" class="btn-group col-xl-3 d-inline-block p-2" role="group">
-              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay">
+            <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
+              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay"
+                     :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
+
+              <button class="btn green-button" @click="retrieveSalesReport()">
+                Apply
+              </button>
+
             </div>
+
 
             <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
 
               <!-------------------------------------- Custom date inputs --------------------------------------------->
 
+              <form class="needs-validation" novalidate @submit.prevent>
+                <div class="form-group" id="date-filtering-container">
 
-
-                <form class="needs-validation" novalidate @submit.prevent>
-                  <div class="form-group" id="date-filtering-container">
-
-                    <div class="row">
-                      <div class="col-xl-1">
-                        <label for="start-date-input" class="p-2">Date </label>
-                      </div>
-                      <div class="col-xl-4 col-md-6">
-                        <input type="date" class="form-control filter-input" id="start-date-input"
-                               v-model="startDate"
-                               :class="toggleInvalidClass(invalidDateMsg)">
-                        <div class="invalid-feedback">
-                          {{invalidDateMsg}}
-                        </div>
-                      </div>
-                      <div class="col-xl-1">
-                        <label for="end-date-input" class="p-2"> to </label>
-                      </div>
-                      <div class="col-xl-4 col-md-6">
-                        <input type="date" class="form-control filter-input" id="end-date-input"
-                               v-model="endDate">
-                      </div>
-                      <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
-                        <button class="btn green-button" @click="applyDate($event)">
-                          Apply
-                        </button>
+                  <div class="row">
+                    <div class="col-xl-1">
+                      <label for="start-date-input" class="py-2">Date </label>
+                    </div>
+                    <div class="col-xl-4 col-md-6">
+                      <input type="date" class="form-control filter-input" id="start-date-input"
+                             v-model="startDate"
+                             :class="toggleInvalidClass(invalidDateMsg)"
+                             :min="'2021-01-01'">
+                      <div class="invalid-feedback">
+                        {{ invalidDateMsg }}
                       </div>
                     </div>
+                    <div class="col-xl-1">
+                      <label for="end-date-input" class="p-2"> to </label>
+                    </div>
+                    <div class="col-xl-4 col-md-6">
+                      <input type="date" class="form-control filter-input" id="end-date-input"
+                             v-model="endDate"
+                             :min="'2021-01-01'">
+                    </div>
+                    <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
+                      <button class="btn green-button" @click="applyDate($event)">
+                        Apply
+                      </button>
+                    </div>
                   </div>
-                </form>
-          </div>
+                </div>
+              </form>
+            </div>
 
-          <!---------------------------------- Granularity options menu ------------------------------------------->
+            <!---------------------------------- Granularity options menu ------------------------------------------->
 
-          <div class="col-xl-1">
-            <label for="granularity-button" class="py-3">
-              Granularity:
-            </label>
-          </div>
+            <div class="col-xl-1" style="width: auto">
+              <label for="granularity-button" class="py-3">
+                Granularity:
+              </label>
+            </div>
 
-          <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
+            <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
 
-            <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
-                    data-bs-toggle="dropdown" aria-expanded="false" id="granularity-button">{{ granularity }}
-            </button>
+              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                      data-bs-toggle="dropdown" aria-expanded="false" id="granularity-button">{{ granularity }}
+              </button>
 
-            <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Total')">
-                Total
-              </li>
+              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Total', $event)">
+                  Total
+                </li>
 
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Yearly')">
-                Yearly
-              </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Yearly', $event)">
+                  Yearly
+                </li>
 
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Monthly')">
-                Monthly
-              </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Monthly', $event)">
+                  Monthly
+                </li>
 
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Daily')">
-                Daily
-              </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Daily', $event)">
+                  Daily
+                </li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
 
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
-        <div class="card p-3">
-          Barry's stuff for task 723
+        <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
+          <br>
+
+          <table class="table table-hover" aria-describedby="page-title" v-if="this.granularity !== 'Total'">
+            <thead>
+            <tr>
+              <th scope="col">Time</th>
+              <th scope="col">Total Sales</th>
+              <th scope="col">Total Revenue ({{ currencyCode }})</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr v-for="line in salesReportData" v-bind:key="line.granularityName">
+              <td>{{ line.granularityName }}</td>
+              <td>{{ line.totalSales }}</td>
+              <td>{{ currencySymbol }} {{ line.totalRevenue }}</td>
+            </tr>
+            </tbody>
+          </table>
+          <div v-else>
+            Billie's task 725
+          </div>
         </div>
+
       </div>
-     </div>
+    </div>
 
   </div>
 </template>
@@ -172,17 +202,37 @@
 
 <script>
 
-import {isFuture, parseISO} from "date-fns";
+import {isFuture, parseISO, formatISO, format, lastDayOfMonth, isBefore} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
-import {format} from "date-fns";
+import Api from "../../Api";
+import {manageError} from "../../errorHandler";
 
 export default {
   name: "SalesReport",
-  components: {
-  },
+  components: {},
   props: {
     businessName: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessCountry: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessId: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: true
+    },
+    currencyCode: {
       type: String,
       default: "",
       required: true
@@ -215,6 +265,10 @@ export default {
 
       currentDay: "",
       selectedDay: "",
+
+      salesReportData: [],
+      invalidDayMsg: "",
+      showTable: false
     }
   },
   methods: {
@@ -222,6 +276,8 @@ export default {
     isFirstDateBeforeSecondDate: isFirstDateBeforeSecondDate,
 
     toggleInvalidClass: toggleInvalidClass,
+
+    manageError: manageError,
 
     /**
      * Validates the start and end dates before applying the date range to the report.
@@ -232,22 +288,124 @@ export default {
      */
     applyDate(event) {
       event.preventDefault();
-      if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
+      if (this.startDate === null || this.endDate === null) {
+        this.invalidDateMsg = "Please enter two dates"
+      } else if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
+        this.invalidDateMsg = "Dates must be after 2020"
+      } else if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
         this.invalidDateMsg = "Start date must be before end date"
       } else if (isFuture(parseISO(this.startDate))) {
         this.invalidDateMsg = "Start date cannot be in the future";
       } else {
         this.invalidDateMsg = "";
-        // TODO: apply query method for task 723
+        this.retrieveSalesReport();
       }
     },
 
     /**
      * Sets the granularity option text on the button to match the selected granularity.
      * @param granularity The chosen granularity, e.g. total, yearly, monthly, daily.
+     * @param event The click event passed in from the Vue template button click.
      */
-    setGranularityOption(granularity) {
+    setGranularityOption(granularity, event) {
       this.granularity = granularity;
+      this.applyDate(event)
+    },
+
+    /**
+     * Returns the start date and end date for the given year.
+     * @param year A year to give the dates of.
+     */
+    generateDatesFromYear(year) {
+      return {
+        fromDate: `${year}-01-01T00:00`,
+        toDate: `${year}-12-31T23:59:59`
+      }
+    },
+
+    /**
+     * Returns the start date and end date for the given month.
+     * @param month A month to give the dates of.
+     */
+    generateDatesFromMonth(month) {
+      const monthNumber = this.months.indexOf(month) + 1 < 10 ? '0' + (this.months.indexOf(month) + 1).toString() : this.months.indexOf(month) + 1;
+      let toDate = formatISO(lastDayOfMonth(parseISO(`${this.selectedYear}-${monthNumber}-01`)), {representation: 'date'}) + "T23:59:59";
+      return {
+        fromDate: `${this.selectedYear}-${monthNumber}-01T00:00`,
+        toDate: toDate
+      }
+    },
+
+    /**
+     * Returns the start date and end date for the day.
+     * @param day A year to give the dates of.
+     */
+    generateDatesFromDay(day) {
+      return {
+        fromDate: `${day}T00:00`,
+        toDate: `${day}T23:59:59`
+      }
+    },
+
+    /**
+     * Generates the From and To dates for the retrieve sales report API call based on the selected options
+     * @return {fromDate, toDate} An object containing a fromDate and a toDate to complete a range for the API call
+     */
+    generateDates() {
+      let dates = null;
+      if (this.period === 'Custom') {
+        dates = {
+          fromDate: formatISO(parseISO(this.startDate), {representation: 'date'}) + "T00:00",
+          toDate: formatISO(parseISO(this.endDate), {representation: 'date'}) + "T23:59:59"
+        }
+      } else if (this.period === 'Year') {
+        dates = this.generateDatesFromYear(this.selectedYear);
+      } else if (this.period === 'Month') {
+        dates = this.generateDatesFromMonth(this.selectedMonth);
+      } else if (this.period === 'Day') {
+        dates = this.generateDatesFromDay(this.selectedDay);
+      }
+      return dates;
+    },
+
+    /**
+     * Sends an API request to the backend to retrieve the sales report for the currently selected options
+     */
+    async retrieveSalesReport() {
+      // Check that selected day is not partially empty (unlikely case)
+      if (this.selectedDay === '') {
+        this.invalidDayMsg = 'Please enter a date';
+      } else {
+        this.invalidDayMsg = "";
+        const dates = this.generateDates();
+        const fromDate = dates.fromDate;
+        const toDate = dates.toDate;
+
+        await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
+          this.salesReportData = [];
+          response.data.forEach((line) => {
+            this.salesReportData.push({
+              granularityName: line.granularityName,
+              totalSales: line.totalSales,
+              totalRevenue: line.totalRevenue
+            })
+          });
+          this.showTable = true;
+        }).catch((error) => {
+          this.$router.push(manageError(error));
+        })
+      }
+    },
+
+    /**
+     * Checks if a date is before the year 2021.
+     * Dates before 2021 are not accepted by the sales report back-end endpoint
+     * so this must be validated here.
+     * @param date A date to check
+     */
+    isBefore2021(date) {
+      const dateToCompare = parseISO('2021-01-01');
+      return isBefore(parseISO(date), dateToCompare);
     },
 
     /**

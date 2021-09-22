@@ -3,12 +3,7 @@
  */
 
 import {expect, test, describe, beforeEach} from "@jest/globals";
-import {
-    checkAccessPermission,
-    checkNullity,
-    getAddressConcatenation,
-    getFormattedAddress
-} from "../../src/views/helpFunction";
+import {checkAccessPermission, checkNullity, getAddressConcatenation, getFormattedAddress} from "../../src/views/helpFunction";
 
 describe("Test the checkAccessPermission method", () => {
 
@@ -53,7 +48,7 @@ describe("Test getFormattedAddress method", () => {
     let region;
     let country;
 
-    beforeEach( () => {
+    beforeEach(() => {
         number = "";
         streetName = "";
         suburb = "";
@@ -63,7 +58,7 @@ describe("Test getFormattedAddress method", () => {
         country = "";
     })
 
-    test ("Tests that when all fields are empty strings getFormattedAddress returns a list containing empty lines", () => {
+    test("Tests that when all fields are empty strings getFormattedAddress returns a list containing empty lines", () => {
         const address = [
             {line: ""},
             {line: ""},
@@ -72,7 +67,7 @@ describe("Test getFormattedAddress method", () => {
         expect(getFormattedAddress(number, streetName, suburb, city, postcode, region, country)).toStrictEqual(address);
     })
 
-    test ("Test that when the second item of each line is an empty string then a list containing lines which" +
+    test("Test that when the second item of each line is an empty string then a list containing lines which" +
         " only contain the first item of each line is returned", () => {
         number = 1;
         suburb = "Ilam";
@@ -87,7 +82,7 @@ describe("Test getFormattedAddress method", () => {
         expect(getFormattedAddress(number, streetName, suburb, city, postcode, region, country)).toStrictEqual(address);
     })
 
-    test ("Test that when the first item of each line is an empty string then a list containing lines which" +
+    test("Test that when the first item of each line is an empty string then a list containing lines which" +
         " only contain the second item of each line is returned", () => {
         streetName = "Waimairi Road";
         suburb = "Ilam";
@@ -102,7 +97,7 @@ describe("Test getFormattedAddress method", () => {
         expect(getFormattedAddress(number, streetName, suburb, city, postcode, region, country)).toStrictEqual(address);
     })
 
-    test ("Test that when every item is not an empty string then the lines returned contain all data.", () => {
+    test("Test that when every item is not an empty string then the lines returned contain all data.", () => {
         number = 1;
         streetName = "Waimairi Road";
         suburb = "Ilam";
