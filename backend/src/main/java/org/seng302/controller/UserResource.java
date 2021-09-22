@@ -11,15 +11,16 @@
 package org.seng302.controller;
 
 import org.seng302.exceptions.IllegalAddressArgumentException;
+import org.seng302.exceptions.IllegalForgotPasswordArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
+import org.seng302.model.ForgotPassword;
+import org.seng302.model.repository.ForgotPasswordRepository;
+import org.seng302.services.EmailService;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
-import org.seng302.view.incoming.UserIdPayload;
-import org.seng302.view.incoming.UserLoginPayload;
-import org.seng302.view.incoming.UserProfileModifyPayload;
-import org.seng302.view.incoming.UserRegistrationPayload;
+import org.seng302.view.incoming.*;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
@@ -70,6 +71,12 @@ public class UserResource {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private ForgotPasswordRepository forgotPasswordRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
@@ -391,6 +398,43 @@ public class UserResource {
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
+    }
+
+    /**
+     * This method will be called on the forgot password page after the user has entered a valid email.
+     * Sends an email to the given email address with a link to the reset password page.
+     * @param forgotPasswordPayload Forgot password payload containing an email address.
+     */
+    @PostMapping("/users/forgotPassword")
+    public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload) {
+
+        String email = forgotPasswordPayload.getEmail();
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            try {
+                ForgotPassword forgotPasswordEntity = new ForgotPassword(user.getId());
+                forgotPasswordRepository.save(forgotPasswordEntity);
+            } catch (IllegalForgotPasswordArgumentException exception) {
+                logger.error("500 [NOT ACCEPTABLE] - User ID {} invalid", user.getId());
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "User ID Invalid"
+                );
+            }
+
+            emailService.sendSimpleMessage("jlp89@uclive.ac.nz", "subject", "content");
+
+
+        } else {
+            logger.error("406 [NOT ACCEPTABLE] - User with email {} does not exist.", email);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Email does not exist"
+            );
+        }
     }
 
     /**
