@@ -416,7 +416,7 @@ export default {
     getCreatedDate(createdDate) {
       const dateJoined = new Date(createdDate);
 
-      const currentDate = new Date();
+      const currentDate = new Date(Date.now());
       let months = (currentDate.getFullYear() - dateJoined.getFullYear()) * 12
           + (currentDate.getMonth() - dateJoined.getMonth());
 
@@ -672,6 +672,7 @@ export default {
         let success = true;
         await Api.makeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
               if (response.status !== 200) {
+                success = false;
                 this.actionErrorMessage = "Sorry, but something went wrong..."
               }
             }
