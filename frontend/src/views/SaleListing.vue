@@ -114,7 +114,10 @@
               <button v-if="canBuy" class="buy-button merryweather w-100" @click="buy">
                 Buy
               </button>
-              <button v-else class="buy-button-disabled merryweather w-100" disabled>
+              <button class="delete-button btn btn-danger w-100" v-if="actingBusinessId == businessId || isAdmin" @click="deleteListing">
+                Remove Listing
+              </button>
+              <button v-else-if="actingBusinessId !== undefined && actingBusinessId !== null" class="buy-button-disabled merryweather w-100" disabled>
                 Business cannot purchase listings.
               </button>
             </div>
@@ -189,6 +192,7 @@ export default {
       manufacturer: "",
 
       // Business info
+      businessId: 0,
       businessName: "",
       businessAddress: "",
       businessAddressLine1: "",
@@ -216,9 +220,29 @@ export default {
       EAN_LENGTH: 13,
 
       actingBusinessId: null,
+
+      isAdmin: false
     }
   },
   methods: {
+    deleteListing() {
+      Api.deleteListing(this.businessId, this.listingId).then(() => {
+        this.returnToSales();
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 406) {
+            this.$router.push({name: "NoListing"})
+          } else if (err.response.status === 403) {
+            this.actingBusinessId = null
+          } else if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          }
+        } else {
+          console.log(err)
+        }
+      })
+
+    },
     /**
      * Attempts to buy the viewed listing and if successful returns the user to their home page
      */
@@ -345,6 +369,7 @@ export default {
       this.manufacturer = data.inventoryItem.product.manufacturer;
 
       // Business info
+      this.businessId = data.inventoryItem.product.business.id;
       this.businessName = data.inventoryItem.product.business.name;
       this.businessAddress = data.inventoryItem.product.business.address;
       this.currencySymbol = (data.inventoryItem.product.business.currencySymbol === null ||
@@ -419,6 +444,34 @@ export default {
       // return the url which can be used to retrieve the barcode image.
       return "https://bwipjs-api.metafloor.com/?bcid=" + type + "&text=" + this.barcode;
     },
+    /**
+     * Gets the role of the current user at and checks if they are an admin
+     * @param id ID of user to get the role of
+     */
+    getRole(id) {
+      Api.getUser(id).then((res) => {
+        const role = res.data.role
+        if (role === 'DEFAULTGLOBALAPPLICATIONADMIN' || role === 'GLOBALAPPLICATIONADMIN') {
+          this.isAdmin = true;
+        } else {
+          this.isAdmin = false;
+        }
+      }).catch((err) => {
+        if (err.response) {
+          if (err.response.status === 401) {
+            this.$router.push({name: "InvalidToken"})
+          } else if (err.response.status === 406) {
+            console.log("Invalid userId Cookie")
+          } else {
+            console.log(err.response.data.message)
+          }
+        } else if (err.request) {
+          console.log("Timeout")
+        } else {
+          console.log(err)
+        }
+      });
+    }
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -444,6 +497,8 @@ export default {
           self.$router.push({path: '/noListing'});
           console.log(error);
         });
+
+    this.getRole(this.currentID)
   }
 }
 </script>
@@ -561,7 +616,22 @@ h6 {
   color: #19b092;
 
   padding: 0.65em 0;
-  margin: 1.45em 0;
+  margin: .45em 0;
+  border-radius: 0.25em;
+
+  cursor: pointer;
+  transition: 150ms ease-in-out;
+
+  font-size: 1.5em;
+}
+
+.delete-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0.65em 0;
+  margin: .45em 0;
   border-radius: 0.25em;
 
   cursor: pointer;
@@ -580,7 +650,7 @@ h6 {
   color: #19b092;
 
   padding: 0.65em 0;
-  margin: 1.45em 0;
+  margin: .45em 0;
   border-radius: 0.25em;
 
   cursor: pointer;
@@ -593,6 +663,10 @@ h6 {
   background-color: #19b092;
   border: 1px solid #fff;
   color: #fff;
+}
+
+.buy-button-wrapper {
+  margin: 1em 0;
 }
 
 #barcode-number {
