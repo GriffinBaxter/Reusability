@@ -35,7 +35,7 @@
             <form @submit.prevent>
               <div class="row">
                 <div class="col mb-4">
-                  <label for="email-input" class="form-label">Email Address</label>
+                  <label for="email-input" class="form-label">Email Address*</label>
                   <input type="email" class="form-control" id="email-input" ref="eInput" tabindex="1">
                 </div>
               </div>
@@ -60,6 +60,11 @@
 
             </div>
 
+              <!--forgot password location-->
+              <div class="row">
+                <router-link to="/forgotPassword" style="color: #1EBA8C; text-decoration: none; background-color: transparent;" tabindex="6">Forgot password?</router-link>
+              </div>
+
               <!--error message location-->
               <div class="row">
                 <div class="col mb-2 mb-md-0">
@@ -68,7 +73,6 @@
               </div>
 
               <div class="row">
-
                 <!--register button-->
                 <div class="col-5">
                   <router-link class="btn btn-lg m-sm-4 mb-4 green-button-transparent" to="/registration" tag="button" type="button" tabindex="5" >Register</router-link>
@@ -102,7 +106,6 @@ export default {
   name: "Login",
   components: {
     Footer
-
   },
 
   data() {
@@ -208,5 +211,7 @@ input:focus, textarea:focus {
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
+
+
 
 </style>
