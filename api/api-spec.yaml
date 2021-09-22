@@ -2620,6 +2620,10 @@ components:
           type: string
           example: "/media/images/23987192387509-123908794328_thumbnail.png"
           description: Relative URI to thumbnail of image. A fully qualified URI (e.g www.wasteless.com/media/images/...) should NOT be given.
+        isPrimary:
+          type: boolean
+          example: true
+          description: Whether this image is the primary image (only one image in the array will be the primary)
 
     Product:
       type: object
