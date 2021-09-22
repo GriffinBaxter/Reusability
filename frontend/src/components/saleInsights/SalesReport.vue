@@ -166,6 +166,9 @@
           </div>
         </div>
 
+        Sales <bar-chart :label-list="graphLabels" :data-list="graphDataSales"></bar-chart>
+        Revenue <bar-chart :label-list="graphLabels" :data-list="graphDataRevenue"></bar-chart>
+
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
         <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
@@ -207,10 +210,13 @@ import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
 import {manageError} from "../../errorHandler";
+import BarChart from './SalesReportGraph'
 
 export default {
   name: "SalesReport",
-  components: {},
+  components: {
+    BarChart
+  },
   props: {
     businessName: {
       type: String,
@@ -268,7 +274,11 @@ export default {
 
       salesReportData: [],
       invalidDayMsg: "",
-      showTable: false
+      showTable: false,
+
+      graphLabels: [],
+      graphDataSales: [],
+      graphDataRevenue: [],
     }
   },
   methods: {
@@ -389,12 +399,27 @@ export default {
               totalSales: line.totalSales,
               totalRevenue: line.totalRevenue
             })
+            this.generateGraphData();
           });
           this.showTable = true;
         }).catch((error) => {
           this.$router.push(manageError(error));
         })
       }
+    },
+
+    generateGraphData() {
+      let labels = [];
+      let salesData = [];
+      let revenueData = [];
+      for (const data of this.salesReportData) {
+        labels.push(data.granularityName);
+        salesData.push(data.totalSales);
+        revenueData.push(data.totalRevenue);
+      }
+      this.graphLabels = labels;
+      this.graphDataSales = salesData;
+      this.graphDataRevenue = revenueData;
     },
 
     /**
