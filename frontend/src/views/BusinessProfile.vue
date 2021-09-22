@@ -31,6 +31,14 @@
                 <h5>{{ name }}</h5>
                 <div class="text-secondary">{{ description }}</div>
               </div>
+
+              <div id="edit-business-profile" style="padding-top: 10px" v-if="isAdministrator">
+                <hr>
+                <button type="button" style="width: 252px; max-width: 100%"
+                        class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
+                  Edit Profile
+                </button>
+              </div>
             </div>
           </div>
 
@@ -167,7 +175,7 @@ import Navbar from "@/components/Navbar";
 import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";
-import {checkNullity, getFormattedAddress} from "@/views/helpFunction";
+import {checkNullity, getFormattedAddress} from "../views/helpFunction";
 
 export default {
   name: "BusinessProfile",
@@ -344,6 +352,18 @@ export default {
      */
     returnToListing() {
       this.$router.back();
+    },
+    /**
+     * Redirects the currently logged in administrator to the edit business profile page.
+     */
+    goToEdit() {
+      let id;
+      if (this.urlID === "businessProfile") {
+        id = this.currentID;
+      } else {
+        id = this.urlID;
+      }
+      this.$router.push({name: "EditBusinessProfile", params: {id}});
     }
   },
   mounted() {

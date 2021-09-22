@@ -534,7 +534,7 @@ public class BusinessResource {
         }
 
         // Verify payload content is still valid to the requirements of a business. fail --> 400 BAD REQUEST
-        Business updatedBusiness = updatePrimaryAdminstrator(user, business.get(), businessModifyPayload);
+        Business updatedBusiness = updatePrimaryAdministrator(user, business.get(), businessModifyPayload);
         updateBusinessName(updatedBusiness, user, businessModifyPayload);
         updateBusinessDescription(updatedBusiness, user, businessModifyPayload.getDescription());
         updateBusinessAddress(updatedBusiness, user, businessModifyPayload.getAddress());
@@ -675,7 +675,7 @@ public class BusinessResource {
      *
      * @return {Business} The newly updated business object.
      */
-    private Business updatePrimaryAdminstrator(User user, Business business, BusinessModifyPayload payload)
+    private Business updatePrimaryAdministrator(User user, Business business, BusinessModifyPayload payload)
             throws ResponseStatusException {
         boolean userIsPrimaryAdmin = business.getPrimaryAdministratorId().equals(user.getId());
 

@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.6
+  version: 6.2.7
   title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -1340,11 +1340,11 @@ paths:
         '200':
           description: 'Successfully deleted'
         '401':
-          description: 'User not logged in'
+          description: 'User is not logged in'
         '406':
-          description: 'Business with ID doesn’t exist, listing with ID doesn’t exist, listing with ID is closed'
+          description: 'Business with ID doesn’t exist, listing with ID doesn’t exist, listing with ID is closed depending on the error.'
         '403':
-          description: 'User not a business administrator or a global application administrator'
+          description: 'User is not a business administrator or a global application administrator'
 
   '/businesses/search':
     get:

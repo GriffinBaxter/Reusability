@@ -158,12 +158,13 @@
 
 <script>
 import Api from "../Api";
-import Business from "../configs/Business"
+import Business, {BusinessTypes} from "../configs/Business"
 import Footer from "../components/main/Footer";
 import AddressAPI from "../addressInstance";
 import Cookies from 'js-cookie';
-import {toggleInvalidClass} from "../validationUtils";
+import {toggleInvalidClass, toggleInvalidSelectClass} from "../validationUtils";
 import CurrencyAPI from "../currencyInstance";
+import {getAddressConcatenation} from "../views/helpFunction";
 
 export default {
   name: "BusinessRegistration",
@@ -239,21 +240,7 @@ export default {
 
   methods: {
     toggleInvalidClass: toggleInvalidClass,
-
-    /**
-     * This method toggles the appearance of the error message for select boxes, where the is-invalid
-     * class is added to the messages if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidSelectClass(errorMessage) {
-      let classList = ['form-select']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
+    toggleInvalidSelectClass: toggleInvalidSelectClass,
 
     /**
      * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
@@ -314,147 +301,15 @@ export default {
      */
     async addNewBusiness(e) {
       // Steps required for the function before starting processing.
-      e.preventDefault()  // prevents page from reloading
-      this.trimBusinessTextInputFields()
-      let requestIsInvalid = false
+      e.preventDefault();  // prevents page from reloading
 
-      // ===================================== START OF INPUT FIELDS VALIDATION ========================================
+      this.trimBusinessTextInputFields();
 
-      // Business Type error checking
-      const businessTypes = [
-        'ACCOMMODATION AND FOOD SERVICES',
-        'RETAIL TRADE',
-        'CHARITABLE ORGANISATION',
-        'NON PROFIT ORGANISATION']
-      if (businessTypes.includes(this.businessType.toUpperCase())) {
-        this.businessTypeErrorMsg = "";
-      } else {
-        this.businessTypeErrorMsg = "This field is required!"
-        requestIsInvalid = true
-      }
+      // get error messages if input is invalid.
+      this.getErrorMessages();
 
-      // Business name error checking
-      this.businessNameErrorMsg = this.getErrorMessage(
-          this.config.businessName.name,
-          this.businessName,
-          this.config.businessName.minLength,
-          this.config.businessName.maxLength,
-          this.config.businessName.regexMessage,
-          this.config.businessName.regex
-      )
-      if (this.businessNameErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Description error checking
-      this.descriptionErrorMsg = this.getErrorMessage(
-          this.config.description.name,
-          this.description,
-          this.config.description.minLength,
-          this.config.description.maxLength,
-      )
-      if (this.descriptionErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Business address error checking
-      this.businessAddressErrorMsg = this.getErrorMessage(
-          this.config.businessAddress.name,
-          this.$refs.businessAddressInput.value,
-          this.config.businessAddress.minLength,
-          this.config.businessAddress.maxLength
-      )
-      if (this.businessAddressErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Street number error checking
-      this.businessStreetNumberErrorMsg = this.getErrorMessage(
-          this.config.streetNumber.name,
-          // Using v-model for this address input apparently does not update
-          // when we insert from our autocomplete list so it has been changed to use $refs
-          this.$refs.streetNumber.value,
-          this.config.streetNumber.minLength,
-          this.config.streetNumber.maxLength
-      )
-      if (this.businessStreetNumberErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Street name error checking
-      this.businessStreetNameErrorMsg = this.getErrorMessage(
-          this.config.streetName.name,
-          // Using v-model for this address input apparently does not update
-          // when we insert from our autocomplete list so it has been changed to use $refs
-          this.$refs.streetName.value,
-          this.config.streetName.minLength,
-          this.config.streetName.maxLength
-      )
-      if (this.businessStreetNameErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Suburb error checking
-      this.businessSuburbErrorMsg = this.getErrorMessage(
-          this.config.suburb.name,
-          this.$refs.suburb.value,
-          this.config.suburb.minLength,
-          this.config.suburb.maxLength
-      )
-      if (this.businessSuburbErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Postcode error checking
-      this.businessPostcodeErrorMsg = this.getErrorMessage(
-          this.config.postcode.name,
-          this.$refs.postcode.value,
-          this.config.postcode.minLength,
-          this.config.postcode.maxLength
-      )
-      if (this.businessPostcodeErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // City error checking
-      this.businessCityErrorMsg = this.getErrorMessage(
-          this.config.city.name,
-          this.$refs.city.value,
-          this.config.city.minLength,
-          this.config.city.maxLength
-      )
-      if (this.businessCityErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Region error checking
-      this.businessRegionErrorMsg = this.getErrorMessage(
-          this.config.region.name,
-          this.$refs.region.value,
-          this.config.region.minLength,
-          this.config.region.maxLength
-      )
-      if (this.businessRegionErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // Country error checking
-      this.businessCountryErrorMsg = this.getErrorMessage(
-          this.config.country.name,
-          this.$refs.country.value,
-          this.config.country.minLength,
-          this.config.country.maxLength
-      )
-      if (this.businessCountryErrorMsg) {
-        requestIsInvalid = true
-      }
-
-      // ====================================== END OF INPUT FIELDS VALIDATION =========================================
-
-      // If at any stage an error has been discovered we cancel the procedure
-      if (requestIsInvalid) {
-        return
-      }
+      // If at any stage an error has been discovered we cancel the procedure.
+      if (this.checkInvalidRequest()) { return; }
 
       const addressData = {
         streetNumber: this.$refs.streetNumber.value,
@@ -516,6 +371,107 @@ export default {
       })
     },
 
+    /**
+     * This method gets the inputs from the the form and validates them based on the criteria in the Business config file.
+     * If a field is not valid then an error message is set in the modal.
+     */
+    getErrorMessages() {
+      // Business type error checking.
+      if (BusinessTypes.includes(this.businessType)) {
+        this.businessTypeErrorMsg = "";
+      } else {
+        this.businessTypeErrorMsg = "This field is required!";
+      }
+      // Business name error checking
+      this.businessNameErrorMsg = this.getErrorMessage(
+          this.config.businessName.name,
+          this.businessName,
+          this.config.businessName.minLength,
+          this.config.businessName.maxLength,
+          this.config.businessName.regexMessage,
+          this.config.businessName.regex
+      );
+      // Description error checking
+      this.descriptionErrorMsg = this.getErrorMessage(
+          this.config.description.name,
+          this.description,
+          this.config.description.minLength,
+          this.config.description.maxLength,
+      );
+      // Business address error checking
+      this.businessAddressErrorMsg = this.getErrorMessage(
+          this.config.businessAddress.name,
+          this.$refs.businessAddressInput.value,
+          this.config.businessAddress.minLength,
+          this.config.businessAddress.maxLength
+      );
+      // Street number error checking
+      this.businessStreetNumberErrorMsg = this.getErrorMessage(
+          this.config.streetNumber.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetNumber.value,
+          this.config.streetNumber.minLength,
+          this.config.streetNumber.maxLength
+      );
+      // Street name error checking
+      this.businessStreetNameErrorMsg = this.getErrorMessage(
+          this.config.streetName.name,
+          // Using v-model for this address input apparently does not update
+          // when we insert from our autocomplete list so it has been changed to use $refs
+          this.$refs.streetName.value,
+          this.config.streetName.minLength,
+          this.config.streetName.maxLength
+      );
+      // Suburb error checking
+      this.businessSuburbErrorMsg = this.getErrorMessage(
+          this.config.suburb.name,
+          this.$refs.suburb.value,
+          this.config.suburb.minLength,
+          this.config.suburb.maxLength
+      );
+      // Postcode error checking
+      this.businessPostcodeErrorMsg = this.getErrorMessage(
+          this.config.postcode.name,
+          this.$refs.postcode.value,
+          this.config.postcode.minLength,
+          this.config.postcode.maxLength
+      );
+      // City error checking
+      this.businessCityErrorMsg = this.getErrorMessage(
+          this.config.city.name,
+          this.$refs.city.value,
+          this.config.city.minLength,
+          this.config.city.maxLength
+      );
+      // Region error checking
+      this.businessRegionErrorMsg = this.getErrorMessage(
+          this.config.region.name,
+          this.$refs.region.value,
+          this.config.region.minLength,
+          this.config.region.maxLength
+      );
+      // Country error checking
+      this.businessCountryErrorMsg = this.getErrorMessage(
+          this.config.country.name,
+          this.$refs.country.value,
+          this.config.country.minLength,
+          this.config.country.maxLength
+      );
+    },
+
+    /**
+     * If an error message exists then the input fields have not been correctly filled out and a
+     * business can not be created.
+     * @return boolean true if changes are invalid, false otherwise.
+     */
+    checkInvalidRequest() {
+      return (this.businessTypeErrorMsg || this.businessNameErrorMsg || this.descriptionErrorMsg ||
+          this.businessAddressErrorMsg || this.businessStreetNumberErrorMsg || this.businessStreetNameErrorMsg ||
+          this.businessSuburbErrorMsg || this.businessPostcodeErrorMsg || this.businessCityErrorMsg ||
+          this.businessRegionErrorMsg || this.businessCountryErrorMsg);
+    },
+
     /*
      * Address API requests
      */
@@ -557,7 +513,7 @@ export default {
       while ((numInList < maxL) && (index < fLength)) {
         let { properties } = features[index];
         if (properties) {
-          let address = this.getAddressConcatenation(properties);
+          let address = getAddressConcatenation(properties);
           if (!autoCompleteOptions.includes(address.trim())) {
             // Add to both the string to display and the variable for later use.
             autoCompleteOptions.push(address.trim());
@@ -568,28 +524,6 @@ export default {
         index++;
       }
       return autoCompleteOptions;
-    },
-
-    /**
-     * This method converts the components of the address received from the Komoot Photon API
-     * to a single line string.
-     * @return address a string representation of the address returned by the Komoot Photon API
-     */
-    getAddressConcatenation(properties) {
-      let address = "";
-
-      let {country, city, postcode, state, street, housenumber, name, district} = properties;
-
-      if (name) { address += name + ", "; }
-      if (housenumber) { address += housenumber; }
-      if (street) { address += " " + street + ", "; }
-      if (district) { address += " " + district + ", "; }
-      if (city) { address += city + ", "; }
-      if (postcode) { address += postcode + ", "; }
-      if (state) { address += state + ", "; }
-      if (country) { address += country; }
-
-      return address;
     },
 
     /**

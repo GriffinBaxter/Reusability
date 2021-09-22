@@ -101,20 +101,25 @@ function parseSelectedDate(dateString) {
 }
 
 /**
- * If a request in to the backend results in an error, then this method will deal with the error.
- * @param error the error received from the backend.
+ * This method converts the components of the address received from the Komoot Photon API
+ * to a single line string.
+ *
+ * @param properties the components of address received from the Komoot Photon API.
+ * @return address a string representation of the address returned by the Komoot Photon API
  */
-export function manageError(error) {
-    if (error.request && !error.response) {
-         this.$router.push({path: '/timeout'});
-    } else if (error.response.status === 401) {
-         this.$router.push({path: '/invalidtoken'});
-    } else if (error.response.status === 403) {
-         this.$router.push({path: '/forbidden'});
-    } else if (error.response.status === 406) {
-         this.$router.push({path: '/noBusiness'});
-    } else {
-         this.$router.push({path: '/noBusiness'});
-        console.log(error.message);
-    }
+export function getAddressConcatenation(properties) {
+    let address = "";
+
+    let {country, city, postcode, state, street, housenumber, name, district} = properties;
+
+    if (name) { address += name + ", "; }
+    if (housenumber) { address += housenumber; }
+    if (street) { address += " " + street + ", "; }
+    if (district) { address += " " + district + ", "; }
+    if (city) { address += city + ", "; }
+    if (postcode) { address += postcode + ", "; }
+    if (state) { address += state + ", "; }
+    if (country) { address += country; }
+
+    return address;
 }

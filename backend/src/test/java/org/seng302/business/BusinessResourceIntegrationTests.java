@@ -106,7 +106,7 @@ class BusinessResourceIntegrationTests {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
             "\"images\":%s," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
@@ -693,9 +693,7 @@ class BusinessResourceIntegrationTests {
                     "\"email\":\"testemail@email.com\"," +
                     "\"created\":\"2021-02-02T00:00\"," +
                     "\"role\":\"USER\"," +
-                    "\"businessesAdministered\":[" +
-                    "null" +
-                    "]," +
+                    "\"businessesAdministered\":[]," +
                     "\"images\":[]," +
                     "\"dateOfBirth\":\"2007-02-02\"," +
                     "\"phoneNumber\":\"0271316\"," +
@@ -757,9 +755,7 @@ class BusinessResourceIntegrationTests {
                 "\"email\":\"testemail@email.com\"," +
                 "\"created\":\"2021-02-02T00:00\"," +
                 "\"role\":\"USER\"," +
-                "\"businessesAdministered\":[" +
-                "null" +
-                "]," +
+                "\"businessesAdministered\":[]," +
                 "\"images\":[]," +
                 "\"dateOfBirth\":\"2007-02-02\"," +
                 "\"phoneNumber\":\"0271316\"," +
@@ -837,9 +833,7 @@ class BusinessResourceIntegrationTests {
                 "\"email\":\"testemail@email.com\"," +
                 "\"created\":\"2021-02-02T00:00\"," +
                 "\"role\":\"USER\"," +
-                "\"businessesAdministered\":[" +
-                "null" +
-                "]," +
+                "\"businessesAdministered\":[]," +
                 "\"images\":[]," +
                 "\"dateOfBirth\":\"2007-02-02\"," +
                 "\"phoneNumber\":\"0271316\"," +

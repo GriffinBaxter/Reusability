@@ -21,19 +21,19 @@
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li id="year-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Year'">
+                    @click="period = 'Year'; retrieveSalesReport()">
                   Year
                 </li>
                 <li id="month-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Month'">
+                    @click="period = 'Month'; retrieveSalesReport()">
                   Month
                 </li>
                 <li id="day-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Day'">
+                    @click="period = 'Day'; retrieveSalesReport()">
                   Day
                 </li>
                 <li id="custom-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Custom'">
+                    @click="period = 'Custom'; showTable = false">
                   Custom
                 </li>
               </ul>
@@ -79,11 +79,14 @@
 
             <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
               <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay"
-                     :min="'2021-01-01'" :max="currentDay">
+                     :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
+
               <button class="btn green-button" @click="retrieveSalesReport()">
                 Apply
               </button>
+
             </div>
+
 
             <div v-if="period === 'Custom'" class="btn-group col d-inline-block p-2" role="group">
 
@@ -94,12 +97,13 @@
 
                   <div class="row">
                     <div class="col-xl-1">
-                      <label for="start-date-input" class="p-2">Date </label>
+                      <label for="start-date-input" class="py-2">Date </label>
                     </div>
                     <div class="col-xl-4 col-md-6">
                       <input type="date" class="form-control filter-input" id="start-date-input"
                              v-model="startDate"
-                             :class="toggleInvalidClass(invalidDateMsg)">
+                             :class="toggleInvalidClass(invalidDateMsg)"
+                             :min="'2021-01-01'">
                       <div class="invalid-feedback">
                         {{ invalidDateMsg }}
                       </div>
@@ -109,7 +113,8 @@
                     </div>
                     <div class="col-xl-4 col-md-6">
                       <input type="date" class="form-control filter-input" id="end-date-input"
-                             v-model="endDate">
+                             v-model="endDate"
+                             :min="'2021-01-01'">
                     </div>
                     <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
                       <button class="btn green-button" @click="applyDate($event)">
@@ -123,7 +128,7 @@
 
             <!---------------------------------- Granularity options menu ------------------------------------------->
 
-            <div class="col-xl-1">
+            <div class="col-xl-1" style="width: auto">
               <label for="granularity-button" class="py-3">
                 Granularity:
               </label>
@@ -137,22 +142,22 @@
 
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Total')">
+                    @click="setGranularityOption('Total', $event)">
                   Total
                 </li>
 
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Yearly')">
+                    @click="setGranularityOption('Yearly', $event)">
                   Yearly
                 </li>
 
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Monthly')">
+                    @click="setGranularityOption('Monthly', $event)">
                   Monthly
                 </li>
 
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="setGranularityOption('Daily')">
+                    @click="setGranularityOption('Daily', $event)">
                   Daily
                 </li>
 
@@ -163,7 +168,7 @@
 
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
-        <div class="card p-3" style="margin: 10px 0 75px 0">
+        <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
           <br>
 
           <table class="table table-hover" aria-describedby="page-title" v-if="this.granularity !== 'Total'">
@@ -179,7 +184,7 @@
             <tr v-for="line in salesReportData" v-bind:key="line.granularityName">
               <td>{{ line.granularityName }}</td>
               <td>{{ line.totalSales }}</td>
-              <td>{{currencySymbol}} {{ line.totalRevenue }}</td>
+              <td>{{ currencySymbol }} {{ line.totalRevenue }}</td>
             </tr>
             </tbody>
           </table>
@@ -198,11 +203,11 @@
 
 <script>
 
-import {isFuture, parseISO, formatISO, format, lastDayOfMonth} from "date-fns";
+import {isFuture, parseISO, formatISO, format, lastDayOfMonth, isBefore} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
-import {manageError} from "../../views/helpFunction"
+import {manageError} from "../../errorHandler";
 
 export default {
   name: "SalesReport",
@@ -262,7 +267,9 @@ export default {
       currentDay: "",
       selectedDay: "",
 
-      salesReportData: []
+      salesReportData: [],
+      invalidDayMsg: "",
+      showTable: false
     }
   },
   methods: {
@@ -270,6 +277,8 @@ export default {
     isFirstDateBeforeSecondDate: isFirstDateBeforeSecondDate,
 
     toggleInvalidClass: toggleInvalidClass,
+
+    manageError: manageError,
 
     /**
      * Validates the start and end dates before applying the date range to the report.
@@ -280,7 +289,11 @@ export default {
      */
     applyDate(event) {
       event.preventDefault();
-      if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
+      if (this.startDate === null || this.endDate === null) {
+        this.invalidDateMsg = "Please enter two dates"
+      } else if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
+        this.invalidDateMsg = "Dates must be after 2020"
+      } else if (!isFirstDateBeforeSecondDate(this.startDate, this.endDate)) {
         this.invalidDateMsg = "Start date must be before end date"
       } else if (isFuture(parseISO(this.startDate))) {
         this.invalidDateMsg = "Start date cannot be in the future";
@@ -293,10 +306,11 @@ export default {
     /**
      * Sets the granularity option text on the button to match the selected granularity.
      * @param granularity The chosen granularity, e.g. total, yearly, monthly, daily.
+     * @param event The click event passed in from the Vue template button click.
      */
-    setGranularityOption(granularity) {
+    setGranularityOption(granularity, event) {
       this.granularity = granularity;
-      this.retrieveSalesReport();
+      this.applyDate(event)
     },
 
     /**
@@ -359,22 +373,40 @@ export default {
      * Sends an API request to the backend to retrieve the sales report for the currently selected options
      */
     async retrieveSalesReport() {
-      const dates = this.generateDates();
-      const fromDate = dates.fromDate;
-      const toDate = dates.toDate;
+      // Check that selected day is not partially empty (unlikely case)
+      if (this.selectedDay === '') {
+        this.invalidDayMsg = 'Please enter a date';
+      } else {
+        this.invalidDayMsg = "";
+        const dates = this.generateDates();
+        const fromDate = dates.fromDate;
+        const toDate = dates.toDate;
 
-      await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
-        this.salesReportData = [];
-        response.data.forEach((line) => {
-          this.salesReportData.push({
-            granularityName: line.granularityName,
-            totalSales: line.totalSales,
-            totalRevenue: line.totalRevenue
-          })
-        });
-      }).catch((error) => {
-        manageError(error);
-      })
+        await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
+          this.salesReportData = [];
+          response.data.forEach((line) => {
+            this.salesReportData.push({
+              granularityName: line.granularityName,
+              totalSales: line.totalSales,
+              totalRevenue: line.totalRevenue
+            })
+          });
+          this.showTable = true;
+        }).catch((error) => {
+          this.$router.push(manageError(error));
+        })
+      }
+    },
+
+    /**
+     * Checks if a date is before the year 2021.
+     * Dates before 2021 are not accepted by the sales report back-end endpoint
+     * so this must be validated here.
+     * @param date A date to check
+     */
+    isBefore2021(date) {
+      const dateToCompare = parseISO('2021-01-01');
+      return isBefore(parseISO(date), dateToCompare);
     },
 
     /**

@@ -51,6 +51,7 @@
 import Api from "../../Api";
 import {formatDate} from "../../dateUtils";
 import PageButtons from "../PageButtons";
+import {manageError} from "../../errorHandler";
 
 export default {
   name: "SaleHistory",
@@ -109,6 +110,7 @@ export default {
   },
 
   methods: {
+    manageError: manageError,
     /**
      * Calls a GET request to the backend to retrieve the sold listings for the current business, and
      * then formats the retrieved data to be displayed.
@@ -150,17 +152,6 @@ export default {
       }).catch((error) => {
         this.manageError(error);
       })
-    },
-    /**
-     * If a request in to the backend results in an error, then this method will deal with the error.
-     * @param error the error received from the backend.
-     */
-    async manageError(error) {
-      if (error.request && !error.response)      { await this.$router.push({path: '/timeout'});      }
-      else if (error.response.status === 401)    { await this.$router.push({path: '/invalidtoken'}); }
-      else if (error.response.status === 403)    { await this.$router.push({path: '/forbidden'});    }
-      else if (error.response.status === 406)    { await this.$router.push({path: '/noBusiness'});   }
-      else { await this.$router.push({path: '/noBusiness'}); console.log(error.message); }
     },
     /**
      * This method adds a currency symbol and unit to a price, if the business has a valid currency.
