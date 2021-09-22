@@ -82,7 +82,6 @@
 
             </form>
 
-
           </div>
         </div>
       </div>
@@ -133,15 +132,17 @@ export default {
       })
       .catch((error) => {
         if (error.response) {
-          this.$refs.errorLbl.innerText = 'Failed login attempt, email or password incorrect.';
-          this.$refs.errorLbl.style.visibility = "visible";
+          if (this.hasExceedLoginAttempts()) {
+            this.$refs.errorLbl.innerText = 'Exceeded login attempts. Your account is now locked. Please wait X minutes for your account to be unlocked. ';
+          } else {
+            this.$refs.errorLbl.innerText = 'Failed login attempt, email or password incorrect.';
+          }
         } else if (error.request) {
           this.$refs.errorLbl.innerText = 'Connection Timeout.';
-          this.$refs.errorLbl.style.visibility = "visible";
         } else {
           this.$refs.errorLbl.innerText = 'Connection error.';
-          this.$refs.errorLbl.style.visibility = "visible";
         }
+        this.$refs.errorLbl.style.visibility = "visible";
       })
     },
 
@@ -158,6 +159,15 @@ export default {
         return 'password'
       }
     },
+
+    /**
+     * Check if the user has exceeded the number of attempts for logging into their account.
+     * @return Boolean, true if the number of attempts exceeds the limit, otherwise false.
+     */
+    hasExceedLoginAttempts() {
+      // TODO
+      return true;
+    }
   }
 }
 
