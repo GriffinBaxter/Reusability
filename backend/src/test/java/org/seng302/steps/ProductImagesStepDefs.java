@@ -67,6 +67,9 @@ public class ProductImagesStepDefs {
     private UserImageRepository userImageRepository;
 
     @MockBean
+    private BusinessImageRepository businessImageRepository;
+
+    @MockBean
     private FileStorageService fileStorageService;
 
     private Address address;
@@ -91,8 +94,10 @@ public class ProductImagesStepDefs {
         userImageRepository = mock(UserImageRepository.class);
         fileStorageService = Mockito.mock(FileStorageService.class,
                 withSettings().stubOnly().useConstructor("test-images"));
-        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
-                productRepository, productImageRepository, userImageRepository, fileStorageService)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(
+                businessRepository, userRepository, productRepository, productImageRepository,
+                userImageRepository, businessImageRepository, fileStorageService)
+        ).build();
         jpgImage = new MockMultipartFile("images", "testImage.jpg",
                 MediaType.IMAGE_JPEG_VALUE, this.getClass().getResourceAsStream("testImage.jpg"));
 
@@ -235,8 +240,10 @@ public class ProductImagesStepDefs {
         nonPrimaryProductImage = new ProductImage(2, productId, businessId, filename, filename, false);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly().useConstructor("test-images"));
 
-        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
-                productRepository, productImageRepository, userImageRepository, fileStorageService)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(
+                businessRepository, userRepository, productRepository, productImageRepository,
+                userImageRepository, businessImageRepository, fileStorageService)
+        ).build();
 
         nonPrimaryProductImage.setIsPrimary(false);
         List<ProductImage> nonPrimaryProductImages = new ArrayList<>();

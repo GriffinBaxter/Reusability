@@ -9,11 +9,9 @@ import {shallowMount} from "@vue/test-utils";
 import ProductCatalogue from "../src/views/ProductCatalogue";
 import Cookies from "js-cookie";
 import Api from "../src/Api";
-import CurrencyApi from "../src/currencyInstance";
 import OpenFoodFactsApi from "../src/openFoodFactsInstance";
 
 jest.mock("../src/Api");
-jest.mock("../src/currencyInstance");
 jest.mock("../src/openFoodFactsInstance");
 jest.mock("js-cookie");
 
@@ -947,8 +945,12 @@ describe('Testing autofill functionality', function () {
     let productCatalogueWrapper;
 
     beforeAll(() => {
-        Api.getBusiness.mockImplementation(() => Promise.resolve({data: {address: {country: ''}}}));
-        CurrencyApi.currencyQuery.mockImplementation(() => Promise.resolve({data: [{currencies: [{code: '', symbol: ''}]}]}));
+        Api.getBusiness.mockImplementation(() => Promise.resolve({
+            data: {
+                currencySymbol: '$',
+                currencyCode: 'USD'
+            }
+        }));
         Api.searchProducts.mockImplementation(() => Promise.resolve({
             status: 200,
             data: [],
@@ -1153,6 +1155,13 @@ describe('Testing scanning UI functionality', function () {
                 $route
             }
         });
+
+        Api.getBusiness.mockImplementation(() => Promise.resolve({
+            data: {
+                currencySymbol: '$',
+                currencyCode: 'USD'
+            }
+        }));
     });
 
     test('Testing that the scanning buttons are not available when the "add barcode" checkbox is not selected.', () => {
@@ -1252,6 +1261,12 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
             }
         });
 
+        Api.getBusiness.mockImplementation(() => Promise.resolve({
+            data: {
+                currencySymbol: '$',
+                currencyCode: 'USD'
+            }
+        }));
         Cookies.get = jest.fn().mockImplementation(() => 1); // mock the actAs cookie (business id)
         Api.searchProducts.mockImplementation(() => Promise.resolve({
             status: 200,
@@ -1273,7 +1288,7 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         wrapper.vm.onSearch(checked, searchQuery);
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
-            query: { "searchQuery": searchQuery, "searchBy": "productName", "orderBy": "", "page": "0"}})
+            query: { "searchQuery": searchQuery, "searchBy": "productName", "orderBy": "productIdASC", "page": "0"}})
     })
 
     test('Test the closeCreateProductModal method resets variables.', () => {
@@ -1318,7 +1333,7 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         wrapper.vm.updatePage(mockedEvent);
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
-            query: { "searchQuery": "", "searchBy": "name", "orderBy": "", "page": "2", "barcode": ""}})
+            query: { "searchQuery": "", "searchBy": "name", "orderBy": "productIdASC", "page": "2", "barcode": ""}})
     })
 
     test('Test the convertSearchByListToString method generates the correct string when searchBy only contains name', () => {

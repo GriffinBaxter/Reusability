@@ -59,9 +59,6 @@ public abstract class UserPayloadParent {
         this.created = created.toString();
         this.role = role;
         this.businessesAdministered = BusinessPayload.toBusinessPayload(businessesAdministeredObject);
-        if (this.businessesAdministered.isEmpty()){
-            this.businessesAdministered.add(null);
-        }
         this.images = ImagePayload.convertToImagePayload(userImages == null ? null : new ArrayList<>(userImages));
     }
 

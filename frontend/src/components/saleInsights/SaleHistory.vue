@@ -48,22 +48,45 @@
 </template>
 
 <script>
-import Cookies from "js-cookie";
-import {checkAccessPermission} from "../views/helpFunction";
-import Api from "../Api";
-import {formatDate} from "../dateUtils";
-import PageButtons from "../components/PageButtons";
+import Api from "../../Api";
+import {formatDate} from "../../dateUtils";
+import PageButtons from "../PageButtons";
+import {manageError} from "../../errorHandler";
 
 export default {
   name: "SaleHistory",
   components: {
     PageButtons
   },
+  props: {
+    businessName: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessCountry: {
+      type: String,
+      default: "",
+      required: true
+    },
+    businessId: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    currencySymbol: {
+      type: String,
+      default: "",
+      required: true
+    },
+    currencyCode: {
+      type: String,
+      default: "",
+      required: true
+    }
+  },
   data() {
     return {
-      businessId: 0,
-      businessName: "",
-      businessCountry: "",
       soldListings: [],
       columns: [
         {title: "Product Id"},
@@ -74,9 +97,6 @@ export default {
         {title: "Bookmarks"},
         {title: "Buyer"}
       ],
-      // Currency related variables
-      currencyCode: "",
-      currencySymbol: "",
 
       // Table
       maxSoldListings: 10,
@@ -85,23 +105,12 @@ export default {
       currentPage: 0,
       noResults: false,
       numberListingsRetrieved: 0,
-      totalListings: 0,
+      totalListings: 0
     }
   },
+
   methods: {
-    /**
-     * Calls a GET request to the backend to retrieve the information of the current business.
-     */
-    async retrieveBusinessInfo() {
-      await Api.getBusiness(this.businessId).then(response => {
-        this.businessName = response.data.name;
-        this.businessCountry = response.data.address.country;
-        this.currencySymbol = response.data.currencySymbol;
-        this.currencyCode = response.data.currencyCode;
-      }).catch((error) => {
-        this.manageError(error);
-      })
-    },
+    manageError: manageError,
     /**
      * Calls a GET request to the backend to retrieve the sold listings for the current business, and
      * then formats the retrieved data to be displayed.
@@ -127,7 +136,7 @@ export default {
           for (let j = this.soldListings.length; j < this.maxSoldListings; j++) {
             this.soldListings.push({
               bookmarks: "",
-              id: j,
+              id: j - this.maxSoldListings,
               listingDate: "",
               price: "",
               productId: "",
@@ -143,17 +152,6 @@ export default {
       }).catch((error) => {
         this.manageError(error);
       })
-    },
-    /**
-     * If a request in to the backend results in an error, then this method will deal with the error.
-     * @param error the error received from the backend.
-     */
-    async manageError(error) {
-      if (error.request && !error.response)      { await this.$router.push({path: '/timeout'});      }
-      else if (error.response.status === 401)    { await this.$router.push({path: '/invalidtoken'}); }
-      else if (error.response.status === 403)    { await this.$router.push({path: '/forbidden'});    }
-      else if (error.response.status === 406)    { await this.$router.push({path: '/noBusiness'});   }
-      else { await this.$router.push({path: '/noBusiness'}); console.log(error.message); }
     },
     /**
      * This method adds a currency symbol and unit to a price, if the business has a valid currency.
@@ -182,23 +180,6 @@ export default {
      */
     goToCustomerProfile(userId) {
       this.$router.push({path: `/profile/${userId}`});
-    },
-  },
-  /**
-   * When mounted, initiate population of page.
-   * If cookies are invalid or not present, redirect to login page.
-   */
-  async mounted() {
-    const actAs = Cookies.get('actAs');
-    if (checkAccessPermission(this.$route.params.businessId, actAs)) {
-      await this.$router.push({path: `/businessProfile/${actAs}/saleHistory`});
-    } else {
-      const currentID = Cookies.get('userID');
-      if (currentID) {
-        this.businessId = parseInt(this.$route.params.businessId);
-        await this.retrieveBusinessInfo();
-        await this.retrieveSoldListings();
-      }
     }
   }
 }

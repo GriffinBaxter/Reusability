@@ -76,6 +76,9 @@ class ImageResourceIntegrationTests {
     @MockBean
     private UserImageRepository userImageRepository;
 
+    @MockBean
+    private BusinessImageRepository businessImageRepository;
+
     private FileStorageService fileStorageService;
 
     private User user;
@@ -109,6 +112,10 @@ class ImageResourceIntegrationTests {
     private ProductImage primaryProductImage;
 
     private ProductImage newProductImage;
+
+    private BusinessImage primaryBusinessImage;
+
+    private BusinessImage newBusinessImage;
 
     private Integer userId;
 
@@ -250,13 +257,19 @@ class ImageResourceIntegrationTests {
                 "test/test", true);
         newProductImage = new ProductImage(2, productId, businessId, "storage/test2",
                 "test2/test2", false);
+        primaryBusinessImage = new BusinessImage(1, businessId, "storage/test",
+                "test/test", true);
+        newBusinessImage = new BusinessImage(2, businessId, "storage/test3",
+                "test3/test3", false);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
 
-        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(businessRepository, userRepository,
-                productRepository, productImageRepository, userImageRepository, fileStorageService)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new ImageResource(
+                businessRepository, userRepository, productRepository, productImageRepository,
+                userImageRepository, businessImageRepository, fileStorageService)
+        ).build();
     }
 
-    //---------------------------------------- Image Creation Endpoint Tests -------------------------------------------
+    // --------------------------------------- Image Creation Endpoint Tests ------------------------------------------
 
     /**
      * Testing that we receive an image id and get a CREATED http status back when we create an image for a user
@@ -331,6 +344,42 @@ class ImageResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+    }
+
+    /**
+     * Testing that we receive an image id and get a CREATED http status back when we create an image for a business
+     * that does not have already any other primary images.
+     *
+     * @throws Exception thrown if there is an error with the fileStorageService.
+     */
+    @Test
+    void testingFileCreationWithValidDataNoPrimaryImagesForBusinessImage() throws Exception {
+        // Given
+        businessId = business.getId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = new ArrayList<>();
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.saveAndFlush(any(BusinessImage.class))).thenReturn(primaryBusinessImage);
+        response = mvc.perform(multipart("/images").file(jpgImage).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
     }
 
     /**
@@ -410,6 +459,43 @@ class ImageResourceIntegrationTests {
     }
 
     /**
+     * Testing that we receive an image id and get a CREATED http status back when we create an image for a business
+     * that has already a primary image.
+     *
+     * @throws Exception thrown if there is an error with the fileStorageService.
+     */
+    @Test
+    void testingFileCreationWithValidDataWithPrimaryImagesForBusinessImage() throws Exception {
+        // Given
+        businessId = business.getId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = new ArrayList<>();
+        businessImages.add(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.saveAndFlush(any(BusinessImage.class))).thenReturn(primaryBusinessImage);
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+    }
+
+    /**
      * Testing that we get a BAD_REQUEST https status when we do not include the 'images' file.
      *
      * @throws Exception thrown if there is an error with MockMvc.
@@ -425,6 +511,30 @@ class ImageResourceIntegrationTests {
         // When
         response = mvc.perform(multipart("/images").cookie(cookie)
                         .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Required request part 'images' is not present");
+    }
+
+    /**
+     * Testing that we get a BAD_REQUEST https status when we do not include the 'images' file.
+     *
+     * @throws Exception thrown if there is an error with MockMvc.
+     */
+    @Test
+    void testingImageFileIsRequiredForBusinessImage() throws Exception {
+        // Given
+        userId = user.getId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        response = mvc.perform(multipart("/images").cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
@@ -530,7 +640,6 @@ class ImageResourceIntegrationTests {
         assertThat(response.getErrorMessage()).isEqualTo("Invalid image type");
     }
 
-
     /**
      * Testing that the user must provide a valid user id in the parameters when they upload user image.
      *
@@ -550,6 +659,30 @@ class ImageResourceIntegrationTests {
         when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
                         .param("uncheckedImageType", "USER_IMAGE"))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Testing that the user must provide a valid user id in the parameters when they upload user image.
+     *
+     * @throws Exception thrown if there is an error with MockMvc.
+     */
+    @Test
+    void testingUserHasToProvideValidUserIdForBusinessImage() throws Exception {
+        // Given
+        businessId = business.getId();
+        productId = product.getProductId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE"))
                 .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
@@ -682,6 +815,44 @@ class ImageResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
     }
 
+    /**
+     * Testing that a user needs to have GAA role to be able to upload an image for a business they are not on the
+     * administrator list of.
+     *
+     * @throws Exception thrown if there is an error with the fileStorageService.
+     */
+    @Test
+    void testingUserNeedsToBeGaaForBusinessThatTheyAreNotAdminOfForBusinessImage() throws Exception {
+        // Given
+        businessId = anotherBusiness.getId();
+
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        when(productRepository.findProductByIdAndBusinessId(productId, businessId)).thenReturn(Optional.of(product));
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = new ArrayList<>();
+        businessImages.add(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.saveAndFlush(any(BusinessImage.class))).thenReturn(primaryBusinessImage);
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+    }
 
     /**
      * Testing that a user needs to have DGAA role to be able to upload an image for another user.
@@ -785,7 +956,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("User have no permission to do this.");
+        assertThat(response.getErrorMessage()).isEqualTo("User does not have permission to modify this user's images.");
     }
 
     /**
@@ -824,6 +995,43 @@ class ImageResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+    }
+
+    /**
+     * Testing that a user needs to have DGAA role to be able to upload an image for a business they are not on the
+     * administrator list of.
+     *
+     * @throws Exception thrown if there is an error with the fileStorageService.
+     */
+    @Test
+    void testingUserNeedsToBeDGAAForBusinessThatTheyAreNotAdminOfForBusinessImage() throws Exception {
+        // Given
+        businessId = anotherBusiness.getId();
+
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = new ArrayList<>();
+        businessImages.add(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.saveAndFlush(any(BusinessImage.class))).thenReturn(primaryBusinessImage);
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
     }
 
     /**
@@ -866,6 +1074,43 @@ class ImageResourceIntegrationTests {
     }
 
     /**
+     * Testing that a user of role USER can upload business images if they are an admin of the business.
+     *
+     * @throws Exception thrown if there is an error with the fileStorageService.
+     */
+    @Test
+    void testingThatUserMustBeAdminOfBusinessToUploadImagesForBusinessImage() throws Exception {
+        // Given
+        businessId = anotherBusiness.getId();
+
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        lenient().when(fileStorageService.generateThumbnail(any(MultipartFile.class), anyString())).thenReturn(
+                new ByteArrayInputStream("mockedThumbnailInputStream".getBytes())
+        );
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = new ArrayList<>();
+        businessImages.add(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.saveAndFlush(any(BusinessImage.class))).thenReturn(primaryBusinessImage);
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("userId", "")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+    }
+
+    /**
      * Testing that a user of role USER cannot upload images if they are not an admin of the business.
      *
      * @throws Exception thrown if there is an error with the fileStorageService.
@@ -889,6 +1134,39 @@ class ImageResourceIntegrationTests {
         productImages.add(primaryProductImage);
         when(productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true)).thenReturn(productImages);
         when(productImageRepository.saveAndFlush(any(ProductImage.class))).thenReturn(primaryProductImage);
+        response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
+                        .param("uncheckedImageType", "PRODUCT_IMAGE")
+                        .param("businessId", String.valueOf(businessId))
+                        .param("productId", productId))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Testing that a user of role USER cannot upload business images if they are not an admin of the business.
+     *
+     * @throws Exception thrown if there is an error with the fileStorageService.
+     */
+    @Test
+    void testingThatUserThatIsNotAnAdminOfBusinessCannotUploadBusinessImages() throws Exception {
+        // Given
+        businessId = anotherBusiness.getId();
+
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(anotherBusiness));
+        lenient().when(fileStorageService.storeFile(any(InputStream.class), anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = new ArrayList<>();
+        businessImages.add(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.saveAndFlush(any(BusinessImage.class))).thenReturn(primaryBusinessImage);
         response = mvc.perform(multipart("/images").file(jpegImage).cookie(cookie)
                         .param("uncheckedImageType", "PRODUCT_IMAGE")
                         .param("businessId", String.valueOf(businessId))
@@ -930,7 +1208,6 @@ class ImageResourceIntegrationTests {
                 "The file type of the image uploaded is not supported. Only JPG, JPEG, PNG and GIF are supported.");
     }
 
-
     /**
      * Testing that .gif is a valid file format to be uploaded.
      *
@@ -968,7 +1245,6 @@ class ImageResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
     }
-
 
     /**
      * Testing that .png is a valid file format to be uploaded.
@@ -1087,7 +1363,7 @@ class ImageResourceIntegrationTests {
     }
 
 
-    //------------------------------------ Product Image Deletion Endpoint Tests ---------------------------------------
+    // ------------------------------------ Image Deletion Endpoint Tests ---------------------------------------
 
     /**
      * Tests that an OK status is received when deleting an image of an existing business with an existing product at
@@ -1289,7 +1565,467 @@ class ImageResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
-    //--------------------------- Product Image Changing Primary Image Endpoint Tests ----------------------------------
+    /**
+     * Tests that an OK status is received when deleting an image of an existing user  at
+     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that another existing image is made the primary image when the current primary image is deleted and an OK response is
+     * returned.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndMultipleImagesExist_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        UserImage newUserImage = new UserImage(2, userId, "storage/test2", "test2/test2", false);
+        List<UserImage> userImages = List.of(newUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(Collections.emptyList());
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        when(userImageRepository.findUserImageByUserId(userId)).thenReturn(userImages);
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(userImages.get(0).getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when deleting an image of an existing user
+     * at the file path user-images -> IMAGE_UUID but the user does not have administration rights i.e.
+     * not "owner" or application admin.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocationButIncorrectAccessRights_thenReceiveForbiddenStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an existing user
+     * but the image id does not exist.
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndImageWithGivenImageIdDoesNotExistsAtExpectedFilePathLocation_thenReceiveNotAcceptedStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an non-existing user.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdDoesNotExist_thenReceiveNotAcceptedStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", "6000"))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when deleting an image with an invalid image type.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenInvalidImageType_thenReceiveBadRequestStatus() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "CAT_IMAGE")
+                        .param("userId", "6000"))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid image type");
+    }
+
+    /**
+     * Tests that a UNAUTHORISED status is received when deleting an image when a user is not logged in.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserNotLoggedIn_thenReceiveUnauthorisedStatus() throws Exception {
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId()))
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", "6000"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing user at
+     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location. Test specifically for when a user is a DGAA and deleting another user's image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndLoggedInUserIsDGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing user at
+     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location. Test specifically for when a user is a GAA and deleting another user's image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenUserIdExistsAndLoggedInUserIsGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        userId = user.getId();
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
+        List<UserImage> userImages = List.of(primaryUserImage);
+        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
+        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "USER_IMAGE")
+                        .param("userId", String.valueOf(userId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing user  at
+     * the file path images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        businessId = business.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(Collections.emptyList());
+        when(businessImageRepository.findBusinessImageByIdAndBusinessId(primaryBusinessImage.getId(), businessId))
+                .thenReturn(Optional.of(primaryBusinessImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that another existing image is made the primary image when the current primary image is deleted and an OK
+     * response is returned.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndMultipleImagesExist_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+
+        // Given
+        businessId = business.getId();
+        sessionToken = user.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        BusinessImage newBusinessImage = new BusinessImage(
+                2, businessId, "storage/test3", "test3/test3", false
+        );
+        List<BusinessImage> businessImages = List.of(newBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(Collections.emptyList());
+        when(businessImageRepository.findBusinessImageByIdAndBusinessId(primaryBusinessImage.getId(), businessId))
+                .thenReturn(Optional.of(primaryBusinessImage));
+        when(businessImageRepository.findBusinessImageByBusinessId(businessId)).thenReturn(businessImages);
+        response = mvc.perform(delete(String.format("/images/%d", primaryBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(businessImages.get(0).getIsPrimary()).isTrue();
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when deleting an image of an existing business
+     * at the file path images -> IMAGE_UUID but the user does not have administration rights i.e.
+     * not "owner" or application admin.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocationButIncorrectAccessRights_thenReceiveForbiddenStatus() throws Exception {
+        // Given
+        businessId = business.getId();
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = List.of(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.findBusinessImageByIdAndBusinessId(primaryBusinessImage.getId(), businessId))
+                .thenReturn(Optional.of(primaryBusinessImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an existing business but the image id
+     * does not exist.
+     * 
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndImageWithGivenImageIdDoesNotExistsAtExpectedFilePathLocation_thenReceiveNotAcceptedStatus() throws Exception {
+        // Given
+        businessId = business.getId();
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = List.of(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.findBusinessImageByIdAndBusinessId(primaryBusinessImage.getId(), businessId))
+                .thenReturn(Optional.empty());
+        response = mvc.perform(delete(String.format("/images/%d", primaryBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that a UNAUTHORIZED status is received when deleting a business image for a business that does not exist.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessDoesNotExist_thenReceiveNotAcceptedStatus() throws Exception {
+        response = mvc.perform(delete(String.format("/images/%d", primaryBusinessImage.getId()))
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", "6000"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing business at
+     * the file path images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location. Test specifically for when a user is a DGAA and deleting a business's image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndLoggedInUserIsDGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        businessId = business.getId();
+        sessionToken = dGAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = List.of(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.findBusinessImageByIdAndBusinessId(primaryBusinessImage.getId(), businessId))
+                .thenReturn(Optional.of(primaryBusinessImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Tests that an OK status is received when deleting an image of an existing business at
+     * the file path images -> IMAGE_UUID and that the image no longer exists at the file path
+     * location. Test specifically for when a user is a GAA and deleting a business's image.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void whenBusinessIdExistsAndLoggedInUserIsGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+        // Given
+        businessId = business.getId();
+        sessionToken = gAA.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // When
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
+        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryBusinessImage.getFilename());
+        List<BusinessImage> businessImages = List.of(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.findBusinessImageByIdAndBusinessId(primaryBusinessImage.getId(), businessId))
+                .thenReturn(Optional.of(primaryBusinessImage));
+        response = mvc.perform(delete(String.format("/images/%d", primaryBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
+                .andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    // --------------------------- Changing Primary Image Endpoint Tests ----------------------------------
 
     /**
      * Tests that an UNAUTHORIZED status is received when user try to change primary image before login.
@@ -1458,7 +2194,7 @@ class ImageResourceIntegrationTests {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getErrorMessage()).isEqualTo("User does not have permission to update this image.");
+        assertThat(response.getErrorMessage()).isEqualTo("User does not have permission to modify this user's images.");
     }
 
     /**
@@ -1657,249 +2393,121 @@ class ImageResourceIntegrationTests {
         assertThat(response.getErrorMessage()).isEqualTo("Given business does not exist.");
     }
 
-    //------------------------------------ User Image Deletion Endpoint Tests ---------------------------------------
-
     /**
-     * Tests that an OK status is received when deleting an image of an existing user  at
-     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
-     * location.
+     * Tests that an OK status is received when making an image the primary image of an existing business
+     * at the file path images -> IMAGE_UUID and that the image no longer exists at the file
+     * path location.
      *
      * @throws Exception Exception error
      */
     @Test
-    void whenUserIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+    void whenBusinessIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenMakeNewPrimaryImageWithGivenImageIdAtFilePathLocation() throws Exception {
+
         // Given
-        userId = user.getId();
+        businessId = business.getId();
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+        assertThat(primaryBusinessImage.getIsPrimary()).isTrue();
 
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
-        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
-        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
-        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
-        List<UserImage> userImages = List.of(primaryUserImage);
-        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
-        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", String.valueOf(userId)))
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        List<BusinessImage> businessImages = List.of(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.findById(newBusinessImage.getId()))
+                .thenReturn(Optional.of(newBusinessImage));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(newBusinessImage.getIsPrimary()).isTrue();
     }
 
     /**
-     * Tests that another existing image is made the primary image when the current primary image is deleted and an OK response is
-     * returned.
+     * Tests that a FORBIDDEN status is received when making an image the primary image of an existing business
+     * at the file path images -> IMAGE_UUID but the user does not have administration rights
+     * i.e. not administrator of business.
      *
      * @throws Exception Exception error
      */
     @Test
-    void whenUserIdExistsAndMultipleImagesExist_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
+    void whenBusinessIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocationButIncorrectAccessRights_thenChangingPrimaryImageResultsInForbiddenStatus() throws Exception {
 
         // Given
-        userId = user.getId();
-        sessionToken = user.getSessionUUID();
-        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
-
-        // When
-        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
-        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
-        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
-        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
-        UserImage newUserImage = new UserImage(2, userId, "storage/test2", "test2/test2", false);
-        List<UserImage> userImages = List.of(newUserImage);
-        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(Collections.emptyList());
-        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
-        when(userImageRepository.findUserImageByUserId(userId)).thenReturn(userImages);
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", String.valueOf(userId)))
-                .andReturn().getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(userImages.get(0).getIsPrimary()).isTrue();
-    }
-
-    /**
-     * Tests that a FORBIDDEN status is received when deleting an image of an existing user
-     * at the file path user-images -> IMAGE_UUID but the user does not have administration rights i.e.
-     * not "owner" or application admin.
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    void whenUserIdExistsAndImageWithGivenImageIdExistsAtExpectedFilePathLocationButIncorrectAccessRights_thenReceiveForbiddenStatus() throws Exception {
-        // Given
-        userId = user.getId();
+        businessId = business.getId();
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(anotherUser));
-        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", String.valueOf(userId)))
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     /**
-     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an existing user
-     * but the image id does not exist.
+     * Tests that a NOT_ACCEPTABLE status is received when making an image the primary image of an existing business
+     * but the image id does not exist
+     *
      * @throws Exception Exception error
      */
     @Test
-    void whenUserIdExistsAndImageWithGivenImageIdDoesNotExistsAtExpectedFilePathLocation_thenReceiveNotAcceptedStatus() throws Exception {
+    void whenBusinessIdExistsExistsAndImageWithGivenImageIdDoesNotExistsAtExpectedFilePathLocation_thenChangingPrimaryImageResultsInNotAcceptedStatus() throws Exception {
+
         // Given
-        userId = user.getId();
+        businessId = business.getId();
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
-        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
-        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
-        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
-        List<UserImage> userImages = List.of(primaryUserImage);
-        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
-        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.empty());
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", String.valueOf(userId)))
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.of(business));
+        List<BusinessImage> businessImages = List.of(primaryBusinessImage);
+        when(businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(businessId, true))
+                .thenReturn(businessImages);
+        when(businessImageRepository.findBusinessImageByIdAndBusinessId(primaryBusinessImage.getId(), businessId))
+                .thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newBusinessImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Given business image does not exist.");
     }
 
     /**
-     * Tests that a NOT_ACCEPTABLE status is received when deleting an image of an non-existing user.
+     * Tests that a NOT_ACCEPTABLE status is received when making a business image the primary image of a non-existing
+     * business.
      *
      * @throws Exception Exception error
      */
     @Test
-    void whenUserIdDoesNotExist_thenReceiveNotAcceptedStatus() throws Exception {
+    void whenBusinessIdDoesNotExist_thenChangingPrimaryBusinessImageResultsInNotAcceptedStatus() throws Exception {
+
         // Given
-        userId = user.getId();
+        businessId = business.getId();
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
         // When
         when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", "6000"))
+        when(businessRepository.findBusinessById(businessId)).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/images/%d/makePrimary", newProductImage.getId())).cookie(cookie)
+                        .param("uncheckedImageType", "BUSINESS_IMAGE")
+                        .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
-
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-    }
-
-    /**
-     * Tests that a BAD_REQUEST status is received when deleting an image with an invalid image type.
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    void whenInvalidImageType_thenReceiveBadRequestStatus() throws Exception {
-        // Given
-        userId = user.getId();
-        sessionToken = user.getSessionUUID();
-        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
-
-        // When
-        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(user));
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "CAT_IMAGE")
-                .param("userId", "6000"))
-                .andReturn().getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getErrorMessage()).isEqualTo("Invalid image type");
-    }
-
-    /**
-     * Tests that a UNAUTHORISED status is received when deleting an image when a user is not logged in.
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    void whenUserNotLoggedIn_thenReceiveUnauthorisedStatus() throws Exception {
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId()))
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", "6000"))
-                .andReturn().getResponse();
-
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    /**
-     * Tests that an OK status is received when deleting an image of an existing user at
-     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
-     * location. Test specifically for when a user is a DGAA and deleting another user's image.
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    void whenUserIdExistsAndLoggedInUserIsDGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
-        // Given
-        userId = user.getId();
-        sessionToken = dGAA.getSessionUUID();
-        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
-
-        // When
-        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(dGAA));
-        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
-        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
-        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
-        List<UserImage> userImages = List.of(primaryUserImage);
-        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
-        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", String.valueOf(userId)))
-                .andReturn().getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    /**
-     * Tests that an OK status is received when deleting an image of an existing user at
-     * the file path user-images -> IMAGE_UUID and that the image no longer exists at the file path
-     * location. Test specifically for when a user is a GAA and deleting another user's image.
-     *
-     * @throws Exception Exception error
-     */
-    @Test
-    void whenUserIdExistsAndLoggedInUserIsGAAAndImageWithGivenImageIdExistsAtExpectedFilePathLocation_thenDeleteImageWithGivenImageIdAtFilePathLocation() throws Exception {
-        // Given
-        userId = user.getId();
-        sessionToken = gAA.getSessionUUID();
-        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
-
-        // When
-        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.of(gAA));
-        when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user));
-        lenient().when(fileStorageService.deleteFile(anyString())).thenReturn(true);
-        lenient().when(fileStorageService.getPathString(anyString())).thenReturn(primaryUserImage.getFilename());
-        List<UserImage> userImages = List.of(primaryUserImage);
-        when(userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true)).thenReturn(userImages);
-        when(userImageRepository.findImageByIdAndUserId(primaryUserImage.getId(), userId)).thenReturn(Optional.of(primaryUserImage));
-        response = mvc.perform(delete(String.format("/images/%d", primaryUserImage.getId())).cookie(cookie)
-                .param("uncheckedImageType", "USER_IMAGE")
-                .param("userId", String.valueOf(userId)))
-                .andReturn().getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Given business does not exist.");
     }
 }

@@ -4,7 +4,7 @@
  */
 import {shallowMount} from '@vue/test-utils';
 import {beforeAll, describe, expect, jest, test} from "@jest/globals";
-import SalesReport from "../src/views/SalesReport";
+import SalesReport from "../src/components/saleInsights/SalesReport";
 import Cookies from 'js-cookie';
 
 jest.mock("../src/Api");
@@ -32,6 +32,13 @@ describe('Testing the period selection of the sales report page', function () {
                 mocks: {
                     $router,
                     $route
+                },
+                propsData: {
+                    businessName: "Lumbridge General Store",
+                    businessCountry: "New Zealand",
+                    businessId: 1,
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             });
         Cookies.get = jest.fn().mockImplementation(() => 1);

@@ -367,8 +367,9 @@ import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 import Api from "../Api";
-import {isValidDateOfBirth} from "./helpFunction";
+import {isValidDateOfBirth, getAddressConcatenation} from "./helpFunction";
 import {getErrorMessage} from "../components/inventory/InventoryValidationHelper";
+import {toggleInvalidClass} from "../validationUtils";
 
 export default {
   name: "EditProfile",
@@ -479,20 +480,7 @@ export default {
   },
   methods: {
 
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
+    toggleInvalidClass: toggleInvalidClass,
 
     /**
      * This method toggles the appearance of the password field, where the password will be shown if showPassword is
@@ -541,15 +529,14 @@ export default {
       }
 
       const addressData = {
-        streetNumber: this.streetNumber,
-        streetName: this.streetName,
-        suburb: this.suburb,
-        city: this.city,
-        region: this.region,
-        country: this.country,
-        postcode: this.postcode
+        streetNumber: this.$refs.streetNumber.value,
+        streetName: this.$refs.streetName.value,
+        suburb: this.$refs.suburb.value,
+        city: this.$refs.city.value,
+        region: this.$refs.region.value,
+        country: this.$refs.country.value,
+        postcode: this.$refs.postcode.value
       }
-
 
       let currentPassword = null
       let newPassword = null
@@ -570,7 +557,7 @@ export default {
         currentPassword: currentPassword,
         newPassword: newPassword
       }
-      const id = this.$route.params.id
+      const id = this.$route.params.id;
 
       Api.editUser(id, new EditUser(userData)).then( (res) => {
         if (res.status === 200) {
@@ -837,7 +824,7 @@ export default {
       while ((numInList < maxL) && (index < fLength)) {
         let { properties } = features[index];
         if (properties) {
-          let address = this.getAddressConcatenation(properties);
+          let address = getAddressConcatenation(properties);
           if (!autoCompleteOptions.includes(address.trim())) {
             // Add to both the string to display and the variable for later use.
             autoCompleteOptions.push(address.trim());
@@ -848,28 +835,6 @@ export default {
         index++;
       }
       return autoCompleteOptions;
-    },
-
-    /**
-     * This method converts the components of the address received from the Komoot Photon API
-     * to a single line string.
-     * @return address a string representation of the address returned by the Komoot Photon API
-     */
-    getAddressConcatenation(properties) {
-      let address = "";
-
-      let {country, city, postcode, state, street, housenumber, name, district} = properties;
-
-      if (name) { address += name + ", "; }
-      if (housenumber) { address += housenumber; }
-      if (street) { address += " " + street + ", "; }
-      if (district) { address += " " + district + ", "; }
-      if (city) { address += city + ", "; }
-      if (postcode) { address += postcode + ", "; }
-      if (state) { address += state + ", "; }
-      if (country) { address += country; }
-
-      return address;
     },
 
     /**
@@ -1054,13 +1019,13 @@ export default {
       this.nickname = this.nickname.trim();
       this.bio = this.bio.trim();
       this.email = this.email.trim();
-      this.country = this.country.trim();
-      this.city = this.city.trim();
-      this.postcode = this.postcode.trim();
-      this.region = this.region.trim();
-      this.streetNumber = this.streetNumber.trim();
-      this.streetName = this.streetName.trim();
-      this.suburb = this.suburb.trim();
+      this.$refs.country.value = this.$refs.country.value.trim();
+      this.$refs.city.value = this.$refs.city.value.trim();
+      this.$refs.postcode.value = this.$refs.postcode.value.trim();
+      this.$refs.region.value = this.$refs.region.value.trim();
+      this.$refs.streetNumber.value = this.$refs.streetNumber.value.trim();
+      this.$refs.streetName.value = this.$refs.streetName.value.trim();
+      this.$refs.suburb.value = this.$refs.suburb.value.trim();
     },
 
     /**

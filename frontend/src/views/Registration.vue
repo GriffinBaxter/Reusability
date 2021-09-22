@@ -340,7 +340,8 @@ import User from "../configs/User"
 import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
-import {isValidDateOfBirth} from "./helpFunction";
+import {isValidDateOfBirth, getAddressConcatenation} from "./helpFunction";
+import {toggleInvalidClass} from "../validationUtils";
 
 export default {
   name: "Registration",
@@ -436,21 +437,7 @@ export default {
     }
   },
   methods: {
-
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
+    toggleInvalidClass: toggleInvalidClass,
 
     /**
      * This method toggles the appearance of the password field, where the password will be shown if showPassword is
@@ -907,7 +894,7 @@ export default {
       while ((numInList < maxL) && (index < fLength)) {
         let { properties } = features[index];
         if (properties) {
-          let address = this.getAddressConcatenation(properties);
+          let address = getAddressConcatenation(properties);
           if (!autoCompleteOptions.includes(address.trim())) {
             // Add to both the string to display and the variable for later use.
             autoCompleteOptions.push(address.trim());
@@ -918,28 +905,6 @@ export default {
         index++;
       }
       return autoCompleteOptions;
-    },
-
-    /**
-     * This method converts the components of the address received from the Komoot Photon API
-     * to a single line string.
-     * @return address a string representation of the address returned by the Komoot Photon API
-     */
-    getAddressConcatenation(properties) {
-      let address = "";
-
-      let {country, city, postcode, state, street, housenumber, name, district} = properties;
-
-      if (name) { address += name + ", "; }
-      if (housenumber) { address += housenumber; }
-      if (street) { address += " " + street + ", "; }
-      if (district) { address += " " + district + ", "; }
-      if (city) { address += city + ", "; }
-      if (postcode) { address += postcode + ", "; }
-      if (state) { address += state + ", "; }
-      if (country) { address += country; }
-
-      return address;
     },
 
     /**

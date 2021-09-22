@@ -4,18 +4,19 @@
  */
 import {shallowMount} from '@vue/test-utils';
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
-import Api from "../src/Api";
-import SaleHistory from "../src/views/SaleHistory";
+import Api from "../../src/Api";
+import SaleHistory from "../../src/components/saleInsights/SaleHistory";
+import CurrencyAPI from "../../src/currencyInstance";
 import Cookies from 'js-cookie';
 
-jest.mock("../src/Api");
+jest.mock("../../src/Api");
+jest.mock("../../src/currencyInstance");
 
+let wrapper;
+let $router;
+let $route;
 
 describe('Tests methods in the SaleHistory component.', () => {
-
-    let wrapper;
-    let $router;
-    let $route;
 
     beforeEach(() => {
         $router = {
@@ -32,43 +33,17 @@ describe('Tests methods in the SaleHistory component.', () => {
                 mocks: {
                     $router,
                     $route
+                },
+                propsData: {
+                    businessName: "Lumbridge General Store",
+                    businessCountry: "New Zealand",
+                    businessId: 1,
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             });
         Cookies.get = jest.fn().mockImplementation(() => 1);
     });
-
-    describe("Test the formatPrice method", () => {
-
-        test("Test when currency symbol and code are both empty", () => {
-            const price = 2.99;
-            wrapper.vm.$data.currencySymbol = "";
-            wrapper.vm.$data.currencyCode = "";
-            expect(wrapper.vm.formatPrice(price)).toEqual(price);
-        })
-
-        test("Test when currency symbol is not empty and code is empty", () => {
-            const price = 2.99;
-            wrapper.vm.$data.currencySymbol = "$";
-            wrapper.vm.$data.currencyCode = "";
-            expect(wrapper.vm.formatPrice(price)).toEqual("$" + price);
-        })
-
-        test("Test when currency symbol is empty and code is not empty", () => {
-            const price = 2.99;
-            wrapper.vm.$data.currencySymbol = "";
-            wrapper.vm.$data.currencyCode = "NZD";
-            expect(wrapper.vm.formatPrice(price)).toEqual(price + " NZD");
-        })
-
-        test("Test when currency symbol is not empty and code is not empty", () => {
-            const price = 2.99;
-            const formattedPrice = "$" + price + " NZD";
-            wrapper.vm.$data.currencySymbol = "$";
-            wrapper.vm.$data.currencyCode = "NZD";
-            expect(wrapper.vm.formatPrice(price)).toEqual(formattedPrice);
-        })
-
-    })
 
     describe("Test the manageError method", () => {
 
@@ -177,13 +152,148 @@ describe('Tests methods in the SaleHistory component.', () => {
             };
             Api.getBusiness.mockImplementation(() => Promise.resolve(response));
 
-            await wrapper.vm.retrieveBusinessInfo();
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.vm.$data.businessName).toEqual(response.data.name);
-            expect(wrapper.vm.$data.businessCountry).toEqual(response.data.address.country);
-            expect(wrapper.vm.$data.currencySymbol).toEqual(response.data.currencySymbol);
-            expect(wrapper.vm.$data.currencyCode).toEqual(response.data.currencyCode);
+            expect(wrapper.vm.$props.currencySymbol).toEqual(response.data.currencySymbol);
+            expect(wrapper.vm.$props.currencyCode).toEqual(response.data.currencyCode);
+            expect(wrapper.vm.$props.businessName).toEqual(response.data.name);
+            expect(wrapper.vm.$props.businessCountry).toEqual(response.data.address.country);
+        })
+
+    })
+
+    describe("Test retrieveCurrencyInfo method", () => {
+
+        test("Test retrieveCurrencyInfo method correctly sets data when a 200 response with data is returned.", async () => {
+            const response = {
+                status: 200,
+                data: [{
+                        currencies: [{
+                            code: "NZD",
+                            symbol: "$"
+                        }]
+                }]
+            };
+            CurrencyAPI.currencyQuery.mockImplementation(() => Promise.resolve(response));
+
+            expect(wrapper.vm.$props.currencyCode).toEqual(response.data[0].currencies[0].code);
+            expect(wrapper.vm.$props.currencySymbol).toEqual(response.data[0].currencies[0].symbol);
+        })
+
+    })
+
+    describe("Test goToCustomerProfile method", () => {
+
+        test("Test the goToCustomerProfile method.", async () => {
+            const userId = 2;
+
+            wrapper.vm.goToCustomerProfile(userId);
+
+            expect($router.push).toHaveBeenCalledWith({ path: `/profile/${userId}`});
+        })
+
+    })
+})
+
+describe('Tests methods in the SaleHistory component.(User different initial props)', () => {
+
+    beforeEach(() => {
+        $router = {
+            push: jest.fn()
+        };
+        $route = {
+            params: {
+                businessId: 2
+            }
+        };
+        Cookies.get = jest.fn().mockImplementation(() => 1);
+    });
+
+    describe("Test the formatPrice method", () => {
+
+        test("Test when currency symbol and code are both empty", () => {
+            wrapper = shallowMount(
+                SaleHistory,
+                {
+                    mocks: {
+                        $router,
+                        $route
+                    },
+                    propsData: {
+                        businessName: "Lumbridge General Store",
+                        businessCountry: "New Zealand",
+                        businessId: 1,
+                        currencyCode: "",
+                        currencySymbol: ""
+                    }
+                });
+
+            const price = 2.99;
+            expect(wrapper.vm.formatPrice(price)).toEqual(price);
+        })
+
+        test("Test when currency symbol is not empty and code is empty", () => {
+            wrapper = shallowMount(
+                SaleHistory,
+                {
+                    mocks: {
+                        $router,
+                        $route
+                    },
+                    propsData: {
+                        businessName: "Lumbridge General Store",
+                        businessCountry: "New Zealand",
+                        businessId: 1,
+                        currencyCode: "",
+                        currencySymbol: "$"
+                    }
+                });
+
+            const price = 2.99;
+            expect(wrapper.vm.formatPrice(price)).toEqual("$" + price);
+        })
+
+        test("Test when currency symbol is empty and code is not empty", () => {
+            wrapper = shallowMount(
+                SaleHistory,
+                {
+                    mocks: {
+                        $router,
+                        $route
+                    },
+                    propsData: {
+                        businessName: "Lumbridge General Store",
+                        businessCountry: "New Zealand",
+                        businessId: 1,
+                        currencyCode: "NZD",
+                        currencySymbol: ""
+                    }
+                });
+
+            const price = 2.99;
+            expect(wrapper.vm.formatPrice(price)).toEqual(price + " NZD");
+        })
+
+        test("Test when currency symbol is not empty and code is not empty", () => {
+            wrapper = shallowMount(
+                SaleHistory,
+                {
+                    mocks: {
+                        $router,
+                        $route
+                    },
+                    propsData: {
+                        businessName: "Lumbridge General Store",
+                        businessCountry: "New Zealand",
+                        businessId: 1,
+                        currencyCode: "NZD",
+                        currencySymbol: "$"
+                    }
+                });
+
+            const price = 2.99;
+            const formattedPrice = "$" + price + " NZD";
+            expect(wrapper.vm.formatPrice(price)).toEqual(formattedPrice);
         })
 
     })
@@ -191,6 +301,22 @@ describe('Tests methods in the SaleHistory component.', () => {
     describe("Test retrieveSoldListings method", () => {
 
         test("Test that the table rows (soldListings) are filled when zero soldListings are received from the backend", async ()=> {
+            wrapper = shallowMount(
+                SaleHistory,
+                {
+                    mocks: {
+                        $router,
+                        $route
+                    },
+                    propsData: {
+                        businessName: "Lumbridge General Store",
+                        businessCountry: "New Zealand",
+                        businessId: 1,
+                        currencyCode: "NZD",
+                        currencySymbol: "$"
+                    }
+                });
+
             const response = {
                 status: 200,
                 data: [],
@@ -209,6 +335,22 @@ describe('Tests methods in the SaleHistory component.', () => {
         })
 
         test("Test that the data is correctly formatted when a 200 response is received from the backend with data", async ()=> {
+            wrapper = shallowMount(
+                SaleHistory,
+                {
+                    mocks: {
+                        $router,
+                        $route
+                    },
+                    propsData: {
+                        businessName: "Lumbridge General Store",
+                        businessCountry: "New Zealand",
+                        businessId: 1,
+                        currencyCode: "USD",
+                        currencySymbol: "$"
+                    }
+                });
+
             const response = {
                 status: 200,
                 data: [
@@ -840,10 +982,6 @@ describe('Tests methods in the SaleHistory component.', () => {
             ];
             Api.getSoldListings.mockImplementation(() => Promise.resolve(response));
 
-            // "mock" the currency request
-            wrapper.vm.$data.currencyCode = "USD";
-            wrapper.vm.$data.currencySymbol = "$";
-
             await wrapper.vm.retrieveSoldListings();
             await wrapper.vm.$nextTick();
 
@@ -851,17 +989,5 @@ describe('Tests methods in the SaleHistory component.', () => {
             expect(wrapper.vm.$data.soldListings.length).toEqual(response.data.length); // the max number of sold listings
             expect(wrapper.vm.$data.soldListings).toEqual(formattedListings); // with the prices and dates formatted
         })
-    })
-
-    describe("Test goToCustomerProfile method", () => {
-
-        test("Test the goToCustomerProfile method.", async () => {
-            const userId = 2;
-
-            wrapper.vm.goToCustomerProfile(userId);
-
-            expect($router.push).toHaveBeenCalledWith({ path: `/profile/${userId}`});
-        })
-
     })
 })
