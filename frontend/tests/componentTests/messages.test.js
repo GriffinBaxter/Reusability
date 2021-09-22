@@ -505,7 +505,12 @@ describe("Testing MessageOption.vue", () => {
             localVue,
             propsData: {
                 userName: username,
-                image: ProfileImage,
+                images: [
+                    {id: 1,
+                    filename: ProfileImage,
+                    thumbnailFilename: ProfileImage,
+                    isPrimary: true}
+                ],
                 newMessage: true,
                 cardName: cardName,
                 conversationId: 1
@@ -589,7 +594,13 @@ describe("Testing MessageTitle component", () => {
             localVue,
             propsData: {
                 conversationData: {
-                    id: 1
+                    id: 1,
+                    images: [
+                        {id: 1,
+                            filename: ProfileImage,
+                            thumbnailFilename: ProfileImage,
+                            isPrimary: true}
+                    ],
                 }
             }
         });
