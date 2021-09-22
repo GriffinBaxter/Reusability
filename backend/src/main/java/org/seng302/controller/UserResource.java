@@ -44,6 +44,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -406,16 +407,17 @@ public class UserResource {
      * @param forgotPasswordPayload Forgot password payload containing an email address.
      */
     @PostMapping("/users/forgotPassword")
-    public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload) {
+    public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload,
+                               HttpServletRequest request) {
 
         String email = forgotPasswordPayload.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-
+            ForgotPassword forgotPasswordEntity;
             try {
-                ForgotPassword forgotPasswordEntity = new ForgotPassword(user.getId());
+                forgotPasswordEntity = new ForgotPassword(user.getId());
                 forgotPasswordRepository.save(forgotPasswordEntity);
             } catch (IllegalForgotPasswordArgumentException exception) {
                 logger.error("500 [NOT ACCEPTABLE] - User ID {} invalid", user.getId());
@@ -425,7 +427,30 @@ public class UserResource {
                 );
             }
 
-            emailService.sendSimpleMessage("jlp89@uclive.ac.nz", "subject", "content");
+            String baseURL = request.getRequestURL().toString();
+
+            String resetPasswordURL;
+
+            switch (baseURL) {
+                case "http://localhost:9499/users/forgotPassword":
+                    resetPasswordURL = "http://localhost:9500/changePassword?token=";
+                    break;
+                case "https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword":
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/test/changePassword?token=";
+                    break;
+                case "https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword":
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/prod/changePassword?token=";
+                    break;
+                default:
+                    throw new ResponseStatusException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Invalid Request URL");
+            }
+
+            resetPasswordURL += forgotPasswordEntity.getToken();
+
+            // Change email for testing
+            emailService.sendSimpleMessage(email, "Reset Password", resetPasswordURL);
 
 
         } else {
