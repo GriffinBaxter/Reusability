@@ -83,7 +83,7 @@ public class ForgotPassword {
     public LocalDateTime getExpiry() { return this.expiry; }
 
     /**
-     * Checks if the requested forgotten password is still valid.
+     * Checks if the requested forgotten password token is still valid.
      * @return T/F if token is valid
      */
     public boolean isValidToken() {
