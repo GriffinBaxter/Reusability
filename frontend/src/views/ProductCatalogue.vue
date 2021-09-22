@@ -936,7 +936,7 @@ export default {
         query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0"}
       });
       this.requestProducts();
-      this.barcodeSearched = this.$route.query.barcode !== "" && this.$route.query.barcode !== null
+      this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
     }
   },
 
@@ -974,7 +974,7 @@ export default {
     }
 
     this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
-    this.barcodeSearched = this.$route.query.barcode !== "" && this.$route.query.barcode !== null
+    this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
 
   },
   watch: {
