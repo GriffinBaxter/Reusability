@@ -14,6 +14,7 @@ describe("Testing the listing item functionality", () => {
     beforeAll(() => {
         listingItemWrapper = shallowMount(ListingItem, {
             propsData: {
+                id: 1,
                 productName: "Product",
                 productId: "PROD",
                 quantity: 10,
@@ -105,5 +106,4 @@ describe("Testing the listing item functionality", () => {
         });
 
     });
-
 })

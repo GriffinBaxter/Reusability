@@ -263,19 +263,21 @@ export default {
         })
     },
 
+    // Retrieves all user notifications
     getNotifications: () => {
         return instance.get(`/users/notifications`, {
             withCredentials: true
         })
     },
 
+    // Retrieves all business notifications
     getBusinessNotifications: (businessId) => {
         return instance.get(`/businesses/${businessId}/notifications`, {
             withCredentials: true
         })
     },
 
-
+    // Edits the details of a marketplace card
     editCard: (cardId, updatedCard) => {
         return instance.put(`/cards/${cardId}`, {...updatedCard}, {
             withCredentials: true
@@ -289,6 +291,7 @@ export default {
         })
     },
 
+    // Adds a new keyword to the global keyword store
     addNewKeyword: (newKeyword) => {
         return instance.post(`/keywords`, {...newKeyword}, {
             withCredentials: true
@@ -364,13 +367,21 @@ export default {
         })
     },
 
-    // Buy a listing
+    // Purchases a listing
     buyListing: (id) => {
         return instance.put(`/listings/${id}/buy`, {}, {
             withCredentials: true
         })
     },
 
+    // Delete a listing
+    deleteListing: (businessId, id) => {
+        return instance.delete(`businesses/${businessId}/listings/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // Deletes are bookmark message
     deleteBookmarkMessage: (id) => {
         return instance.delete(`/home/bookmarkMessages/${id}`, {
             withCredentials: true
@@ -384,6 +395,7 @@ export default {
         })
     },
 
+    // Deletes a single notification
     deleteNotification: (id, notificationType) => {
         return instance.delete(`/users/notifications/${id}?type=${notificationType}`, {
             withCredentials: true
@@ -404,7 +416,7 @@ export default {
         })
     },
 
-    // retrieves conversation entities
+    // Retrieves conversation entities
     getConversations() {
         return instance.get(`/home/conversation`, {withCredentials: true})
     },
@@ -416,12 +428,20 @@ export default {
         })
     },
 
-    // retrieves a specific conversation
+    // Retrieves a specific conversation
     getConversation(id) {
         return instance.get(`/home/conversation/${id}/messages`, {withCredentials: true})
     },
 
+    // Sends a reply message in the given conversation
     sendReply: (conversationId, message) => {
         return instance.post(`/home/conversation/${conversationId}`, message, {withCredentials: true})
+    },
+
+    // Retrieves the business's sales report for the given dates and granularity
+    getSalesReport(id, fromDate, toDate, granularity) {
+        return instance.get(`businesses/${id}/salesReport?fromDate=${fromDate}&toDate=${toDate}&granularity=${granularity}`, {
+            withCredentials: true
+        })
     }
 }
