@@ -104,6 +104,15 @@ let response = {
 
 }
 
+let roleResponse = {
+    response: {
+        status: 200,
+        data: {
+            role: "USER"
+        }
+    }
+}
+
 beforeEach(() => {
     Api.getServerResourcePath.mockImplementation((stringPart) => resourcePath + stringPart);
     Api.getDetailForAListing.mockImplementation(() => Promise.resolve(response));
@@ -115,6 +124,10 @@ afterEach(() => {
 });
 
 describe("Tests for getMainImage function.", () => {
+
+    beforeAll(() => {
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
+    })
 
     test("Testing that getMainImage returns default image if the index is below zero", async () => {
         wrapper = shallowMount(listing, {
@@ -221,6 +234,10 @@ describe("Tests for getMainImage function.", () => {
 
 describe("Tests for getCarouselImage function", () => {
 
+    beforeAll(() => {
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
+    })
+
     test("Testing that getCarouselImage returns default image if the index is below zero", async () => {
         wrapper = shallowMount(listing, {
             localVue,
@@ -320,6 +337,10 @@ describe("Tests for getCarouselImage function", () => {
 })
 
 describe("Tests for getVisibleImages function", () => {
+
+    beforeAll(() => {
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
+    })
 
     test("Testing that for index -3, and 3 images we get the correct values", async () => {
         wrapper = shallowMount(listing, {
@@ -458,6 +479,10 @@ describe("Tests for getVisibleImages function", () => {
 
 describe("Tests for boundIndex function", () => {
 
+    beforeAll(() => {
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
+    })
+
     test("Testing boundIndex(), with negative random index", async () => {
         wrapper = shallowMount(listing, {localVue});
         expect(wrapper.vm.boundIndex(-5, 5)).toStrictEqual(0);
@@ -500,6 +525,10 @@ describe("Tests for boundIndex function", () => {
 })
 
 describe("Tests for nextImage function", () => {
+
+    beforeAll(() => {
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
+    })
 
     test("Testing that we get the next image at 0 index in 5 n array", async () => {
         wrapper = shallowMount(listing, {
@@ -596,6 +625,10 @@ describe("Tests for nextImage function", () => {
 })
 
 describe("Tests for previousImage function", () => {
+
+    beforeAll(() => {
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
+    })
 
     test("Testing that we get the previous image at 0 index in 5 n array", async () => {
         wrapper = shallowMount(listing, {
@@ -699,6 +732,7 @@ describe("Tests for previousImage function", () => {
 describe("Test data population", () =>{
     beforeEach(() => {
         // given
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
         wrapper = shallowMount(listing, {
             localVue,
         })
@@ -761,6 +795,7 @@ describe("Test data population", () =>{
 describe("Test bookmark display counter and icon", () => {
     beforeEach(() => {
         // given
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
         wrapper = shallowMount(listing, {
             localVue
         });
@@ -831,6 +866,7 @@ describe("Testing the 'Go to Business Profile' button", () => {
                 listingId: 11
             }
         };
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
         wrapper = shallowMount(listing, {
             mocks: {
                 $router,
@@ -864,6 +900,7 @@ describe("Testing buy listing functionality", () => {
                 listingId: 11
             }
         };
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
         wrapper = shallowMount(listing, {
             mocks: {
                 $router,
@@ -907,6 +944,7 @@ describe("Testing the getBarcodeImage method", () => {
                 listingId: 11
             }
         };
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
         wrapper = shallowMount(listing, {
             mocks: {
                 $router,
@@ -938,6 +976,10 @@ describe("Testing the getBarcodeImage method", () => {
 });
 
 describe("Test delete button", () => {
+
+    beforeAll(() => {
+        Api.getUser.mockImplementation(() => Promise.resolve(roleResponse));
+    })
 
     test("Test delete button appears when user is acting as a business", async () => {
         Cookies.get.mockReturnValue(1);
@@ -1057,3 +1099,86 @@ describe("Test delete button", () => {
         })
     })
 })
+
+describe("Testing the getRole method", () => {
+
+    test("Test successful response for a GAA user", async () => {
+        let APIResponseUser = {
+            status: 200,
+            data: {
+                role: "GLOBALAPPLICATIONADMIN"
+            }
+        }
+        Api.getUser.mockImplementation(() => Promise.resolve(APIResponseUser))
+
+        wrapper = shallowMount(listing, {
+            localVue,
+            mocks: {
+                $router
+            }
+        });
+        await wrapper.vm.$nextTick()
+
+        expect(wrapper.vm.$data.isAdmin).toBeTruthy();
+    })
+
+    test("Test successful response for a DGAA user", async () => {
+        let APIResponseUser = {
+            status: 200,
+            data: {
+                role: "DEFAULTGLOBALAPPLICATIONADMIN"
+            }
+        }
+        Api.getUser.mockImplementation(() => Promise.resolve(APIResponseUser))
+
+        wrapper = shallowMount(listing, {
+            localVue,
+            mocks: {
+                $router
+            }
+        });
+        await wrapper.vm.$nextTick()
+
+        expect(wrapper.vm.$data.isAdmin).toBeTruthy();
+    })
+
+    test("Test successful response for a normal user", async () => {
+        let APIResponseUser = {
+            status: 200,
+            data: {
+                role: "USER"
+            }
+        }
+        Api.getUser.mockImplementation(() => Promise.resolve(APIResponseUser))
+
+        wrapper = shallowMount(listing, {
+            localVue,
+            mocks: {
+                $router
+            }
+        });
+        await wrapper.vm.$nextTick()
+
+        expect(wrapper.vm.$data.isAdmin).toBeFalsy();
+    });
+
+    test("Test 401 response for a user", async () => {
+        let APIResponseUser = {
+            response: {
+                status: 401
+            }
+        }
+        Api.getUser.mockImplementation(() => Promise.reject(APIResponseUser))
+
+        wrapper = shallowMount(listing, {
+            localVue,
+            mocks: {
+                $router
+            }
+        });
+        await wrapper.vm.$nextTick()
+
+        expect($router.push).toBeCalled()
+        expect($router.push).toBeCalledWith({name: 'InvalidToken'})
+    });
+});
