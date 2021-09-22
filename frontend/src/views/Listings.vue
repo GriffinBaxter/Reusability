@@ -223,7 +223,7 @@ name: "Listings",
      */
     async deleteListing() {
       if (this.currentListingId !== null) {
-        await Api.deleteListing(this.currentListingId).then(() => {
+        await Api.deleteListing(this.businessId, this.currentListingId).then(() => {
           this.getListings()
         }).catch((err) => {
           if (err.response) {
