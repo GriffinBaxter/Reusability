@@ -104,13 +104,13 @@ let response = {
 
 }
 
-let roleResponse = {
-    response: {
-        status: 200,
-        data: {
-            role: "USER"
-        }
+const roleResponse = {
+
+    status: 200,
+    data: {
+       role: "USER"
     }
+
 }
 
 beforeEach(() => {
