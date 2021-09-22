@@ -163,8 +163,11 @@ describe('Tests methods in the SaleReport component.', () => {
         test("Test the setGranularityOption method sets granularityText to the sentence case of " +
             "the given granularity.", () => {
             wrapper.vm.$data.granularity = "";
+            let event = {
+                preventDefault: jest.fn()
+            }
             const granularity = "Total";
-            wrapper.vm.setGranularityOption(granularity)
+            wrapper.vm.setGranularityOption(granularity, event)
             expect(wrapper.vm.$data.granularity).toBe("Total");
         })
 

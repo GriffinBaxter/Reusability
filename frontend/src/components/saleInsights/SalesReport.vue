@@ -21,19 +21,19 @@
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li id="year-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Year'">
+                    @click="period = 'Year'; retrieveSalesReport()">
                   Year
                 </li>
                 <li id="month-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Month'">
+                    @click="period = 'Month'; retrieveSalesReport()">
                   Month
                 </li>
                 <li id="day-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Day'">
+                    @click="period = 'Day'; retrieveSalesReport()">
                   Day
                 </li>
                 <li id="custom-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Custom'">
+                    @click="period = 'Custom'; showTable = false">
                   Custom
                 </li>
               </ul>
@@ -47,22 +47,23 @@
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li v-if="selectedYear === currentYear">
                   <div class="btn green-button-transparent col-12 order-by-options-btn"
-                      v-for="month in months.slice(0, this.currentMonth + 1)" v-bind:key="month"
-                      @click="selectedMonth = month; retrieveSalesReport()">
+                       v-for="month in months.slice(0, this.currentMonth + 1)" v-bind:key="month"
+                       @click="selectedMonth = month; retrieveSalesReport()">
                     {{ month }}
                   </div>
                 </li>
                 <li v-else>
                   <div class="btn green-button-transparent col-12 order-by-options-btn"
-                      v-for="month in months" v-bind:key="month"
-                      @click="selectedMonth = month; retrieveSalesReport()">
+                       v-for="month in months" v-bind:key="month"
+                       @click="selectedMonth = month; retrieveSalesReport()">
                     {{ month }}
                   </div>
                 </li>
               </ul>
             </div>
 
-            <div v-if="period === 'Year' || period === 'Month'" class="btn-group col-xl-2 d-inline-block p-2" role="group">
+            <div v-if="period === 'Year' || period === 'Month'" class="btn-group col-xl-2 d-inline-block p-2"
+                 role="group">
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                       id="sales-period-select-year"
                       data-bs-toggle="dropdown" aria-expanded="false">{{ selectedYear }}
@@ -77,7 +78,8 @@
             </div>
 
             <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
-              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay" :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
+              <input type="date" id="sales-period-select-day" class="form-control" v-model="selectedDay"
+                     :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
 
               <button class="btn green-button" @click="retrieveSalesReport()">
                 Apply
@@ -90,92 +92,109 @@
 
               <!-------------------------------------- Custom date inputs --------------------------------------------->
 
-                <form class="needs-validation" novalidate @submit.prevent>
-                  <div class="form-group" id="date-filtering-container">
+              <form class="needs-validation" novalidate @submit.prevent>
+                <div class="form-group" id="date-filtering-container">
 
-                    <div class="row">
-                      <div class="col-xl-1">
-                        <label for="start-date-input" class="py-2">Date </label>
-                      </div>
-                      <div class="col-xl-4 col-md-6">
-                        <input type="date" class="form-control filter-input" id="start-date-input"
-                               v-model="startDate"
-                               :class="toggleInvalidClass(invalidDateMsg)"
-                               :min="'2021-01-01'">
-                        <div class="invalid-feedback">
-                          {{invalidDateMsg}}
-                        </div>
-                      </div>
-                      <div class="col-xl-1">
-                        <label for="end-date-input" class="p-2"> to </label>
-                      </div>
-                      <div class="col-xl-4 col-md-6">
-                        <input type="date" class="form-control filter-input" id="end-date-input"
-                               v-model="endDate"
-                               :min="'2021-01-01'">
-                      </div>
-                      <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
-                        <button class="btn green-button" @click="applyDate($event)">
-                          Apply
-                        </button>
+                  <div class="row">
+                    <div class="col-xl-1">
+                      <label for="start-date-input" class="py-2">Date </label>
+                    </div>
+                    <div class="col-xl-4 col-md-6">
+                      <input type="date" class="form-control filter-input" id="start-date-input"
+                             v-model="startDate"
+                             :class="toggleInvalidClass(invalidDateMsg)"
+                             :min="'2021-01-01'">
+                      <div class="invalid-feedback">
+                        {{ invalidDateMsg }}
                       </div>
                     </div>
+                    <div class="col-xl-1">
+                      <label for="end-date-input" class="p-2"> to </label>
+                    </div>
+                    <div class="col-xl-4 col-md-6">
+                      <input type="date" class="form-control filter-input" id="end-date-input"
+                             v-model="endDate"
+                             :min="'2021-01-01'">
+                    </div>
+                    <div class="col-xl-2 mt-lg-3 mt-md-3 mt-sm-3 mt-xl-0">
+                      <button class="btn green-button" @click="applyDate($event)">
+                        Apply
+                      </button>
+                    </div>
                   </div>
-                </form>
-          </div>
+                </div>
+              </form>
+            </div>
 
-          <!---------------------------------- Granularity options menu ------------------------------------------->
+            <!---------------------------------- Granularity options menu ------------------------------------------->
 
-          <div class="col-xl-1" style="width: auto">
-            <label for="granularity-button" class="py-3">
-              Granularity:
-            </label>
-          </div>
+            <div class="col-xl-1" style="width: auto">
+              <label for="granularity-button" class="py-3">
+                Granularity:
+              </label>
+            </div>
 
-          <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
+            <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
 
-            <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
-                    data-bs-toggle="dropdown" aria-expanded="false" id="granularity-button">{{ granularity }}
-            </button>
+              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                      data-bs-toggle="dropdown" aria-expanded="false" id="granularity-button">{{ granularity }}
+              </button>
 
-            <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Total')">
-                Total
-              </li>
+              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Total', $event)">
+                  Total
+                </li>
 
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Yearly')">
-                Yearly
-              </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Yearly', $event)">
+                  Yearly
+                </li>
 
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Monthly')">
-                Monthly
-              </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Monthly', $event)">
+                  Monthly
+                </li>
 
-              <li class="btn green-button-transparent col-12 order-by-options-btn"
-                  @click="setGranularityOption('Daily')">
-                Daily
-              </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Daily', $event)">
+                  Daily
+                </li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
 
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
-        <div class="card p-3">
-          Barry's stuff for task 723:
+        <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
           <br>
-          <div>
-            {{ salesReportData }}
+
+          <table class="table table-hover" aria-describedby="page-title" v-if="this.granularity !== 'Total'">
+            <thead>
+            <tr>
+              <th scope="col">Time</th>
+              <th scope="col">Total Sales</th>
+              <th scope="col">Total Revenue ({{ currencyCode }})</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr v-for="line in salesReportData" v-bind:key="line.granularityName">
+              <td>{{ line.granularityName }}</td>
+              <td>{{ line.totalSales }}</td>
+              <td>{{ currencySymbol }} {{ line.totalRevenue }}</td>
+            </tr>
+            </tbody>
+          </table>
+          <div v-else>
+            Billie's task 725
           </div>
         </div>
 
       </div>
-     </div>
+    </div>
 
   </div>
 </template>
@@ -191,8 +210,7 @@ import {manageError} from "../../errorHandler";
 
 export default {
   name: "SalesReport",
-  components: {
-  },
+  components: {},
   props: {
     businessName: {
       type: String,
@@ -248,8 +266,9 @@ export default {
       currentDay: "",
       selectedDay: "",
 
-      salesReportData: null,
-      invalidDayMsg: ""
+      salesReportData: [],
+      invalidDayMsg: "",
+      showTable: false
     }
   },
   methods: {
@@ -286,10 +305,11 @@ export default {
     /**
      * Sets the granularity option text on the button to match the selected granularity.
      * @param granularity The chosen granularity, e.g. total, yearly, monthly, daily.
+     * @param event The click event passed in from the Vue template button click.
      */
-    setGranularityOption(granularity) {
+    setGranularityOption(granularity, event) {
       this.granularity = granularity;
-      this.retrieveSalesReport();
+      this.applyDate(event)
     },
 
     /**
@@ -308,8 +328,8 @@ export default {
      * @param month A month to give the dates of.
      */
     generateDatesFromMonth(month) {
-      const monthNumber = this.months.indexOf(month)+1 < 10 ? '0' + (this.months.indexOf(month)+1).toString() : this.months.indexOf(month)+1;
-      let toDate = formatISO(lastDayOfMonth(parseISO(`${this.selectedYear}-${monthNumber}-01`)), { representation: 'date' }) + "T23:59:59";
+      const monthNumber = this.months.indexOf(month) + 1 < 10 ? '0' + (this.months.indexOf(month) + 1).toString() : this.months.indexOf(month) + 1;
+      let toDate = formatISO(lastDayOfMonth(parseISO(`${this.selectedYear}-${monthNumber}-01`)), {representation: 'date'}) + "T23:59:59";
       return {
         fromDate: `${this.selectedYear}-${monthNumber}-01T00:00`,
         toDate: toDate
@@ -335,8 +355,8 @@ export default {
       let dates = null;
       if (this.period === 'Custom') {
         dates = {
-          fromDate: formatISO(parseISO(this.startDate), { representation: 'date' }) + "T00:00",
-          toDate: formatISO(parseISO(this.endDate), { representation: 'date' }) + "T23:59:59"
+          fromDate: formatISO(parseISO(this.startDate), {representation: 'date'}) + "T00:00",
+          toDate: formatISO(parseISO(this.endDate), {representation: 'date'}) + "T23:59:59"
         }
       } else if (this.period === 'Year') {
         dates = this.generateDatesFromYear(this.selectedYear);
@@ -362,9 +382,17 @@ export default {
         const toDate = dates.toDate;
 
         await Api.getSalesReport(this.businessId, fromDate, toDate, this.granularity).then(response => {
-          this.salesReportData = response.data;
+          this.salesReportData = [];
+          response.data.forEach((line) => {
+            this.salesReportData.push({
+              granularityName: line.granularityName,
+              totalSales: line.totalSales,
+              totalRevenue: line.totalRevenue
+            })
+          });
+          this.showTable = true;
         }).catch((error) => {
-          this.manageError(error);
+          this.$router.push(manageError(error));
         })
       }
     },
