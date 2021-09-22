@@ -2,11 +2,13 @@
   <div :id="'conversation_title_' + conversationData.id">
     <div class="row m-0 w-100">
       <button class="btn col-2 btn-light" @click="closeConversation">{{ backIcon }}</button>
+        <div class="col m-1">
+          <img :src="getImageSrc()" :alt="`user's profile image`" class="user-icon rounded-circle d-inline-block">
+          <h5 class="d-inline-block">
+            {{ conversationData.userName }}
+          </h5>
+        </div>
 
-        <h5 class="col m-1">
-          <img :src="getImageSrc()" :alt="`user's profile image`" class="user-icon rounded-circle">
-          {{ conversationData.userName }}
-        </h5>
 
     </div>
     <p class="px-2 m-0 text-center">{{ conversationData.cardName }}</p>
@@ -53,7 +55,7 @@ export default {
 .user-icon {
   width: 40px;
   height: 40px;
-  margin-right: 5px;
+  margin-right: 8px;
 }
 
 </style>
