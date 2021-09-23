@@ -1,4 +1,4 @@
-import {test, expect, describe, jest} from "@jest/globals";
+import {test, expect, describe, jest, afterEach} from "@jest/globals";
 import Profile from '../src/views/Profile'
 import {UserRole} from "../src/configs/User";
 import Api from "../src/Api";
@@ -781,6 +781,57 @@ describe("Testing the retrieveUser method", () => {
         populatePageSpy = jest.spyOn(Profile.methods, 'populatePage');
         processUserInfoErrorSpy = jest.spyOn(Profile.methods, 'processUserInfoError');
 
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         profileWrapper = await shallowMount(Profile, {
             mocks: {
                 $router
@@ -795,12 +846,30 @@ describe("Testing the retrieveUser method", () => {
     });
 
     test("Testing that when a non-error response is received, populatePage is called", async () => {
-        const data = {
-            data: {
-
-            }
-        }
-        Api.getUser.mockImplementation(() => Promise.resolve(data));
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
 
         await profileWrapper.vm.retrieveUser(1);
         await Promise.resolve();
@@ -810,9 +879,7 @@ describe("Testing the retrieveUser method", () => {
 
     test("Testing that when an error is received, processUserInfoError is called", async () => {
         const data = {
-            data: {
-
-            }
+            request: {}
         }
         Api.getUser.mockImplementation(() => Promise.reject(data));
 
@@ -841,7 +908,87 @@ describe("Testing the populatePage method", () => {
     let profileWrapper;
 
     beforeEach(async () => {
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         profileWrapper = await shallowMount(Profile);
+    });
+
+    afterEach(() => {
+       jest.clearAllMocks();
     });
 
     test("Testing that all fields are set correctly with the data received", async () => {
@@ -1197,8 +1344,82 @@ describe("Testing the activeAsAdministrator method", () => {
 
         processUpdateAdministratorErrorSpy = jest.spyOn(Profile.methods, "processUpdateAdministratorError");
 
-        Api.getUser.mockImplementation(() => Promise.resolve({data: {status: 200, role: "User"}, response: {status: 200}, status: 200}));
-        Api.getUsersCards.mockImplementation(() => Promise.resolve({data: [], status: 200, response: {status: 200}}));
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         Cookies.get = jest.fn().mockImplementation(() => "1");
 
         const data = {
@@ -1276,7 +1497,7 @@ describe("Testing the activeAsAdministrator method", () => {
     });
 
     test("Testing that when an error is received, processUpdateAdministratorError is called", async () => {
-        const data = {}
+        const data = {response: {status: 500}}
         Api.makeAdministrator.mockImplementation(() => Promise.reject(data));
         profileWrapper.vm.isBusinessAdministrator = false;
         profileWrapper.vm.businessesAdministered = [];
@@ -1306,16 +1527,82 @@ describe("Testing the removeActiveAdministrator method", () => {
 
         processUpdateAdministratorErrorSpy = jest.spyOn(Profile.methods, "processUpdateAdministratorError");
 
-        Api.getUser.mockImplementation(() => Promise.resolve({data: {status: 200}}));
-        Api.getUsersCards.mockImplementation(() => Promise.resolve({data: []}));
-
-        profileWrapper = await shallowMount(Profile, {
-            mocks: {
-                $router
-            }
-        });
-
         Cookies.get = jest.fn().mockImplementation(() => "1");
+        const userPayload = {status: 200, data: {
+            "id": 100,
+            "firstName": "John",
+            "lastName": "Smith",
+            "middleName": "Hector",
+            "nickname": "Jonny",
+            "bio": "Likes long walks on the beach",
+            "email": "johnsmith99@gmail.com",
+            "dateOfBirth": "1999-04-27",
+            "phoneNumber": "+64 3 555 0129",
+            "homeAddress": {
+                "streetNumber": "3/24",
+                "streetName": "Ilam Road",
+                "suburb": "Upper Riccarton",
+                "city": "Christchurch",
+                "region": "Canterbury",
+                "country": "New Zealand",
+                "postcode": "90210"
+            },
+            "created": "2020-07-14T14:32:00Z",
+            "role": null,
+            "businessesAdministered": []
+        }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
 
         const data = {
             data: {
@@ -1324,6 +1611,18 @@ describe("Testing the removeActiveAdministrator method", () => {
             }
         }
         Api.getBusiness.mockImplementation(() => Promise.resolve(data));
+
+        profileWrapper = await shallowMount(Profile, {
+            mocks: {
+                $router
+            }
+        });
+
+        await Promise.resolve();
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     test("Testing that when loadingAction is true, it remains true and actionErrorMessage remains empty", async () => {
@@ -1384,7 +1683,11 @@ describe("Testing the removeActiveAdministrator method", () => {
     });
 
     test("Testing that when an error is received, processUpdateAdministratorError is called", async () => {
-        const data = {}
+        const data = {
+            response: {
+                status: 500
+            }
+        }
         Api.removeAdministrator.mockImplementation(() => Promise.reject(data));
         profileWrapper.vm.isBusinessAdministrator = true;
         profileWrapper.vm.businessesAdministered = [{"name": "Business", "id": 1}];
@@ -1459,7 +1762,9 @@ describe("Testing the processUpdateAdministratorError method", () => {
 
     test("Testing that when the error has a request, there is a router push to /timeout and false is returned", async () => {
         const data = {
-            request: {}
+            request: {
+
+            }
         }
 
         let result = profileWrapper.vm.processUpdateAdministratorError(data);
