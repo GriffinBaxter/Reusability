@@ -35,7 +35,7 @@ public class BusinessPayload {
     private String created;
     private String currencySymbol;
     private String currencyCode;
-    private List<BusinessImage> businessImages;
+    private List<ImagePayload> businessImages;
 
     /**
      * translate a list of Business to a list of BusinessPayload
@@ -76,7 +76,7 @@ public class BusinessPayload {
         this.created = created.toString();
         this.currencySymbol = currencySymbol;
         this.currencyCode = currencyCode;
-        this.businessImages = businessImages;
+        this.businessImages = ImagePayload.convertToImagePayload(businessImages == null ? null : new ArrayList<>(businessImages));
     }
 
     public int getId() {
@@ -119,7 +119,7 @@ public class BusinessPayload {
         return currencyCode;
     }
 
-    public List<BusinessImage> getBusinessImages() {
+    public List<ImagePayload> getBusinessImages() {
         return businessImages;
     }
 

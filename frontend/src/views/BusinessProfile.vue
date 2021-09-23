@@ -319,6 +319,7 @@ export default {
       //basic data unpack
       this.name = data.name;
       this.business.data.name = this.name;
+      this.business.data.images = data.businessImages;
       this.description = data.description;
       let businessTypeLowerCaseAndSplit = data.businessType.replace(/_/g, ' ').toLowerCase().split(" ");
 
