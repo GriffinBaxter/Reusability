@@ -102,6 +102,13 @@ export default {
         withCredentials: true
     }),
 
+    // Sends a post request to the backend with a new business object to store
+    editBusiness: (id, business) => instance.put(`/businesses/${id}`, {
+        ...business.data
+    }, {
+        withCredentials: true
+    }),
+
     // Sends a get request to the backend asking for a sorted and paginated list of products matching the given search criteria for a business.
     searchProducts: (businessID, searchQuery, searchBy, sortBy, page) => {
         return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&orderBy=${sortBy}&page=${page}`, {
