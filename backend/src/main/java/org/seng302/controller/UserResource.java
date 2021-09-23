@@ -402,11 +402,65 @@ public class UserResource {
     }
 
     /**
+     * This endpoint is for changing a users forgotten password
+     * Checks if the forgot password token is still valid and if so changes the users password
+     * @param token forgot password token
+     * @param payload NewPasswordPayload containing the new password
+     */
+    @PutMapping("/users/forgotPassword")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Password changed successfully")
+    public void changePassword(
+            @RequestParam String token,
+            @RequestBody NewPasswordPayload payload
+    ) {
+        logger.info("Forgot Password - Attempt to change users password");
+        Optional<ForgotPassword> foundForgotPasswordEntity = forgotPasswordRepository.findByToken(token);
+
+        if(foundForgotPasswordEntity.isPresent() && foundForgotPasswordEntity.get().isValidToken()) {
+            ForgotPassword forgotPassword = foundForgotPasswordEntity.get();
+            Integer userId = forgotPassword.getUserId();
+
+            Optional<User> foundUser = userRepository.findById(userId);
+
+            if(foundUser.isEmpty()) {
+                logger.error("500 [INTERNAL_SERVER_ERROR] - Forgot Password - Could not find user with ID {}", userId);
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Could not find user"
+                );
+            }
+
+            User user = foundUser.get();
+            try {
+                user.updatePassword(payload.getPassword());
+                userRepository.save(user);
+            } catch (IllegalUserArgumentException exception) {
+                logger.error("400 [BAD_REQUEST] - Forgot Password - Invalid Password");
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid Password"
+                );
+            }
+
+            // On success delete ForgotPassword Entity
+            forgotPasswordRepository.delete(forgotPassword);
+        } else {
+            // Calls if forgot password entity is expired
+            foundForgotPasswordEntity.ifPresent(forgotPassword -> forgotPasswordRepository.delete(forgotPassword));
+            logger.error("406 [NOT_ACCEPTABLE] - Forgot Password - Token is Invalid or has Expired");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Token is Invalid");
+        }
+    }
+
+    /**
      * This method will be called on the forgot password page after the user has entered a valid email.
      * Sends an email to the given email address with a link to the reset password page.
      * @param forgotPasswordPayload Forgot password payload containing an email address.
      */
     @PostMapping("/users/forgotPassword")
+    @ResponseStatus(value = HttpStatus.CREATED, reason = "Email sent to user")
     public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload,
                                HttpServletRequest request) {
 
