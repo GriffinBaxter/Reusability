@@ -166,10 +166,42 @@
           </div>
         </div>
 
-        Sales <bar-chart :label-list="graphLabels" :data-list="graphDataSales" :sales="true"/>
-        Revenue <bar-chart :label-list="graphLabels" :data-list="graphDataRevenue" :currency-symbol="currencySymbol"/>
+        <div class="card p-3" style="margin: 10px 0 0 0">
+          <div class="row m-2">
+            <div class="col-xl-1" style="max-width: 80px">
+              <label for="period-button" class="py-3">
+                Data:
+              </label>
+            </div>
 
-        <!----------------------------------------- Sale history table/rows ------------------------------------------->
+            <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
+              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                      data-bs-toggle="dropdown" aria-expanded="false">{{ graphType }}
+              </button>
+              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="graphType = 'Sales'">
+                  Sales
+                </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="graphType = 'Revenue'">
+                  Revenue
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!------------------------------------------- Sales report graphs --------------------------------------------->
+
+        <div class="card p-3" style="margin: 10px 0 75px 0">
+          <bar-chart v-if="graphType === 'Sales'" :label-list="graphLabels" :data-list="graphDataSales"
+                     :sales="true"/>
+          <bar-chart v-if="graphType === 'Revenue'" :label-list="graphLabels" :data-list="graphDataRevenue"
+                     :currency-symbol="currencySymbol"/>
+        </div>
+
+        <!----------------------------------------- Sales report table/rows ------------------------------------------->
 
         <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
           <br>
@@ -279,6 +311,7 @@ export default {
       graphLabels: [],
       graphDataSales: [],
       graphDataRevenue: [],
+      graphType: "Sales",
     }
   },
   methods: {
