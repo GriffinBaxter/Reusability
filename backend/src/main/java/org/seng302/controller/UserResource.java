@@ -407,6 +407,7 @@ public class UserResource {
      * @param forgotPasswordPayload Forgot password payload containing an email address.
      */
     @PostMapping("/users/forgotPassword")
+    @ResponseStatus(value = HttpStatus.CREATED, reason = "Email sent successfully")
     public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload,
                                HttpServletRequest request) {
 
