@@ -216,7 +216,8 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                         "\"businessType\":\"" + business.getBusinessType() + "\"," +
                         "\"created\":\"" + business.getCreated() + "\"," +
                         "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
-                        "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}," +
+                        "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
+                        "\"businessImages\":" + business.getBusinessImages() + "}," +
                     "\"barcode\":\"" + product.getBarcode() + "\"" +
                 "}," +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +

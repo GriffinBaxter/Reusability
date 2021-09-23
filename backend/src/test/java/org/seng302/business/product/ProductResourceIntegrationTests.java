@@ -107,7 +107,8 @@ class ProductResourceIntegrationTests {
             "\"businessType\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"currencySymbol\":\"%s\"," +
-            "\"currencyCode\":\"%s\"}," +
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":%s}," +
             "\"barcode\":\"%s\"}";
 
     private String expectedJson;
@@ -599,7 +600,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -639,7 +640,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -679,7 +680,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -719,7 +720,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -761,7 +762,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -803,7 +804,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -871,7 +872,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -1067,7 +1068,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -1109,7 +1110,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product);
@@ -1507,7 +1508,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode()) + "," +
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), product.getBarcode()) + "," +
                 String.format(expectedProductJson, anotherProduct.getProductId(), anotherProduct.getName(),
                 anotherProduct.getDescription(), anotherProduct.getManufacturer(), anotherProduct.getRecommendedRetailPrice(),
                 anotherProduct.getCreated(), business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
@@ -1516,7 +1517,7 @@ class ProductResourceIntegrationTests {
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
                 business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode(), anotherProduct.getBarcode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(), anotherProduct.getBarcode()) + "]";
 
         // when
         List<Product> list = List.of(product, anotherProduct);

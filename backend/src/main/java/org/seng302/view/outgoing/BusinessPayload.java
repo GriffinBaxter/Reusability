@@ -134,6 +134,8 @@ public class BusinessPayload {
                 ",\"businessType\":\"" + businessType + "\"," +
                 "\"created\":\"" + created + "\"," +
                 "\"currencySymbol\":\"" + currencySymbol + "\"," +
-                "\"currencyCode\":\"" + currencyCode + "\"}";
+                "\"currencyCode\":\"" + currencyCode + "\"," +
+                "\"businessImages\":" + businessImages +
+                "}";
     }
 }

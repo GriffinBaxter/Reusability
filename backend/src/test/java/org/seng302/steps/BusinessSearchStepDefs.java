@@ -87,7 +87,8 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
             "\"businessType\":\"%s\"," +
             "\"created\":\"%s\","+
             "\"currencySymbol\":\"%s\"," +
-            "\"currencyCode\":\"%s\"" +
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":%s" +
             "}";
 
     private final String expectedAdministratorJson = "[{\"id\":%d," +
@@ -287,7 +288,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 name, business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages()) + "]";
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -304,10 +305,10 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
 
         String expectedBusinessJson1 = String.format(expectedBusinessJson, business1.getId(), expectedUserJson1, business1.getPrimaryAdministratorId(),
                 name1, business1.getDescription(), business1.getAddress(), business1.getBusinessType(), business1.getCreated(),
-                business1.getCurrencySymbol(), business1.getCurrencyCode());
+                business1.getCurrencySymbol(), business1.getCurrencyCode(), business1.getBusinessImages());
         String expectedBusinessJson2 = String.format(expectedBusinessJson, business2.getId(), expectedUserJson2, business2.getPrimaryAdministratorId(),
                 name2, business2.getDescription(), business2.getAddress(), business2.getBusinessType(), business2.getCreated(),
-                business2.getCurrencySymbol(), business2.getCurrencyCode());
+                business2.getCurrencySymbol(), business2.getCurrencyCode(), business2.getBusinessImages());
 
         expectedJson = "[" + expectedBusinessJson1 + "," + expectedBusinessJson2 + "]";
 
@@ -405,7 +406,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 business.getName(), business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages()) + "]";
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -418,7 +419,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
                 user1.getDateOfBirth(), user1.getPhoneNumber(), address1);
         expectedJson = "[" + String.format(expectedBusinessJson, business.getId(), expectedUserJson, business.getPrimaryAdministratorId(),
                 name, business.getDescription(), business.getAddress(), BusinessType.valueOf(type), business.getCreated(),
-                business.getCurrencySymbol(), business.getCurrencyCode()) + "]";
+                business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages()) + "]";
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);

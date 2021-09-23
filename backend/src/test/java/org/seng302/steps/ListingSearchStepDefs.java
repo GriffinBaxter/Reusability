@@ -134,7 +134,8 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     "\"businessType\":\"%s\"," +
                     "\"created\":\"%s\"," +
                     "\"currencySymbol\":\"%s\"," +
-                    "\"currencyCode\":\"%s\"}," +
+                    "\"currencyCode\":\"%s\"," +
+                    "\"businessImages\":%s}," +
                     "\"barcode\":\"%s\"}," +
                     "\"quantity\":%d," +
                     "\"pricePerItem\":%.1f," +
@@ -363,7 +364,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     anotherBusiness.getId(), anotherUser.getId(), anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(), anotherUser.getNickname(),
                     anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(), anotherUser.getRole(), anotherUser.getDateOfBirth(), anotherUser.getPhoneNumber(),
                     anotherUser.getHomeAddress(), anotherBusiness.getPrimaryAdministratorId(), anotherBusiness.getName(),
-                    anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(), anotherBusiness.getCurrencySymbol(), anotherBusiness.getCurrencyCode(),
+                    anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(), anotherBusiness.getCurrencySymbol(), anotherBusiness.getCurrencyCode(), anotherBusiness.getBusinessImages(),
                     product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                     inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                     listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -375,7 +376,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                     user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
                     user.getHomeAddress(), business.getPrimaryAdministratorId(), business.getName(),
-                    business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                    business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(),
                     product2.getBarcode(), inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                     inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
                     listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString(),
@@ -444,7 +445,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
                 user.getHomeAddress(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(), business.getBusinessImages(),
                 product2.getBarcode(), inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                 inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
                 listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString(),
@@ -454,7 +455,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 anotherBusiness.getId(), anotherUser.getId(), anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(), anotherUser.getNickname(),
                 anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(), anotherUser.getRole(), anotherUser.getDateOfBirth(), anotherUser.getPhoneNumber(),
                 anotherUser.getHomeAddress(), anotherBusiness.getPrimaryAdministratorId(), anotherBusiness.getName(),
-                anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(), anotherBusiness.getCurrencySymbol(), anotherBusiness.getCurrencyCode(),
+                anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(), anotherBusiness.getCurrencySymbol(), anotherBusiness.getCurrencyCode(), anotherBusiness.getBusinessImages(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
