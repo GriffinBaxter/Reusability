@@ -94,7 +94,8 @@ class BusinessResourceIntegrationTests {
             "\"businessType\":\"%s\"," +
             "\"created\":\"%s\","+
             "\"currencySymbol\":\"%s\","+
-            "\"currencyCode\":\"%s\""+
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":null" +
             "}";
 
     private final String expectedAdministratorJson = "[{\"id\":%d," +
@@ -722,7 +723,8 @@ class BusinessResourceIntegrationTests {
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"," +
                 "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
-                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
+                "\"businessImages\":" + business.getBusinessImages() + "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -784,7 +786,8 @@ class BusinessResourceIntegrationTests {
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"," +
                 "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
-                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
+                "\"businessImages\":" + business.getBusinessImages() + "}";
         sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -862,7 +865,8 @@ class BusinessResourceIntegrationTests {
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"," +
                 "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
-                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"}";
+                "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
+                "\"businessImages\":" + business.getBusinessImages() + "}";
 
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
@@ -3487,7 +3491,4 @@ class BusinessResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(someBusiness).hasToString(someBusiness.toString());
     }
-
-
-
 }

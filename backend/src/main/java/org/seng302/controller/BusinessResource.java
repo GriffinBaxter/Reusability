@@ -253,7 +253,8 @@ public class BusinessResource {
                 selectBusiness.getBusinessType(),
                 selectBusiness.getCreated(),
                 selectBusiness.getCurrencySymbol(),
-                selectBusiness.getCurrencyCode()
+                selectBusiness.getCurrencyCode(),
+                selectBusiness.getBusinessImages()
         );
     }
 
