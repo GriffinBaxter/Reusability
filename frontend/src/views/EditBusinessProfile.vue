@@ -34,7 +34,7 @@
                   <select id="business-type" name="business-type" tabindex="2" :class="toggleInvalidSelectClass(businessTypeErrorMsg)"
                           v-model="businessType" required>
                     <option value="" disabled>Select Business Type</option>
-                    <option v-for="option in types" :key="option.text" :value="option.value">
+                    <option v-for="option in types" :key="option.text" :value="option.text">
                       {{ option.text }}
                     </option>
                   </select>
@@ -190,10 +190,10 @@ export default {
       // Business type related variables
       businessType: "",
       types: [
-        { text: 'Accommodation and Food Services', value: 'Accommodation and Food Services' },
-        { text: 'Retail Trade', value:  'Retail Trade'},
-        { text: 'Charitable Organisation', value: 'Charitable Organisation'},
-        { text: 'Non Profit Organisation', value: 'Non Profit Organisation'}
+        { text: 'Accommodation and Food Services' },
+        { text: 'Retail Trade'},
+        { text: 'Charitable Organisation'},
+        { text: 'Non Profit Organisation'}
       ],
       businessTypeErrorMsg: "",
 
