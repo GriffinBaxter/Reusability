@@ -217,7 +217,7 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                         "\"created\":\"" + business.getCreated() + "\"," +
                         "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
                         "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
-                        "\"businessImages\":" + business.getBusinessImages() + "}," +
+                        "\"businessImages\":[]}," +
                     "\"barcode\":\"" + product.getBarcode() + "\"" +
                 "}," +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +
@@ -327,5 +327,4 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
     public void the_number_of_bookmarks_the_listing_has_is_decremented() {
         assertThat(listing.getTotalBookmarks()).isZero();
     }
-
 }

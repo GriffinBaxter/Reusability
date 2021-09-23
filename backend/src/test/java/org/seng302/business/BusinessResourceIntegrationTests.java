@@ -95,7 +95,7 @@ class BusinessResourceIntegrationTests {
             "\"created\":\"%s\","+
             "\"currencySymbol\":\"%s\","+
             "\"currencyCode\":\"%s\"," +
-            "\"businessImages\":null" +
+            "\"businessImages\":[]" +
             "}";
 
     private final String expectedAdministratorJson = "[{\"id\":%d," +
@@ -724,7 +724,7 @@ class BusinessResourceIntegrationTests {
                 "\"created\":\"" + business.getCreated() + "\"," +
                 "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
                 "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
-                "\"businessImages\":" + business.getBusinessImages() + "}";
+                "\"businessImages\":[]}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -787,7 +787,7 @@ class BusinessResourceIntegrationTests {
                 "\"created\":\"" + business.getCreated() + "\"," +
                 "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
                 "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
-                "\"businessImages\":" + business.getBusinessImages() + "}";
+                "\"businessImages\":[]}";
         sessionToken = anotherUser.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -866,7 +866,7 @@ class BusinessResourceIntegrationTests {
                 "\"created\":\"" + business.getCreated() + "\"," +
                 "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
                 "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
-                "\"businessImages\":" + business.getBusinessImages() + "}";
+                "\"businessImages\":[]}";
 
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
