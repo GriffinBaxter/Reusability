@@ -34,7 +34,7 @@
     <div class="row">
       <label class="d-inline-block my-3 text-center col-xl-2 col-l-6 col-md-6">Barcode (EAN or UPC)</label>
       <div class="d-inline-block p-2 text-center col-xl-4 col-l-2 col-md-6">
-        <input type="number" class="form-control filter-input d-inline-block" id="barcode-input" v-model="barcode">
+        <input type="number" class="form-control filter-input d-inline-block" id="barcode-input" v-model="barcode" @keydown="enterPressed($event)">
         <button type="button" id="scanner-modal-btn" class="btn green-button" style="margin-top: -5px" @click="showBarcodeScannerModal($event)">
           <i class="fas fa-camera" aria-hidden="true"></i>
         </button>

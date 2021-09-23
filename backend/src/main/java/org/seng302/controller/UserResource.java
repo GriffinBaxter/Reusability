@@ -102,6 +102,8 @@ public class UserResource {
 
     /**
      * Attempt to authenticate a user account with a username and password.
+     * Checks that the user has attempts remaining. If the user exceeds three attempts, they are locked from their
+     * account for 1 hour.
      * @param login Login payload
      * @param response HTTP Response
      */
@@ -116,7 +118,7 @@ public class UserResource {
             user.get().setSessionUUID(sessionUUID);
             userRepository.save(user.get());
 
-            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
+            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", sessionUUID).maxAge(28800).sameSite("strict").httpOnly(true).build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             logger.info("Successful Login - User Id: {}", user.get().getId());
@@ -126,6 +128,7 @@ public class UserResource {
                 HttpStatus.BAD_REQUEST,
                 "Failed login attempt, email or password incorrect"
         );
+
     }
 
     /**
