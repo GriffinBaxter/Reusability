@@ -1666,7 +1666,7 @@ class UserTests {
     @Test
     void testHasLoginAttemptsRemaining_AtLeastOneAttemptRemaining_ReturnsTrue() {
         user.setRemainingLoginAttempts(1);
-        Assertions.assertEquals(true, user.hasLoginAttemptsRemaining());
+        Assertions.assertTrue(user.hasLoginAttemptsRemaining());
     }
 
     /**
@@ -1676,7 +1676,7 @@ class UserTests {
     @Test
     void testHasLoginAttemptsRemaining_NoAttemptsRemaining_ReturnsFalse() {
         user.setRemainingLoginAttempts(0);
-        Assertions.assertEquals(false, user.hasLoginAttemptsRemaining());
+        Assertions.assertFalse(user.hasLoginAttemptsRemaining());
     }
 
     // ********************************* canUnlock() method tests ************************************
