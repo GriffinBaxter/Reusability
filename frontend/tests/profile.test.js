@@ -446,6 +446,82 @@ describe("Testing the getCreatedDate method", () => {
     test("Testing that months is reduced by 1 if currentDate is less than dateJoined", async () => {
         jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2021-09-22T00:00'));
 
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         const profileWrapper = await shallowMount(Profile);
 
         profileWrapper.vm.getCreatedDate('2020-09-23T00:00');
@@ -464,6 +540,82 @@ describe("Testing the grantUserGAA method", () => {
         $router = {
             push: jest.fn()
         };
+
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
 
         profileWrapper = await shallowMount(Profile, {
             mocks: {
@@ -894,6 +1046,82 @@ describe("Testing the retrieveUser method", () => {
 describe("Testing the formatAge method", () => {
 
     test("Testing that the age output is formatted correctly", async () => {
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         const profileWrapper = await shallowMount(Profile);
 
         let returnedString = profileWrapper.vm.formatAge("2000-10-09");
@@ -1274,6 +1502,82 @@ describe("Testing the redirectToBusiness method", () => {
             push: jest.fn()
         };
 
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         const profileWrapper = await shallowMount(Profile, {
             mocks: {
                 $router
@@ -1292,6 +1596,82 @@ describe("Testing the redirectToBusiness method", () => {
 describe("Testing the getLoginRole method", () => {
 
     test("Testing that the loginRole is set correctly to the received role", async () => {
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         const profileWrapper = await shallowMount(Profile);
 
         const data = {
@@ -1315,6 +1695,82 @@ describe("Testing the logout method", () => {
         const $router = {
             push: jest.fn()
         };
+
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
 
         const profileWrapper = await shallowMount(Profile, {
             mocks: {
@@ -1714,6 +2170,82 @@ describe("Testing the processUpdateAdministratorError method", () => {
             push: jest.fn()
         };
 
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         profileWrapper = await shallowMount(Profile, {
             mocks: {
                 $router
@@ -1787,6 +2319,82 @@ describe("Testing the processUpdateAdministratorError method", () => {
 describe("Testing the retrieveUsersCards method", () => {
 
     test("Testing that when a response is received, usersCards contains the sorted data", async () => {
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         const profileWrapper = await shallowMount(Profile);
 
         const data = {
@@ -1901,6 +2509,82 @@ describe("Testing the compareCards method", () => {
     let profileWrapper;
 
     beforeEach(async () => {
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         profileWrapper = await shallowMount(Profile);
     });
 
@@ -1949,11 +2633,93 @@ describe("Testing the processUserInfoError method", () => {
             push: jest.fn()
         };
 
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
+
         profileWrapper = await shallowMount(Profile, {
             mocks: {
                 $router
             }
         });
+
+        await Promise.resolve();
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     test("Testing that when an error request and no error response is received, there is a router push to /timeout", async () => {
@@ -1994,7 +2760,8 @@ describe("Testing the processUserInfoError method", () => {
         const data = {
             response: {
                 status: 500
-            }
+            },
+            message: "error"
         }
 
         await profileWrapper.vm.processUserInfoError(data);
@@ -2013,6 +2780,82 @@ describe("Testing the goToEdit method", () => {
         $router = {
             push: jest.fn()
         };
+
+        const userPayload = {status: 200, data: {
+                "id": 100,
+                "firstName": "John",
+                "lastName": "Smith",
+                "middleName": "Hector",
+                "nickname": "Jonny",
+                "bio": "Likes long walks on the beach",
+                "email": "johnsmith99@gmail.com",
+                "dateOfBirth": "1999-04-27",
+                "phoneNumber": "+64 3 555 0129",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Upper Riccarton",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                },
+                "created": "2020-07-14T14:32:00Z",
+                "role": null,
+                "businessesAdministered": []
+            }}
+        Api.getUser.mockImplementation(() => Promise.resolve(userPayload));
+
+        const cards = {
+            status: 200,
+            data: [
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "FORSALE",
+                    title: "PS4"},
+                {created: "2021-07-15T15:37:39.753837",
+                    creator: {
+                        bio: "Biography",
+                        businessesAdministered: [null],
+                        created: "2021-03-14T00:00",
+                        email: "chad.taylor@example.com",
+                        firstName: "Chad",
+                        homeAddress: {
+                            city: "Shire of Cocos Islands",
+                            country: "Cocos (Keeling) Islands",
+                            region: "West Island",
+                            suburb: null
+                        },
+                        id: 1,
+                        lastName: "Taylor",
+                        middleName: "S",
+                        nickname: "Chaddy",
+                        role: "USER"
+                    },
+                    keywords: [],
+                    section: "EXCHANGE",
+                    title: "PS5"}
+            ]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(cards));
 
         profileWrapper = await shallowMount(Profile, {
             mocks: {
