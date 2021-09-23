@@ -17,6 +17,14 @@
       <ProfileHeader id="profile-header"/>
 
       <div class="row">
+
+        <!-- modal for modify primary admin -->
+        <PrimaryAdminModification
+            ref="primaryAdminModification"
+            :business-name="name"
+            :description="description"
+            :admin-list="adminList"/>
+
         <div class="col-xl-3 mb-3">
 
           <div class="card text-center shadow-sm">
@@ -37,6 +45,12 @@
                 <button type="button" style="width: 252px; max-width: 100%"
                         class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
                   Edit Profile
+                </button>
+                <hr>
+                <button type="button" style="width: 252px; max-width: 100%"
+                        class="btn btn-md btn-outline-primary green-button"
+                        @click="(event) => {this.$refs.primaryAdminModification.showModel(event)}">
+                  Edit Primary Admin
                 </button>
               </div>
             </div>
@@ -176,10 +190,12 @@ import Api from "@/Api";
 import Cookies from 'js-cookie';
 import {UserRole} from "@/configs/User";
 import {checkNullity, getFormattedAddress} from "../views/helpFunction";
+import PrimaryAdminModification from "../components/business/PrimaryAdminModification";
 
 export default {
   name: "BusinessProfile",
   components: {
+    PrimaryAdminModification,
     Footer,
     ProfileHeader,
     Navbar
@@ -203,6 +219,7 @@ export default {
       postcode: "",
 
       nameOfAdministrators: [],
+      adminList: [],
 
       isAdministrator: false,
       // keep track of if user came from individual listing page so they can return.
@@ -305,6 +322,9 @@ export default {
         if (anUser.id === this.primaryAdministratorId) {
           this.primaryAdministrator = anUser.firstName + " " + adminMiddleName + " " + anUser.lastName;
         }
+
+        this.adminList.push(anUser);
+
         this.nameOfAdministrators.push({
           name: anUser.firstName + " " + adminMiddleName + " " + anUser.lastName,
           id: anUser.id
