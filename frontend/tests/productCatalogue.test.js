@@ -4,7 +4,6 @@
 
 import {test, expect, describe, jest, beforeAll} from "@jest/globals"
 import reg from '../src/views/ProductCatalogue'
-// noinspection DuplicatedCode
 import Product from '../src/configs/Product'
 import {shallowMount} from "@vue/test-utils";
 import ProductCatalogue from "../src/views/ProductCatalogue";
@@ -1334,7 +1333,7 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         wrapper.vm.updatePage(mockedEvent);
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
-            query: { "searchQuery": "", "searchBy": "name", "orderBy": "productIdASC", "page": "2"}})
+            query: { "searchQuery": "", "searchBy": "name", "orderBy": "productIdASC", "page": "2", "barcode": ""}})
     })
 
     test('Test the convertSearchByListToString method generates the correct string when searchBy only contains name', () => {

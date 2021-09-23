@@ -31,6 +31,7 @@
                  :table-headers="tableHeaders" :table-data="tableData"
                  :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
                  :order-by-override="tableOrderBy" :loading-data="loadingProducts" :table-data-is-page="true"
+                 :hide-pagination="barcodeSearched"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
                  @row-selected="event => showRowModal(event.index)"
@@ -290,7 +291,11 @@ export default {
       searchBy: ["name"],
       // The attributes to search by in the required url format.
       searchByString: "",
+      // The attributes to search by barcode in the required url format.
+      searchBarcode: "",
 
+      // For pagination buttons
+      barcodeSearched: false,
 
       // Product modal variables
       productId: null,
@@ -363,6 +368,7 @@ export default {
 
       // List of Business account current user account administrated
       linkBusinessAccount: [],
+
     }
   },
   methods: {
@@ -470,7 +476,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       })
       this.requestProducts();
     },
@@ -524,9 +530,10 @@ export default {
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
       this.loadingProducts = true;
+      this.barcode = this.$route.query["barcode"] || "";
 
       // Perform the call to sort the products and get them back.
-      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.barcode, this.orderByString, this.currentPage).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -536,7 +543,7 @@ export default {
           return new Product(product);
         });
 
-        let newtableData = [];
+        let newTableData = [];
 
         // No results
         if (this.productList.length <= 0) {
@@ -548,15 +555,15 @@ export default {
           this.totalRows = parseInt(response.headers["total-rows"]);
 
           for (let i = 0; i < this.productList.length; i++) {
-            newtableData.push(this.productList[i].data.id);
-            newtableData.push(this.productList[i].data.name);
-            newtableData.push(this.productList[i].data.manufacturer);
-            newtableData.push(this.productList[i].data.recommendedRetailPrice);
-            newtableData.push(formatDate(this.productList[i].data.created));
-            newtableData.push(this.productList[i].data.barcode);
+            newTableData.push(this.productList[i].data.id);
+            newTableData.push(this.productList[i].data.name);
+            newTableData.push(this.productList[i].data.manufacturer);
+            newTableData.push(this.productList[i].data.recommendedRetailPrice);
+            newTableData.push(formatDate(this.productList[i].data.created));
+            newTableData.push(this.productList[i].data.barcode);
           }
         }
-        this.tableData = newtableData;
+        this.tableData = newTableData;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -585,7 +592,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
       });
       this.requestProducts();
     },
@@ -855,6 +862,9 @@ export default {
       }).catch((error) => console.log(error))
     },
 
+    /**
+     * Clicks the image
+     */
     onUploadClick() {
       this.$refs.image.click();
     },
@@ -888,7 +898,7 @@ export default {
     },
 
     /**
-     * Autofills data from the barcode, using the OpenFoodFacts API.
+     * Autofill data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
       this.toastErrorMessage = "";
@@ -896,18 +906,31 @@ export default {
         return undefined;
       });
     },
-    onSearch (checked, searchQuery) {
+
+    /**
+     * Requests the products that match the current search.
+     * @param checked A list of selected checked boxes.
+     * @param searchQuery The search query.
+     * @param searchBarcode The barcode to search by.
+     */
+    onSearch (checked, searchQuery, searchBarcode) {
       this.searchBy = checked;
       this.searchQuery = searchQuery;
+      this.searchBarcode = searchBarcode;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "orderBy": this.orderByString, "page": "0"}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0"}
       });
       this.requestProducts();
+      this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
     }
   },
 
+  /**
+   * Mounts the product catalogue.
+   * @return {Promise<void>}
+   */
   async mounted() {
     // If the edit is successful the UpdateProductModal component will emit an 'edits' event. This code notices the emit
     // and will alert the user that the edit was successful by calling the afterEdit function.
@@ -919,10 +942,9 @@ export default {
     if (checkAccessPermission(this.$route.params.id, actAs)) {
       await this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
-      /**
-       * When mounted, initiate population of page.
-       * If cookies are invalid or not present, redirect to login page.
-       */
+
+      // When mounted, initiate population of page.
+      // If cookies are invalid or not present, redirect to login page.
       const currentID = Cookies.get('userID');
       if (currentID) {
         await this.currencyRequest();
@@ -939,6 +961,8 @@ export default {
     }
 
     this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
+    this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
+
   },
   watch: {
     // If the current Product was updated we update the table.
