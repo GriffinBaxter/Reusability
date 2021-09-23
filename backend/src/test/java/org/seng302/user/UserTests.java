@@ -24,8 +24,6 @@ class UserTests {
 
     private static User user;
 
-    private static User testUser;
-
     private static Business business;
 
     private static Product product;
@@ -1701,6 +1699,32 @@ class UserTests {
 
     // ********************************* lockAccount() method tests ************************************
 
+    /**
+     * Test that lockAccount locks the account for 1 hour.
+     */
+    @Test
+    void testLockAccount_LocksForOneHour() {
+        user.lockAccount();
+        Assertions.assertEquals(user.getTimeWhenUnlocked(), LocalDateTime.now().plusHours(1));
+    }
+
     // ********************************* unlockAccount() method tests ************************************
 
+    /**
+     * Test that unlockAccount sets timeWhenUnlocked to null.
+     */
+    @Test
+    void testUnlockAccount_TimeWhenUnlockedSetToNull() {
+        user.unlockAccount();
+        Assertions.assertEquals(null, user.getTimeWhenUnlocked());
+    }
+
+    /**
+     * Test that unlockAccount sets remainingLoginAttempts to three.
+     */
+    @Test
+    void testUnlockAccount_SetsRemainingLoginAttemptsToThree() {
+        user.unlockAccount();
+        Assertions.assertEquals(3, user.getRemainingLoginAttempts());
+    }
 }
