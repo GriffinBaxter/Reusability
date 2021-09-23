@@ -91,9 +91,10 @@ public class UserResource {
     private static final String HTTP_NOT_ACCEPTABLE_MESSAGE = "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
             "for example trying to access a resource by an ID that does not exist.";
 
-    public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
+    public UserResource(UserRepository userRepository, AddressRepository addressRepository, ForgotPasswordRepository forgotPasswordRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
+        this.forgotPasswordRepository = forgotPasswordRepository;
     }
 
     /**

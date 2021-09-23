@@ -8,6 +8,7 @@ import org.seng302.model.Address;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
+import org.seng302.model.repository.ForgotPasswordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.seng302.controller.UserResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,10 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private AddressRepository addressRepository;
 
+    @Autowired
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
+
     private MockHttpServletResponse response;
     private User user;
     private Address address;
@@ -57,7 +62,7 @@ public class RegistrationStepDefs extends CucumberSpringConfiguration {
     public void createMockMvc() {
         userRepository = mock(UserRepository.class);
         addressRepository = mock(AddressRepository.class);
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
     }
 
     @Given("My email {string} doesnt exist in the database.")
