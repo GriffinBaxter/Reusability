@@ -1681,6 +1681,24 @@ class UserTests {
 
     // ********************************* canUnlock() method tests ************************************
 
+    /**
+     * Test that canUnlock returns true when the 1 hour since locking the account has passed.
+     */
+    @Test
+    void testCanUnlock_HourPassed_ReturnsTrue() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().minusHours(2));
+        Assertions.assertTrue(user.canUnlock());
+    }
+
+    /**
+     * Test that canUnlock returns false when the 1 hour since locking the account has not passed yet.
+     */
+    @Test
+    void testCanUnlock_HourNotPassed_ReturnsFalse() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusMinutes(38));
+        Assertions.assertFalse(user.canUnlock());
+    }
+
     // ********************************* lockAccount() method tests ************************************
 
     // ********************************* unlockAccount() method tests ************************************
