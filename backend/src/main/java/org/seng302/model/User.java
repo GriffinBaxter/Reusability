@@ -150,6 +150,7 @@ public class User {
     private static final Integer PASSWORD_MAX_LENGTH = 30;
 
     private static final Integer LOGIN_ATTEMPTS_LIMIT = 3;
+    private static final Integer HOURS_LOCKED_FOR = 1;
 
     /**
      * User account constructor.
@@ -362,6 +363,18 @@ public class User {
     public void setUserImages(List<UserImage> userImages) {
         this.userImages = userImages;
     }
+
+    public Integer getRemainingLoginAttempts() { return remainingLoginAttempts; }
+
+    public void setRemainingLoginAttempts(Integer newAmountOfAttempts) { this.remainingLoginAttempts = newAmountOfAttempts; }
+
+    public LocalDateTime getTimeWhenUnlocked() { return timeWhenUnlocked; }
+
+    public void setTimeWhenUnlocked(LocalDateTime time) {
+        this.timeWhenUnlocked = time;
+    }
+
+
 
     /**
      * validate and set firstName
@@ -809,7 +822,9 @@ public class User {
      * Update number of remaining login attempts
      */
     public void useAttempt() {
-        this.remainingLoginAttempts -= 1;
+        if (this.remainingLoginAttempts > 0) {
+            this.remainingLoginAttempts -= 1;
+        }
     }
 
     /**
@@ -821,19 +836,27 @@ public class User {
     }
 
     /**
-     * Sets timeWhenUnlocked.
-     */
-    public void setTimeWhenUnlocked(LocalDateTime time) {
-        this.timeWhenUnlocked = time;
-    }
-
-    /**
      * Checks if the user's account can be unlocked.
      * @return true if the account can be unlocked, false otherwise.
      */
     public Boolean canUnlock() {
         LocalDateTime currentTime = LocalDateTime.now();
         return currentTime.isAfter(this.timeWhenUnlocked);
+    }
+
+    /**
+     * Locks the account for the HOURS_LOCKED_FOR
+     */
+    public void lockAccount() {
+        this.timeWhenUnlocked = LocalDateTime.now().plusHours(HOURS_LOCKED_FOR);
+    }
+
+    /**
+     * Unlocks the account for the user
+     */
+    public void unlockAccount() {
+        this.timeWhenUnlocked = null;
+        this.remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
     }
 
 }

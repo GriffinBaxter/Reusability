@@ -112,11 +112,20 @@ public class UserResource {
 
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
+        // User exists and if they are locked out and the lock period has finished, then unlock account
+        if (user.isPresent() && user.get().canUnlock()) {
+            user.get().unlockAccount();
+            userRepository.save(user.get());
+        }
+
+        // User exists and they have no login attempts left, then says locked
         if (user.isPresent() && !user.get().hasLoginAttemptsRemaining()) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "Exceeded login attempts"
+                    "Exceeded login attempts. Please try again in 1 hour."
             );
+
+        // User exists and password is correct
         } else if (user.isPresent() && (user.get().verifyPassword(login.getPassword()))) {
             String sessionUUID = getUniqueSessionUUID();
 
@@ -128,9 +137,16 @@ public class UserResource {
 
             logger.info("Successful Login - User Id: {}", user.get().getId());
             return new UserIdPayload(user.get().getId());
+
+        // User either does not exist or the password is incorrect
         } else {
             user.get().useAttempt();
             userRepository.save(user.get());
+            // Lock account if used up all login attempts
+            if (!user.get().hasLoginAttemptsRemaining()) {
+                user.get().lockAccount();
+                userRepository.save(user.get());
+            }
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Failed login attempt, email or password incorrect"
