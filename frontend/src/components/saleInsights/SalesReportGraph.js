@@ -1,4 +1,3 @@
-<script>
 import { Bar } from 'vue-chartjs'
 
 export default {
@@ -12,6 +11,16 @@ export default {
     dataList: {
       type: Array,
       required: true
+    },
+    sales: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    currencySymbol: {
+      type: String,
+      required: false,
+      default: ""
     }
   },
   watch: {
@@ -24,19 +33,30 @@ export default {
   },
   computed: {
     data() {
-      return this.dataList
+      return this.dataList;
     },
     labels() {
-      return this.labelList
+      return this.labelList;
     },
-  },
+    label() {
+      if (this.sales) {
+        return "Sales";
+      } else {
+        return "Revenue";
+      }
+    },
+  }
+  ,
   methods: {
+    currencyRevenue(value) {
+      return this.currencySymbol + value;
+    },
     renderBarChart() {
       this.renderChart({
         labels: this.labels,
         datasets: [
           {
-            label: 'Bar Chart',
+            label: this.label,
             data: this.data,
             fill: false,
             borderColor: '#00B88F',
@@ -48,7 +68,8 @@ export default {
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
+              callback: this.currencyRevenue
             },
             gridLines: {
               display: true
@@ -61,7 +82,7 @@ export default {
           }]
         },
         legend: {
-          display: true
+          display: false
         },
         responsive: true,
         maintainAspectRatio: false
@@ -72,4 +93,3 @@ export default {
     this.renderBarChart();
   }
 }
-</script>

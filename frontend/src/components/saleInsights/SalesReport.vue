@@ -166,8 +166,8 @@
           </div>
         </div>
 
-        Sales <bar-chart :label-list="graphLabels" :data-list="graphDataSales"></bar-chart>
-        Revenue <bar-chart :label-list="graphLabels" :data-list="graphDataRevenue"></bar-chart>
+        Sales <bar-chart :label-list="graphLabels" :data-list="graphDataSales" :sales="true"/>
+        Revenue <bar-chart :label-list="graphLabels" :data-list="graphDataRevenue" :currency-symbol="currencySymbol"/>
 
         <!----------------------------------------- Sale history table/rows ------------------------------------------->
 
@@ -210,7 +210,7 @@ import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
 import {manageError} from "../../errorHandler";
-import BarChart from './SalesReportGraph'
+import BarChart from './SalesReportGraph.js'
 
 export default {
   name: "SalesReport",
