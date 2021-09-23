@@ -1659,9 +1659,27 @@ class UserTests {
 
     // ********************************* hasLoginAttemptsRemaining() method tests ************************************
 
+    /**
+     * Test that hasLoginAttemptsRemaining returns true when there is at least one remaining login attempt
+     * available.
+     */
+    @Test
+    void testHasLoginAttemptsRemaining_AtLeastOneAttemptRemaining_ReturnsTrue() {
+        user.setRemainingLoginAttempts(1);
+        Assertions.assertEquals(true, user.hasLoginAttemptsRemaining());
+    }
+
+    /**
+     * Test that hasLoginAttemptsRemaining returns true when there are no remaining login attempts
+     * available.
+     */
+    @Test
+    void testHasLoginAttemptsRemaining_NoAttemptsRemaining_ReturnsFalse() {
+        user.setRemainingLoginAttempts(0);
+        Assertions.assertEquals(false, user.hasLoginAttemptsRemaining());
+    }
 
     // ********************************* canUnlock() method tests ************************************
-
 
     // ********************************* lockAccount() method tests ************************************
 
