@@ -380,9 +380,6 @@ export default {
      * @param name The name of the page.
      */
     navigateTo(name) {
-      /*
-      Navigates to the product catalogue of the business
-       */
       let id = this.$route.params.id;
       this.$router.push({name: name, params: {id}});
     },
