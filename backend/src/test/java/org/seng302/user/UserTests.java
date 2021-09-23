@@ -1615,4 +1615,56 @@ class UserTests {
         // Then
         Assertions.assertEquals("Invalid password", errorMessage);
     }
+
+    // ********************************* useAttempt() method tests ************************************
+
+    /**
+     * Test that remainingLoginAttempts is reduced by 1 attempt when the current remainingLoginAttempts is greater than
+     * 0 when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsGreaterThanOne() {
+        int attempts = 2;
+        int expectedAttempts = 1;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    /**
+     * Test that remainingLoginAttempts is not reduced when the current remainingLoginAttempts is 0
+     * when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsNoAttemptsRemaining() {
+        int attempts = 0;
+        int expectedAttempts = 0;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    /**
+     * Test that remainingLoginAttempts is not reduced when the current remainingLoginAttempts is negative
+     * when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsNegativeAttemptsRemaining() {
+        int attempts = -10;
+        int expectedAttempts = 0;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    // ********************************* hasLoginAttemptsRemaining() method tests ************************************
+
+
+    // ********************************* canUnlock() method tests ************************************
+
+
+    // ********************************* lockAccount() method tests ************************************
+
+    // ********************************* unlockAccount() method tests ************************************
+
 }

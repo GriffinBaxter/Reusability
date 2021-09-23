@@ -824,6 +824,8 @@ public class User {
     public void useAttempt() {
         if (this.remainingLoginAttempts > 0) {
             this.remainingLoginAttempts -= 1;
+        } else if (this.remainingLoginAttempts < 0) {
+            this.remainingLoginAttempts = 0;
         }
     }
 
