@@ -449,7 +449,9 @@ export default {
       let salesData = [];
       let revenueData = [];
       for (const data of this.salesReportData) {
-        labels.push(data.granularityName);
+        let granularityName;
+        granularityName = data.granularityName == null ? "Total" : data.granularityName;
+        labels.push(granularityName);
         salesData.push(data.totalSales);
         revenueData.push(data.totalRevenue);
       }
