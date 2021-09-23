@@ -114,6 +114,8 @@ paths:
           $ref: '#/components/responses/AuthenticatedResponse'
         '400':
           description: Failed login attempt, email or password incorrect
+        '403':
+          description: Exceeded login attempts. Please try again in 1 hour.
 
   '/users':
     post:
