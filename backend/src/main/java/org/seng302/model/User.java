@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javax.persistence.*;
@@ -115,6 +116,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserImage> userImages;
 
+    @Column(name = "remaining_login_attempts")
+    private Integer remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
+
+    @Column(name = "time_when_unlocked")
+    private LocalDateTime timeWhenUnlocked;
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;
@@ -141,6 +148,8 @@ public class User {
 
     private static final Integer PASSWORD_MIN_LENGTH = 8;
     private static final Integer PASSWORD_MAX_LENGTH = 30;
+
+    private static final Integer LOGIN_ATTEMPTS_LIMIT = 3;
 
     /**
      * User account constructor.
@@ -796,5 +805,35 @@ public class User {
                 (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,30}$"));
     }
 
+    /**
+     * Update number of remaining login attempts
+     */
+    public void useAttempt() {
+        this.remainingLoginAttempts -= 1;
+    }
+
+    /**
+     * Checks whether the user has exceed the allowed number of attempts.
+     * @return true if the user has exceeded this limit, otherwise false.
+     */
+    public boolean hasLoginAttemptsRemaining() {
+      return this.remainingLoginAttempts > 0;
+    }
+
+    /**
+     * Sets timeWhenUnlocked.
+     */
+    public void setTimeWhenUnlocked(LocalDateTime time) {
+        this.timeWhenUnlocked = time;
+    }
+
+    /**
+     * Checks if the user's account can be unlocked.
+     * @return true if the account can be unlocked, false otherwise.
+     */
+    public Boolean canUnlock() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        return currentTime.isAfter(this.timeWhenUnlocked);
+    }
 
 }

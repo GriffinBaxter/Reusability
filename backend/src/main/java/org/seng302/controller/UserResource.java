@@ -102,6 +102,8 @@ public class UserResource {
 
     /**
      * Attempt to authenticate a user account with a username and password.
+     * Checks that the user has attempts remaining. If the user exceeds three attempts, they are locked from their
+     * account for 1 hour.
      * @param login Login payload
      * @param response HTTP Response
      */
@@ -110,7 +112,12 @@ public class UserResource {
 
         Optional<User> user = userRepository.findByEmail(login.getEmail());
 
-        if (user.isPresent() && (user.get().verifyPassword(login.getPassword()))) {
+        if (user.isPresent() && !user.get().hasLoginAttemptsRemaining()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Exceeded login attempts"
+            );
+        } else if (user.isPresent() && (user.get().verifyPassword(login.getPassword()))) {
             String sessionUUID = getUniqueSessionUUID();
 
             user.get().setSessionUUID(sessionUUID);
@@ -121,11 +128,14 @@ public class UserResource {
 
             logger.info("Successful Login - User Id: {}", user.get().getId());
             return new UserIdPayload(user.get().getId());
+        } else {
+            user.get().useAttempt();
+            userRepository.save(user.get());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Failed login attempt, email or password incorrect"
+            );
         }
-        throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Failed login attempt, email or password incorrect"
-        );
     }
 
     /**
