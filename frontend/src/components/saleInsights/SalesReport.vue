@@ -168,13 +168,37 @@
 
         <div class="card p-3" style="margin: 10px 0 0 0">
           <div class="row m-2">
-            <div class="col-xl-1" style="max-width: 80px">
+            <!-------------------------------------- Visualization dropdown menu -------------------------------------->
+            <div class="col-xl-4" style="max-width: 130px">
+              <label for="visualization-button" class="py-3">
+                Visualization:
+              </label>
+            </div>
+
+            <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
+              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                      data-bs-toggle="dropdown" aria-expanded="false" id="visualization-button">{{ visualizationType }}
+              </button>
+              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="visualizationType = 'Table'">
+                  Table
+                </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="visualizationType = 'Graph'">
+                  Graph
+                </li>
+              </ul>
+            </div>
+
+            <!--------------------------------------- Graph type dropdown menu ---------------------------------------->
+            <div v-if="visualizationType === 'Graph'" class="col-xl-1" style="max-width: 80px">
               <label for="period-button" class="py-3">
                 Data:
               </label>
             </div>
 
-            <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
+            <div v-if="visualizationType === 'Graph'" class="btn-group col-xl-2 d-inline-block p-2" role="group">
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                       data-bs-toggle="dropdown" aria-expanded="false">{{ graphType }}
               </button>
@@ -189,12 +213,13 @@
                 </li>
               </ul>
             </div>
+
           </div>
         </div>
 
         <!------------------------------------------- Sales report graphs --------------------------------------------->
 
-        <div class="card p-3" style="margin: 10px 0 75px 0">
+        <div v-if="visualizationType === 'Graph'" class="card p-3" style="margin: 10px 0 75px 0">
           <bar-chart v-if="graphType === 'Sales'" :label-list="graphLabels" :data-list="graphDataSales"
                      :sales="true"/>
           <bar-chart v-if="graphType === 'Revenue'" :label-list="graphLabels" :data-list="graphDataRevenue"
@@ -203,7 +228,7 @@
 
         <!----------------------------------------- Sales report table/rows ------------------------------------------->
 
-        <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
+        <div v-if="showTable && visualizationType === 'Table'" class="card p-3" style="margin: 10px 0 75px 0">
           <br>
 
           <table class="table table-hover" aria-describedby="page-title" v-if="this.granularity !== 'Total'">
@@ -313,6 +338,9 @@ export default {
       graphDataSales: [],
       graphDataRevenue: [],
       graphType: "Sales",
+
+      // keeps track of whether table or graph should be displayed
+      visualizationType: "Table"
     }
   },
   methods: {
