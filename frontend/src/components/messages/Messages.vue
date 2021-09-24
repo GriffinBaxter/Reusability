@@ -76,6 +76,7 @@ export default {
         this.deletedConversation = conversation.deleted;
         this.conversationIsOpen = true;
         conversation.newMessage = false;
+        this.$emit("updateNotifications")
       }).catch(() => {
         this.toastErrorMessage("Something went wrong")
       })
@@ -113,6 +114,7 @@ export default {
      */
     closeConversation() {
       this.conversationIsOpen = false;
+      this.$emit("updateNotifications")
     },
     /**
      * This method is used to retrieve the conversations for a user.
