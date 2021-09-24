@@ -7,10 +7,16 @@
         <p class="company-name-sub-heading"> - Share & Save - </p>
       </div>
     </div>
-    <div id="password-container" class="container col-xl-5 col-lg-6 col-md-8 col-sm-12 my-2 my-lg-0 mt-4">
+    <div id="password-container"
+         class="container col-xl-5 col-lg-6 col-md-8 col-sm-12 my-2 my-lg-0 mt-4 py-3 px-4"
+    >
 
-      <!--logo, with text-->
-
+      <!--text-->
+      <div class="row">
+        <div class="col">
+          <h3 class="m-4 text-center">Reset Password</h3>
+        </div>
+      </div>
 
       <!--fourth row of form-->
       <div class="row my-lg-2">
@@ -74,7 +80,13 @@
             {{confirmPasswordErrorMsg}}
           </div>
         </div>
+      </div>
 
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-lg float-end my-sm-4 mb-4 green-button"
+                  type="submit" id="loginButton" tabindex="4">Change Password</button>
+        </div>
       </div>
     </div>
   </div>
@@ -163,9 +175,8 @@ export default {
   background-color: #fff;
   border-radius: 1rem;
   box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-  width: 35%;
-  min-width: 30%;
-  max-width: 100px;
+  width: 90vw;
+  max-width: 500px;
 }
 
 </style>
