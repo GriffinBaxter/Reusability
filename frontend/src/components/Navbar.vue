@@ -260,6 +260,7 @@ export default {
       actAsId: null,
       actAs: "",
       currentUser: null,
+      currentBusinessImage: null,
       // navbar required variables
       showNavbar: false,
       isActAsBusiness: false,
@@ -547,6 +548,7 @@ export default {
           }
           if (String(response.businessesAdministered[i].id) === this.actAsId) {
             this.actAs = response.businessesAdministered[i].name;
+            this.currentBusinessImage = response.businessesAdministered[i].businessImages;
             check = true;
             i = response.businessesAdministered.length; // Ends for loop
           }
@@ -602,10 +604,20 @@ export default {
       }, 5);
     },
     getPrimaryImageSrc(currentUser) {
-      if (currentUser != null && currentUser.images.length > 0) {
-        for (let image of currentUser.images) {
-          if (image.isPrimary) {
-            return Api.getServerURL() + "/" + image.thumbnailFilename;
+      if (!this.isActAsBusiness) {
+        if (currentUser != null && currentUser.images.length > 0) {
+          for (let image of currentUser.images) {
+            if (image.isPrimary) {
+              return Api.getServerURL() + "/" + image.thumbnailFilename;
+            }
+          }
+        }
+      } else {
+        if (this.currentBusinessImage != null && this.currentBusinessImage.length > 0) {
+          for (let image of this.currentBusinessImage) {
+            if (image.isPrimary) {
+              return Api.getServerURL() + "/" + image.thumbnailFilename;
+            }
           }
         }
       }
