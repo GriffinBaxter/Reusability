@@ -27,11 +27,11 @@
         <div class="modal-body">
           <div class="row administrators"
                v-for="admin in adminList"
-               v-bind:key="admin.id" style="">
+               v-bind:key="admin.id">
             <div class="col-3">
               <img class="rounded-circle img-fluid user-image"
-                   :src="require('../../../public/sample_business_logo.jpg')"
-                   alt="Profile Image"/>
+                   :src="getPrimaryImageSrc(admin.images)"
+                   alt="Admin Image"/>
             </div>
             <div class="col-9">
               <p style="margin: 0 0 0 0">Name: {{ admin.firstName + " " + admin.lastName }}</p>
@@ -49,7 +49,7 @@
 
 <script>
 import {Modal} from "bootstrap";
-import Api from "@/Api";
+import Api from "../../Api";
 
 export default {
   name: "PrimaryAdminModification",
@@ -77,16 +77,22 @@ export default {
   },
   methods: {
     /**
-     * get SRC if file been given, otherwise return default image SRC
+     * get primary image SRC for a user if given images not null, otherwise return default image SRC
      *
-     * @param filename image file name
-     * @returns {string|*} image address
+     * @param images images for a user
+     * @returns {string|*} primary image address
      */
-    getImageSrc(filename) {
-      if (filename === "") {
+    getPrimaryImageSrc(images) {
+      if (images.length === 0) {
         return require('../../../public/default-image.jpg')
       }
-      return Api.getServerURL() + "/" + filename;
+      try {
+        images.forEach((image) => {
+          if (image.isPrimary) throw (image.thumbnailFilename)
+        })
+      } catch (primaryImage) {
+        return Api.getServerURL() + "/" + primaryImage;
+      }
     },
     /**
      * open modal
@@ -96,7 +102,6 @@ export default {
       // Prevent any default actions
       event.preventDefault();
 
-      // Show the modal
       this.modal.show();
     }
   },

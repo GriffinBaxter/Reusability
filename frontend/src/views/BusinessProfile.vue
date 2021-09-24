@@ -323,7 +323,9 @@ export default {
           this.primaryAdministrator = anUser.firstName + " " + adminMiddleName + " " + anUser.lastName;
         }
 
-        this.adminList.push(anUser);
+        if (anUser.id !== this.primaryAdministratorId) {
+          this.adminList.push(anUser);
+        }
 
         this.nameOfAdministrators.push({
           name: anUser.firstName + " " + adminMiddleName + " " + anUser.lastName,
