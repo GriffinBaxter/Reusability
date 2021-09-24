@@ -189,7 +189,8 @@
             </tbody>
           </table>
           <div v-else>
-            Billie's task 725
+            <h3><strong>Total Sales:</strong> {{ salesReportData[0] ? salesReportData[0].totalSales : "0" }}</h3>
+            <h3><strong>Total Revenue:</strong> {{currencySymbol}}{{ salesReportData[0] ? salesReportData[0].totalRevenue : "0" }} {{currencyCode}}</h3>
           </div>
         </div>
 
@@ -288,7 +289,9 @@ export default {
      */
     applyDate(event) {
       event.preventDefault();
-      if (this.startDate === null || this.endDate === null) {
+      if (this.period !== 'Custom') {
+        this.retrieveSalesReport();
+      } else if (this.startDate === null || this.endDate === null) {
         this.invalidDateMsg = "Please enter two dates"
       } else if (this.isBefore2021(this.startDate) || this.isBefore2021(this.endDate)) {
         this.invalidDateMsg = "Dates must be after 2020"
@@ -430,8 +433,9 @@ export default {
     }
   },
 
-  mounted() {
-    this.setDates(new Date());
+  async mounted() {
+    await this.setDates(new Date());
+    await this.retrieveSalesReport();
   }
 }
 </script>

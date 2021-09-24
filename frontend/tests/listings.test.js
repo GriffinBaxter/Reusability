@@ -124,6 +124,7 @@ describe("Testing the Listing pages methods", () => {
                     $router
                 }
             });
+            listingWrapper.vm.$data.currentListingId = 1;
             await listingWrapper.vm.$nextTick()
         })
 
@@ -137,7 +138,7 @@ describe("Testing the Listing pages methods", () => {
             }
             Api.deleteListing.mockImplementation(() => Promise.resolve(deleteResponse))
 
-            listingWrapper.vm.deleteListing(25)
+            listingWrapper.vm.deleteListing()
             await listingWrapper.vm.$nextTick()
 
             expect(Api.sortListings).toHaveBeenCalled()
@@ -152,7 +153,7 @@ describe("Testing the Listing pages methods", () => {
             }
             Api.deleteListing.mockImplementation(() => Promise.reject(deleteResponse))
 
-            listingWrapper.vm.deleteListing(25)
+            listingWrapper.vm.deleteListing()
             await listingWrapper.vm.$nextTick()
 
             expect(Api.sortListings).toHaveBeenCalled()
@@ -169,7 +170,7 @@ describe("Testing the Listing pages methods", () => {
 
             listingWrapper.vm.$data.businessAdmin = true
 
-            await listingWrapper.vm.deleteListing(25)
+            await listingWrapper.vm.deleteListing()
             await listingWrapper.vm.$nextTick()
 
             expect(listingWrapper.vm.$data.businessAdmin).toBeFalsy()
@@ -183,7 +184,7 @@ describe("Testing the Listing pages methods", () => {
             }
             Api.deleteListing.mockImplementation(() => Promise.reject(deleteResponse))
 
-            await listingWrapper.vm.deleteListing(25)
+            await listingWrapper.vm.deleteListing()
             await listingWrapper.vm.$nextTick()
 
             expect($router.push).toHaveBeenCalled()
@@ -191,4 +192,3 @@ describe("Testing the Listing pages methods", () => {
         })
     })
 })
-

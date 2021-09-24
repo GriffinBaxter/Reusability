@@ -102,6 +102,8 @@ public class UserResource {
 
     /**
      * Attempt to authenticate a user account with a username and password.
+     * Checks that the user has attempts remaining. If the user exceeds three attempts, they are locked from their
+     * account for 1 hour.
      * @param login Login payload
      * @param response HTTP Response
      */
@@ -126,6 +128,7 @@ public class UserResource {
                 HttpStatus.BAD_REQUEST,
                 "Failed login attempt, email or password incorrect"
         );
+
     }
 
     /**

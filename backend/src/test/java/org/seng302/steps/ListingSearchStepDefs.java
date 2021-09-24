@@ -134,7 +134,8 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     "\"businessType\":\"%s\"," +
                     "\"created\":\"%s\"," +
                     "\"currencySymbol\":\"%s\"," +
-                    "\"currencyCode\":\"%s\"}," +
+                    "\"currencyCode\":\"%s\"," +
+                    "\"businessImages\":[]}," +
                     "\"barcode\":\"%s\"}," +
                     "\"quantity\":%d," +
                     "\"pricePerItem\":%.1f," +

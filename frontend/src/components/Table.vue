@@ -59,15 +59,17 @@
     <!-- Table footer -->
     <div :id="`${tableId}-footer-row`" class="row flex-column-reverse flex-lg-row">
       <!-- Showing results out of total results section-->
-      <div class="col-lg" v-if="totalRows > 0">
+      <div class="col-lg"
+           v-if="totalRows > 0 && !hidePagination">
         Showing {{currentPage*maxRowsPerPage+1}}-{{currentPageRows.length+currentPage*maxRowsPerPage}} of {{totalRows}} results
       </div>
-      <div v-else>
+      <div v-else-if="!hidePagination">
         No results found
       </div>
       <!---------------------------------------------- page buttons ------------------------------------------------>
 
-      <div id="page-button-container">
+      <div id="page-button-container"
+           v-if="!hidePagination">
         <PageButtons
             v-bind:totalPages="totalPages"
             v-bind:currentPage="currentPage"
@@ -89,7 +91,7 @@ export default {
     PageButtons,
   },
   props: {
-    // Table ID must be unqiue within the page it is placed!
+    // Table ID must be unique within the page it is placed!
     // This is used to identify the icons per table.
     tableId: {
       type: String,
@@ -178,8 +180,13 @@ export default {
       },
       required: false,
       default() { return null; }
-    }
+    },
 
+    hidePagination: {
+      type: Boolean,
+      required: false,
+      default() { return false}
+    }
 
   },
   data() {

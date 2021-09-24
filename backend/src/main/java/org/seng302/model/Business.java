@@ -74,6 +74,9 @@ public class Business {
     @Column(name = "currencyCode")
     private String currencyCode;
 
+    @OneToMany(mappedBy = "business")
+    private List<BusinessImage> businessImages;
+
     // Values need for validation.
     private static final Integer NAME_MIN_LENGTH = 1;
     private static final Integer NAME_MAX_LENGTH = 100;
@@ -203,6 +206,13 @@ public class Business {
         return currencyCode;
     }
 
+    /**
+     * return a list of BusinessImage object related to the business.
+     * @return business image
+     */
+    public List<BusinessImage> getBusinessImages() {
+        return businessImages;
+    }
 
     /**
      * set id
@@ -284,6 +294,14 @@ public class Business {
     }
 
     /**
+     * set businessImages
+     * @param businessImages business images
+     */
+    public void setBusinessImages(List<BusinessImage> businessImages) {
+        this.businessImages = businessImages;
+    }
+
+    /**
      * Adds a new user as an administrator for this business.
      * Also adds this business to the list of businesses administered by the user.
      * @param user An user which is an administrator for this business.
@@ -355,7 +373,8 @@ public class Business {
                 businessType,
                 created,
                 currencySymbol,
-                currencyCode
+                currencyCode,
+                businessImages
         );
     }
 
