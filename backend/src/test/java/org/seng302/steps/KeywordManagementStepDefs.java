@@ -55,6 +55,10 @@ public class KeywordManagementStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private KeywordNotificationRepository keywordNotificationRepository;
 
+    @Autowired
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -74,7 +78,7 @@ public class KeywordManagementStepDefs extends CucumberSpringConfiguration {
         keywordRepository = mock(KeywordRepository.class);
 
         this.keywordMVC = MockMvcBuilders.standaloneSetup(new KeywordResource(keywordRepository, userRepository, keywordNotificationRepository)).build();
-        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
     }
 
     @Given("I am already logged in.")
