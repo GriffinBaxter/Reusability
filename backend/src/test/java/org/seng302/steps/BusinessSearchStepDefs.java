@@ -59,6 +59,10 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private AddressRepository addressRepository;
 
+    @Autowired
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
+
     private Address address1;
     private User user1;
 
@@ -171,7 +175,7 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
 
         this.businessMVC = MockMvcBuilders.standaloneSetup(new BusinessResource(
                 businessRepository, userRepository, addressRepository)).build();
-        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
     }
 
     /* ------------------------------------------AC2------------------------------------------ */
