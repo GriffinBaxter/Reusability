@@ -258,6 +258,14 @@ const routes = [
         component: () => import('../views/Sales')
     },
     {
+        path: '/resetPassword',
+        name: "ResetPassword",
+        meta: {
+            title: 'Reset Password'
+        },
+        component: () => import('../views/ResetPassword')
+    },
+    {
         path: '*',
         name: 'catchAll',
         component: () => import('../views/Login')
@@ -270,7 +278,7 @@ const router = new VueRouter({
     routes
 })
 router.beforeEach((to, from, next) => {
-    if(to.name !== "Login" && to.name !== "Registration") {
+    if(to.name !== "Login" && to.name !== "Registration" && to.name !== "ResetPassword") {
         if (!Cookies.get('userID')) {
             next({ name: "Login"});
         } else {
