@@ -175,7 +175,7 @@
               </label>
             </div>
 
-            <div class="btn-group col-xl-2 d-inline-block p-2" role="group">
+            <div class="btn-group col-xl-2 d-inline-block p-2 me-3" role="group">
               <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
                       data-bs-toggle="dropdown" aria-expanded="false" id="visualization-button">{{ visualizationType }}
               </button>
