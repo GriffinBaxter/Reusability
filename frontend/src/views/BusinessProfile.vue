@@ -146,12 +146,14 @@
 
             <div class="col">
               <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
-                <button class="btn green-button mt-4 mx-2" id="InventoryButton"
+                <button class="btn green-button mt-4 mx-2" id="inventoryButton"
                         @click="navigateTo('Inventory')" tabindex="0">Inventory
                 </button>
-                <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
+                <button class="btn green-button mt-4 mx-2" id="productCatalogueButton"
                         @click="navigateTo('ProductCatalogue')" tabindex="0">Product Catalogue
-
+                </button>
+                <button class="btn green-button float-end mt-4 mx-2" id="salesButton"
+                        @click="navigateTo('Sales')" tabindex="0">Sales
                 </button>
               </div>
             </div>
