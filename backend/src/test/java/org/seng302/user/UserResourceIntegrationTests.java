@@ -326,6 +326,7 @@ class UserResourceIntegrationTests {
         assertThat(response.getCookie("JSESSIONID")).isNotNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(user.isLocked()).isFalse();
     }
 
     /**
@@ -351,6 +352,35 @@ class UserResourceIntegrationTests {
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
         assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(user.isLocked()).isTrue();
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when the user exists and this is their third failed attempt
+     * of logging in and their account gets locked.
+     */
+    @Test
+    void cantLoginWhenUserExistsButThirdFailedLoginAttempt() throws Exception {
+        // given
+        expectedJson = "";
+        user.setRemainingLoginAttempts(1);
+        user.setTimeWhenUnlocked(null);
+
+        // when
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.save(any(User.class))).thenReturn(user); // after using third attempt
+        when(userRepository.save(any(User.class))).thenReturn(user); // after locking
+
+        response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, user.getEmail(), "asbhash")))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(user.isLocked()).isTrue();
     }
 
     /**

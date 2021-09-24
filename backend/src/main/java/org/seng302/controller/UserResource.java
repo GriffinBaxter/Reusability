@@ -139,9 +139,6 @@ public class UserResource {
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
                 logger.info("Successful Login - 200 [OK] - User Id: {}", user.getId());
-
-                System.out.println(new UserIdPayload(user.getId()));
-
                 return ResponseEntity.status(HttpStatus.OK).body(new UserIdPayload(user.getId()));
 
                 // User either does not exist or the password is incorrect
