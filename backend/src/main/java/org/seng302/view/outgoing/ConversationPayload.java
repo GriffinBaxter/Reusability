@@ -22,6 +22,8 @@ public class ConversationPayload {
     private String created;
     private boolean deletedByInstigator;
     private boolean deletedByReceiver;
+    private boolean readByInstigator;
+    private boolean readByReceiver;
 
     /**
      * Constructor for conversation payloads.
@@ -43,7 +45,9 @@ public class ConversationPayload {
             MarketplaceCard marketplaceCard,
             LocalDateTime created,
             boolean deletedByInstigator,
-            boolean deletedByReceiver
+            boolean deletedByReceiver,
+            boolean readByInstigator,
+            boolean readByReceiver
     ) {
         this.id = id;
         this.instigatorId = instigator.getId();
@@ -61,6 +65,8 @@ public class ConversationPayload {
         this.created = created.toString();
         this.deletedByInstigator = deletedByInstigator;
         this.deletedByReceiver = deletedByReceiver;
+        this.readByInstigator = readByInstigator;
+        this.readByReceiver = readByReceiver;
     }
 
     public int getId() {
@@ -107,6 +113,10 @@ public class ConversationPayload {
 
     public boolean getDeletedByReceiver() { return deletedByReceiver; }
 
+    public boolean getReadByInstigator() { return readByInstigator; }
+
+    public boolean getReadByReceiver() { return readByReceiver; }
+
     /**
      * An override of the toString method for debugging and testing purposes.
      * @return String representation of the conversation payload.
@@ -125,6 +135,8 @@ public class ConversationPayload {
                 ",\"marketplaceCardTitle\":\"" + marketplaceCardTitle + "\"" +
                 ",\"created\":\"" + created + "\"" +
                 ",\"deletedByInstigator\":" + deletedByInstigator +
-                ",\"deletedByReceiver\":" + deletedByReceiver + "}";
+                ",\"deletedByReceiver\":" + deletedByReceiver +
+                ",\"readByInstigator\":" + readByInstigator +
+                ",\"readByReceiver\":" + readByReceiver + "}";
     }
 }
