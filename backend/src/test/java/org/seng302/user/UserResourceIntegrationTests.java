@@ -300,6 +300,8 @@ class UserResourceIntegrationTests {
 
     }
 
+    //************************************************ loginUser tests *************************************************
+
     /**
      * Tests that an OK status is received when sending a login payload to the /login API endpoint
      * that contains an email that belongs to an existing user as well as the correct password

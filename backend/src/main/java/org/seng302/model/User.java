@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javax.persistence.*;
@@ -841,7 +840,7 @@ public class User {
      * Checks if the user's account can be unlocked.
      * @return true if the account can be unlocked, false otherwise.
      */
-    public Boolean canUnlock() {
+    public boolean canUnlock() {
         LocalDateTime currentTime = LocalDateTime.now();
         return currentTime.isAfter(this.timeWhenUnlocked);
     }
@@ -859,6 +858,15 @@ public class User {
     public void unlockAccount() {
         this.timeWhenUnlocked = null;
         this.remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
+    }
+
+    //TODO: write two tests for this
+    /**
+     * Determines whether the account is locked
+     * @return Boolean, true if account is locked, otherwise false
+     */
+    public boolean isLocked() {
+        return this.timeWhenUnlocked != null;
     }
 
 }

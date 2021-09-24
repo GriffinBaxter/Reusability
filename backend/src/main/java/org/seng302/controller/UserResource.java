@@ -90,6 +90,7 @@ public class UserResource {
 
     /**
      * Gets a unique session UUID, by generating until a session token is generated that does not already exist.
+     *
      * @return Unique session UUID
      */
     public String getUniqueSessionUUID() {
@@ -104,54 +105,65 @@ public class UserResource {
      * Attempt to authenticate a user account with a username and password.
      * Checks that the user has attempts remaining. If the user exceeds three attempts, they are locked from their
      * account for 1 hour.
-     * @param login Login payload
+     *
+     * @param login    Login payload
      * @param response HTTP Response
      */
     @PostMapping("/login")
     public UserIdPayload loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
 
-        Optional<User> user = userRepository.findByEmail(login.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmail(login.getEmail());
 
-        // User exists and if they are locked out and the lock period has finished, then unlock account
-        if (user.isPresent() && user.get().canUnlock()) {
-            user.get().unlockAccount();
-            userRepository.save(user.get());
-        }
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
 
-        // User exists and they have no login attempts left, then says locked
-        if (user.isPresent() && !user.get().hasLoginAttemptsRemaining()) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Exceeded login attempts. Please try again in 1 hour."
-            );
+            // Check if account locked
+            if (user.isLocked()) {
+                if (user.canUnlock()) {
+                    user.unlockAccount();
+                    userRepository.save(user);
+                } else {
+                    throw new ResponseStatusException(
+                            HttpStatus.FORBIDDEN,
+                            "Exceeded login attempts. Please try again in 1 hour."
+                    );
+                }
 
-        // User exists and password is correct
-        } else if (user.isPresent() && (user.get().verifyPassword(login.getPassword()))) {
-            String sessionUUID = getUniqueSessionUUID();
+                // User exists, account not locked and password is correct
+            } else if (user.verifyPassword(login.getPassword())) {
+                String sessionUUID = getUniqueSessionUUID();
 
-            user.get().setSessionUUID(sessionUUID);
-            userRepository.save(user.get());
+                user.setSessionUUID(sessionUUID);
+                userRepository.save(user);
 
-            ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
-            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+                ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
+                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-            logger.info("Successful Login - User Id: {}", user.get().getId());
-            return new UserIdPayload(user.get().getId());
+                logger.info("Successful Login - User Id: {}", user.getId());
+                return new UserIdPayload(user.getId());
 
-        // User either does not exist or the password is incorrect
-        } else {
-            user.get().useAttempt();
-            userRepository.save(user.get());
-            // Lock account if used up all login attempts
-            if (!user.get().hasLoginAttemptsRemaining()) {
-                user.get().lockAccount();
-                userRepository.save(user.get());
+                // User either does not exist or the password is incorrect
+            } else {
+
+                user.useAttempt();
+                userRepository.save(user);
+                // Lock account if used up all login attempts
+                if (!user.hasLoginAttemptsRemaining()) {
+                    user.lockAccount();
+                    userRepository.save(user);
+                }
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Failed login attempt, email or password incorrect"
+                );
             }
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Failed login attempt, email or password incorrect"
-            );
+
         }
+
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Failed login attempt, email or password incorrect"
+        );
     }
 
     /**
@@ -171,6 +183,11 @@ public class UserResource {
         }
     }
 
+    /**
+     * Extracts the address parts of the given address
+     * @param addressPayload The address to separate into address parts
+     * @return address The Address created from the addressPayload
+     */
     private Address extractAddress(AddressPayload addressPayload) {
         Address address;
         try {
