@@ -113,15 +113,15 @@
               <div class="col my-2 my-lg-0">
                 <h6>Password must meet the following conditions:</h6>
                 <ul>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase, passwordWasTyped)">
                     One lowercase letter</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase, passwordWasTyped)">
                     One uppercase letter</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainNumber)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainNumber, passwordWasTyped)">
                     One number</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol, passwordWasTyped)">
                     One of the following: !, @, #, $, %, ^, & and or*</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainLength)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLength, passwordWasTyped)">
                     At least 8 characters in length</li>
                 </ul>
               </div>
@@ -342,6 +342,7 @@ import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 import {isValidDateOfBirth} from "./helpFunction";
 import {toggleInvalidClass} from "../validationUtils";
+import {checkPasswordCriteria, togglePasswordInputType} from "../../src/passwordUtil";
 
 export default {
   name: "Registration",
@@ -439,37 +440,8 @@ export default {
   methods: {
 
     toggleInvalidClass: toggleInvalidClass,
-
-    /**
-     * This method toggles the appearance of the password field, where the password will be shown if showPassword is
-     * true, else it is hidden.
-     * @param showPassword, whether the password should be displayed.
-     * @returns {string}, String, the visibility of the password.
-     */
-    togglePasswordInputType(showPassword) {
-      if (showPassword) {
-        return 'text'
-      } else {
-        return 'password'
-      }
-    },
-
-    /**
-     * This method checks the password against the given criteria and determines whether it meets the criteria.
-     * If it does, the colour is changed from black to red.
-     *
-     * @param password, string, the current input of the password field.
-     * @param regex, string, the password criteria that the password is checked against.
-     * @returns {[string]}, classList, a List containing a String of classes for the password criteria to used.
-     */
-    checkPasswordCriteria(password, regex) {
-
-      let classList = ['small']
-      if (!regex.test(password) && this.passwordWasTyped) {
-        classList.push('text-red');
-      }
-      return classList;
-    },
+    togglePasswordInputType: togglePasswordInputType,
+    checkPasswordCriteria: checkPasswordCriteria,
 
     /**
      * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
