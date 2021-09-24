@@ -88,6 +88,11 @@ public class Conversation {
         this.readByReceiver = false;
     }
 
+    // Used for integration testing
+    public boolean getReadByInstigator() { return this.readByInstigator; }
+    public boolean getReadByReceiver() { return this.readByReceiver; }
+
+
     /**
      * Converts the Conversation into its payload representation to be sent to the frontend.
      * @return ConversationPayload object representing the conversation.
