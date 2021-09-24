@@ -860,7 +860,6 @@ public class User {
         this.remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
     }
 
-    //TODO: write two tests for this
     /**
      * Determines whether the account is locked
      * @return Boolean, true if account is locked, otherwise false

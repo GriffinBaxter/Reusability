@@ -1677,6 +1677,26 @@ class UserTests {
         Assertions.assertFalse(user.hasLoginAttemptsRemaining());
     }
 
+    // ********************************* isLocked() method tests ************************************
+
+    /**
+     * Test that isLocked returns false when the account is not locked.
+     */
+    @Test
+    void testIsLocked_NotLocked_ReturnsFalse() {
+        user.setTimeWhenUnlocked(null);
+        Assertions.assertFalse(user.isLocked());
+    }
+
+    /**
+     * Test that isLocked returns true when the account is locked.
+     */
+    @Test
+    void testIsLocked_Locked_ReturnsTrue() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusMinutes(29));
+        Assertions.assertTrue(user.isLocked());
+    }
+
     // ********************************* canUnlock() method tests ************************************
 
     /**
