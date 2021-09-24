@@ -20,15 +20,12 @@ import org.seng302.view.incoming.UserIdPayload;
 import org.seng302.view.incoming.UserLoginPayload;
 import org.seng302.view.incoming.UserProfileModifyPayload;
 import org.seng302.view.incoming.UserRegistrationPayload;
-import org.seng302.view.outgoing.AddressPayload;
+import org.seng302.view.outgoing.*;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
 import org.seng302.model.repository.UserRepository;
-import org.seng302.view.outgoing.UserPayload;
-import org.seng302.view.outgoing.UserPayloadParent;
-import org.seng302.view.outgoing.UserPayloadSecure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -110,7 +107,7 @@ public class UserResource {
      * @param response HTTP Response
      */
     @PostMapping("/login")
-    public UserIdPayload loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
+    public ResponseEntity<UserIdPayload> loginUser(@RequestBody UserLoginPayload login, HttpServletResponse response) {
 
         Optional<User> optionalUser = userRepository.findByEmail(login.getEmail());
 
@@ -123,14 +120,16 @@ public class UserResource {
                     user.unlockAccount();
                     userRepository.save(user);
                 } else {
+                    logger.error("Login Failure - 403 [FORBIDDEN] - Cannot unlock account");
                     throw new ResponseStatusException(
                             HttpStatus.FORBIDDEN,
                             "Exceeded login attempts. Please try again in 1 hour."
                     );
                 }
+            }
 
                 // User exists, account not locked and password is correct
-            } else if (user.verifyPassword(login.getPassword())) {
+            if (user.verifyPassword(login.getPassword())) {
                 String sessionUUID = getUniqueSessionUUID();
 
                 user.setSessionUUID(sessionUUID);
@@ -139,8 +138,11 @@ public class UserResource {
                 ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-                logger.info("Successful Login - User Id: {}", user.getId());
-                return new UserIdPayload(user.getId());
+                logger.info("Successful Login - 200 [OK] - User Id: {}", user.getId());
+
+                System.out.println(new UserIdPayload(user.getId()));
+
+                return ResponseEntity.status(HttpStatus.OK).body(new UserIdPayload(user.getId()));
 
                 // User either does not exist or the password is incorrect
             } else {
@@ -152,6 +154,8 @@ public class UserResource {
                     user.lockAccount();
                     userRepository.save(user);
                 }
+
+                logger.error("Login Failure - 400 [BAD_REQUEST] - Email or password incorrect");
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Failed login attempt, email or password incorrect"

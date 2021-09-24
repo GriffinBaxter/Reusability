@@ -300,7 +300,58 @@ class UserResourceIntegrationTests {
 
     }
 
-    //************************************************ loginUser tests *************************************************
+    //********************************************** POST /login tests *************************************************
+
+    /**
+     * Tests that a FORBIDDEN status is received when the user exists but their account is locked due to exceeding
+     * the maximum number of attempts.
+     */
+    @Test
+    void canLoginWhenUserExistsAndAccountWasLockedAndCanUnlockAndPasswordCorrect() throws Exception {
+        // given
+        expectedJson = String.format(expectedUserIdJson, user.getId());
+        user.setRemainingLoginAttempts(0);
+        user.setTimeWhenUnlocked(LocalDateTime.now().minusMinutes(70));
+
+        // when
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getCookie("JSESSIONID")).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when the user exists but their account is locked due to exceeding
+     * the maximum number of attempts.
+     */
+    @Test
+    void cantLoginWhenUserExistsButAccountIsLockedAndCannotUnlockYet() throws Exception {
+        // given
+        expectedJson = "";
+        user.setRemainingLoginAttempts(0);
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusHours(1));
+
+        // when
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
 
     /**
      * Tests that an OK status is received when sending a login payload to the /login API endpoint
@@ -308,6 +359,11 @@ class UserResourceIntegrationTests {
      */
     @Test
     void canLoginWhenUserExistsAndPasswordCorrect() throws Exception {
+        // given
+        expectedJson = String.format(expectedUserIdJson, user.getId());
+        user.setRemainingLoginAttempts(3);
+        user.setTimeWhenUnlocked(null);
+
         // when
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/login")
@@ -316,10 +372,10 @@ class UserResourceIntegrationTests {
                 .andReturn().getResponse();
 
         // then
-        assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
-        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
-        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(28800);
+
+        assertThat(response.getCookie("JSESSIONID")).isNotNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /**
@@ -364,6 +420,9 @@ class UserResourceIntegrationTests {
         assertThat(response.getCookie("JSESSIONID")).isNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    //********************************************* POST /logout tests *************************************************
+
 
     /**
      * Tests that an OK status is received when making a POST to the /logout API endpoint
