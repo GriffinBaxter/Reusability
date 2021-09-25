@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 
-import {describe, expect, test} from "@jest/globals";
+import {describe, expect, jest, test} from "@jest/globals";
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import ProfileHeader from "../src/components/ProfileHeader";
 import VueRouter from 'vue-router';
@@ -574,6 +574,126 @@ describe("Testing the search type functionality", () => {
                 searchBar.trigger('keydown.escape');
 
                 expect(router.currentRoute.name).toBe('Profile')
+            });
+        });
+    });
+
+    describe("Search using enter triggering current route and target route comparison", () => {
+
+        let profileHeaderWrapper;
+        let $router;
+        let $route;
+
+        beforeAll(() => {
+            $router = {
+                push: jest.fn()
+            };
+            $route = {
+                name: "Search",
+                query: {
+                    type: 'Business',
+                    searchQuery: 'Hello World',
+                    businessType: 'Retail Trade'
+                }
+            };
+            profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router,
+                    $route
+                }
+            });
+        });
+
+        test('Testing pressing enter when searchType is Business, route businessType equals selectedBusinessType' +
+            'and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'Business';
+            profileHeaderWrapper.vm.selectedBusinessType = 'Retail Trade';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchBar = profileHeaderWrapper.find('#search-bar');
+                searchBar.trigger('keydown.enter');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
+            });
+        });
+
+        test('Testing pressing enter when searchType is User and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'User';
+            profileHeaderWrapper.vm.$route.query.type = 'User';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchBar = profileHeaderWrapper.find('#search-bar');
+                searchBar.trigger('keydown.enter');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
+            });
+        });
+    });
+
+    describe("Search using enter triggering current route and target route comparison", () => {
+
+        let profileHeaderWrapper;
+        let $router;
+        let $route;
+
+        beforeAll(() => {
+            $router = {
+                push: jest.fn()
+            };
+            $route = {
+                name: "Search",
+                query: {
+                    type: 'Business',
+                    searchQuery: 'Hello World',
+                    businessType: 'Retail Trade'
+                }
+            };
+            profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router,
+                    $route
+                }
+            });
+        });
+
+        test('Testing clicking the search button when searchType is Business, route businessType equals selectedBusinessType' +
+            'and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'Business';
+            profileHeaderWrapper.vm.selectedBusinessType = 'Retail Trade';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchButton = profileHeaderWrapper.find('#search-button');
+                searchButton.trigger('click');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
+            });
+        });
+
+        test('Testing clicking the search button when searchType is User and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'User';
+            profileHeaderWrapper.vm.$route.query.type = 'User';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchButton = profileHeaderWrapper.find('#search-button');
+                searchButton.trigger('click');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
             });
         });
     });

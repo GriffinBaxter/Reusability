@@ -18,7 +18,7 @@
     </div>
 
     <div v-if="searchType === 'Business'" id="business-type-combo-box-container" class="col" style="margin-bottom: 10px;">
-      <label style="padding-left: 12px; padding-right: 10px;" for="business-type-combo-box">Business Type:</label>
+      <label style="padding-left: 13px; padding-right: 10px;" for="business-type-combo-box">Business Type:</label>
       <select id="business-type-combo-box" name="business-type" v-model="selectedBusinessType">
         <option value="Any" id="default-option">Any</option>
         <option v-for="option in businessTypes" :id="option.businessType" :key="option.businessType" :value="option.value">
