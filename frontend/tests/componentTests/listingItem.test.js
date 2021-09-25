@@ -24,7 +24,8 @@ describe("Testing the listing item functionality", () => {
                 fullCloseDate: "2022-10-20T00:00",
                 expires: "20th October 2022",
                 images: [],
-                isAdmin: true
+                isAdmin: true,
+                listingId: 1
             }
         });
     });

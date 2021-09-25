@@ -46,6 +46,7 @@ describe('Tests for admin rights methods.', () => {
                 "businessesAdministered": [
                     null
                 ],
+                "images": [],
                 "dateOfBirth": "2000-02-02",
                 "phoneNumber": "0271316",
                 "homeAddress": {
@@ -142,6 +143,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
                 "businessesAdministered": [
                     null
                 ],
+                "images": [],
                 "dateOfBirth": "2000-02-02",
                 "phoneNumber": "0271316",
                 "homeAddress": {
@@ -251,6 +253,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
             "businessesAdministered": [
                 null
             ],
+            "images": [],
             "dateOfBirth": "2000-02-02",
             "phoneNumber": "0271316",
             "homeAddress": {
@@ -304,6 +307,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
                     "created": "2021-09-08T21:22:53.130650"
                 }
             ],
+            "images": [],
             "dateOfBirth": "2000-02-02",
             "phoneNumber": "0271316",
             "homeAddress": {
@@ -328,5 +332,52 @@ describe('Tests for miscellaneous Navbar methods', () => {
         expect(wrapper.emitted().getLinkBusinessAccount).toBeTruthy();
     })
 
+    test("Tests the getPrimaryImageSrc method returns the primary image when acting as a user.", () => {
+        const currentUser = {
+            images: [
+                {
+                    isPrimary: false,
+                    thumbnailFilename: "incorrectImage1"
+                },
+                {
+                    isPrimary: true,
+                    thumbnailFilename: "primaryImage"
+                },
+                {
+                    isPrimary: false,
+                    thumbnailFilename: "incorrectImage2"
+                },
+            ],
+        }
 
+        wrapper.vm.isActAsBusiness = false;
+
+        const primaryImageSrc = wrapper.vm.getPrimaryImageSrc(currentUser);
+
+        expect(primaryImageSrc).toContain(currentUser.images[1].thumbnailFilename);
+    })
+
+    test("Tests the getPrimaryImageSrc method returns the primary image when acting as a business.", () => {
+        const currentBusinessImage = [
+            {
+                isPrimary: false,
+                thumbnailFilename: "incorrectImage1"
+            },
+            {
+                isPrimary: true,
+                thumbnailFilename: "primaryImage"
+            },
+            {
+                isPrimary: false,
+                thumbnailFilename: "incorrectImage2"
+            },
+        ]
+
+        wrapper.vm.isActAsBusiness = true;
+        wrapper.vm.currentBusinessImage = currentBusinessImage;
+
+        const primaryImageSrc = wrapper.vm.getPrimaryImageSrc();
+
+        expect(primaryImageSrc).toContain(currentBusinessImage[1].thumbnailFilename);
+    })
 })

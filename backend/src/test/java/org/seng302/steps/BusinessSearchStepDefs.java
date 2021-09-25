@@ -91,7 +91,8 @@ public class BusinessSearchStepDefs extends CucumberSpringConfiguration {
             "\"businessType\":\"%s\"," +
             "\"created\":\"%s\","+
             "\"currencySymbol\":\"%s\"," +
-            "\"currencyCode\":\"%s\"" +
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":[]" +
             "}";
 
     private final String expectedAdministratorJson = "[{\"id\":%d," +

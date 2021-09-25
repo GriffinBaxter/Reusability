@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,6 +60,8 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
 
     private String currentEmail;
     private String currentPassword;
+
+    private LocalDateTime lockedTime;
 
     @Before
     public void createMockMvc() {
@@ -219,6 +223,47 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
 
         Optional<User> findUser = userRepository.findByEmail(currentEmail);
         assertThat(findUser.get().getPassword()).isNotEqualTo(currentPassword);
+
+    }
+
+    @Given("The user has tried unsuccessfully to login {int} times")
+    public void the_user_has_tried_unsuccessfully_to_login_times(Integer attempts) {
+        user.setRemainingLoginAttempts(3 - attempts);
+        user.setTimeWhenUnlocked(null);
+
+        assertThat(user.isLocked()).isFalse();
+        assertThat(user.getTimeWhenUnlocked()).isNull();
+    }
+
+    @When("They try to login with the incorrect password {string}")
+    public void they_try_to_login_with_the_incorrect_password(String incorrectPassword) throws Exception {
+        String expectedJson= "";
+
+        MockHttpServletResponse response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, user.getEmail(), incorrectPassword)))
+                .andReturn().getResponse();
+
+        lockedTime = LocalDateTime.now();
+
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Then("Their account is locked for {int} hour")
+    public void their_account_is_locked_for_hour(Integer hoursLockedFor) {
+        LocalDateTime whenLocked = lockedTime.truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime whenUnlocked = user.getTimeWhenUnlocked().truncatedTo(ChronoUnit.MINUTES);
+
+        assertThat(user.isLocked()).isTrue();
+        assertThat(whenUnlocked).isEqualTo(whenLocked.plusHours(1));
+    }
+
+    @Given("Their account is locked")
+    public void their_account_is_locked() {
+        user.setRemainingLoginAttempts(0);
+        user.setTimeWhenUnlocked(LocalDateTime.now().minusMinutes(1));
 
     }
 

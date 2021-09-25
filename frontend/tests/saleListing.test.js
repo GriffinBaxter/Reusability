@@ -79,7 +79,9 @@ let response = {
                         suburb: null
                     },
                     businessType: "RETAIL_TRADE",
-                    created: "2021-02-12T00:00"
+                    created: "2021-02-12T00:00",
+                    currencySymbol: "$",
+                    currencyCode: "NZD",
                 },
                 barcode: null
             },
@@ -102,13 +104,13 @@ let response = {
 
 }
 
-let roleResponse = {
-    response: {
-        status: 200,
-        data: {
-            role: "USER"
-        }
+const roleResponse = {
+
+    status: 200,
+    data: {
+       role: "USER"
     }
+
 }
 
 beforeEach(() => {
@@ -1003,6 +1005,17 @@ describe("Test delete button", () => {
     test("Test delete button doesn't appear when user is acting as a different business", async () => {
         Cookies.get.mockReturnValueOnce("1");
         Cookies.get.mockReturnValueOnce("2");
+        wrapper = shallowMount(listing, {
+            localVue,
+        });
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find(".delete-button").exists()).toBe(false);
+    })
+
+    test("Test delete button doesn't appear when ActAs cookie is not a valid number", async () => {
+        Cookies.get.mockReturnValueOnce("1");
+        Cookies.get.mockReturnValueOnce("Not a Number");
         wrapper = shallowMount(listing, {
             localVue,
         });
