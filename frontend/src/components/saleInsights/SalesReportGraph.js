@@ -21,14 +21,19 @@ export default {
       type: String,
       required: false,
       default: ""
+    },
+    mock: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   watch: {
     labelList() {
-      this.renderBarChart();
+      this.renderBarChart(!this.mock);
     },
     dataList() {
-      this.renderBarChart();
+      this.renderBarChart(!this.mock);
     },
   },
   computed: {
@@ -45,51 +50,52 @@ export default {
         return "Revenue";
       }
     },
-  }
-  ,
+  },
   methods: {
     currencyRevenue(value) {
       return this.currencySymbol + value;
     },
-    renderBarChart() {
-      this.renderChart({
-        labels: this.labels,
-        datasets: [
-          {
-            label: this.label,
-            data: this.data,
-            fill: false,
-            borderColor: '#00B88F',
-            backgroundColor: '#00B88F',
-            borderWidth: 1
-          }
-        ]
-      }, {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-              callback: this.currencyRevenue
-            },
-            gridLines: {
-              display: true
+    renderBarChart(render) {
+      if (render) {
+        this.renderChart({
+          labels: this.labels,
+          datasets: [
+            {
+              label: this.label,
+              data: this.data,
+              fill: false,
+              borderColor: '#00B88F',
+              backgroundColor: '#00B88F',
+              borderWidth: 1
             }
-          }],
-          xAxes: [ {
-            gridLines: {
-              display: false
-            }
-          }]
-        },
-        legend: {
-          display: false
-        },
-        responsive: true,
-        maintainAspectRatio: false
-      })
+          ]
+        }, {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                callback: this.currencyRevenue
+              },
+              gridLines: {
+                display: true
+              }
+            }],
+            xAxes: [ {
+              gridLines: {
+                display: false
+              }
+            }]
+          },
+          legend: {
+            display: false
+          },
+          responsive: true,
+          maintainAspectRatio: false
+        })
+      }
     }
   },
   mounted () {
-    this.renderBarChart();
+    this.renderBarChart(!this.mock);
   }
 }
