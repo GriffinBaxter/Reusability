@@ -1,13 +1,3 @@
-/**
- * Summary. This file contains the definition for the UserResource.
- * <p>
- * Description. This file contains the defintion for the UserResource.
- *
- * @link team-400/src/main/java/org/seng302/user/UserResource
- * @file This file contains the definition for UserResource.
- * @author team-400.
- * @since 5.5.2021
- */
 package org.seng302.controller;
 
 import org.seng302.exceptions.IllegalAddressArgumentException;
@@ -52,6 +42,17 @@ import java.util.Optional;
 import static org.seng302.Authorization.*;
 import static org.seng302.model.enums.Role.*;
 
+/*
+ * Summary. This file contains the definition for the UserResource.
+ * <p>
+ * Description. This file contains the definition for the UserResource.
+ *
+ * @link team-400/src/main/java/org/seng302/user/UserResource
+ * @file This file contains the definition for UserResource.
+ * @author team-400.
+ * @since 5.5.2021
+ */
+
 /**
  * UserResource class. This class includes:
  * POST "/login" endpoint used to allow a user to login.
@@ -83,6 +84,14 @@ public class UserResource {
     private static final String HTTP_NOT_ACCEPTABLE_MESSAGE = "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
             "for example trying to access a resource by an ID that does not exist.";
 
+    private static final String NO_USER_PERMISSION = "User does not have permission to perform action.";
+
+    private static final String HTTP_FORBIDDEN_MESSAGE = "The user does not have permission to perform the requested action";
+
+    private static final String REGISTRATION_ERROR_MESSAGE = "Registration Failure - %s";
+
+    private static final String REGISTRATION_ERROR_MESSAGE_EMAIL = "Registration Failure - Email already in use %s";
+
     public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
@@ -105,7 +114,6 @@ public class UserResource {
      * Attempt to authenticate a user account with a username and password.
      * Checks that the user has attempts remaining. If the user exceeds three attempts, they are locked from their
      * account for 1 hour.
-     *
      * @param login    Login payload
      * @param response HTTP Response
      */
@@ -229,7 +237,7 @@ public class UserResource {
                 addressRepository.save(address);
             }
         } catch (IllegalAddressArgumentException e) {
-            logger.error("Registration Failure - {}", e.getMessage());
+            logger.error(String.format(REGISTRATION_ERROR_MESSAGE, e.getMessage()));
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     e.getMessage()
@@ -247,7 +255,8 @@ public class UserResource {
             @RequestBody UserRegistrationPayload registration, HttpServletResponse response
     ) {
         if (userRepository.findByEmail(registration.getEmail()).isPresent()) {
-            logger.error("Registration Failure - Email already in use {}", registration.getEmail());
+            String errorString = String.format(REGISTRATION_ERROR_MESSAGE_EMAIL, registration.getEmail());
+            logger.error(errorString);
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Email address already in use"
@@ -281,7 +290,7 @@ public class UserResource {
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserIdPayload(createdUser.getId()));
 
         } catch (IllegalUserArgumentException e) {
-            logger.error("Registration Failure - {}", e.getMessage());
+            logger.error(String.format(REGISTRATION_ERROR_MESSAGE, e.getMessage()));
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     e.getMessage()
@@ -508,10 +517,10 @@ public class UserResource {
                 userRepository.saveAndFlush(selectedUser);
                 logger.info("User with Id: {} is now GAA.", selectedUser.getId());
             } else {
-                logger.error("User does not have permission to perform action.");
+                logger.error(NO_USER_PERMISSION);
                 throw new ResponseStatusException(
                         HttpStatus.FORBIDDEN,
-                        "The user does not have permission to perform the requested action"
+                        HTTP_FORBIDDEN_MESSAGE
                 );
             }
         }
@@ -542,10 +551,10 @@ public class UserResource {
                 userRepository.saveAndFlush(selectedUser);
                 logger.info("User with Id: {} is now USER.", selectedUser.getId());
             } else {
-                logger.error("User does not have permission to perform action.");
+                logger.error(NO_USER_PERMISSION);
                 throw new ResponseStatusException(
                         HttpStatus.FORBIDDEN,
-                        "The user does not have permission to perform the requested action"
+                        HTTP_FORBIDDEN_MESSAGE
                 );
             }
         }
@@ -561,7 +570,8 @@ public class UserResource {
     private User updateUserInfo(User currentUser, User selectedUser, UserProfileModifyPayload userProfileModifyPayload) {
         String newEmailAddress = userProfileModifyPayload.getEmail();
         if (userRepository.findByEmail(newEmailAddress).isPresent() && !selectedUser.getEmail().equals(newEmailAddress)) {
-            logger.error("Registration Failure - {}", "Email address used");
+            String errorString = String.format(REGISTRATION_ERROR_MESSAGE, "Email address used");
+            logger.error(errorString);
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "The Email already been used."
@@ -599,7 +609,7 @@ public class UserResource {
                 }
             }
         } catch (IllegalUserArgumentException e) {
-            logger.error("Registration Failure - {}", e.getMessage());
+            logger.error(String.format(REGISTRATION_ERROR_MESSAGE, e.getMessage()));
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     e.getMessage()
@@ -656,10 +666,10 @@ public class UserResource {
         logger.debug("Selected user (ID: {}) retrieve successfully.", selectedUser.getId());
 
         if (selectedUser.getId() != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
-            logger.error("User does not have permission to perform action.");
+            logger.error(NO_USER_PERMISSION);
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "The user does not have permission to perform the requested action"
+                    HTTP_FORBIDDEN_MESSAGE
             );
         }
 
