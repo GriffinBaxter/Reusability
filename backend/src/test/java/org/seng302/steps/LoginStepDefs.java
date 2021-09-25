@@ -262,13 +262,4 @@ public class LoginStepDefs extends CucumberSpringConfiguration {
 
     }
 
-    @When("They try to login with the correct password {string}")
-    public void they_try_to_login_with_the_correct_password(String correctPassword) throws Exception {
-
-        MockHttpServletResponse response = mvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(String.format(loginPayloadJson, user.getEmail(), correctPassword)))
-                .andReturn().getResponse();
-    }
-
 }
