@@ -2,16 +2,19 @@
   <div>
 
     <div id="main">
-    <!--nav bar-->
-    <Navbar></Navbar>
+      <!--nav bar-->
+      <Navbar></Navbar>
       <UpdateImagesModal ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
 
-    <!--profile container-->
-    <div class="container p-5" id="profileContainer">
+      <!--profile container-->
+      <div class="container p-5" id="profileContainer">
       <div class="row">
-      <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
-        <button class="btn btn-lg green-button w-100" @click="returnToListing()" id="return-button" tabindex="9">Return to Sale Listing</button>
-      </div>
+        <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
+          <button class="btn btn-lg green-button w-100" @click="returnToPreviousPage()" id="return-button" tabindex="9">Return to Sale Listing</button>
+        </div>
+        <div class="return-button-wrapper col-xl-3 mb-3" v-else-if="fromSearch">
+          <button class="btn btn-lg green-button w-100" @click="returnToPreviousPage()" id="return-button-search" tabindex="9">Return to Search</button>
+        </div>
       </div>
 
       <!--profile header, contains user search bar-->
@@ -242,8 +245,11 @@ export default {
       nameOfAdministrators: [],
 
       isAdministrator: false,
-      // keep track of if user came from individual listing page so they can return.
+
+      // keep track of if user came from individual listing page or search page so they can return.
       fromListing: false,
+      fromSearch: false,
+
       business: {
         data: {
           name: "",
@@ -436,9 +442,9 @@ export default {
       })
     },
     /**
-     * Redirect the user back to the individual sale listings page.
+     * Redirect the user back to the previous page.
      */
-    returnToListing() {
+    returnToPreviousPage() {
       this.$router.back();
     },
     /**
@@ -507,6 +513,8 @@ export default {
       // should be rendered.
       if (from.name === 'SaleListing') {
         vm.fromListing = true;
+      } else if (from.name === 'Search') {
+        vm.fromSearch = true;
       }
       next();
     });

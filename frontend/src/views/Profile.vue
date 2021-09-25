@@ -14,6 +14,12 @@
       <!--profile container-->
       <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
+        <div class="row">
+          <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromSearch">
+            <button class="btn btn-lg green-button w-100" @click="returnToSearch()" id="return-button" tabindex="9">Return to Search</button>
+          </div>
+        </div>
+
         <!--profile header, contains user search bar-->
         <ProfileHeader id="profile-header"/>
 
@@ -355,7 +361,9 @@ export default {
       // User card variables
       usersCards: [],
 
-      images: []
+      images: [],
+
+      fromSearch: false
     }
   },
   methods: {
@@ -831,9 +839,25 @@ export default {
         id = this.urlID
       }
       this.$router.push({name: "EditProfile", params: {id}})
+    },
+    /**
+     * Returns the user to the previously visited page
+     * Only used for returning to the search page
+     */
+    returnToSearch() {
+      this.$router.back();
     }
   },
-
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from a page which contains an individual listing then the return to listing button component
+      // should be rendered.
+      if (from.name === 'Search') {
+        vm.fromSearch = true;
+      }
+      next();
+    });
+  },
   /**
    * When mounted, initiate population of page.
    * If cookies are invalid or not present, redirect to login page.
