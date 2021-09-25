@@ -26,7 +26,7 @@
               <!--business's profile image-->
               <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
-                  <div v-if="business.data.images === null || business.data.images.length === 0">
+                  <div v-if="business.data.images === null || business.data.images === [] || business.data.images.length === 0">
                     <img :src="getImageSrc()"
                          class="rounded-circle img-fluid"
                          alt="Profile Image">
@@ -39,7 +39,7 @@
                          alt="Profile Image">
                   </div>
                 </div>
-                <div v-if="business.data.images.length > 1">
+                <div v-if="business.data.images !== null && business.data.images !== [] && business.data.images.length !== 0">
                   <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
                           data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -319,6 +319,7 @@ export default {
       //basic data unpack
       this.name = data.name;
       this.business.data.name = this.name;
+      this.business.data.images = data.businessImages;
       this.description = data.description;
       let businessTypeLowerCaseAndSplit = data.businessType.replace(/_/g, ' ').toLowerCase().split(" ");
 
