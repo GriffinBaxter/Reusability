@@ -106,6 +106,12 @@
           </router-link>
         </li>
 
+          <li class="a-nav-item">
+            <router-link to="/search?type=User&searchQuery=&orderBy=fullNameASC&page=1" class="router-nav-link" active-class="active-link">
+              <i class="side-nav-link-icon fas fa-search"></i>Search
+            </router-link>
+          </li>
+
         <li class="a-nav-item">
           <router-link to="/browseListings" class="router-nav-link" active-class="active-link">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket3-fill side-nav-link-icon" viewBox="0 0 16 16">
