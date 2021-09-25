@@ -467,7 +467,7 @@ export default {
           });
           this.showTable = true;
         }).catch((error) => {
-          this.$router.push(manageError(error));
+          this.manageError(error);
         })
       }
     },
