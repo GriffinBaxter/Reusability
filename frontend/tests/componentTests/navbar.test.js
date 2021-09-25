@@ -459,7 +459,9 @@ describe('Tests for notifications', () => {
             },
             stubs: ['router-link', 'router-view']
         });
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.unreadMessage).toBeTruthy()
     })
@@ -483,6 +485,8 @@ describe('Tests for notifications', () => {
             stubs: ['router-link', 'router-view']
         });
         await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.unreadMessage).toBeFalsy();
     })
@@ -505,7 +509,9 @@ describe('Tests for notifications', () => {
             },
             stubs: ['router-link', 'router-view']
         });
-        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.unreadMessage).toBeTruthy()
     })
@@ -528,6 +534,8 @@ describe('Tests for notifications', () => {
             },
             stubs: ['router-link', 'router-view']
         });
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
 
         expect(wrapper.vm.$data.unreadMessage).toBeFalsy();
