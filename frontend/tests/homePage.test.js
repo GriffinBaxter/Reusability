@@ -387,5 +387,56 @@ describe("Tests for tab being available depending ", () => {
         expect(wrapper.find("#my-cards-tab").exists()).toBeTruthy();
         expect(wrapper.find("#my-cards").exists()).toBeTruthy();
     })
+})
 
+describe("Tests the compareCards method", () => {
+
+    const createWrapperAndMockApi = async () => {
+        const response = {
+            status: 200,
+            data: [card1]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(response));
+        Api.getBookmarkedMessage.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: []
+        }));
+
+        wrapper = shallowMount(
+            Home,
+            {
+                localVue,
+                mocks: {
+                    $router
+                }
+            }
+        )
+        await wrapper.vm.$nextTick();
+    }
+
+    test("Test the method returns -1 when section of card 1 has a smaller alphabetic order than the section of card 2", async () => {
+        const card1 = { section: "ForSale" };
+        const card2 = { section: "Wanted" };
+
+        await createWrapperAndMockApi();
+
+        expect(wrapper.vm.compareCards(card1, card2)).toEqual(-1);
+    });
+
+    test("Test the method returns 1 when section of card 1 has a higher alphabetic order than the section of card 2", async () => {
+        const card1 = { section: "Wanted" };
+        const card2 = { section: "ForSale" };
+
+        await createWrapperAndMockApi();
+
+        expect(wrapper.vm.compareCards(card1, card2)).toEqual(1);
+    });
+
+    test("Test the method returns 0 when section of card 1 is equal to the section of card 2", async () => {
+        const card = { section: "Wanted" };
+
+        await createWrapperAndMockApi();
+
+        expect(wrapper.vm.compareCards(card, card)).toEqual(0);
+    });
 })

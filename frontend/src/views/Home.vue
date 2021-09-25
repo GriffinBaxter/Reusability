@@ -235,12 +235,8 @@ export default {
      *                 3. 0 if the card sections are equal.
      */
     compareCards(card1, card2) {
-      if (card1.section < card2.section) {
-        return -1;
-      }
-      if (card1.section > card2.section) {
-        return 1;
-      }
+      if (card1.section < card2.section) { return -1; }
+      if (card1.section > card2.section) { return 1; }
       return 0;
     },
     /**
