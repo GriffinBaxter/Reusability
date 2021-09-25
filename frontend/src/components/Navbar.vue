@@ -43,7 +43,7 @@
             </svg>
 
             <transition name="expand">
-              <Messages v-on:emittedDeleteConversation="onDeleteConversation" v-on:updateNotifications="updateNotificationState" v-if="showMessages"/>
+              <Messages v-on:emittedDeleteConversation="onDeleteConversation" v-on:updateNotifications="updateNotificationState" v-on:newMessage="unreadMessage = true" v-if="showMessages"/>
             </transition>
           </div>
 

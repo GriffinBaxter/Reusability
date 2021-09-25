@@ -115,14 +115,15 @@ export default {
     closeConversation() {
       this.conversationIsOpen = false;
       this.$emit("updateNotifications")
+      this.retrieveConversations()
     },
     /**
      * This method is used to retrieve the conversations for a user.
      */
-    retrieveConversations() {
+    async retrieveConversations() {
       this.errorMessage = "";
       this.isLoading = true;
-      Api.getConversations().then(
+      await Api.getConversations().then(
           (res) => {
             this.conversations = res.data.map( (conversation) => {
               let userImage;
@@ -175,6 +176,11 @@ export default {
         }
         this.isLoading = false;
       });
+      for (let conv of this.conversations) {
+        if (conv.newMessage) {
+          this.$emit("newMessage")
+        }
+      }
     },
     /**
      * We need to emit the deleteConversation event to the parent (Navbar). The DeleteConversationModal component is in
