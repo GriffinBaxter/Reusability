@@ -8,9 +8,9 @@ beforeEach(() => {
     wrapper = shallowMount(ResetPassword);
 })
 
-describe("Teting the password field", () => {
+describe("Testing the password field", () => {
 
-    test("Testing that inputing a value into the input field updates the value", async () => {
+    test("Testing that inputting a value into the input field updates the value", async () => {
         const password = await wrapper.find("#password");
         expect(password.element.value).toStrictEqual("");
         expect(wrapper.vm.$data.password).toStrictEqual("");
@@ -22,15 +22,29 @@ describe("Teting the password field", () => {
         expect(wrapper.vm.$data.password).toStrictEqual("password");
     })
 
-    test("Testing that pressing the show password icon changes the input type", async () => {
-        const password = await wrapper.find("#password");
-        const showPasswordIcon = await wrapper.find("#show-password");
+    const toggleShowPassword = (password) => {
+        const showPasswordIcon = wrapper.find("#show-password");
 
         expect(password.element.type).toStrictEqual("password");
 
-        await showPasswordIcon.trigger("click");
-        await wrapper.vm.$nextTick();
+        showPasswordIcon.trigger("click");
+        wrapper.vm.$nextTick();
         expect(password.element.type).toStrictEqual("text");
+
+        showPasswordIcon.trigger("click");
+        wrapper.vm.$nextTick();
+        expect(password.element.type).toStrictEqual("password");
+
+    }
+
+    test("Testing that pressing the show password icon changes the input type for password", async () => {
+        const password = await wrapper.find("#password");
+        toggleShowPassword(password);
+    })
+
+    test("Testing that pressing the show password icon changes the input type confirm password", async () => {
+        const password = await wrapper.find("#confirm-password");
+        toggleShowPassword(password);
     })
 
 })
