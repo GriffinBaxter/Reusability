@@ -485,8 +485,8 @@ export default {
     /**
      * Gets information about the current logged in user
      */
-    getUserData(currentID) {
-      Api.getUser(currentID).then((response) => {
+    async getUserData(currentID) {
+      await Api.getUser(currentID).then((response) => {
         this.role = response.data.role;
         this.setCurUser(response.data);
       }).catch((error) => {
@@ -658,10 +658,10 @@ export default {
     }
 
   },
-  mounted() {
+  async mounted() {
     const currentID = Cookies.get('userID');
 
-    this.getUserData(currentID);
+    await this.getUserData(currentID);
 
     // update notifications
     this.updateNotificationState();
