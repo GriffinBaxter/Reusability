@@ -1,4 +1,4 @@
-Feature: U21 Lost Password
+Feature: U25 Lost Password
 
   Background:
     Given A user exists with the email "test@test.com"
