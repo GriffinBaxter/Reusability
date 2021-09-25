@@ -12,8 +12,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * User test class.
@@ -1725,7 +1728,14 @@ class UserTests {
     @Test
     void testLockAccount_LocksForOneHour() {
         user.lockAccount();
-        Assertions.assertEquals(user.getTimeWhenUnlocked(), LocalDateTime.now().plusHours(1));
+
+        LocalDateTime lockedTime = LocalDateTime.now();
+
+        LocalDateTime whenLocked = lockedTime.truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime whenUnlocked = user.getTimeWhenUnlocked().truncatedTo(ChronoUnit.MINUTES);
+
+        assertThat(user.isLocked()).isTrue();
+        assertThat(whenUnlocked).isEqualTo(whenLocked.plusHours(1));
     }
 
     // ********************************* unlockAccount() method tests ************************************
