@@ -2,16 +2,20 @@
  * @jest-environment jsdom
  */
 
-import {shallowMount} from '@vue/test-utils';
+import {createLocalVue, shallowMount} from '@vue/test-utils';
 import EditBusinessProfile from "../src/views/EditBusinessProfile";
 import AddressAPI from "../src/addressInstance";
 import Api from "../src/Api";
 import {beforeEach, describe, expect, jest, test} from "@jest/globals";
 import Cookies from "js-cookie";
+import VueLogger from "vuejs-logger";
 
 jest.mock("../src/addressInstance");
 jest.mock("../src/Api");
 jest.mock("js-cookie");
+
+const localVue = createLocalVue();
+localVue.use(VueLogger, {isEnabled: false})
 
 describe("Testing methods in EditBusinessProfile", () => {
 
@@ -254,6 +258,12 @@ describe("Testing methods in EditBusinessProfile", () => {
 
         Cookies.get = jest.fn().mockImplementation(() => "1"); // mock all cookies
 
+        const mockEditResponse = {
+            status: 200
+        }
+
+        Api.editBusiness.mockImplementation(() => Promise.resolve(mockEditResponse))
+
         wrapper = shallowMount(
             EditBusinessProfile,
             {
@@ -494,5 +504,97 @@ describe("Testing methods in EditBusinessProfile", () => {
         await wrapper.vm.$nextTick();
 
         expect($router.push).toHaveBeenCalledWith({path: "/noUser"});
+    })
+
+    test("Test application routes to business profile on 200 response when editing business", async () => {
+            wrapper.vm.$data.description = "New description";
+
+            await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith(`/businessProfile/${1}`)
+    })
+
+    test("Test error message is displayed and application does not route to business profile on 400 response when editing business", async () => {
+        const error = {
+            response: {
+                status: 400
+            }
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('400 Bad request; invalid business data');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile on 409 response when editing business", async () => {
+        const error = {
+            response: {
+                status: 409
+            }
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.businessNameErrorMsg).toEqual('Business with name already exists');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile on a random (500) response when editing business", async () => {
+        const error = {
+            response: {
+                status: 500
+            }
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('500 Unexpected error occurred!');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile on a timeout when editing business", async () => {
+        const error = {
+            request: "Hello"
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('Timeout occurred');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test error message is displayed and application does not route to business profile when an unexpected error occurs when editing business", async () => {
+        const error = {
+            random: "Unexpected"
+        }
+        Api.editBusiness.mockImplementation(() => Promise.reject(error));
+
+        await wrapper.vm.editBusiness({preventDefault: jest.fn()});
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.toastErrorMessage).toEqual('Unexpected error occurred!');
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Test the input method returns false when there is no input value", async () => {
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return { value: "20 Kirkwood Avenue, Upper"};
+        }); // spy on the getElementById call made by the request method
+
+        jest.spyOn(document, 'getElementsByClassName').mockImplementation( () => {
+            return {}
+        }) // spy on getElementsByClassName call made by the closeAllLists method
+
+        expect(await wrapper.vm.input()).toBeFalsy();
     })
 })

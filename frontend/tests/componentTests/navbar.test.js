@@ -332,5 +332,52 @@ describe('Tests for miscellaneous Navbar methods', () => {
         expect(wrapper.emitted().getLinkBusinessAccount).toBeTruthy();
     })
 
+    test("Tests the getPrimaryImageSrc method returns the primary image when acting as a user.", () => {
+        const currentUser = {
+            images: [
+                {
+                    isPrimary: false,
+                    thumbnailFilename: "incorrectImage1"
+                },
+                {
+                    isPrimary: true,
+                    thumbnailFilename: "primaryImage"
+                },
+                {
+                    isPrimary: false,
+                    thumbnailFilename: "incorrectImage2"
+                },
+            ],
+        }
 
+        wrapper.vm.isActAsBusiness = false;
+
+        const primaryImageSrc = wrapper.vm.getPrimaryImageSrc(currentUser);
+
+        expect(primaryImageSrc).toContain(currentUser.images[1].thumbnailFilename);
+    })
+
+    test("Tests the getPrimaryImageSrc method returns the primary image when acting as a business.", () => {
+        const currentBusinessImage = [
+            {
+                isPrimary: false,
+                thumbnailFilename: "incorrectImage1"
+            },
+            {
+                isPrimary: true,
+                thumbnailFilename: "primaryImage"
+            },
+            {
+                isPrimary: false,
+                thumbnailFilename: "incorrectImage2"
+            },
+        ]
+
+        wrapper.vm.isActAsBusiness = true;
+        wrapper.vm.currentBusinessImage = currentBusinessImage;
+
+        const primaryImageSrc = wrapper.vm.getPrimaryImageSrc();
+
+        expect(primaryImageSrc).toContain(currentBusinessImage[1].thumbnailFilename);
+    })
 })

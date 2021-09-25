@@ -71,7 +71,7 @@
 			"response": []
 		},
 		{
-			"name": "3. GET Inventory Item by barcode",
+			"name": "3. GET Product Catalogue Item by barcode",
 			"request": {
 				"method": "GET",
 				"header": [],

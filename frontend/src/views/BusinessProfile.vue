@@ -4,6 +4,7 @@
     <div id="main">
     <!--nav bar-->
     <Navbar></Navbar>
+      <UpdateImagesModal ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
 
     <!--profile container-->
     <div class="container p-5" id="profileContainer">
@@ -23,8 +24,42 @@
             <div class="card-body">
 
               <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
-                   alt="Profile Image"/>
+              <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div v-if="business.data.images === null || business.data.images === [] || business.data.images.length === 0">
+                    <img :src="getImageSrc()"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
+                  </div>
+                  <div v-for="image of business.data.images"
+                       v-bind:key="image.id"
+                       :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
+                    <img :src="getImageSrc(image.thumbnailFilename)"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
+                  </div>
+                </div>
+                <div v-if="business.data.images !== null && business.data.images !== [] && business.data.images.length !== 0">
+                  <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+              </div>
+
+            <div id="change-profile-picture-button" style="padding-top: 10px" v-if="isAdministrator && business.data.id">
+              <button type="button" style="width: 252px; max-width: 100%" id="update-business-image-button"
+                      class="btn btn-md btn-outline-primary green-button"
+                      @click="(event) => {this.$refs.updateImagesModal.showModel(event)}">
+                Change Profile Picture
+              </button>
+            </div>
 
               <!--business's name-->
               <div class="mt-3">
@@ -169,20 +204,22 @@
 </template>
 
 <script>
-import ProfileHeader from "@/components/ProfileHeader";
-import Footer from "@/components/main/Footer";
-import Navbar from "@/components/Navbar";
-import Api from "@/Api";
+import ProfileHeader from "../components/ProfileHeader";
+import UpdateImagesModal from "../components/UpdateImagesModal"
+import Footer from "../components/main/Footer";
+import Navbar from "../components/Navbar";
+import Api from "../Api";
 import Cookies from 'js-cookie';
-import {UserRole} from "@/configs/User";
-import {checkNullity, getFormattedAddress} from "../views/helpFunction";
+import {UserRole} from "../configs/User";
+import {checkNullity, getFormattedAddress} from "./helpFunction";
 
 export default {
   name: "BusinessProfile",
   components: {
     Footer,
     ProfileHeader,
-    Navbar
+    Navbar,
+    UpdateImagesModal
   },
   data() {
     return {
@@ -206,28 +243,39 @@ export default {
 
       isAdministrator: false,
       // keep track of if user came from individual listing page so they can return.
-      fromListing: false
+      fromListing: false,
+      business: {
+        data: {
+          name: "",
+          id: 0,
+          images: []
+        }
+      }
     }
   },
   methods: {
-    formatAge(ageString) {
-      /*
-      Formats the given age string using a Date object and removes the day from the result.
-      Returns a formatted string.
-       */
+    /**
+     * Formats the given age string using a Date object and removes the day from the result.
+     * Returns a formatted string.
+     *
+     * @param ageString The age string returned.
+     * @return {string} Returns the formatted age string.
+     */
+    formatDate(ageString) {
       let array = (new Date(ageString)).toDateString().split(" ");
       array.shift();
       return array.join(' ')
     },
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     *
+     * @param createdDate the created date.
+     */
     getCreatedDate(createdDate) {
-      /*
-      Calculates the months between the given date and the current date, then formats the given date and months.
-      Finally it sets the join date on the page to the formatted string.
-       */
-
       const dateJoined = new Date(createdDate);
 
-      const currentDate = new Date();
+      const currentDate = new Date(Date.now());
       let months = (currentDate.getFullYear() - dateJoined.getFullYear()) * 12
           + (currentDate.getMonth() - dateJoined.getMonth());
 
@@ -239,14 +287,16 @@ export default {
         months -= 1;
       }
 
-      const finalDate = this.formatAge(createdDate);
+      const finalDate = this.formatDate(createdDate);
       this.created = `${finalDate} (${months} months ago)`;
     },
+    /**
+     * try to send a request to backend, and use populatePage() function to unpack data returned,
+     * if fail, push to a page show the error.
+     *
+     * @param businessID The business id we want to retrieve.
+     */
     retrieveBusiness(businessID) {
-      /*
-      try to send a request to backend, and use populatePage() function to unpack data returned,
-      if fail, push to a page show the error.
-      */
       Api.getBusiness(businessID).then(response => (this.populatePage(response.data))).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -260,31 +310,36 @@ export default {
         }
       })
     },
+    /**
+     * Unpacks the data into the correct data attributes.
+     *
+     * @param data The data to be unpacked from a Api.getBusiness(id) call.
+     */
     populatePage(data) {
-      /*
-      unpack data
-      */
-
       //basic data unpack
       this.name = data.name;
+      this.business.data.name = this.name;
+      this.business.data.images = data.businessImages;
       this.description = data.description;
-      let businessTypeLowerCaseAndSplit = data.businessType.replaceAll("_", " ").toLowerCase().split(" ");
+      let businessTypeLowerCaseAndSplit = data.businessType.replace(/_/g, ' ').toLowerCase().split(" ");
+
       for (let i = 0; i < businessTypeLowerCaseAndSplit.length; i++) {
         businessTypeLowerCaseAndSplit[i] = businessTypeLowerCaseAndSplit[i][0].toUpperCase() + businessTypeLowerCaseAndSplit[i].slice(1);
       }
       this.businessType = businessTypeLowerCaseAndSplit.join(" ");
+
       this.getCreatedDate(data.created);
 
       //address unpack
       this.streetNumber = checkNullity(data.address.streetNumber);
       this.streetName = checkNullity(data.address.streetName);
-      this.suburb = checkNullity(data.address.suburb);
+      const suburb = checkNullity(data.address.suburb);
       this.city = checkNullity(data.address.city);
       this.region = checkNullity(data.address.region);
       this.country = checkNullity(data.address.country);
       this.postcode = checkNullity(data.address.postcode);
 
-      this.address = getFormattedAddress(this.streetNumber, this.streetName, this.suburb, this.city, this.postcode, this.region, this.country);
+      this.address = getFormattedAddress(this.streetNumber, this.streetName, suburb, this.city, this.postcode, this.region, this.country);
 
       // administrators unpack
       this.primaryAdministratorId = data.primaryAdministratorId;
@@ -311,16 +366,51 @@ export default {
         })
       })
     },
+    /**
+     * When called the page will route you to the profile page for a user with a given id.
+     *
+     * @param id The id of the user we want to see the profile page of.
+     */
     pushToUser(id) {
       this.$router.push({name: 'Profile', params: {id}});
     },
+    /**
+     * Navigates to a page with a given name. This includes also the params id.
+     * This is intended for the product catalogue, inventory and listings pages.
+     *
+     * @param name The name of the page.
+     */
     navigateTo(name) {
-      /*
-      Navigates to the product catalogue of the business
-       */
       let id = this.$route.params.id;
       this.$router.push({name: name, params: {id}});
     },
+    /**
+     * Returns the src property for a img tag.
+     *
+     * @param filename Optional image source name. Defaults to an empty string.
+     * @return {String} returns the src link.
+     */
+    getImageSrc(filename = "") {
+      if (filename === "") {
+        return require('../../public/default-image.jpg')
+      }
+      return Api.getServerURL() + "/" + filename;
+    },
+    /**
+     * Given a role see if it is a DGAA or GAA.
+     *
+     * @param role The role we want to test against.
+     * @return {Boolean} Returns true if the role is a DGAA or GAA. Otherwise false.
+     */
+    isGaaOrDgaa(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
+          || role === UserRole.GLOBALAPPLICATIONADMIN
+    },
+    /**
+     * Given a id we attempt to see if the yser is an admin. And update the isAdministrator variable.
+     *
+     * @param currentID The user's id we are testing against.
+     */
     checkIsAdmin(currentID) {
       Api.getUser(currentID).then(response => {
         response.data.businessesAdministered.forEach(business => {
@@ -328,9 +418,7 @@ export default {
             this.isAdministrator = true;
           }
         });
-        this.isAdministrator = this.isAdministrator ? true :
-            (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
-            || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
+        this.isAdministrator = this.isAdministrator || this.isGaaOrDgaa(response.data.role);
         if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
           this.isAdministrator = false;
         }
@@ -368,6 +456,7 @@ export default {
   },
   mounted() {
     const currentID = Cookies.get('userID');
+    const actAsId = Cookies.get("actAs");
     if (currentID) {
       this.checkIsAdmin(currentID);
       const url = document.URL;
@@ -378,12 +467,18 @@ export default {
       } else {
         this.retrieveBusiness(urlID);
         this.urlID = urlID;
+        try {
+          this.business.data.id = parseInt(actAsId, 10);
+        } catch (err) {
+          this.business.data.id = null;
+        }
       }
     }
   },
   beforeRouteUpdate (to, from, next) {
     // Reset variables
     this.name = "";
+    this.business.data.name = this.name;
     this.description = "";
     this.businessType = "";
     this.created = "";

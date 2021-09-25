@@ -472,7 +472,7 @@ export default {
           this.businessRegionErrorMsg || this.businessCountryErrorMsg);
     },
 
-    /*
+    /**
      * Address API requests
      */
     async request() {
