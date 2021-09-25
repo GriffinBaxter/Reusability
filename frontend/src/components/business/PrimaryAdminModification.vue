@@ -17,8 +17,8 @@
                  alt="Profile Image"/>
 
             <!-- Business info-->
-            <h5>{{ businessName }}</h5>
-            <div class="text-secondary">{{ description }}</div>
+            <h5>{{ businessInfo.name }}</h5>
+            <div class="text-secondary">{{ businessInfo.description }}</div>
           </div>
           <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"/>
         </div>
@@ -27,7 +27,8 @@
         <div class="modal-body">
           <div class="row administrators"
                v-for="admin in adminList"
-               v-bind:key="admin.id">
+               v-bind:key="admin.id"
+               @click="setPrimaryAdmin(admin.id)">
             <div class="col-3">
               <img class="rounded-circle img-fluid user-image"
                    :src="getPrimaryImageSrc(admin.images)"
@@ -50,17 +51,13 @@
 <script>
 import {Modal} from "bootstrap";
 import Api from "../../Api";
+import Business from "../../configs/Business";
 
 export default {
   name: "PrimaryAdminModification",
   props: {
-    businessName: {
-      type: String,
-      required: true
-    },
-
-    description: {
-      type: String,
+    businessInfo: {
+      type: Object,
       required: true
     },
 
@@ -72,7 +69,6 @@ export default {
   data() {
     return {
       modal: null,
-
     }
   },
   methods: {
@@ -93,6 +89,40 @@ export default {
       } catch (primaryImage) {
         return Api.getServerURL() + "/" + primaryImage;
       }
+    },
+    setPrimaryAdmin(id) {
+      const url = document.URL;
+      const urlID = url.substring(url.lastIndexOf('/') + 1);
+
+      const businessDate = {
+        primaryAdministratorId: id,
+        name: this.businessInfo.name,
+        description: this.businessInfo.description,
+        address: this.businessInfo.address,
+        businessType: this.businessInfo.businessType,
+        currencySymbol: this.businessInfo.currencySymbol,
+        currencyCode: this.businessInfo.currencyCode
+      }
+      Api.editBusiness(urlID, new Business(businessDate))
+          .then(() => {
+            location.reload()
+          })
+          .catch((error) => {
+            if (error.response) {
+              if (error.response.status === 400) {
+                this.toastErrorMessage = '400 Bad request; invalid business data';
+              } else if (error.response.status === 409) {
+                this.businessNameErrorMsg = 'Business with name already exists';
+              } else {
+                this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+              }
+            } else if (error.request) {
+              this.toastErrorMessage = 'Timeout occurred';
+            } else {
+              this.toastErrorMessage = 'Unexpected error occurred!';
+            }
+          });
+      this.modal.hide();
     },
     /**
      * open modal
