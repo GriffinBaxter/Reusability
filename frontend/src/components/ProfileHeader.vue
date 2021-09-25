@@ -2,32 +2,31 @@
 <!--It contains the search bar for searching for users by first name.-->
 
 <template>
+  <div>
     <div class="pt-3 text-font container-fluid search-bar-positioning" id="search-container">
-      <div class="row" id="search-bar-inputs">
-        <div class="col" id="radio-button-container">
+      <div class="row" id="search-bar-container" style="padding-top: 3px">
+        <div class="input-group" id="search-inputs">
           <div class="btn-group" id="radio-buttons">
             <button id="user-radio-button" type="button" :class="`btn green-button-transparent ${this.searchType === 'User' ? 'active': ''}`" @click="changeSearchType('User')">User</button>
             <button id="business-radio-button" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
           </div>
-        </div>
-        <div v-if="searchType === 'Business'" id="business-type-combo-box-container" class="col" style="margin-bottom: 10px;">
-          <label style="padding-right: 10px; padding-left: 70px;" for="business-type-combo-box">Business Type:</label>
-          <select id="business-type-combo-box" name="business-type" v-model="selectedBusinessType">
-            <option value="Any" id="default-option">Any</option>
-            <option v-for="option in businessTypes" :id="option.businessType" :key="option.businessType" :value="option.value">
-              {{ option.value }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="row" id="search-bar-container" style="padding-top: 3px">
-        <div class="input-group" id="search-inputs">
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
           <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search" aria-hidden="true"></i></button>
         </div>
       </div>
       <br>
     </div>
+
+    <div v-if="searchType === 'Business'" id="business-type-combo-box-container" class="col" style="margin-bottom: 10px;">
+      <label style="padding-left: 12px; padding-right: 10px;" for="business-type-combo-box">Business Type:</label>
+      <select id="business-type-combo-box" name="business-type" v-model="selectedBusinessType">
+        <option value="Any" id="default-option">Any</option>
+        <option v-for="option in businessTypes" :id="option.businessType" :key="option.businessType" :value="option.value">
+          {{ option.value }}
+        </option>
+      </select>
+    </div>
+  </div>
 </template>
 
 
@@ -115,6 +114,12 @@ export default {
      */
     changeSearchType(type) {
       this.searchType = type;
+    }
+  },
+  mounted() {
+    const type = this.$route.query.type;
+    if (type) {
+      this.changeSearchType(type);
     }
   }
 }
