@@ -34,7 +34,7 @@
                   <select id="business-type" name="business-type" tabindex="2" :class="toggleInvalidSelectClass(businessTypeErrorMsg)"
                           v-model="businessType" required>
                     <option value="" disabled>Select Business Type</option>
-                    <option v-for="option in types" :key="option.text" :value="option.value">
+                    <option v-for="option in types" :key="option.text" :value="option.text">
                       {{ option.text }}
                     </option>
                   </select>
@@ -156,7 +156,6 @@
       </div>
     </div>
 
-
     <Footer></Footer>
   </div>
 </template>
@@ -191,10 +190,10 @@ export default {
       // Business type related variables
       businessType: "",
       types: [
-        { text: 'Accommodation and Food Services', value: 'Accommodation and Food Services' },
-        { text: 'Retail Trade', value:  'Retail Trade'},
-        { text: 'Charitable Organisation', value: 'Charitable Organisation'},
-        { text: 'Non Profit Organisation', value: 'Non Profit Organisation'}
+        { text: 'Accommodation and Food Services' },
+        { text: 'Retail Trade'},
+        { text: 'Charitable Organisation'},
+        { text: 'Non Profit Organisation'}
       ],
       businessTypeErrorMsg: "",
 
@@ -228,13 +227,21 @@ export default {
 
       // Toast related variables
       toastErrorMessage: "",
-      cannotProceed: false,
 
       // Address autocompletion related variables
       address: "",
       addresses: [],
       autocompleteFocusIndex: 0,
       addressResultProperties: [],
+
+      // Address related variables
+      // streetNumber: "",
+      // streetName: "",
+      // suburb: "",
+      // city: "",
+      // region: "",
+      // postcode: "",
+      // country: "",
 
       // Currency change details.
       currencyCode: "",
@@ -687,9 +694,62 @@ export default {
       this.editBusiness();
     },
 
-    editBusiness() {
-      //TODO call to backend.
-      return;
+    /**
+     * Sends an EditBusiness object to the backend to update the user's business
+     *
+     * PRECONDITIONS:
+     *     1. all fields are validated
+     */
+    async editBusiness() {
+
+      const addressData = {
+        streetNumber: this.$refs.streetNumber.value,
+        streetName: this.$refs.streetName.value,
+        suburb: this.$refs.suburb.value,
+        city: this.$refs.city.value,
+        region: this.$refs.region.value,
+        country: this.$refs.country.value,
+        postcode: this.$refs.postcode.value
+      }
+
+      // Wrapping up the business submitted fields into a class object (Business).
+      const businessData = {
+        primaryAdministratorId: Cookies.get('userID'),
+        name: this.businessName,
+        description: this.description,
+        // NOTE: Using v-model for this address input apparently does not update.
+        // When we insert from our autocomplete list so it has been changed to use $refs
+        address: addressData,
+        businessType: this.businessType,
+        currencySymbol: this.currencySymbol,
+        currencyCode: this.currencyCode
+      }
+
+      const id = this.$route.params.id;
+
+      // Add the Business to the database by sending an API request to the backend to store the business' information.
+      // Raise any errors and ensure they are displayed on the UI.
+      await Api.editBusiness(id, new Business(businessData)).then( (res) => {
+        if (res.status === 200) {
+          if (id) {
+            this.$router.push('/businessProfile/' + id);
+          }
+        }
+      }).catch((error) => {
+        if (error.response) {
+          if (error.response.status === 400) {
+            this.toastErrorMessage = '400 Bad request; invalid business data';
+          } else if (error.response.status === 409) {
+            this.businessNameErrorMsg = 'Business with name already exists';
+          } else {
+            this.toastErrorMessage = `${error.response.status} Unexpected error occurred!`;
+          }
+        } else if (error.request) {
+          this.toastErrorMessage = 'Timeout occurred';
+        } else {
+          this.toastErrorMessage = 'Unexpected error occurred!';
+        }
+      })
     },
 
     /**
@@ -713,10 +773,10 @@ export default {
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
-        } else if (error.response.status === 406) {
-          this.$router.push({path: '/noUser'});
-        } else if (error.response.status === 401) {
-          this.$router.push({path: '/invalidtoken'});
+        } else if (error.response !== undefined && error.response.status === 406) {
+            this.$router.push({path: '/noUser'});
+        } else if (error.response !== undefined && error.response.status === 401) {
+            this.$router.push({path: '/invalidtoken'});
         } else {
           this.$router.push({path: '/noUser'});
           console.log(error.message);
