@@ -3,15 +3,15 @@
     <div class="row m-0 w-100">
       <button class="btn col-2 btn-light" @click="closeConversation">{{ backIcon }}</button>
         <div class="col m-1">
-          <img :src="getImageSrc()" :alt="`user's profile image`" class="user-icon rounded-circle d-inline-block">
-          <h5 class="d-inline-block">
+          <h5>
+            <img :src="getImageSrc()" :alt="`user's profile image`" :class="getImageStyle(conversationData.userName)">
             {{ conversationData.userName }}
           </h5>
         </div>
 
 
     </div>
-    <p class="px-2 m-0 text-center">{{ conversationData.cardName }}</p>
+    <p class="px-2 m-0 text-center align ">{{ conversationData.cardName }}</p>
     <hr class="m-0">
   </div>
 </template>
@@ -46,6 +46,16 @@ export default {
       const primaryImage = this.conversationData.images.filter((image) => image.isPrimary);
       return Api.getServerURL() + "/" + primaryImage[0].thumbnailFilename;
     },
+    /**
+     * Returns different styling classes depending on the length of the given username.
+     */
+    getImageStyle(username) {
+      if (username.length > 13) {
+        return "user-icon rounded-circle row user-icon-large-username"
+      } else {
+        return "user-icon rounded-circle"
+      }
+    }
   }
 }
 </script>
@@ -56,6 +66,10 @@ export default {
   width: 40px;
   height: 40px;
   margin-right: 8px;
+}
+
+.user-icon-large-username {
+  margin-left: 78px;
 }
 
 </style>
