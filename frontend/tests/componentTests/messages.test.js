@@ -601,6 +601,7 @@ describe("Testing MessageTitle component", () => {
                             thumbnailFilename: ProfileImage,
                             isPrimary: true}
                     ],
+                    userName: "Joe"
                 }
             }
         });
@@ -619,4 +620,62 @@ describe("Testing MessageTitle component", () => {
 
         expect(messageTitleWrapper.vm.$parent.closeConversation).toHaveBeenCalledTimes(1);
     })
+
+    test("Test that the getThumbnailImageSrc method in messageHelper returns the default image when there are no images given", async () => {
+        const serverURL = 'http://localhost:9499';
+        Api.getServerURL.mockImplementation(() => serverURL);
+
+        const images = [];
+        expect(await messageTitleWrapper.vm.getThumbnailImageSrc(images)).toBe("test-file-stub");
+    })
+
+    test("Test that the getThumbnailImageSrc method in messageHelper returns the image src when there is one image", async () => {
+
+        const serverURL = 'http://localhost:9499';
+        Api.getServerURL.mockImplementation(() => serverURL);
+
+        const images = [
+                {
+                    filename:"image777",
+                    thumbnailFilename:"imageThumb888",
+                    isPrimary: true
+                }
+            ];
+
+        expect(await messageTitleWrapper.vm.getThumbnailImageSrc(images)).toBe(serverURL + "/imageThumb888");
+    })
+
+    test("Test that the getThumbnailImageSrc method in messageHelper returns the image src when there are multiple images (there is only ever one primary image)", async () => {
+
+        const serverURL = 'http://localhost:9499';
+        Api.getServerURL.mockImplementation(() => serverURL);
+
+        const images = [
+            {
+                filename:"image111",
+                thumbnailFilename:"imageThumb111",
+                isPrimary: false
+            },
+            {
+                filename:"image222",
+                thumbnailFilename:"imageThumb222",
+                isPrimary: false
+            },
+            {
+                filename:"image333",
+                thumbnailFilename:"imageThumb333",
+                isPrimary: false
+            },
+            {
+                filename:"image444",
+                thumbnailFilename:"imageThumb444",
+                isPrimary: true
+            }
+        ];
+
+        expect(await messageTitleWrapper.vm.getThumbnailImageSrc(images)).toBe(serverURL + "/imageThumb444");
+    })
+
+
+
 })
