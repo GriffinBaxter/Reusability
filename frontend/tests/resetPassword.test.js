@@ -46,5 +46,23 @@ describe("Testing the password field", () => {
         const password = await wrapper.find("#confirm-password");
         toggleShowPassword(password);
     })
+})
+
+describe("Testing the dynamic criteria", () => {
+
+    const getDyamicCriteria = async (wrapper) => {
+        return {
+            lowerCase: await wrapper.find("#"),
+            upperCase: await wrapper.find("#"),
+            number: await wrapper.find("#"),
+            symbol: await wrapper.find("#"),
+            length: await wrapper.find("#")
+        }
+    }
+
+    test("Testing that on focus all fields turn red", async () => {
+
+        const criteria = await getDyamicCriteria(wrapper);
+    })
 
 })

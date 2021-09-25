@@ -25,15 +25,15 @@
         <div class="col my-2 my-lg-0">
           <h6>Password must meet the following conditions:</h6>
           <ul>
-            <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase, passwordWasTyped)">
+            <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase, passwordWasTyped)" id="lower-case-criteria">
               One lowercase letter</li>
-            <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase, passwordWasTyped)">
+            <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase, passwordWasTyped)" id="upper-case-criteria">
               One uppercase letter</li>
-            <li :class="checkPasswordCriteria(password, config.password.regexContainNumber, passwordWasTyped)">
+            <li :class="checkPasswordCriteria(password, config.password.regexContainNumber, passwordWasTyped)" id="number-criteria">
               One number</li>
-            <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol, passwordWasTyped)">
+            <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol, passwordWasTyped)" id="symbol-criteria">
               One of the following: !, @, #, $, %, ^, & and or*</li>
-            <li :class="checkPasswordCriteria(password, config.password.regexContainLength, passwordWasTyped)">
+            <li :class="checkPasswordCriteria(password, config.password.regexContainLength, passwordWasTyped)" id="length-criteria">
               At least 8 characters in length</li>
           </ul>
         </div>
