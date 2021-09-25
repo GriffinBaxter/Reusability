@@ -60,14 +60,59 @@ describe("Testing the dynamic criteria", () => {
         }
     }
 
-    test("Testing that on focus all fields turn red", async () => {
+    const redClassList = ["small", "text-red"];
+    const normalClassList = ["small"]
 
-        const criteria = await getDyamicCriteria(wrapper);
+    const expectCriteriaClassList = async (criteria, classList) => {
+        expect(criteria.lowerCase.classes()).toEqual(classList)
+        expect(criteria.upperCase.classes()).toEqual(classList)
+        expect(criteria.number.classes()).toEqual(classList)
+        expect(criteria.symbol.classes()).toEqual(classList)
+        expect(criteria.length.classes()).toEqual(classList)
+    }
 
-        expect(criteria.lowerCase.classes()).toEqual(["small"])
+    const setup = async (criteria) => {
+        await expectCriteriaClassList(criteria, normalClassList);
         await wrapper.find("#password").trigger("focus")
         await wrapper.vm.$nextTick();
-        expect(criteria.lowerCase.classes()).toEqual(["small", "text-red"])
+    }
+
+    test("Testing that on focus all fields turn red", async () => {
+        const criteria = await getDyamicCriteria(wrapper);
+        await setup(criteria);
+        await expectCriteriaClassList(criteria, redClassList);
+    })
+
+    const expectChangeInput = async (criteria, classList, input) => {
+        await setup(criteria);
+        await wrapper.find("#password").setValue(input);
+        await wrapper.vm.$nextTick();
+        expect(classList).toEqual(normalClassList)
+    }
+
+    test("Testing that when we input a lower case character the lower case criteria is no longer red", async () => {
+        const criteria = await getDyamicCriteria(wrapper);
+        await expectChangeInput(criteria, criteria.lowerCase.classes(), "a")
+    })
+
+    test("Testing that when we input a upper case character the upper case criteria is no longer red", async () => {
+        const criteria = await getDyamicCriteria(wrapper);
+        await expectChangeInput(criteria, criteria.upperCase.classes(), "A")
+    })
+
+    test("Testing that when we input a number the number criteria is no longer red", async () => {
+        const criteria = await getDyamicCriteria(wrapper);
+        await expectChangeInput(criteria, criteria.number.classes(), "1")
+    })
+
+    test("Testing that when we input a symbol the symbol criteria is no longer red", async () => {
+        const criteria = await getDyamicCriteria(wrapper);
+        await expectChangeInput(criteria, criteria.symbol.classes(), "@")
+    })
+
+    test("Testing that when we input 8 numbers the length criteria is no longer red", async () => {
+        const criteria = await getDyamicCriteria(wrapper);
+        await expectChangeInput(criteria, criteria.length.classes(), "12345678")
     })
 
 })
