@@ -119,6 +119,7 @@ public class UserResource {
                 if (user.canUnlock()) {
                     user.unlockAccount();
                     userRepository.save(user);
+                    logger.debug("Account unlocked - User Id: {}", user.getId());
                 } else {
                     logger.error("Login Failure - 403 [FORBIDDEN] - Cannot unlock account");
                     throw new ResponseStatusException(
@@ -150,9 +151,10 @@ public class UserResource {
                 if (!user.hasLoginAttemptsRemaining()) {
                     user.lockAccount();
                     userRepository.save(user);
+                    logger.debug("Account locked - User Id: {}", user.getId());
                 }
 
-                logger.error("Login Failure - 400 [BAD_REQUEST] - Email or password incorrect");
+                logger.error("Login Failure - 400 [BAD_REQUEST] - Password incorrect");
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Failed login attempt, email or password incorrect"
@@ -161,6 +163,7 @@ public class UserResource {
 
         }
 
+        logger.error("Login Failure - 400 [BAD_REQUEST] - Email does not exist");
         throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "Failed login attempt, email or password incorrect"
