@@ -438,3 +438,26 @@ describe("Testing the getImageSrc()", () => {
     })
 
 })
+
+test("Testing the return to previous page call", async () => {
+    const $router = {
+        back: jest.fn()
+    };
+
+    const profileWrapper = await shallowMount(Profile, {
+        mocks: {
+            $router
+        }
+    });
+
+    profileWrapper.vm.$data.fromSearch = true;
+
+    await profileWrapper.vm.$nextTick();
+
+    expect(profileWrapper.find("#return-button").exists).toBeTruthy()
+    profileWrapper.find("#return-button").trigger("click");
+
+    await profileWrapper.vm.$nextTick();
+
+    expect($router.back).toHaveBeenCalled();
+})

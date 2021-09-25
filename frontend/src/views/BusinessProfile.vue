@@ -10,7 +10,7 @@
       <div class="container p-5" id="profileContainer">
       <div class="row">
         <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
-          <button class="btn btn-lg green-button w-100" @click="returnToPreviousPage()" id="return-button" tabindex="9">Return to Sale Listing</button>
+          <button class="btn btn-lg green-button w-100" @click="returnToPreviousPage()" id="return-button-listing" tabindex="9">Return to Sale Listing</button>
         </div>
         <div class="return-button-wrapper col-xl-3 mb-3" v-else-if="fromSearch">
           <button class="btn btn-lg green-button w-100" @click="returnToPreviousPage()" id="return-button-search" tabindex="9">Return to Search</button>

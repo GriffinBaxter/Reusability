@@ -113,7 +113,8 @@ beforeEach(() => {
     }
 
     $router = {
-        push: jest.fn()
+        push: jest.fn(),
+        back: jest.fn()
     }
 })
 
@@ -320,7 +321,8 @@ describe("Testing that data variables get populated correctly", () => {
         businessType:"ACCOMMODATION_AND_FOOD_SERVICES",
         created:"2021-09-19T15:36:42.328003",
         currencySymbol:"#",
-        currencyCode:"123"
+        currencyCode:"123",
+        businessImages: []
     }}
 
     test("Testing that with a full response all the values are correctly assigned.", async () => {
@@ -384,5 +386,39 @@ describe("Testing the isGaaOrDgaa function", () => {
 
     test("Testing that '1231231' returns false.", async () => {
         expect(BusinessProfile.methods.isGaaOrDgaa("1231231")).toBeFalsy();
+    })
+})
+
+
+describe("Testing the return to previous page calls", () => {
+
+    beforeEach(async () => {
+        await createWrapper();
+    })
+
+    test("Test clicking the return to Search button", async () => {
+        wrapper.vm.$data.fromSearch = true;
+
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find("#return-button-search").exists).toBeTruthy()
+        wrapper.find("#return-button-search").trigger("click");
+
+        await wrapper.vm.$nextTick();
+
+        expect($router.back).toHaveBeenCalled();
+    })
+
+    test("Test clicking the return to Listing button", async () => {
+        wrapper.vm.$data.fromListing = true;
+
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find("#return-button-listing").exists).toBeTruthy()
+        wrapper.find("#return-button-listing").trigger("click");
+
+        await wrapper.vm.$nextTick();
+
+        expect($router.back).toHaveBeenCalled();
     })
 })
