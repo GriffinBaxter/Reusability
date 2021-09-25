@@ -5,7 +5,7 @@
         <div class="new-message-icon" v-if="newMessage"></div>
       </div>
       <div class="user-icon-wrap">
-        <img :src="getImageSrc()" :alt="`seller ${userName}'s profile image`" class="user-icon rounded-circle">
+        <img :src="getThumbnailImageSrc(images)" :alt="`seller ${userName}'s profile image`" class="user-icon rounded-circle">
       </div>
       <div class="conversation-details">
         <div class="card-name">{{limitStringLength(cardName, MAX_CARD_LENGTH)}}</div>
@@ -23,8 +23,7 @@
 </template>
 
 <script>
-
-import Api from "../../Api";
+import {getThumbnailImageSrc} from "./messageHelper";
 
 export default {
   name: "MessageOption",
@@ -57,6 +56,9 @@ export default {
     }
   },
   methods: {
+
+    getThumbnailImageSrc: getThumbnailImageSrc,
+
     /**
      * Takes a string and shortens it if necessary.
      *
@@ -69,19 +71,7 @@ export default {
         return str.substr(0, maxLength-3) + "...";
       }
       return str;
-    },
-
-    /**
-     * Adds the backend server URL to the user's primary profile image URL if they have images.
-     * @return String a full URL to the primary image of the user (or the default image if they don't have one)
-     */
-    getImageSrc() {
-      if (this.images.length === 0) {
-        return require('../../../public/default-image.jpg')
-      }
-      const primaryImage = this.images.filter((image) => image.isPrimary);
-      return Api.getServerURL() + "/" + primaryImage[0].thumbnailFilename;
-    },
+    }
   }
 }
 </script>
