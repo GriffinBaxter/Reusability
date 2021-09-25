@@ -51,7 +51,7 @@
                    v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" autocomplete="new-password">
 
             <!--toggle password visibility-->
-            <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
+            <span class="input-group-text green-search-button" id="show-password" @click="showPassword = !showPassword"
                   @keydown=" (event) => { if (event.keyCode === 13) this.showPassword = !showPassword}"
                   tabindex="8">
                         <i v-if="!showPassword" class="fas fa-eye" aria-hidden="true"></i>

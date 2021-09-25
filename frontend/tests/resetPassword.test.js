@@ -10,7 +10,6 @@ beforeEach(() => {
 
 describe("Teting the password field", () => {
 
-
     test("Testing that inputing a value into the input field updates the value", async () => {
         const password = await wrapper.find("#password");
         expect(password.element.value).toStrictEqual("");
@@ -21,6 +20,17 @@ describe("Teting the password field", () => {
         await wrapper.vm.$nextTick();
         expect(password.element.value).toStrictEqual("password");
         expect(wrapper.vm.$data.password).toStrictEqual("password");
+    })
+
+    test("Testing that pressing the show password icon changes the input type", async () => {
+        const password = await wrapper.find("#password");
+        const showPasswordIcon = await wrapper.find("#show-password");
+
+        expect(password.element.type).toStrictEqual("password");
+
+        await showPasswordIcon.trigger("click");
+        await wrapper.vm.$nextTick();
+        expect(password.element.type).toStrictEqual("text");
     })
 
 })
