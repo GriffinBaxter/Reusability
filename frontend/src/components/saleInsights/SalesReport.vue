@@ -472,6 +472,10 @@ export default {
       }
     },
 
+    /**
+     * Generates the graph data in the required format for vue-chartjs, with the chart labels and data (for both sales
+     * and revenue).
+     */
     generateGraphData() {
       let labels = [];
       let salesData = [];
