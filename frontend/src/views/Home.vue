@@ -31,6 +31,10 @@
         <div class="tab-content">
           <!--Home feed-->
           <div class="tab-pane fade show active" id="my-feed" role="tabpanel" aria-labelledby="my-feed-tab">
+            <div id="no-bookmarks-message" class="mt-2" v-if="hasDataLoaded && bookmarkMessages.length === 0 && rendered">
+              No bookmarked messages to show
+            </div>
+
             <div class="container-news mx-md-5 text-font">
 
             <br>
@@ -39,11 +43,7 @@
             <div v-if="showBookmarkMessages">
 
               <!-- Bookmarked listing message -->
-              <div id="bookmark-messages-container" v-if="hasDataLoaded">
-                <div v-if="bookmarkMessages.length === 0 && rendered">
-                  <h2 id="no-bookmark-message" style="text-align: center">(No Bookmarked Messages)</h2>
-                </div>
-
+              <div id="bookmark-messages-container" v-if="hasDataLoaded && bookmarkMessages.length !== 0 && rendered">
                 <div :id="'bookmark-message-container-' + message.id"
                      class="row post shadow py-3 px-4"
                      type="button"
@@ -77,7 +77,7 @@
                 </div>
               </div>
               <!--     Loading Dotes     -->
-              <div v-else>
+              <div v-if="!hasDataLoaded">
                 <LoadingDots/>
               </div>
 
