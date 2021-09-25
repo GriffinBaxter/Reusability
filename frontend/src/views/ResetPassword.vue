@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div class="row justify-content-center ">
       <div class="col-3 m-3 text-center logo-container">
         <img id="logo" src="../../public/logo_only_med.png" class="img-fluid" alt="logo">
@@ -83,9 +83,9 @@
       </div>
 
       <div class="row">
-        <div class="col">
-          <button class="btn btn-lg float-end my-sm-4 mb-4 green-button"
-                  type="submit" id="loginButton" tabindex="4">Change Password</button>
+        <div class="col d-flex justify-content-center" >
+          <button class="btn btn-lg my-sm-4 mb-4 green-button"
+                  type="submit" tabindex="4">Change Password</button>
         </div>
       </div>
     </div>
