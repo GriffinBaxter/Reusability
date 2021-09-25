@@ -4,7 +4,7 @@ export const UserRole = {
     DEFAULTGLOBALAPPLICATIONADMIN: "DEFAULTGLOBALAPPLICATIONADMIN"
 }
 
-export default class User{
+export default class User {
 
     // This is a config for the user requirement details
     static config = {

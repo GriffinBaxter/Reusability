@@ -107,7 +107,8 @@ class ProductResourceIntegrationTests {
             "\"businessType\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"currencySymbol\":\"%s\"," +
-            "\"currencyCode\":\"%s\"}," +
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":[]}," +
             "\"barcode\":\"%s\"}";
 
     private String expectedJson;

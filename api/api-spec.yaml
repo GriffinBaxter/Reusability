@@ -7,7 +7,7 @@ servers:
 
 info:
   description: API specification for the SENG302 2021 project
-  version: 6.2.8
+  version: 6.3.0
   title: REUSEABILITY
   contact:
     email: s302team400@cosc.canterbury.ac.nz
@@ -52,6 +52,7 @@ tags:
   - name: 'U31: Purchases'
   - name: 'U40: Withdraw sale listings'
   - name: 'U41: Sales report'
+  - name: 'U25: Lost Password'
   # Entities
   - name: 'Users'
     description: 'Grouping of endpoints related to the User entity'
@@ -73,6 +74,8 @@ tags:
     description: 'Grouping of endpoints related to the Conversation entity'
   - name: 'Messages'
     description: 'Grouping of endpoints related to the Message entity'
+  - name: 'Forgot Password'
+    description: 'Grouping of endpoints related the the ForgotPassword entity'
 
 security:
   - CookieAuth:
@@ -111,6 +114,8 @@ paths:
           $ref: '#/components/responses/AuthenticatedResponse'
         '400':
           description: Failed login attempt, email or password incorrect
+        '403':
+          description: Exceeded login attempts. Please try again in 1 hour.
 
   '/users':
     post:
@@ -2350,6 +2355,51 @@ paths:
         '406':
           $ref: '#/components/responses/NotAcceptableError'
 
+  '/users/forgotPassword':
+    post:
+      tags:
+        - 'U25: Lost Password'
+        - 'Forgot Password'
+      summary: Creates a ForgotPassword entity and sends an email to the user
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPassword'
+      responses:
+        '201':
+          description: Forgot Password Entity created and email successfully sent
+        '400':
+          description: Email not sent
+        '406':
+          description: Email does not exist in the system
+    put:
+      tags:
+        - 'U25: Lost Password'
+        - 'Forgot Password'
+      summary: Changes the users pasword if they have a valid token
+      security: []
+      parameters:
+        - name: token
+          in: path
+          description: ForgotPassword token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+      responses:
+        '200':
+          description: Successfully updated password
+        '400':
+          description: Invalid Password
+        '406':
+          description: Invalid Token
+
 
 components:
   securitySchemes:
@@ -2711,6 +2761,12 @@ components:
             - Retail Trade
             - Charitable organisation
             - Non-profit organisation
+        currencyCode:
+          type: string
+          example: 'NZD'
+        currencySymbol:
+          type: string
+          example: '$'
         created:
           type: string
           format: date-time
@@ -3144,3 +3200,25 @@ components:
           format: date-time
           example: '2021-07-15T05:10:00Z'
           description: Date and time message was created/sent
+
+    ForgotPassword:
+      type: object
+      description: Email for user to reset their password
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          example: 'example@email.com'
+          description: Users email
+
+    ChangePassword:
+      type: object
+      description: New Password for user
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          example: 'NewPassword1!'
+          description: New password
