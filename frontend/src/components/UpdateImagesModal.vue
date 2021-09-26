@@ -262,8 +262,6 @@ export default {
           response => {
             if (response.status === 200) {
               this.setPrimary(this.selectedImage);
-            } else {
-              this.formErrorModalMessage = "Sorry, something went wrong...";
             }
           }
       ).catch((error) => {
@@ -329,14 +327,16 @@ export default {
      * @param res response from upload image API call
      */
     addImage(res) {
-      // If image is the only image set as default
+      // If image is the only image set primary as default
       if (this.currentData.data.images.length === 0) {
         res.data.isPrimary = true;
         this.primaryImage = res.data.id;
+        this.currentData.data.images.push(res.data);
         document.getElementById("primary-image").src = this.getImageSrc(res.data.filename);
+      } else {
+        this.currentData.data.images.push(res.data);
       }
 
-      this.currentData.data.images.push(res.data);
     },
 
     onUploadClick() {
