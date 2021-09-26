@@ -42,8 +42,20 @@ describe("Testing the Messages.vue component", () => {
             data() {
                 return {
                     conversations: [
-                        { images: [],
-                        userName: "Test"}
+                        {
+                            images: [
+                                {
+                                    "id": 1,
+                                    "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                                    "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                                    "isPrimary": true
+                                }
+                            ],
+                            userName: "Test",
+                            id: 1,
+                            newMessage: false,
+                            cardName: "Test"
+                        }
                     ]
                 }
             }
@@ -136,49 +148,89 @@ describe("Testing the Messages.vue component", () => {
                     "id": 4,
                     "instigatorId": 21,
                     "instigatorName": "John S Doe",
-                    "instigatorImage": null,
                     "receiverId": 8,
                     "receiverName": "Frank J Smith",
-                    "receiverImage": null,
                     "marketplaceCardId": 9,
                     "marketplaceCardTitle": "Beef Frying",
-                    "created": "2021-09-05T17:22:03.213546"
+                    "created": "2021-09-05T17:22:03.213546",
+                    "receiverImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }],
+                    "instigatorImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }]
                 },
                 {
                     "id": 3,
                     "instigatorId": 21,
                     "instigatorName": "John S Doe",
-                    "instigatorImage": null,
                     "receiverId": 5,
                     "receiverName": "Minttu Anna Wainio",
-                    "receiverImage": null,
                     "marketplaceCardId": 7,
                     "marketplaceCardTitle": "Sealord Fish Fillets Hoki Classic Crumbed",
-                    "created": "2021-09-05T17:20:57.783525"
+                    "created": "2021-09-05T17:20:57.783525",
+                    "receiverImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }],
+                    "instigatorImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }]
                 },
                 {
                     "id": 2,
                     "instigatorId": 21,
                     "instigatorName": "John S Doe",
-                    "instigatorImage": null,
                     "receiverId": 9,
                     "receiverName": "Lina Jose Mari Patterson",
-                    "receiverImage": null,
                     "marketplaceCardId": 10,
                     "marketplaceCardTitle": "Beef Mince Premium",
-                    "created": "2021-09-05T17:09:58.893898"
+                    "created": "2021-09-05T17:09:58.893898",
+                    "receiverImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }],
+                    "instigatorImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }]
                 },
                 {
                     "id": 1,
                     "instigatorId": 21,
                     "instigatorName": "John S Doe",
-                    "instigatorImage": null,
                     "receiverId": 8,
                     "receiverName": "Frank J Smith",
-                    "receiverImage": null,
                     "marketplaceCardId": 9,
                     "marketplaceCardTitle": "Beef Frying",
-                    "created": "2021-09-05T17:09:38.111619"
+                    "created": "2021-09-05T17:09:38.111619",
+                    "receiverImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }],
+                    "instigatorImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }]
                 }
             ]
         }
@@ -202,25 +254,45 @@ describe("Testing the Messages.vue component", () => {
                     "id": 4,
                     "instigatorId": 21,
                     "instigatorName": "John S Doe",
-                    "instigatorImage": null,
                     "receiverId": 8,
                     "receiverName": "Frank J Smith",
-                    "receiverImage": null,
                     "marketplaceCardId": 9,
                     "marketplaceCardTitle": "Beef Frying",
-                    "created": "2021-09-05T17:22:03.213546"
+                    "created": "2021-09-05T17:22:03.213546",
+                    "receiverImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }],
+                    "instigatorImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }]
                 },
                 {
                     "id": 1,
                     "instigatorId": 21,
                     "instigatorName": "John S Doe",
-                    "instigatorImage": null,
                     "receiverId": 8,
                     "receiverName": "Frank J Smith",
-                    "receiverImage": null,
                     "marketplaceCardId": 9,
                     "marketplaceCardTitle": "Beef Frying",
-                    "created": "2021-09-05T17:09:38.111619"
+                    "created": "2021-09-05T17:09:38.111619",
+                    "receiverImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }],
+                    "instigatorImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }]
                 }
             ]
         }
@@ -261,49 +333,89 @@ describe("Testing the Messages.vue component", () => {
                         "id": 4,
                         "instigatorId": 21,
                         "instigatorName": "John S Doe",
-                        "instigatorImage": null,
                         "receiverId": 8,
                         "receiverName": "Frank J Smith",
-                        "receiverImage": null,
                         "marketplaceCardId": 9,
                         "marketplaceCardTitle": "Beef Frying",
-                        "created": "2021-09-05T17:22:03.213546"
+                        "created": "2021-09-05T17:22:03.213546",
+                        "receiverImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }],
+                        "instigatorImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }]
                     },
                     {
                         "id": 3,
                         "instigatorId": 21,
                         "instigatorName": "John S Doe",
-                        "instigatorImage": null,
                         "receiverId": 5,
                         "receiverName": "Minttu Anna Wainio",
-                        "receiverImage": null,
                         "marketplaceCardId": 7,
                         "marketplaceCardTitle": "Sealord Fish Fillets Hoki Classic Crumbed",
-                        "created": "2021-09-05T17:20:57.783525"
+                        "created": "2021-09-05T17:20:57.783525",
+                        "receiverImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }],
+                        "instigatorImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }]
                     },
                     {
                         "id": 2,
                         "instigatorId": 21,
                         "instigatorName": "John S Doe",
-                        "instigatorImage": null,
                         "receiverId": 9,
                         "receiverName": "Lina Jose Mari Patterson",
-                        "receiverImage": null,
                         "marketplaceCardId": 10,
                         "marketplaceCardTitle": "Beef Mince Premium",
-                        "created": "2021-09-05T17:09:58.893898"
+                        "created": "2021-09-05T17:09:58.893898",
+                        "receiverImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }],
+                        "instigatorImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }]
                     },
                     {
                         "id": 1,
                         "instigatorId": 21,
                         "instigatorName": "John S Doe",
-                        "instigatorImage": null,
                         "receiverId": 8,
                         "receiverName": "Frank J Smith",
-                        "receiverImage": null,
                         "marketplaceCardId": 9,
                         "marketplaceCardTitle": "Beef Frying",
-                        "created": "2021-09-05T17:09:38.111619"
+                        "created": "2021-09-05T17:09:38.111619",
+                        "receiverImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }],
+                        "instigatorImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }]
                     }
                 ]
             }
@@ -366,13 +478,23 @@ describe("Testing the Messages.vue component", () => {
                         "id": 1,
                         "instigatorId": 21,
                         "instigatorName": "John S Doe",
-                        "instigatorImage": null,
                         "receiverId": 8,
                         "receiverName": "Frank J Smith",
-                        "receiverImage": null,
                         "marketplaceCardId": 9,
                         "marketplaceCardTitle": "Beef Frying",
-                        "created": "2021-09-05T17:09:38.111619"
+                        "created": "2021-09-05T17:09:38.111619",
+                        "receiverImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }],
+                        "instigatorImages":  [{
+                            "id": 1,
+                            "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                            "isPrimary": true
+                        }]
                     }
                 ]
             }
@@ -474,13 +596,23 @@ describe("Testing the Messages.vue component", () => {
                     "id": 1,
                     "instigatorId": 21,
                     "instigatorName": "John S Doe",
-                    "instigatorImage": null,
                     "receiverId": 8,
                     "receiverName": "Frank J Smith",
-                    "receiverImage": null,
                     "marketplaceCardId": 9,
                     "marketplaceCardTitle": "Beef Frying",
-                    "created": "2021-09-05T17:09:38.111619"
+                    "created": "2021-09-05T17:09:38.111619",
+                    "receiverImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }],
+                    "instigatorImages":  [{
+                        "id": 1,
+                        "filename": "23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "thumbnailFilename": "thumbnail23275f7e-b8af-4da3-a63f-ba850ab3d189.png",
+                        "isPrimary": true
+                    }]
                 }
             ]
         }
