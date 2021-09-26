@@ -150,6 +150,7 @@ describe("Testing the changePassword message", () => {
 
         wrapper.vm.changePassword();
         await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
 
         expect(wrapper.vm.$data.resetSuccess).toBeTruthy();
 
@@ -166,6 +167,7 @@ describe("Testing the changePassword message", () => {
         wrapper.vm.$data.confirmPassword = "TestPassword123!";
 
         wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
         await wrapper.vm.$nextTick()
 
         expect($router.push).toHaveBeenCalledWith({ path: `/timeout`});
@@ -186,10 +188,60 @@ describe("Testing the changePassword message", () => {
 
         wrapper.vm.changePassword();
         await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
 
-        console.log(wrapper.vm.$data)
 
         expect(wrapper.vm.$data.passwordErrorMsg).toEqual("Invalid password: Please check criteria.")
 
     });
+
+    test("Testing that the changePassword method sets the invalidToken to true when a 406 status is received", async () => {
+
+        const data = {
+            response: {
+                status: 406
+            }
+        }
+        Api.resetPassword.mockImplementation(() => Promise.reject(data))
+
+        wrapper.vm.$data.password = "TestPassword123!"
+        wrapper.vm.$data.confirmPassword = "TestPassword123!";
+
+        wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+
+        expect(wrapper.vm.$data.invalidToken).toBeTruthy();
+
+    });
+
+    test("Testing that the changePassword method pushes to a timeout route when receiving a 500 error", async () => {
+
+        const data = {
+            response: {
+                status: 500
+            }
+        }
+        Api.resetPassword.mockImplementation(() => Promise.reject(data))
+
+        wrapper.vm.$data.password = "TestPassword123!"
+        wrapper.vm.$data.confirmPassword = "TestPassword123!";
+
+        wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+
+        expect($router.push).toHaveBeenCalledWith({ path: `/timeout`});
+
+    });
+
+    test("BackToLogin calls $router.push to the login route.", async () => {
+
+        wrapper.vm.backToLogin();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+        expect($router.push).toHaveBeenCalledWith({name: "Login"});
+    })
 });
