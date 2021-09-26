@@ -109,13 +109,14 @@
               @updatePage="updatePage"/>
         </div>
 
+        <div class="noListings" v-if="noListings">
+          <div class="card p-1">
+            <p class="h2 py-5" style="text-align: center">No Listings Found</p>
+          </div>
+        </div>
+
       </div>
     </div>
-      <div class="noListings" v-if="noListings">
-        <div class="card p-1">
-          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
-        </div>
-      </div>
     </div>
 
     <WithdrawListingConfirmationModal ref="withdrawListingConfirmationModal"

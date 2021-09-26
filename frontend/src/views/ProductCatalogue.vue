@@ -67,7 +67,7 @@
                       <button class="btn btn-primary" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateImagesModal.showModel(event);
-                    }">Update Photos</button>
+                    }">Update Images</button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateProductModel.showModel(event);
