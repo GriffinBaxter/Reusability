@@ -605,19 +605,6 @@ export default {
         }
 
       })
-    },
-    /**
-     * Creates test data TEMP
-     */
-    testData() {
-      const product = {id: "WATT-420-BEANS"};
-      const item = {id: 1, product: product, quantity: 5, totalPrice: 5.19};
-      this.inventoryItems.push(item);
-      const anotherProduct = {id: "FOOT-LETTUCE"};
-      const anotherItem = {id: 2, product: anotherProduct, quantity: 3, totalPrice: 2.59};
-      this.inventoryItems.push(anotherItem);
-      this.inventoryItems.push({id: 7, product: anotherProduct, quantity: 2});
-      this.inventoryItems.push({id: 234, product: product, quantity: 3})
     }
   },
   mounted() {
@@ -719,7 +706,10 @@ input:focus, textarea:focus {
 /*********************************************************************/
 
 .currentlySelectedLabel {
-  color: red;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
 }
 
 </style>
