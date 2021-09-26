@@ -12,8 +12,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * User test class.
@@ -23,8 +26,6 @@ class UserTests {
     private static Address address;
 
     private static User user;
-
-    private static User testUser;
 
     private static Business business;
 
@@ -1614,5 +1615,146 @@ class UserTests {
 
         // Then
         Assertions.assertEquals("Invalid password", errorMessage);
+    }
+
+    // ********************************* useAttempt() method tests ************************************
+
+    /**
+     * Test that remainingLoginAttempts is reduced by 1 attempt when the current remainingLoginAttempts is greater than
+     * 0 when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsGreaterThanOne() {
+        int attempts = 2;
+        int expectedAttempts = 1;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    /**
+     * Test that remainingLoginAttempts is not reduced when the current remainingLoginAttempts is 0
+     * when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsNoAttemptsRemaining() {
+        int attempts = 0;
+        int expectedAttempts = 0;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    /**
+     * Test that remainingLoginAttempts is not reduced when the current remainingLoginAttempts is negative
+     * when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsNegativeAttemptsRemaining() {
+        int attempts = -10;
+        int expectedAttempts = 0;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    // ********************************* hasLoginAttemptsRemaining() method tests ************************************
+
+    /**
+     * Test that hasLoginAttemptsRemaining returns true when there is at least one remaining login attempt
+     * available.
+     */
+    @Test
+    void testHasLoginAttemptsRemaining_AtLeastOneAttemptRemaining_ReturnsTrue() {
+        user.setRemainingLoginAttempts(1);
+        Assertions.assertTrue(user.hasLoginAttemptsRemaining());
+    }
+
+    /**
+     * Test that hasLoginAttemptsRemaining returns true when there are no remaining login attempts
+     * available.
+     */
+    @Test
+    void testHasLoginAttemptsRemaining_NoAttemptsRemaining_ReturnsFalse() {
+        user.setRemainingLoginAttempts(0);
+        Assertions.assertFalse(user.hasLoginAttemptsRemaining());
+    }
+
+    // ********************************* isLocked() method tests ************************************
+
+    /**
+     * Test that isLocked returns false when the account is not locked.
+     */
+    @Test
+    void testIsLocked_NotLocked_ReturnsFalse() {
+        user.setTimeWhenUnlocked(null);
+        Assertions.assertFalse(user.isLocked());
+    }
+
+    /**
+     * Test that isLocked returns true when the account is locked.
+     */
+    @Test
+    void testIsLocked_Locked_ReturnsTrue() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusMinutes(29));
+        Assertions.assertTrue(user.isLocked());
+    }
+
+    // ********************************* canUnlock() method tests ************************************
+
+    /**
+     * Test that canUnlock returns true when the 1 hour since locking the account has passed.
+     */
+    @Test
+    void testCanUnlock_HourPassed_ReturnsTrue() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().minusHours(2));
+        Assertions.assertTrue(user.canUnlock());
+    }
+
+    /**
+     * Test that canUnlock returns false when the 1 hour since locking the account has not passed yet.
+     */
+    @Test
+    void testCanUnlock_HourNotPassed_ReturnsFalse() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusMinutes(38));
+        Assertions.assertFalse(user.canUnlock());
+    }
+
+    // ********************************* lockAccount() method tests ************************************
+
+    /**
+     * Test that lockAccount locks the account for 1 hour.
+     */
+    @Test
+    void testLockAccount_LocksForOneHour() {
+        user.lockAccount();
+
+        LocalDateTime lockedTime = LocalDateTime.now();
+
+        LocalDateTime whenLocked = lockedTime.truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime whenUnlocked = user.getTimeWhenUnlocked().truncatedTo(ChronoUnit.MINUTES);
+
+        assertThat(user.isLocked()).isTrue();
+        assertThat(whenUnlocked).isEqualTo(whenLocked.plusHours(1));
+    }
+
+    // ********************************* unlockAccount() method tests ************************************
+
+    /**
+     * Test that unlockAccount sets timeWhenUnlocked to null.
+     */
+    @Test
+    void testUnlockAccount_TimeWhenUnlockedSetToNull() {
+        user.unlockAccount();
+        Assertions.assertEquals(null, user.getTimeWhenUnlocked());
+    }
+
+    /**
+     * Test that unlockAccount sets remainingLoginAttempts to three.
+     */
+    @Test
+    void testUnlockAccount_SetsRemainingLoginAttemptsToThree() {
+        user.unlockAccount();
+        Assertions.assertEquals(3, user.getRemainingLoginAttempts());
     }
 }

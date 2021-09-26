@@ -18,7 +18,7 @@ const $router = {
 const card1 = {"id":34,"creator":{"id":21,"firstName":"John","lastName":"Doe","middleName":"S","nickname":"Johnny","bio":"Biography","email":"email@email.com","created":"2021-02-02T00:00","role":"DEFAULTGLOBALAPPLICATIONADMIN","businessesAdministered":[null],"homeAddress":{"suburb":"Ilam","city":"Christchurch","region":"Canterbury","country":"New Zealand"}},"section":"EXCHANGE","created":"2021-08-22T14:37:25.767435","displayPeriodEnd":"2021-09-05T14:37:25.767435","title":"asdasd","description":"asd","keywords":[{"id":19,"name":"asd","created":"2021-08-22T14:37:25.745069"}]};
 
 describe("Tests for bookmark message display", () => {
-    test("Test (No Bookmarked Messages) display when no bookmark message.", async () => {
+    test("Test 'No bookmarked messages to show' displays when no bookmark messages.", async () => {
         const response = {
             data: []
         }
@@ -34,10 +34,10 @@ describe("Tests for bookmark message display", () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.find('#bookmark-message-container-1').exists()).toBeFalsy();
-        expect(wrapper.find('#no-bookmark-message').exists()).toBeTruthy();
+        expect(wrapper.find('#no-bookmarks-message').exists()).toBeTruthy();
     });
 
-    test("Test (No Bookmarked Messages) will not display when there is bookmark message.", async () => {
+    test("Test 'No bookmarked messages to show' will not display when there is a bookmark message.", async () => {
         const response = {
             data: [
                 {
@@ -62,7 +62,7 @@ describe("Tests for bookmark message display", () => {
         await wrapper.vm.$nextTick();
 
         expect(wrapper.find('#bookmark-message-container-1').exists()).toBeTruthy();
-        expect(wrapper.find('#no-bookmark-message').exists()).toBeFalsy();
+        expect(wrapper.find('#no-bookmarks-message').exists()).toBeFalsy();
     });
 
     test("Test the bookmark message will display when there is only one message", async () => {
@@ -387,5 +387,56 @@ describe("Tests for tab being available depending ", () => {
         expect(wrapper.find("#my-cards-tab").exists()).toBeTruthy();
         expect(wrapper.find("#my-cards").exists()).toBeTruthy();
     })
+})
 
+describe("Tests the compareCards method", () => {
+
+    const createWrapperAndMockApi = async () => {
+        const response = {
+            status: 200,
+            data: [card1]
+        }
+        Api.getUsersCards.mockImplementation(() => Promise.resolve(response));
+        Api.getBookmarkedMessage.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: []
+        }));
+
+        wrapper = shallowMount(
+            Home,
+            {
+                localVue,
+                mocks: {
+                    $router
+                }
+            }
+        )
+        await wrapper.vm.$nextTick();
+    }
+
+    test("Test the method returns -1 when section of card 1 has a smaller alphabetic order than the section of card 2", async () => {
+        const card1 = { section: "ForSale" };
+        const card2 = { section: "Wanted" };
+
+        await createWrapperAndMockApi();
+
+        expect(wrapper.vm.compareCards(card1, card2)).toEqual(-1);
+    });
+
+    test("Test the method returns 1 when section of card 1 has a higher alphabetic order than the section of card 2", async () => {
+        const card1 = { section: "Wanted" };
+        const card2 = { section: "ForSale" };
+
+        await createWrapperAndMockApi();
+
+        expect(wrapper.vm.compareCards(card1, card2)).toEqual(1);
+    });
+
+    test("Test the method returns 0 when section of card 1 is equal to the section of card 2", async () => {
+        const card = { section: "Wanted" };
+
+        await createWrapperAndMockApi();
+
+        expect(wrapper.vm.compareCards(card, card)).toEqual(0);
+    });
 })

@@ -29,7 +29,7 @@
                 <br>
 
                 <!--keywords-->
-                <p class="btn btn-outline-secondary"
+                <p class="btn btn-outline-dark disabled"
                    v-for="keyword in keywords"
                    v-bind:key="keyword.id"
                    style="padding: 0px 3px; margin: 3px 5px">
