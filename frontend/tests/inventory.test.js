@@ -40,17 +40,6 @@ describe("Test methods in the inventory component", () => {
                 }
             });
         await wrapper.vm.$nextTick();
-
-        const sortInventoryItemsResponse = {
-            status: 200,
-            data: [],
-            headers: {
-                "total-pages": "0",
-                "total-rows": "0"
-            }
-        }
-
-        Api.sortInventoryItems.mockImplementation(() => Promise.resolve(sortInventoryItemsResponse));
     });
 
     describe("Test setLinkBusinessAccount method", () => {
@@ -127,6 +116,20 @@ describe("Test methods in the inventory component", () => {
     });
 
     describe("Test updatePage method", () => {
+
+        beforeEach(() => {
+
+            const sortInventoryItemsResponse = {
+                status: 200,
+                data: [],
+                headers: {
+                    "total-pages": "0",
+                    "total-rows": "0"
+                }
+            }
+
+            Api.sortInventoryItems.mockImplementation(() => Promise.resolve(sortInventoryItemsResponse));
+        })
 
         test("Test updatePage sets the current page when called with a given page number", () => {
 
@@ -222,8 +225,242 @@ describe("Test methods in the inventory component", () => {
 
         });
 
+        test("Test retrieveBusinessInfo pushes to the timeout page when there is no response received", async () => {
+
+            Api.getBusiness.mockImplementation(() => Promise.reject({request: true}))
+
+            await wrapper.vm.retrieveBusinessInfo();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/timeout"});
+
+        });
+
+        test("Test retrieveBusinessInfo pushes to the invalid token page when a 401 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 401
+                }
+            }
+            Api.getBusiness.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveBusinessInfo();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/invalidtoken"});
+
+        });
+
+        test("Test retrieveBusinessInfo pushes to the no business page when a 406 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 406
+                }
+            }
+            Api.getBusiness.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveBusinessInfo();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/noBusiness"});
+
+        });
+
+        test("Test retrieveBusinessInfo pushes to the no business page by default when a 500 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 500
+                }
+            }
+            Api.getBusiness.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveBusinessInfo();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/noBusiness"});
+
+        });
 
     });
+
+    describe("Test orderInventory method", () => {
+
+        test("Test orderInventory sets product ID ascending values and adds the fas chevron classes to the correct icon when ordering by product ID", async () => {
+            let productIdIcon = wrapper.find('#productIdIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return productIdIcon.element
+            });
+
+            wrapper.vm.$data.productIdAscending = false;
+            wrapper.vm.orderInventory(true, false, false, false, false, false, false, false);
+
+            expect(wrapper.vm.$data.productIdAscending).toEqual(true);
+            expect(productIdIcon.classes()).toContain('fas');
+            expect(productIdIcon.classes()).toContain('fa-chevron-down');
+            expect(productIdIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "productIdDESC", page: "1"}});
+        });
+
+        test("Test orderInventory sets quantity ascending value and adds the fas chevron classes to the correct icon when ordering by quantity", async () => {
+            let quantityIcon = wrapper.find('#quantityIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return quantityIcon.element
+            });
+
+            wrapper.vm.$data.quantityAscending = true;
+            wrapper.vm.orderInventory(false, true, false, false, false, false, false, false);
+
+
+            expect(wrapper.vm.$data.quantityAscending).toEqual(false);
+            expect(quantityIcon.classes()).toContain('fas');
+            expect(quantityIcon.classes()).toContain('fa-chevron-up');
+            expect(quantityIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "quantityASC", page: "1"}});
+        });
+
+        test("Test orderInventory sets price per item ascending value and adds the fas chevron classes to the correct icon when ordering by price per item", async () => {
+            let pricePerItemIcon = wrapper.find('#pricePerItemIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return pricePerItemIcon.element
+            });
+
+            wrapper.vm.$data.quantityAscending = false;
+            wrapper.vm.orderInventory(false, false, true, false, false, false, false, false);
+
+
+            expect(wrapper.vm.$data.pricePerItemAscending).toEqual(true);
+            expect(pricePerItemIcon.classes()).toContain('fas');
+            expect(pricePerItemIcon.classes()).toContain('fa-chevron-down');
+            expect(pricePerItemIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "pricePerItemDESC", page: "1"}});
+        });
+
+        test("Test orderInventory sets total price ascending value and adds the fas chevron classes to the correct icon when ordering by total price", async () => {
+            let totalPriceIcon = wrapper.find('#totalPriceIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return totalPriceIcon.element
+            });
+
+            wrapper.vm.$data.totalPriceAscending = true;
+            wrapper.vm.orderInventory(false, false, false, true, false, false, false, false);
+
+
+            expect(wrapper.vm.$data.totalPriceAscending).toEqual(false);
+            expect(totalPriceIcon.classes()).toContain('fas');
+            expect(totalPriceIcon.classes()).toContain('fa-chevron-up');
+            expect(totalPriceIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "totalPriceASC", page: "1"}});
+        });
+
+        test("Test orderInventory sets manufactured ascending value and adds the fas chevron classes to the correct icon when ordering by manufactured date", async () => {
+            let manufacturedIcon = wrapper.find('#manufacturedIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return manufacturedIcon.element
+            });
+
+            wrapper.vm.$data.manufacturedAscending = false;
+            wrapper.vm.orderInventory(false, false, false, false, true, false, false, false);
+
+
+            expect(wrapper.vm.$data.manufacturedAscending).toEqual(true);
+            expect(manufacturedIcon.classes()).toContain('fas');
+            expect(manufacturedIcon.classes()).toContain('fa-chevron-down');
+            expect(manufacturedIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "manufacturedDESC", page: "1"}});
+        });
+
+        test("Test orderInventory sets sell by ascending value and adds the fas chevron classes to the correct icon when ordering by sell by date", async () => {
+            let sellByIcon = wrapper.find('#sellByIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return sellByIcon.element
+            });
+
+            wrapper.vm.$data.sellByAscending = true;
+            wrapper.vm.orderInventory(false, false, false, false, false, true, false, false);
+
+
+            expect(wrapper.vm.$data.sellByAscending).toEqual(false);
+            expect(sellByIcon.classes()).toContain('fas');
+            expect(sellByIcon.classes()).toContain('fa-chevron-up');
+            expect(sellByIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "sellByASC", page: "1"}});
+        });
+
+        test("Test orderInventory sets best before ascending value and adds the fas chevron classes to the correct icon when ordering by best before date", async () => {
+            let bestBeforeIcon = wrapper.find('#sellByIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return bestBeforeIcon.element
+            });
+
+            wrapper.vm.$data.bestBeforeAscending = false;
+            wrapper.vm.orderInventory(false, false, false, false, false, false, true, false);
+
+
+            expect(wrapper.vm.$data.bestBeforeAscending).toEqual(true);
+            expect(bestBeforeIcon.classes()).toContain('fas');
+            expect(bestBeforeIcon.classes()).toContain('fa-chevron-down');
+            expect(bestBeforeIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "bestBeforeDESC", page: "1"}});
+        });
+
+        test("Test orderInventory sets expires ascending value and adds the fas chevron classes to the correct icon when ordering by expiry date", async () => {
+            let expiresIcon = wrapper.find('#expiresIcon');
+
+            jest.spyOn(document, 'getElementById').mockImplementation(() => {
+                return expiresIcon.element
+            });
+
+            wrapper.vm.$data.expiresAscending = true;
+            wrapper.vm.orderInventory(false, false, false, false, false, false, false, true);
+
+
+            expect(wrapper.vm.$data.expiresAscending).toEqual(false);
+            expect(expiresIcon.classes()).toContain('fas');
+            expect(expiresIcon.classes()).toContain('fa-chevron-up');
+            expect(expiresIcon.classes()).toContain('float-end');
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "expiresASC", page: "1"}});
+        });
+
+    });
+
+
+    describe("Test retrieveInventoryItems method", () => {
+
+        test("Test retrieveInventoryItems clears inventory item values if a 200 response is returned but there is no data for the given query", async () => {
+
+            const sortInventoryItemsResponse = {
+                status: 200,
+                data: [],
+                headers: {
+                    "total-pages": "0",
+                    "total-rows": "0"
+                }
+            }
+            Api.sortInventoryItems.mockImplementation(() => Promise.resolve(sortInventoryItemsResponse));
+
+            await wrapper.vm.retrieveInventoryItems();
+
+            expect(wrapper.vm.$data.inventories).toEqual([]);
+            expect(wrapper.vm.$data.currentPage).toEqual(0);
+            expect(wrapper.vm.$data.totalRows).toEqual(0);
+            expect(wrapper.vm.$data.totalPages).toEqual(0);
+
+
+        });
+
+    });
+
+
 
 
 
