@@ -329,7 +329,7 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
-        System.out.println(user.getPassword());
+
         response = mvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))

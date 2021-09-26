@@ -150,7 +150,6 @@ public class UserResource {
             }
 
             // User exists, account not locked and password is correct
-            System.out.println(user.verifyPassword(login.getPassword()));
             if (user.verifyPassword(login.getPassword())) {
                 String sessionUUID = getUniqueSessionUUID();
 
