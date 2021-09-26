@@ -128,6 +128,12 @@ test("Testing the barcodeSearch method in Inventory triggers a router push with 
         mocks: {
             $router,
             $route
+        },
+        data () {
+            return {
+                inventories: [],
+                notInitialLoad: true
+            }
         }
     });
 
