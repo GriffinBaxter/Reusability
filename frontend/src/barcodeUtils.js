@@ -144,6 +144,7 @@ export function autofillProductFromBarcode(outerThis, callback) {
             if (outerThis.description === "" && result.data.product.generic_name !== undefined) {
                 outerThis.description = result.data.product.generic_name;
             }
+            outerThis.autofilled = true;
         } else {
             outerThis.toastErrorMessage = "Could not autofill, product may not exist in database";
         }
