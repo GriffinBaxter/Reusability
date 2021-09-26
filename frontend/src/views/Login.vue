@@ -68,7 +68,7 @@
               <!--error message location-->
               <div class="row">
                 <div class="col mb-2 mb-md-0">
-                  <label for="loginButton" id="error-label" ref="errorLbl" class="text-danger mt-2">Failed login attempt, email or password incorrect.</label>
+                  <label for="loginButton" id="error-label" ref="errorLbl" class="text-danger mt-2"></label>
                 </div>
               </div>
 
@@ -135,9 +135,9 @@ export default {
       })
       .catch((error) => {
         if (error.response) {
-          if (this.hasExceedLoginAttempts()) {
-            this.$refs.errorLbl.innerText = 'Exceeded login attempts. Your account is now locked. Please wait X minutes for your account to be unlocked. ';
-          } else {
+          if (error.response.status === 403) {
+            this.$refs.errorLbl.innerText = 'Exceeded login attempts. Please wait 1 hour for your account to be unlocked.';
+          } else if (error.response.status === 400) {
             this.$refs.errorLbl.innerText = 'Failed login attempt, email or password incorrect.';
           }
         } else if (error.request) {
@@ -162,15 +162,6 @@ export default {
         return 'password'
       }
     },
-
-    /**
-     * Check if the user has exceeded the number of attempts for logging into their account.
-     * @return Boolean, true if the number of attempts exceeds the limit, otherwise false.
-     */
-    hasExceedLoginAttempts() {
-      // TODO
-      return true;
-    }
   }
 }
 
