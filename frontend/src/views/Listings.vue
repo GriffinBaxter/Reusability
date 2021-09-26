@@ -94,7 +94,7 @@
             v-bind:images="item.images"
             v-bind:barcode="item.barcode"
             v-bind:isAdmin="businessAdmin"
-            @deleteListing="deleteListing"
+            v-on:withdrawConfirmation="withdrawListingConfirmation($event)"
         />
 
         <!--space-->
@@ -117,6 +117,17 @@
         </div>
       </div>
     </div>
+
+    <WithdrawListingConfirmationModal ref="withdrawListingConfirmationModal"
+                                      :businessName="businessName"
+                                      :productName="currentProductName"
+                                      :quantity="currentQuantity.toString()"
+                                      :price="currentPrice.toString()"
+                                      :currencySymbol="currencySymbol"
+                                      :currencyCode="currencyCode"
+                                      v-on:deleteListing="deleteListing()"
+    />
+
     <!-- Footer -->
     <Footer class="footer"/>
   </div>
@@ -132,10 +143,19 @@ import Footer from "../components/main/Footer";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
+import WithdrawListingConfirmationModal from "../components/listing/WithdrawListingConfirmationModal";
 
 export default {
 name: "Listings",
-  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons, BarcodeSearchBar},
+  components: {
+    Footer,
+    CreateListing,
+    ListingItem,
+    Navbar,
+    PageButtons,
+    BarcodeSearchBar,
+    WithdrawListingConfirmationModal
+  },
   data() {
     return {
       allListings: [],
@@ -160,14 +180,20 @@ name: "Listings",
       closesAscending: false,
       createdAscending: false,
 
-      // currency related variables
-      businessCountry: "", // used to retrieve the currency code and symbol
+      // Currency related variables
+      businessCountry: "", // Used to retrieve the currency code and symbol
       currencyCode: "",
       currencySymbol: "",
 
       barcode: "",
 
-      creationSuccess: false
+      creationSuccess: false,
+
+      // Withdraw listing confirmation modal values.
+      currentListingId: null,
+      currentProductName: "",
+      currentQuantity: "",
+      currentPrice: ""
     }
   },
   computed: {
@@ -177,27 +203,44 @@ name: "Listings",
   },
   methods: {
     /**
-     * Delete a listing at ID
-     * @param id ID of listing to be deleted
+     * Opens the withdraw listing confirmation modal for the given item.
+     * @param data An object containing the click event and the listingId
      */
-    async deleteListing(id) {
-      await Api.deleteListing(this.businessId, id).then(() => {
-        this.getListings()
-      }).catch((err) => {
-        if (err.response) {
-          if (err.response.status === 406) {
-            this.getListings()
-          } else if (err.response.status === 401) {
-            this.$router.push({name: "InvalidToken"})
-          } else if (err.response.status === 403) {
-            this.businessAdmin = false
+    withdrawListingConfirmation(data) {
+
+      const listingId = data.listingId;
+      const listing = this.listings.find(listing => listing.id === listingId);
+
+      this.currentProductName = listing.productName;
+      this.currentQuantity = listing.quantity;
+      this.currentPrice = listing.price;
+      this.currentListingId = listing.id;
+
+      this.$refs.withdrawListingConfirmationModal.showModal(data.event);
+    },
+    /**
+     * Delete a listing at ID
+     */
+    async deleteListing() {
+      if (this.currentListingId !== null) {
+        await Api.deleteListing(this.businessId, this.currentListingId).then(() => {
+          this.getListings()
+        }).catch((err) => {
+          if (err.response) {
+            if (err.response.status === 406) {
+              this.getListings()
+            } else if (err.response.status === 401) {
+              this.$router.push({name: "InvalidToken"})
+            } else if (err.response.status === 403) {
+              this.businessAdmin = false
+            } else {
+              console.log(err)
+            }
           } else {
             console.log(err)
           }
-        } else {
-          console.log(err)
-        }
-      })
+        })
+      }
     },
     /**
      * convert orderByString to more readable for user

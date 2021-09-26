@@ -48,7 +48,7 @@
                 type="button"
                 @click="switchNotificationBox()">
 
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16" v-if="newNotification">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell-fill" id="bell-icon-filled" viewBox="0 0 16 16" v-if="newNotification">
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
               </svg>
 
@@ -260,6 +260,7 @@ export default {
       actAsId: null,
       actAs: "",
       currentUser: null,
+      currentBusinessImage: null,
       // navbar required variables
       showNavbar: false,
       isActAsBusiness: false,
@@ -547,6 +548,7 @@ export default {
           }
           if (String(response.businessesAdministered[i].id) === this.actAsId) {
             this.actAs = response.businessesAdministered[i].name;
+            this.currentBusinessImage = response.businessesAdministered[i].businessImages;
             check = true;
             i = response.businessesAdministered.length; // Ends for loop
           }
@@ -602,10 +604,20 @@ export default {
       }, 5);
     },
     getPrimaryImageSrc(currentUser) {
-      if (currentUser != null && currentUser.images.length > 0) {
-        for (let image of currentUser.images) {
-          if (image.isPrimary) {
-            return Api.getServerURL() + "/" + image.thumbnailFilename;
+      if (!this.isActAsBusiness) {
+        if (currentUser != null && currentUser.images.length > 0) {
+          for (let image of currentUser.images) {
+            if (image.isPrimary) {
+              return Api.getServerURL() + "/" + image.thumbnailFilename;
+            }
+          }
+        }
+      } else {
+        if (this.currentBusinessImage != null && this.currentBusinessImage.length > 0) {
+          for (let image of this.currentBusinessImage) {
+            if (image.isPrimary) {
+              return Api.getServerURL() + "/" + image.thumbnailFilename;
+            }
           }
         }
       }
@@ -894,6 +906,10 @@ export default {
     padding: 6px;
     max-width: 120px;
     margin:12px auto
+  }
+
+  #bell-icon-filled, #message-icon-filled {
+    color: #fd5050;
   }
 
   #act-as-small-size-user-section {

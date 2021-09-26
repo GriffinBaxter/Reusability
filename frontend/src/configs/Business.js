@@ -1,4 +1,26 @@
-export default class Business{
+export const BusinessTypes = [
+    'Accommodation and Food Services' ,
+    'Retail Trade',
+    'Charitable Organisation',
+    'Non Profit Organisation'
+]
+
+/**
+ * This method converts a business type that is stored in the backend into the format that is used
+ * in the frontend. It is assumed that the business type received from the backend will be of a valid type and will
+ * therefore, always return a valid business type in the frontend.
+ *
+ * @param type a business type as stored in the backend.
+ * @return {string} the frontend format of business type.
+ */
+export function convertToFrontendBusinessType(type) {
+    if (type === "ACCOMMODATION_AND_FOOD_SERVICES") { return BusinessTypes[0]; }
+    if (type === "RETAIL_TRADE") { return BusinessTypes[1]; }
+    if (type === "CHARITABLE_ORGANISATION") { return BusinessTypes[2]; }
+    return BusinessTypes[3];
+}
+
+export default class Business {
 
     // This is a config for the business requirement details
     static config = {

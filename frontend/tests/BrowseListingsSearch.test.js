@@ -199,8 +199,8 @@ describe("Testing the BrowseListingsSearch methods", () => {
         });
 
         test('Testing that clicking the search button populates the URL correctly', () => {
-            let inputQuery = 'User Search Click Test';
-            let expectedQuery = 'User%20Search%20Click%20Test';
+            let inputQuery = 'Browse Listings Search Click Test';
+            let expectedQuery = 'Browse%20Listings%20Search%20Click%20Test';
             browseListingsSearchWrapper.vm.$refs.searchInput.value = inputQuery;
 
             browseListingsSearchWrapper.vm.$nextTick().then(() => {
