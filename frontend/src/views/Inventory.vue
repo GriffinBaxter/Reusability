@@ -149,6 +149,12 @@
                   @updatePage="updatePage"/>
             </div>
 
+            <div class="noInventory" v-if="noInventory">
+              <div class="card p-1">
+                <p class="h2 py-5" style="text-align: center">No Inventory Items Found</p>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -231,6 +237,15 @@ export default {
 
       // List of Business account current user account administrated
       linkBusinessAccount:[],
+
+      // When page is initially loaded, we don't want 'No Inventory Items Found' message to display since, inventory has not
+      // been retrieved yet.
+      notInitialLoad: false
+    }
+  },
+  computed: {
+    noInventory() {
+      return (this.inventories.length < 1) && this.notInitialLoad;
     }
   },
   methods: {
@@ -594,6 +609,7 @@ export default {
             })
           }
         }
+        this.notInitialLoad = true; // inventories has been retrieved
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
