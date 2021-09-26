@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -323,11 +324,12 @@ class UserResourceIntegrationTests {
         expectedJson = String.format(expectedUserIdJson, user.getId());
         user.setRemainingLoginAttempts(0);
         user.setTimeWhenUnlocked(LocalDateTime.now().minusMinutes(70));
+        user.setPassword(Base64.getEncoder().encodeToString("Testpassword123!".getBytes(StandardCharsets.UTF_8)));
 
         // when
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
-
+        System.out.println(user.getPassword());
         response = mvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))
