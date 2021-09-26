@@ -148,17 +148,18 @@ export default {
         this.currentData.data.name = this.value.data.name;
       }
 
+      let primaryImageFilename;
       for (let image of this.currentData.data.images) {
         if (image.isPrimary) {
           this.primaryImage = image.id;
-          this.primaryImageFilename = image.filename;
+          primaryImageFilename = image.filename;
         }
       }
 
       this.images = this.currentData.data.images;
 
       if (this.images.length > 0) {
-        document.getElementById("primary-image").src = this.getImageSrc(this.primaryImageFilename);
+        document.getElementById("primary-image").src = this.getImageSrc(primaryImageFilename);
       } else {
         document.getElementById("primary-image").src = require('../../public/default-image.jpg');
       }
@@ -260,8 +261,15 @@ export default {
       image.append("images", file)
 
       Api.uploadImage(this.getQueryForParams(), image)
-          .then(() => {
-            location.reload();
+          .then((res) => {
+            // If image is the only image set as default
+            if (this.currentData.data.images.length === 0) {
+              res.data.isPrimary = true;
+              this.primaryImage = res.data.id;
+              document.getElementById("primary-image").src = this.getImageSrc(res.data.filename);
+            }
+
+            this.currentData.data.images.push(res.data);
           }).catch((error) => {
         this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
         console.log(error.message);
@@ -272,7 +280,7 @@ export default {
       this.$refs.image.click();
     }
   },
-  mounted() {
+  mounted: function () {
     // Create a modal and attach it to the updateProductModel reference.
     this.modal = new Modal(this.$refs._updateImagesModal);
 
@@ -281,8 +289,6 @@ export default {
     } else if (this.location === "Business" || this.location === "User") {
       this.currentData = this.value
     }
-    // temp
-    this.primaryImage = 0;
   }
 }
 </script>
