@@ -144,7 +144,7 @@ describe("Test methods in the inventory component", () => {
             wrapper.vm.updatePage(1);
 
             expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/8/inventory", query: {barcode: "9400547002634", orderBy: "expiresASC", page: "2"}});
-            expect(retrieveInventoryItemsSpyOn).toHaveBeenCalledTimes(1);
+            expect(retrieveInventoryItemsSpyOn).toHaveBeenCalledTimes(2);
         });
 
     });
