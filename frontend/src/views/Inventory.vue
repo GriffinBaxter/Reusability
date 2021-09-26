@@ -572,7 +572,6 @@ export default {
         if (this.InventoryItemList.length <= 0) {
           this.inventories = [];
           this.currentPage = 0;
-          this.maxPage = 0;
           this.totalRows = 0;
           this.totalPages = 0;
           // Generate the tableData to be placed in the table & get the total number of rows.
