@@ -178,6 +178,16 @@ public class MarketplaceConversationResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage()
             );
         }
+
+        if (conversation.getReceiver().getId() == sender.getId()) {
+            conversation.setReadByInstigator(false);
+            conversation.setReadByReceiver(true);
+        } else if (conversation.getInstigator().getId() == sender.getId()) {
+            conversation.setReadByReceiver(false);
+            conversation.setReadByInstigator(true);
+        }
+
+        marketplaceConversationRepository.save(conversation);
     }
 
     /**
@@ -227,19 +237,24 @@ public class MarketplaceConversationResource {
 
         Conversation currentConversation = optionalConversation.get();
 
-        // DGAA/GAAs can access any messages
-        if (!Authorization.isGAAorDGAA(currentUser)) {
-            // 403
-            if (currentConversation.getReceiver().getId() != currentUser.getId() && currentConversation.getInstigator().getId() != currentUser.getId()) {
-                logger.error("User does not have permission to perform action.");
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "The user does not have permission to perform the requested action"
-                );
-            }
+        // DGAA/GAAs can access any messages / checks if user is receiver/instigator
+        if (!Authorization.isGAAorDGAA(currentUser) && currentConversation.getReceiver().getId() != currentUser.getId() && currentConversation.getInstigator().getId() != currentUser.getId()) {
+            logger.error("User does not have permission to perform action.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "The user does not have permission to perform the requested action"
+            );
         }
 
         List<Message> messageList = marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(conversationId);
+
+        // Sets the current user to have seen all messages in conversation
+        if (currentConversation.getInstigator().getId() == currentUser.getId()) {
+            currentConversation.setReadByInstigator(true);
+        } else if (currentConversation.getReceiver().getId() == currentUser.getId()) {
+            currentConversation.setReadByReceiver(true);
+        }
+        marketplaceConversationRepository.save(currentConversation);
 
         return toMessagePayloadList(messageList);
     }

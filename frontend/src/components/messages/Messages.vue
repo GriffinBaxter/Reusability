@@ -75,6 +75,8 @@ export default {
         this.messages = res.data.reverse()
         this.deletedConversation = conversation.deleted;
         this.conversationIsOpen = true;
+        conversation.newMessage = false;
+        this.$emit("updateNotifications")
       }).catch(() => {
         this.toastErrorMessage("Something went wrong")
       })
@@ -112,31 +114,36 @@ export default {
      */
     closeConversation() {
       this.conversationIsOpen = false;
+      this.$emit("updateNotifications")
+      this.retrieveConversations()
     },
     /**
      * This method is used to retrieve the conversations for a user.
      */
-    retrieveConversations() {
+    async retrieveConversations() {
       this.errorMessage = "";
       this.isLoading = true;
-      Api.getConversations().then(
+      await Api.getConversations().then(
           (res) => {
             this.conversations = res.data.map( (conversation) => {
               let userImage;
               let userName;
               let userId;
               let deleted;
+              let read
               // comparison between a string and an int
               if (conversation.instigatorId === this.currentId) {
                 userImage = conversation.receiverImage;
                 userName = conversation.receiverName;
                 userId = conversation.receiverId;
                 deleted = conversation.deletedByReceiver;
+                read = conversation.readByInstigator;
               } else {
                 userImage = conversation.instigatorImage;
                 userName = conversation.instigatorName;
                 userId = conversation.instigatorId;
                 deleted = conversation.deletedByInstigator;
+                read = conversation.readByReceiver;
               }
               return {
                 id: conversation.id,
@@ -145,7 +152,7 @@ export default {
                 userId: userId,
                 cardName: conversation.marketplaceCardTitle,
                 creationTime: conversation.created,
-                newMessage: true,
+                newMessage: !read,
                 marketplaceCardId: conversation.marketplaceCardId,
                 deleted: deleted
               };
@@ -169,6 +176,11 @@ export default {
         }
         this.isLoading = false;
       });
+      for (let conv of this.conversations) {
+        if (conv.newMessage) {
+          this.$emit("newMessage")
+        }
+      }
     },
     /**
      * We need to emit the deleteConversation event to the parent (Navbar). The DeleteConversationModal component is in
