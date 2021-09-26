@@ -851,7 +851,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      // If the user has come from a page which contains an individual listing then the return to listing button component
+      // If the user has come from the search page then a return to search button
       // should be rendered.
       if (from.name === 'Search') {
         vm.fromSearch = true;
