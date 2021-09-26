@@ -114,7 +114,8 @@
               <button v-if="canBuy" class="buy-button merryweather w-100" @click="buy">
                 Buy
               </button>
-              <button class="delete-button btn btn-danger w-100" v-if="actingBusinessId == businessId || isAdmin" @click="deleteListing">
+              <button class="delete-button btn btn-danger w-100" v-else-if="actingBusinessId === businessId || isAdmin"
+                      @click="withdrawListingConfirmation($event)">
                 Remove Listing
               </button>
               <button v-else-if="actingBusinessId !== undefined && actingBusinessId !== null" class="buy-button-disabled merryweather w-100" disabled>
@@ -148,6 +149,16 @@
     </main>
 
     <Footer/>
+
+    <WithdrawListingConfirmationModal ref="withdrawListingConfirmationModal"
+                                      :businessName="businessName"
+                                      :productName="productName"
+                                      :quantity="quantity.toString()"
+                                      :price="price.toString()"
+                                      :currencySymbol="currencySymbol"
+                                      :currencyCode="currencyCode"
+                                      v-on:deleteListing="deleteListing()"
+    />
   </div>
 </template>
 
@@ -159,12 +170,14 @@ import Api from "../Api"
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
 import {checkNullity} from "../views/helpFunction";
+import WithdrawListingConfirmationModal from "../components/listing/WithdrawListingConfirmationModal";
 
 export default {
   name: "SaleListing",
   components: {
     Navbar,
-    Footer
+    Footer,
+    WithdrawListingConfirmationModal
   },
   data() {
     return {
@@ -225,6 +238,17 @@ export default {
     }
   },
   methods: {
+    /**
+     * Opens the withdraw listing confirmation modal.
+     * @param event The click event.
+     */
+    withdrawListingConfirmation(event) {
+      this.$refs.withdrawListingConfirmationModal.showModal(event);
+    },
+
+    /**
+     * Sends a request to the back-end to withdraw the current listing and upon success returns to the sale lisings page.
+     */
     deleteListing() {
       Api.deleteListing(this.businessId, this.listingId).then(() => {
         this.returnToSales();
@@ -266,7 +290,7 @@ export default {
       })
     },
     /**
-     * change bookmark status
+     * Change bookmark status
      */
     changeBookmarkStatus() {
       this.isBookmarked = !this.isBookmarked
@@ -489,7 +513,13 @@ export default {
     const listingId = url.substring(url.lastIndexOf('/') + 1);
     const self = this;
     this.currentID = Cookies.get('userID');
-    this.actingBusinessId = Cookies.get("actAs");
+
+    const actAsInt = parseInt(Cookies.get("actAs"));
+    if (!isNaN(actAsInt)) {
+      this.actingBusinessId = actAsInt;
+    } else {
+      this.actingBusinessId = null;
+    }
 
     Api.getDetailForAListing(businessId, listingId)
         .then(response => this.populateData(response.data))

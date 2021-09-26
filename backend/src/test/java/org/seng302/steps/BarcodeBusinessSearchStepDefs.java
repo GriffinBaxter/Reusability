@@ -141,7 +141,8 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
             "\"businessType\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"currencySymbol\":\"%s\"," +
-            "\"currencyCode\":\"%s\"}," +
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":[]}," +
             "\"barcode\":\"%s\"}";
 
     @Before
@@ -315,7 +316,7 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
                 "{\"id\":1,\"firstName\":\"Bob\",\"lastName\":\"Smith\",\"middleName\":\"Ben\",\"nickname\":\"Bobby\",\"bio\":\"cool person\",\"email\":\"email@email.com\",\"created\":\"2021-02-02T00:00\",\"role\":\"GLOBALAPPLICATIONADMIN\",\"businessesAdministered\":[],\"images\":[],\"dateOfBirth\":\"2007-02-02\",\"phoneNumber\":\"0271316\",\"homeAddress\":{\"streetNumber\":\"3/24\",\"streetName\":\"Ilam Road\",\"suburb\":\"Ilam\",\"city\":\"Christchurch\",\"region\":\"Canterbury\",\"country\":\"New Zealand\",\"postcode\":\"90210\"}}]," +
                 "\"primaryAdministratorId\":1,\"name\":\"Business Name\",\"description\":\"Description\"," +
                 "\"address\":{\"streetNumber\":\"3/24\",\"streetName\":\"Ilam Road\",\"suburb\":\"Ilam\",\"city\":\"Christchurch\",\"region\":\"Canterbury\",\"country\":\"New Zealand\",\"postcode\":\"90210\"}" +
-                ",\"businessType\":\"ACCOMMODATION_AND_FOOD_SERVICES\",\"created\":\"2021-02-02T00:00\",\"currencySymbol\":\"$\",\"currencyCode\":\"NZD\"}," +
+                ",\"businessType\":\"ACCOMMODATION_AND_FOOD_SERVICES\",\"created\":\"2021-02-02T00:00\",\"currencySymbol\":\"$\",\"currencyCode\":\"NZD\",\"businessImages\":[]}," +
                 "\"barcode\":\"9300675024235\"}" +
                 ",\"quantity\":5,\"pricePerItem\":2.0,\"totalPrice\":10.0,\"manufactured\":\"\",\"sellBy\":\"\",\"bestBefore\":\"\",\"expires\":\"" + inventoryItem.getExpires().toString() + "\"}]";
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -372,7 +373,7 @@ public class BarcodeBusinessSearchStepDefs extends CucumberSpringConfiguration {
                 "{\"id\":1,\"firstName\":\"Bob\",\"lastName\":\"Smith\",\"middleName\":\"Ben\",\"nickname\":\"Bobby\",\"bio\":\"cool person\",\"email\":\"email@email.com\",\"created\":\"2021-02-02T00:00\",\"role\":\"GLOBALAPPLICATIONADMIN\",\"businessesAdministered\":[],\"images\":[],\"dateOfBirth\":\"2007-02-02\",\"phoneNumber\":\"0271316\",\"homeAddress\":{\"streetNumber\":\"3/24\",\"streetName\":\"Ilam Road\",\"suburb\":\"Ilam\",\"city\":\"Christchurch\",\"region\":\"Canterbury\",\"country\":\"New Zealand\",\"postcode\":\"90210\"}}]," +
                 "\"primaryAdministratorId\":1,\"name\":\"Business Name\",\"description\":\"Description\"," +
                 "\"address\":{\"streetNumber\":\"3/24\",\"streetName\":\"Ilam Road\",\"suburb\":\"Ilam\",\"city\":\"Christchurch\",\"region\":\"Canterbury\",\"country\":\"New Zealand\",\"postcode\":\"90210\"}" +
-                ",\"businessType\":\"ACCOMMODATION_AND_FOOD_SERVICES\",\"created\":\"2021-02-02T00:00\",\"currencySymbol\":\"$\",\"currencyCode\":\"NZD\"}," +
+                ",\"businessType\":\"ACCOMMODATION_AND_FOOD_SERVICES\",\"created\":\"2021-02-02T00:00\",\"currencySymbol\":\"$\",\"currencyCode\":\"NZD\",\"businessImages\":[]}," +
                 "\"barcode\":\"" + product.getBarcode() +
                 "\"}" +
                 ",\"quantity\":5,\"pricePerItem\":2.0,\"totalPrice\":10.0,\"manufactured\":\"\",\"sellBy\":\"\",\"bestBefore\":\"\",\"expires\":\"" + inventoryItem.getExpires().toString() + "\"}," +

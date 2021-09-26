@@ -115,6 +115,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserImage> userImages;
 
+    @Column(name = "remaining_login_attempts")
+    private Integer remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
+
+    @Column(name = "time_when_unlocked")
+    private LocalDateTime timeWhenUnlocked;
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;
@@ -141,6 +147,9 @@ public class User {
 
     private static final Integer PASSWORD_MIN_LENGTH = 8;
     private static final Integer PASSWORD_MAX_LENGTH = 30;
+
+    private static final Integer LOGIN_ATTEMPTS_LIMIT = 3;
+    private static final Integer HOURS_LOCKED_FOR = 1;
 
     /**
      * User account constructor.
@@ -353,6 +362,18 @@ public class User {
     public void setUserImages(List<UserImage> userImages) {
         this.userImages = userImages;
     }
+
+    public Integer getRemainingLoginAttempts() { return remainingLoginAttempts; }
+
+    public void setRemainingLoginAttempts(Integer newAmountOfAttempts) { this.remainingLoginAttempts = newAmountOfAttempts; }
+
+    public LocalDateTime getTimeWhenUnlocked() { return timeWhenUnlocked; }
+
+    public void setTimeWhenUnlocked(LocalDateTime time) {
+        this.timeWhenUnlocked = time;
+    }
+
+
 
     /**
      * validate and set firstName
@@ -796,5 +817,55 @@ public class User {
                 (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,30}$"));
     }
 
+    /**
+     * Update number of remaining login attempts
+     */
+    public void useAttempt() {
+        if (this.remainingLoginAttempts > 0) {
+            this.remainingLoginAttempts -= 1;
+        } else if (this.remainingLoginAttempts < 0) {
+            this.remainingLoginAttempts = 0;
+        }
+    }
+
+    /**
+     * Checks whether the user has exceed the allowed number of attempts.
+     * @return true if the user has exceeded this limit, otherwise false.
+     */
+    public boolean hasLoginAttemptsRemaining() {
+      return this.remainingLoginAttempts > 0;
+    }
+
+    /**
+     * Checks if the user's account can be unlocked.
+     * @return true if the account can be unlocked, false otherwise.
+     */
+    public boolean canUnlock() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        return currentTime.isAfter(this.timeWhenUnlocked);
+    }
+
+    /**
+     * Locks the account for the HOURS_LOCKED_FOR
+     */
+    public void lockAccount() {
+        this.timeWhenUnlocked = LocalDateTime.now().plusHours(HOURS_LOCKED_FOR);
+    }
+
+    /**
+     * Unlocks the account for the user
+     */
+    public void unlockAccount() {
+        this.timeWhenUnlocked = null;
+        this.remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
+    }
+
+    /**
+     * Determines whether the account is locked
+     * @return Boolean, true if account is locked, otherwise false
+     */
+    public boolean isLocked() {
+        return this.timeWhenUnlocked != null;
+    }
 
 }
