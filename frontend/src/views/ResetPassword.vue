@@ -1,3 +1,5 @@
+api change timeout
+
 <template>
   <div class="container">
     <div class="row justify-content-center ">
@@ -82,9 +84,15 @@
         </div>
       </div>
       <div class="row">
+        <div v-if="invalidToken" class="invalid-token-container text-red">
+          Token is either invalid or has expired.
+        </div>
+      </div>
+      <div class="row">
         <div class="col d-flex justify-content-center" >
+
           <button v-if="resetSuccess" class="btn btn-lg my-sm-4 mb-4 green-button"
-                  type="submit" tabindex="4">Success! Return to login</button>
+                  type="submit" tabindex="4" @click="backToLogin()">Success! Return to login</button>
           <button v-else class="btn btn-lg my-sm-4 mb-4 green-button"
                   type="submit" tabindex="4" @click="changePassword()">Change Password</button>
         </div>
@@ -116,7 +124,8 @@ export default {
       confirmPassword: "",
       confirmPasswordErrorMsg: "",
 
-      resetSuccess: false
+      resetSuccess: false,
+      invalidToken: false
     }
   },
   methods: {
@@ -125,9 +134,11 @@ export default {
     checkPasswordCriteria: checkPasswordCriteria,
     getErrorMessage: getErrorMessage,
     /**
-     *
+     * Checks both password inputs for valid passwords and then send an API request to the backend to change the user's
+     * password. The 'back to login' button will be shown if successful.
      */
     changePassword() {
+      this.invalidToken = false
       let requestIsInvalid = false;
       // Check criteria
       this.passwordErrorMsg = this.getErrorMessage(
@@ -161,9 +172,22 @@ export default {
         // handle success
         this.resetSuccess = true;
       }).catch((error) => {
-      // handle errors
-        console.log(error)
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response && error.response.status === 400) {
+          this.passwordErrorMsg = "Invalid password: Please check criteria."
+        } else if (error.response && error.response.status === 406) {
+          this.invalidToken = true;
+        } else {
+          this.$router.push({path: '/timeout'});
+        }
       })
+    },
+    /**
+     * Navigates back to the login page.
+     */
+    backToLogin() {
+      this.$router.push({name: "Login"})
     }
   }
 }

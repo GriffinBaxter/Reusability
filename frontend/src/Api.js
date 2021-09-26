@@ -34,7 +34,7 @@ const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
 
 const instance = axios.create({
     baseURL: SERVER_URL,
-    timeout: 10000
+    timeout: 20000
 });
 
 export default {
