@@ -98,7 +98,6 @@ export default {
 
   .new-message-icon-wrap {
     width: 9%;
-    height: 100%;
 
     display: flex;
     justify-content: center;
