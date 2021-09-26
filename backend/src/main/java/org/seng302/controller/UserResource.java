@@ -145,6 +145,7 @@ public class UserResource {
                 String sessionUUID = getUniqueSessionUUID();
 
                 user.setSessionUUID(sessionUUID);
+                user.unlockAccount();
                 userRepository.save(user);
 
                 ResponseCookie cookie = ResponseCookie.from(COOKIE_AUTH, sessionUUID).maxAge(28800).sameSite(SAME_SITE_STRICT).httpOnly(true).build();

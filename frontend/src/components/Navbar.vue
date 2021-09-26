@@ -33,12 +33,17 @@
 
           <div>
 
-            <svg style="margin: 0 0.4em; cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16" @click="toggleMessages" v-if="!isActAsBusiness">
+            <svg style="margin: 0 0.4em; cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16" @click="toggleMessages" v-if="!isActAsBusiness && unreadMessage">
+              <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
+              <circle cx="13.5" cy="3" r="2.25" color="red" />
+            </svg>
+
+            <svg style="margin: 0 0.4em; cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16" @click="toggleMessages" v-if="!isActAsBusiness && !unreadMessage">
               <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
             </svg>
 
             <transition name="expand">
-              <Messages v-on:emittedDeleteConversation="onDeleteConversation" v-if="showMessages"/>
+              <Messages v-on:emittedDeleteConversation="onDeleteConversation" v-on:updateNotifications="updateNotificationState" v-on:newMessage="unreadMessage = true" v-if="showMessages"/>
             </transition>
           </div>
 
@@ -48,8 +53,9 @@
                 type="button"
                 @click="switchNotificationBox()">
 
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell-fill" id="bell-icon-filled" viewBox="0 0 16 16" v-if="newNotification">
-                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16" v-if="newNotification">
+                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+                <circle cx="12.0" cy="3" r="2.25" color="red" />
               </svg>
 
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16" v-else>
@@ -105,6 +111,12 @@
             <i class="side-nav-link-icon fas fa-user-alt"></i>Profile
           </router-link>
         </li>
+
+          <li class="a-nav-item">
+            <router-link to="/search?type=User&searchQuery=&orderBy=fullNameASC&page=1" class="router-nav-link" active-class="active-link">
+              <i class="side-nav-link-icon fas fa-search"></i>Search
+            </router-link>
+          </li>
 
         <li class="a-nav-item">
           <router-link to="/browseListings" class="router-nav-link" active-class="active-link">
@@ -285,7 +297,9 @@ export default {
 
       // used by the delete conversation modal to delete a conversation
       conversationId: 0,
-      userName: ""
+      userName: "",
+
+      unreadMessage: false
     }
   },
   methods: {    // ---------------------------------------- Admin Rights --------------------------------
@@ -381,18 +395,29 @@ export default {
         Api.getNotifications()
           .then(response => this.newNotification = (response.data.length > 0))
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               // Missing or invalid token
               this.$router.push({path: '/invalidtoken'});
             } else {
               console.log(error)
             }
           });
+        Api.getConversations().then(response => {
+          this.unreadMessage = false;
+          for (let conversation of response.data) {
+            if (conversation.receiverId === this.currentUser.id && !conversation.readByReceiver) {
+              this.unreadMessage = true;
+              break;
+            } else if (conversation.instigatorId === this.currentUser.id && !conversation.readByInstigator) {
+              this.unreadMessage = true;
+            }
+          }
+        }).catch((err) => console.log(err))
       } else {
       Api.getBusinessNotifications(Cookies.get('actAs'))
           .then(response => this.newNotification = (response.data.length > 0))
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               // Missing or invalid token
               this.$router.push({path: '/invalidtoken'});
             } else {
@@ -466,8 +491,8 @@ export default {
     /**
      * Gets information about the current logged in user
      */
-    getUserData(currentID) {
-      Api.getUser(currentID).then((response) => {
+    async getUserData(currentID) {
+      await Api.getUser(currentID).then((response) => {
         this.role = response.data.role;
         this.setCurUser(response.data);
       }).catch((error) => {
@@ -538,8 +563,8 @@ export default {
     },
     setCurUser(response) {
       this.currentUser = response;
-      if (Cookies.get('actAs')) {
-        this.actAsId = Cookies.get('actAs');
+      this.actAsId = Cookies.get('actAs')
+      if (this.actAsId) {
         // Checks if user is admin of business at id actAs
         let check = false;
         for (let i = 0; i < response.businessesAdministered.length; i++) {
@@ -638,15 +663,14 @@ export default {
       }
     }
 
-    // update notifications
-    this.updateNotificationState();
   },
-  mounted() {
+  async mounted() {
     const currentID = Cookies.get('userID');
 
-    if(currentID) {
-      this.getUserData(currentID);
-    }
+    await this.getUserData(currentID);
+
+    // update notifications
+    this.updateNotificationState();
 
   }
 }
@@ -908,9 +932,6 @@ export default {
     margin:12px auto
   }
 
-  #bell-icon-filled, #message-icon-filled {
-    color: #fd5050;
-  }
 
   #act-as-small-size-user-section {
     display: flex;

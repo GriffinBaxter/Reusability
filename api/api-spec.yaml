@@ -2670,6 +2670,10 @@ components:
           type: string
           example: "/media/images/23987192387509-123908794328_thumbnail.png"
           description: Relative URI to thumbnail of image. A fully qualified URI (e.g www.wasteless.com/media/images/...) should NOT be given.
+        isPrimary:
+          type: boolean
+          example: true
+          description: Whether this image is the primary image (only one image in the array will be the primary)
 
     Product:
       type: object
@@ -3117,6 +3121,12 @@ components:
           example: Tom Edwards
           readOnly: true
           description: The name of the user that started the conversation (from a card)
+        instigatorImages:
+          type: array
+          readOnly: true
+          description: 'Instigator user images'
+          items:
+            $ref: '#/components/schemas/Image'
         receiverId:
           type: integer
           example: 101
@@ -3127,6 +3137,12 @@ components:
           example: Billy Bob
           readOnly: true
           description: The name of the user that created the card
+        receiverImages:
+          type: array
+          readOnly: true
+          description: 'Receiver user images'
+          items:
+            $ref: '#/components/schemas/Image'
         marketplaceCardId:
           type: integer
           example: 100
