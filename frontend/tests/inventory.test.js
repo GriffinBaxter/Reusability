@@ -455,8 +455,164 @@ describe("Test methods in the inventory component", () => {
             expect(wrapper.vm.$data.totalRows).toEqual(0);
             expect(wrapper.vm.$data.totalPages).toEqual(0);
 
+        });
+
+        test("Test retrieveInventoryItems correctly stores the inventory data if a 200 response containing inventory items is returned for the given query", async () => {
+
+            const sortInventoryItemsResponse = {
+                status: 200,
+                data: [
+                    {
+                        "id": 12,
+                        "product": {
+                            "id": "BLACK-FOREST",
+                            "name": "Cadbury Chocolate Block Dairy Milk Black Forest 180g",
+                            "description": "Made in Australia from imported and local ingredients.",
+                            "manufacturer": "Cadbury",
+                            "recommendedRetailPrice": 3.49,
+                            "created": "2021-05-12T00:00",
+                            "images": [],
+                            "business": null,
+                            "barcode": null
+                        },
+                        "quantity": 68,
+                        "pricePerItem": 4,
+                        "totalPrice": 250,
+                        "manufactured": "2021-05-10",
+                        "sellBy": "2023-05-14",
+                        "bestBefore": "2023-05-16",
+                        "expires": "2023-05-30"
+                    },
+                    {
+                        "id": 16,
+                        "product": {
+                            "id": "CARAMELLO",
+                            "name": "Cadbury Chocolate Block Dairy Milk Caramello",
+                            "description": "Made in Australia from imported and local ingredients.",
+                            "manufacturer": "Cadbury",
+                            "recommendedRetailPrice": 3.49,
+                            "created": "2021-05-12T00:00",
+                            "images": [],
+                            "business": null,
+                            "barcode": null
+                        },
+                        "quantity": 100,
+                        "pricePerItem": 3.49,
+                        "totalPrice": 349,
+                        "manufactured": "2021-05-12",
+                        "sellBy": "2021-09-10",
+                        "bestBefore": "2021-09-12",
+                        "expires": "2023-11-12"
+                    }
+                ],
+                headers: {
+                    "total-pages": "20",
+                    "total-rows": "40"
+                }
+            }
+            Api.sortInventoryItems.mockImplementation(() => Promise.resolve(sortInventoryItemsResponse));
+
+            await wrapper.vm.retrieveInventoryItems();
+
+            expect(wrapper.vm.$data.inventories.length).toEqual(2);
+            expect(wrapper.vm.$data.currentPage).toEqual(0);
+            expect(wrapper.vm.$data.totalRows).toEqual(40);
+            expect(wrapper.vm.$data.totalPages).toEqual(20);
 
         });
+
+
+        test("Test retrieveInventoryItems pushes to the timeout page when there is no response received", async () => {
+
+            Api.sortInventoryItems.mockImplementation(() => Promise.reject({request: true}))
+
+            await wrapper.vm.retrieveInventoryItems();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/timeout"});
+
+        });
+
+        test("Test retrieveInventoryItems pushes to the invalid token page when a 401 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 401
+                }
+            }
+            Api.sortInventoryItems.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveInventoryItems();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/invalidtoken"});
+
+        });
+
+        test("Test retrieveInventoryItems pushes to the no business page when a 406 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 406
+                }
+            }
+            Api.sortInventoryItems.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveInventoryItems();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/noBusiness"});
+
+        });
+
+        test("Test retrieveInventoryItems pushes to the timeout page by default when a 500 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 500
+                }
+            }
+            Api.sortInventoryItems.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveInventoryItems();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/timeout"});
+
+        });
+
+        test("Test retrieveInventoryItems pushes to the does not exist page when a 400 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 400
+                }
+            }
+            Api.sortInventoryItems.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveInventoryItems();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/pageDoesNotExist"});
+
+        });
+
+        test("Test retrieveInventoryItems pushes to the forbidden page when a 403 status is returned", async () => {
+
+            const data = {
+                response: {
+                    status: 403
+                }
+            }
+            Api.sortInventoryItems.mockImplementation(() => Promise.reject(data))
+
+            await wrapper.vm.retrieveInventoryItems();
+            await wrapper.vm.$nextTick();
+
+            expect($router.push).toHaveBeenCalledWith({path: "/forbidden"});
+
+        });
+
 
     });
 
