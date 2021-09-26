@@ -14,10 +14,14 @@ import org.seng302.model.ForgotPassword;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.Optional;
+
 /**
  * ForgotPasswordRepository interface.
  * This class contains methods which can be used to retrieve ForgotPassword entities based on various criteria.
  */
 @RepositoryRestResource
 public interface ForgotPasswordRepository extends JpaRepository<ForgotPassword, String> {
+
+    Optional<ForgotPassword> findByToken(String token);
 }

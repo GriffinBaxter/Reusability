@@ -2,6 +2,7 @@ package org.seng302.user;
 
 import org.junit.jupiter.api.*;
 import org.seng302.model.Address;
+import org.seng302.model.ForgotPassword;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
 import org.seng302.Main;
@@ -138,6 +139,8 @@ class UserResourceIntegrationTests {
     private Address address3;
     private Address address4;
     private Address address5;
+
+    private ForgotPassword forgotPassword;
 
     @BeforeAll
     void setup() throws Exception {
@@ -300,6 +303,8 @@ class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser5.setId(8);
+
+        forgotPassword = new ForgotPassword(user.getId());
 
         // initializes the MockMVC object and tells it to use the userRepository
         this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
@@ -2118,6 +2123,76 @@ class UserResourceIntegrationTests {
         assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
     }
 
+    // ----------------------- Forgot Password - PUT tests -----------------------
+
+    /**
+     * Tests that the PUT Forgot Password endpoint returns a 406 if the Forgot Password Token is invalid
+     * @throws Exception exception
+     */
+    @Test
+    void testInvalidForgotPasswordToken_UpdatePassword() throws Exception {
+        String passwordJson = "{" +
+                "\"password\":\"NewPassword1!\"" +
+                "}";
+
+        String token = "12345";
+        when(forgotPasswordRepository.findByToken(token)).thenReturn(Optional.empty());
+
+        response = mvc.perform(put("/users/forgotPassword")
+                .param("token", token)
+                .contentType(MediaType.APPLICATION_JSON).content(passwordJson))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that the PUT Forgot Password endpoint returns a 400 if the password isn't valid
+     * @throws Exception exception
+     */
+    @Test
+    void testInvalidPassword_UpdatePassword() throws Exception {
+        String passwordJson = "{" +
+                "\"password\":\"badPass\"" +
+                "}";
+
+        String token = "12345";
+        when(forgotPasswordRepository.findByToken(token)).thenReturn(Optional.of(forgotPassword));
+        when(userRepository.findById(forgotPassword.getUserId())).thenReturn(Optional.of(user));
+
+        response = mvc.perform(put("/users/forgotPassword")
+                .param("token", token)
+                .contentType(MediaType.APPLICATION_JSON).content(passwordJson))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that the PUT Forgot Password endpoint returns a 200 if token exists and password is valid
+     */
+    @Test
+    void testValidForgotPassword_UpdatePassword() throws Exception {
+        String passwordJson = "{" +
+                "\"password\":\"NewPassword1!\"" +
+                "}";
+
+        String token = "12345";
+
+        String oldPass = user.getPassword();
+
+        when(forgotPasswordRepository.findByToken(token)).thenReturn(Optional.of(forgotPassword));
+        when(userRepository.findById(forgotPassword.getUserId())).thenReturn(Optional.of(user));
+
+        response = mvc.perform(put("/users/forgotPassword")
+                .param("token", token)
+                .contentType(MediaType.APPLICATION_JSON).content(passwordJson))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(user.getPassword()).isNotEqualTo(oldPass); // Tests that it has changed as cannot exact String due to encoding
+    }
+
     /**
      * Tests that a NOT_ACCEPTABLE status is received from the forgot password endpoint when there is no user
      * in the database with the supplied email.
@@ -2130,7 +2205,7 @@ class UserResourceIntegrationTests {
 
         // when
         response = mvc.perform(
-                        post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
+                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
                 .andReturn().getResponse();
 
         // then
@@ -2152,7 +2227,7 @@ class UserResourceIntegrationTests {
 
         // when
         response = mvc.perform(
-                        post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
+                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
                 .andReturn().getResponse();
 
         // then

@@ -12,3 +12,9 @@ Feature: U25 Lost Password
     Given Their account is locked
     When The user supplies an email "test@test.com" and password "Password123!" which matches the details in the database
     Then They should be logged in
+
+  Scenario: AC5 - Change password
+    Given A user exists with the email "test@test.com"
+    Given A forgot password entity exist for user
+    When I try to change the password
+    Then The password successfully changes
