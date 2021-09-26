@@ -37,6 +37,12 @@ describe("Test methods in the inventory component", () => {
                 mocks: {
                     $router,
                     $route
+                },
+                data() {
+                    return {
+                        inventories: [],
+                        notInitialLoad: true
+                    }
                 }
             });
         await wrapper.vm.$nextTick();
