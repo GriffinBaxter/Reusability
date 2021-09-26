@@ -166,9 +166,69 @@
           </div>
         </div>
 
-        <!----------------------------------------- Sale history table/rows ------------------------------------------->
+        <div class="card p-3" style="margin: 10px 0 0 0">
+          <div class="row m-2">
+            <!-------------------------------------- Visualisation dropdown menu -------------------------------------->
+            <div class="col-xl-4" style="max-width: 130px">
+              <label for="visualisation-button" class="py-3">
+                Visualisation:
+              </label>
+            </div>
 
-        <div v-if="showTable" class="card p-3" style="margin: 10px 0 75px 0">
+            <div class="btn-group col-xl-2 d-inline-block p-2 me-3" role="group">
+              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                      data-bs-toggle="dropdown" aria-expanded="false" id="visualisation-button">{{ visualisationType }}
+              </button>
+              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="visualisationType = 'Table'">
+                  Table
+                </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="visualisationType = 'Graph'">
+                  Graph
+                </li>
+              </ul>
+            </div>
+
+            <!--------------------------------------- Graph type dropdown menu ---------------------------------------->
+            <div v-if="visualisationType === 'Graph'" class="col-xl-1" style="max-width: 80px">
+              <label for="graph-type-button" class="py-3">
+                Data:
+              </label>
+            </div>
+
+            <div v-if="visualisationType === 'Graph'" class="btn-group col-xl-2 d-inline-block p-2" role="group">
+              <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
+                      data-bs-toggle="dropdown" aria-expanded="false" id="graph-type-button">{{ graphType }}
+              </button>
+              <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="graphType = 'Sales'">
+                  Sales
+                </li>
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="graphType = 'Revenue'">
+                  Revenue
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+        <!------------------------------------------- Sales report graphs --------------------------------------------->
+
+        <div v-if="visualisationType === 'Graph'" class="card p-3" style="margin: 10px 0 75px 0">
+          <bar-chart v-if="graphType === 'Sales'" :label-list="graphLabels" :data-list="graphDataSales"
+                     :sales="true"/>
+          <bar-chart v-if="graphType === 'Revenue'" :label-list="graphLabels" :data-list="graphDataRevenue"
+                     :currency-symbol="currencySymbol"/>
+        </div>
+
+        <!----------------------------------------- Sales report table/rows ------------------------------------------->
+
+        <div v-if="showTable && visualisationType === 'Table'" class="card p-3" style="margin: 10px 0 75px 0">
           <br>
 
           <table class="table table-hover" aria-describedby="page-title" v-if="this.granularity !== 'Total'">
@@ -208,10 +268,13 @@ import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
 import {manageError} from "../../errorHandler";
+import BarChart from './SalesReportGraph.js'
 
 export default {
   name: "SalesReport",
-  components: {},
+  components: {
+    BarChart
+  },
   props: {
     businessName: {
       type: String,
@@ -269,7 +332,15 @@ export default {
 
       salesReportData: [],
       invalidDayMsg: "",
-      showTable: false
+      showTable: false,
+
+      graphLabels: [],
+      graphDataSales: [],
+      graphDataRevenue: [],
+      graphType: "Sales",
+
+      // keeps track of whether table or graph should be displayed
+      visualisationType: "Table"
     }
   },
   methods: {
@@ -392,12 +463,31 @@ export default {
               totalSales: line.totalSales,
               totalRevenue: line.totalRevenue
             })
+            this.generateGraphData();
           });
           this.showTable = true;
         }).catch((error) => {
-          this.$router.push(manageError(error));
+          this.manageError(error);
         })
       }
+    },
+
+    /**
+     * Generates the graph data in the required format for vue-chartjs, with the chart labels and data (for both sales
+     * and revenue).
+     */
+    generateGraphData() {
+      let labels = [];
+      let salesData = [];
+      let revenueData = [];
+      for (const data of this.salesReportData) {
+        labels.push(data.granularityName == null ? "Total" : data.granularityName);
+        salesData.push(data.totalSales);
+        revenueData.push(data.totalRevenue);
+      }
+      this.graphLabels = labels;
+      this.graphDataSales = salesData;
+      this.graphDataRevenue = revenueData;
     },
 
     /**

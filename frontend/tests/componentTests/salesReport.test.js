@@ -381,7 +381,8 @@ describe('Tests methods in the SaleReport component.', () => {
 
     });
 
-    describe('Testing the period selection of the sales report page', function () {
+    describe('Testing the period, visualisation and data selections of the sales report page',
+        function () {
 
         let wrapper;
         let $router;
@@ -504,7 +505,21 @@ describe('Tests methods in the SaleReport component.', () => {
                 expect(wrapper.vm.selectedMonth).toEqual(wrapper.vm.months[month - 1]); // -1 as months start from index 0
             });
         });
+
+        test('Testing that the required options are given for selecting a table visualisation.', () => {
+            wrapper.vm.visualisationType = "Table";
+
+            wrapper.vm.$nextTick().then(() => {
+                expect(wrapper.find('#graph-type-button').exists()).toBeFalsy();
+            });
+        });
+
+        test('Testing that the required options are given for selecting a graph visualisation.', () => {
+            wrapper.vm.visualisationType = "Graph";
+
+            wrapper.vm.$nextTick().then(() => {
+                expect(wrapper.find('#graph-type-button').exists()).toBeTruthy();
+            });
+        });
     });
-
-
 })
