@@ -454,6 +454,79 @@ public class UserResource {
     }
 
     /**
+     * This method will be called on the forgot password page after the user has entered a valid email.
+     * Sends an email to the given email address with a link to the reset password page.
+     * @param forgotPasswordPayload Forgot password payload containing an email address.
+     */
+    @PostMapping("/users/forgotPassword")
+    @ResponseStatus(value = HttpStatus.CREATED, reason = "Email sent successfully")
+    public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload,
+                               HttpServletRequest request) {
+
+        String email = forgotPasswordPayload.getEmail();
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            ForgotPassword forgotPasswordEntity;
+            try {
+                forgotPasswordEntity = new ForgotPassword(user.getId());
+                forgotPasswordRepository.save(forgotPasswordEntity);
+            } catch (IllegalForgotPasswordArgumentException exception) {
+                logger.error("500 [INTERNAL SERVER ERROR] - User ID {} invalid", user.getId());
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "User ID Invalid"
+                );
+            }
+
+            String baseURL = request.getRequestURL().toString();
+
+            String resetPasswordURL;
+
+            switch (baseURL) {
+                case "http://localhost:9499/users/forgotPassword":
+                    resetPasswordURL = "http://localhost:9500/changePassword?token=";
+                    break;
+                case "https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword":
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/test/changePassword?token=";
+                    break;
+                case "https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword":
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/prod/changePassword?token=";
+                    break;
+                default:
+                    throw new ResponseStatusException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Invalid Request URL");
+            }
+
+            resetPasswordURL += forgotPasswordEntity.getToken();
+
+            String emailTemplate = "<!DOCTYPE html><html><head> <title>Reusability Password Reset</title> <style> .container { width: 35%; background-color: white; margin-top: 4%; margin: 4% auto; min-width: 450px; } html { background-color: #f9f9f9; min-width: 480px; } .image-container { padding-top: 1.8rem; text-align: center; margin-bottom: 1.4rem; } .title-span{ font-size: 28px; color: white; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } .title-container { background-color: #26e0aa; padding-top: 2rem; padding-left: 2rem; padding-right: 2rem; padding-bottom: 1rem; text-align: center; } p { color: #666666; font-size: 17px; font-family: Arial, Helvetica, sans-serif; } .subtext { color: #888888; font-style: italic; font-size: 16px; } .text-container { padding: 2rem; } .green-bottom { text-align: center; padding: 1rem; background-color: #26e0aa; } .copyright { color: black; font-size: 16px; font-family: Arial, Helvetica, sans-serif; } .link-text { font-size: 14px; } #password-link { background-color: #26e0aa; margin-top: 1rem; padding: 1rem; text-decoration: none; color: white; line-height: 300%; font-size: 18px; } </style></head><body> <div class=\"container\"> <div class=\"image-container\"> <img src=\"https://i.ibb.co/1QCwQqM/image-1.png\" alt=\"Reusability Logo Image\" width=\"170\"> </div> <div class=\"title-container\"> <img src=\"https://i.ibb.co/WDXHnrQ/image-2.png\" alt=\"Reset Logo\" width=\"80\"> <br> <span class=\"title-span\">Password Reset Request</span> </div> <div class=\"text-container\"> <p>Hello,</p> <p>We have sent you this email in response to your request to reset your password on Reusability.</p> <p>To set a new password, click to follow the link below:</p> <a id=\"password-link\" href=\"" + resetPasswordURL + "\">Change Password</a> <p class=\"link-text\">" + resetPasswordURL + "</p> <p class=\"subtext\">Please ignore this email if you did not request a password change.</p> </div> <div class=\"green-bottom\"> <p class=\"copyright\">© Reusability 2021</p> </div> </div> </body></html>";
+
+            try {
+
+                // Change email when testing
+                emailService.sendHTMLMessage(email, "Password Reset", emailTemplate);
+
+            } catch (MessagingException exception) {
+                logger.error("500 [INTERNAL SERVER ERROR] - Messaging Exception {}", exception.getMessage());
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Messaging Exception"
+                );
+            }
+
+        } else {
+            logger.error("406 [NOT ACCEPTABLE] - User with email {} does not exist.", email);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Email does not exist"
+            );
+        }
+    }
+
+    /**
      * This method parses the search criteria and then calls the needed methods to execute the "query".
      *
      * @param searchQuery criteria to search for users (user's nickname, first name, middle name, last name or full name).
