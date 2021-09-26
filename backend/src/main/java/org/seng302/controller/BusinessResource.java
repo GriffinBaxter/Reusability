@@ -253,7 +253,8 @@ public class BusinessResource {
                 selectBusiness.getBusinessType(),
                 selectBusiness.getCreated(),
                 selectBusiness.getCurrencySymbol(),
-                selectBusiness.getCurrencyCode()
+                selectBusiness.getCurrencyCode(),
+                selectBusiness.getBusinessImages()
         );
     }
 
@@ -555,6 +556,7 @@ public class BusinessResource {
      * @throws ResponseStatusException Thrown when the new business type does not exist or invalid.
      */
     private void updateBusinessType(Business business, User user, BusinessType businessType) throws ResponseStatusException{
+
         if (businessType == null) {
             String errorMessage = String.format("User (id: %d) attempted to update business type for business (id: %d). But the type was invalid.", user.getId(), business.getId());
             logger.error(errorMessage);
@@ -574,6 +576,7 @@ public class BusinessResource {
      * @throws ResponseStatusException Is thrown when the new address does not meet the requirements.
      */
     private void updateBusinessAddress(Business business, User user, AddressPayload addressJSON) throws ResponseStatusException{
+
         if (addressJSON == null) {
             String errorMessage = String.format("User (id: %d) attempted to modify a business (id: %d)." +
                     " But did not provide a new address.", user.getId(), business.getId());
@@ -619,6 +622,7 @@ public class BusinessResource {
      * @param description The new description provided.
      */
     private void updateBusinessDescription(Business business, User user, String description) {
+
         if (description != null) {
             try {
                 String debugMessage = String.format("User (id: %d) updated description for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getDescription(), description);
@@ -643,6 +647,7 @@ public class BusinessResource {
      * @throws ResponseStatusException Thrown when the name placed if invalid or null.
      */
     private void updateBusinessName(Business business, User user, BusinessModifyPayload payload) throws ResponseStatusException {
+
         try {
             // Check that it is present
             if (payload.getName() == null) {
@@ -736,6 +741,7 @@ public class BusinessResource {
      * @param currencyCode The new currency code provided.
      */
     private void updateBusinessCurrencyCode(Business business, User user, String currencyCode) {
+
         if (currencyCode != null) {
             String debugMessage = String.format("User (id: %d) updated currency code for business (id: %d). %s --> %s.", user.getId(), business.getId(), business.getCurrencyCode(), currencyCode);
             logger.debug(debugMessage);

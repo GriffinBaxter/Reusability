@@ -2,8 +2,9 @@
   <div>
 
   <!-- a placeholder so that when you click on a user's card on their profile it will open the more detailed display -->
-  <CardDetail v-bind:id="selectedCard"
-              v-bind:section="cardSection"/>
+  <CardDetail v-bind:id="selectedCard" v-bind:section="cardSection"></CardDetail>
+
+    <MessageModal ref="messageModal"></MessageModal>
 
   <!-- Edit Modal for editing your own cards -->
   <EditCardModal ref="editCardModal"></EditCardModal>
@@ -44,6 +45,7 @@ import Card from "./marketplace/Card"
 import {formatDate} from "../dateUtils";
 import CardDetail from "./marketplace/CardDetailPopup";
 import EditCardModal from "./marketplace/EditCardModal";
+import MessageModal from "./marketplace/MessageModal";
 import Api from "../Api";
 
 export default {
@@ -68,6 +70,7 @@ export default {
     Card,
     CardDetail,
     EditCardModal,
+    MessageModal
   },
   data() {return {
     selectedCard: 0,

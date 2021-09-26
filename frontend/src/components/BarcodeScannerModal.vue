@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body">
 
-          <p style="color: red">
+          <p style="width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545;">
             {{ barcodeErrorMsg }}
           </p>
           
@@ -23,16 +23,16 @@
           <br><br>
           <button id="modal-scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
                   class="btn green-button-transparent" @click="getBarcodeLiveStream">
-            Scan Using Camera
+            Scan using camera
           </button>
           <button id="modal-stop-scanning-button" v-if="liveStreaming && !barcodeFound"
                   class="btn green-button-transparent"
                   @click="liveStreaming = false; removeCameraError();">
-            Stop Scanning (Barcode Not Found)
+            Stop scanning (barcode not found)
           </button>
           <button id="modal-save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
                   class="btn green-button" @click="liveStreaming = false">
-            Save Scanned Barcode
+            Save scanned barcode
           </button>
           <br>
           <div v-if="liveStreaming"><br></div>
@@ -65,9 +65,15 @@ export default {
       liveStreamAvailable: false,
       liveStreaming: false,
       barcodeFound: false,
+
+      hasBeenShown: false
     }
   },
   methods: {
+
+    /**
+     * Shows the barcode scanner modal.
+     */
     showModel(event) {
 
       // Prevent any default actions
@@ -78,8 +84,13 @@ export default {
 
       // Show the modal
       this.modal.show();
+
+      this.hasBeenShown = true;
     },
 
+    /**
+     *  Clicks the image.
+     */
     onUploadClick() {
       this.$refs.image.click();
     },
@@ -123,7 +134,7 @@ export default {
 
   mounted() {
     this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
-    
+
     // Create a modal and attach it to the barcodeScannerModal reference.
     this.modal = new Modal(this.$refs._barcodeScannerModal);
   }

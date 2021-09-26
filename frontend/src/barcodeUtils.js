@@ -45,13 +45,13 @@ function detectBarcodeLiveStream(width, div, callback) {
         if (err) {
             if (err.message === "Could not start video source") {
                 document.querySelector(div).innerHTML =
-                    "<span style='color: red;'>Error: Camera in use by another program.</span>";
+                    "<span style='width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545;'>Error: Camera in use by another program.</span>";
             } else if (err.message === "Permission denied" || err.message === "Permission dismissed") {
                 document.querySelector(div).innerHTML =
-                    "<span style='color: red;'>Error: Insufficient browser permissions to use camera.</span>";
+                    "<span style='width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545;'>Error: Insufficient browser permissions to use camera.</span>";
             } else {
                 document.querySelector(div).innerHTML =
-                    "<span style='color: red;'>Error: Camera not found/available.</span>";
+                    "<span style='width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545;;'>Error: Camera not found/available.</span>";
             }
             return
         }

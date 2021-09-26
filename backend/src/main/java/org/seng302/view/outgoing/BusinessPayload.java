@@ -12,6 +12,7 @@ package org.seng302.view.outgoing;
 
 
 import org.seng302.model.Business;
+import org.seng302.model.BusinessImage;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.User;
 
@@ -34,6 +35,7 @@ public class BusinessPayload {
     private String created;
     private String currencySymbol;
     private String currencyCode;
+    private List<ImagePayload> businessImages;
 
     /**
      * translate a list of Business to a list of BusinessPayload
@@ -58,7 +60,8 @@ public class BusinessPayload {
                            BusinessType businessType,
                            LocalDateTime created,
                            String currencySymbol,
-                           String currencyCode
+                           String currencyCode,
+                           List<BusinessImage> businessImages
                            ) throws Exception {
         this.id = id;
         this.administrators = UserPayload.convertToPayloadWithoutBusiness(administrators);
@@ -73,6 +76,7 @@ public class BusinessPayload {
         this.created = created.toString();
         this.currencySymbol = currencySymbol;
         this.currencyCode = currencyCode;
+        this.businessImages = ImagePayload.convertToImagePayload(businessImages == null ? null : new ArrayList<>(businessImages));
     }
 
     public int getId() {
@@ -115,6 +119,10 @@ public class BusinessPayload {
         return currencyCode;
     }
 
+    public List<ImagePayload> getBusinessImages() {
+        return businessImages;
+    }
+
     @Override
     public String toString() {
         return "{\"id\":" + id +
@@ -126,6 +134,8 @@ public class BusinessPayload {
                 ",\"businessType\":\"" + businessType + "\"," +
                 "\"created\":\"" + created + "\"," +
                 "\"currencySymbol\":\"" + currencySymbol + "\"," +
-                "\"currencyCode\":\"" + currencyCode + "\"}";
+                "\"currencyCode\":\"" + currencyCode + "\"," +
+                "\"businessImages\":" + businessImages +
+                "}";
     }
 }

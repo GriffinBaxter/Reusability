@@ -6,6 +6,7 @@ import {UserRole} from "../../src/configs/User";
 import Api from "../../src/Api";
 
 jest.mock("../../src/Api");
+jest.mock("js-cookie");
 
 describe('Tests for admin rights methods.', () => {
     let wrapper;
@@ -21,14 +22,6 @@ describe('Tests for admin rights methods.', () => {
         $router = {
             push: jest.fn()
         }
-
-        wrapper = shallowMount(Navbar, {
-            mocks: {
-                $router,
-                $route
-            },
-            stubs: ['router-link', 'router-view']
-        });
 
         Cookies.get = jest.fn().mockImplementationOnce(() => 1).mockImplementationOnce(() => 2); // mock the cookies
         Api.getUser.mockImplementation(() => Promise.resolve({
@@ -46,6 +39,7 @@ describe('Tests for admin rights methods.', () => {
                 "businessesAdministered": [
                     null
                 ],
+                "images": [],
                 "dateOfBirth": "2000-02-02",
                 "phoneNumber": "0271316",
                 "homeAddress": {
@@ -59,12 +53,21 @@ describe('Tests for admin rights methods.', () => {
                 }
             },
         }))
-        Api.getNotifications.mockImplementation( () => Promise.resolve([]));
         const response = {
             data: []
         }
+        Api.getConversations.mockImplementation(() => Promise.resolve(response))
+        Api.getNotifications.mockImplementation( () => Promise.resolve(response));
         Api.getBusinessNotifications.mockImplementation( () => Promise.resolve(response));
         Api.signOut.mockImplementation( () => Promise.resolve());
+
+        wrapper = shallowMount(Navbar, {
+            mocks: {
+                $router,
+                $route
+            },
+            stubs: ['router-link', 'router-view']
+        });
 
         Promise.resolve();
     });
@@ -142,6 +145,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
                 "businessesAdministered": [
                     null
                 ],
+                "images": [],
                 "dateOfBirth": "2000-02-02",
                 "phoneNumber": "0271316",
                 "homeAddress": {
@@ -155,10 +159,11 @@ describe('Tests for miscellaneous Navbar methods', () => {
                 }
             },
         }))
-        Api.getNotifications.mockImplementation( () => Promise.resolve([]));
         const response = {
             data: []
         }
+        Api.getConversations.mockImplementation(() => Promise.resolve(response))
+        Api.getNotifications.mockImplementation( () => Promise.resolve(response));
         Api.getBusinessNotifications.mockImplementation( () => Promise.resolve(response));
         Api.signOut.mockImplementation( () => Promise.resolve());
 
@@ -251,6 +256,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
             "businessesAdministered": [
                 null
             ],
+            "images": [],
             "dateOfBirth": "2000-02-02",
             "phoneNumber": "0271316",
             "homeAddress": {
@@ -304,6 +310,7 @@ describe('Tests for miscellaneous Navbar methods', () => {
                     "created": "2021-09-08T21:22:53.130650"
                 }
             ],
+            "images": [],
             "dateOfBirth": "2000-02-02",
             "phoneNumber": "0271316",
             "homeAddress": {
@@ -328,5 +335,209 @@ describe('Tests for miscellaneous Navbar methods', () => {
         expect(wrapper.emitted().getLinkBusinessAccount).toBeTruthy();
     })
 
+    test("Tests the getPrimaryImageSrc method returns the primary image when acting as a user.", () => {
+        const currentUser = {
+            images: [
+                {
+                    isPrimary: false,
+                    thumbnailFilename: "incorrectImage1"
+                },
+                {
+                    isPrimary: true,
+                    thumbnailFilename: "primaryImage"
+                },
+                {
+                    isPrimary: false,
+                    thumbnailFilename: "incorrectImage2"
+                },
+            ],
+        }
 
+        wrapper.vm.isActAsBusiness = false;
+
+        const primaryImageSrc = wrapper.vm.getPrimaryImageSrc(currentUser);
+
+        expect(primaryImageSrc).toContain(currentUser.images[1].thumbnailFilename);
+    })
+
+    test("Tests the getPrimaryImageSrc method returns the primary image when acting as a business.", () => {
+        const currentBusinessImage = [
+            {
+                isPrimary: false,
+                thumbnailFilename: "incorrectImage1"
+            },
+            {
+                isPrimary: true,
+                thumbnailFilename: "primaryImage"
+            },
+            {
+                isPrimary: false,
+                thumbnailFilename: "incorrectImage2"
+            },
+        ]
+
+        wrapper.vm.isActAsBusiness = true;
+        wrapper.vm.currentBusinessImage = currentBusinessImage;
+
+        const primaryImageSrc = wrapper.vm.getPrimaryImageSrc();
+
+        expect(primaryImageSrc).toContain(currentBusinessImage[1].thumbnailFilename);
+    })
+})
+
+describe('Tests for notifications', () => {
+    let wrapper;
+    let $route;
+    let $router;
+
+    beforeEach(() => {
+        $route = {
+            path: '/profile',
+            name: 'Profile',
+        }
+
+        $router = {
+            push: jest.fn()
+        }
+
+        Cookies.get.mockReturnValueOnce(21);
+
+        Api.getUser.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 21,
+                "firstName": "John",
+                "lastName": "Doe",
+                "middleName": "S",
+                "nickname": "Johnny",
+                "bio": "Biography",
+                "email": "email@email.com",
+                "created": "2021-02-02T00:00",
+                "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+                "businessesAdministered": [
+                    null
+                ],
+                "images": [],
+                "dateOfBirth": "2000-02-02",
+                "phoneNumber": "0271316",
+                "homeAddress": {
+                    "streetNumber": "3/24",
+                    "streetName": "Ilam Road",
+                    "suburb": "Ilam",
+                    "city": "Christchurch",
+                    "region": "Canterbury",
+                    "country": "New Zealand",
+                    "postcode": "90210"
+                }
+            },
+        }))
+
+        const response = {
+            data: []
+        }
+
+        Api.getNotifications.mockImplementation(() => Promise.resolve(response));
+        Api.getBusinessNotifications.mockImplementation(() => Promise.resolve(response));
+
+    });
+
+    test("Test that newMessage is set to true when receiver", async () => {
+        let response = {
+            data: [
+                {
+                    receiverId: 21,
+                    readByReceiver: false
+                }
+            ]
+        }
+        Api.getConversations.mockImplementation(() => Promise.resolve(response))
+
+        wrapper = shallowMount(Navbar, {
+            mocks: {
+                $router,
+                $route
+            },
+            stubs: ['router-link', 'router-view']
+        });
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.unreadMessage).toBeTruthy()
+    })
+
+    test("Test that newMessage is set to false when receiver", async () => {
+        let response = {
+            data: [
+                {
+                    receiverId: 21,
+                    readByReceiver: true
+                }
+            ]
+        }
+        Api.getConversations.mockImplementation(() => Promise.resolve(response))
+
+        wrapper = shallowMount(Navbar, {
+            mocks: {
+                $router,
+                $route
+            },
+            stubs: ['router-link', 'router-view']
+        });
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.unreadMessage).toBeFalsy();
+    })
+
+    test("Test that newMessage is set to true when instigator", async () => {
+        let response = {
+            data: [
+                {
+                    instigatorId: 21,
+                    readByInstigator: false
+                }
+            ]
+        }
+        Api.getConversations.mockImplementation(() => Promise.resolve(response))
+
+        wrapper = shallowMount(Navbar, {
+            mocks: {
+                $router,
+                $route
+            },
+            stubs: ['router-link', 'router-view']
+        });
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.unreadMessage).toBeTruthy()
+    })
+
+    test("Test that newMessage is set to false when instigator", async () => {
+        let response = {
+            data: [
+                {
+                    instigatorId: 21,
+                    readByInstigator: true
+                }
+            ]
+        }
+        Api.getConversations.mockImplementation(() => Promise.resolve(response))
+
+        wrapper = shallowMount(Navbar, {
+            mocks: {
+                $router,
+                $route
+            },
+            stubs: ['router-link', 'router-view']
+        });
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.unreadMessage).toBeFalsy();
+    })
 })

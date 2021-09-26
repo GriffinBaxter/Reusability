@@ -14,6 +14,12 @@
       <!--profile container-->
       <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
+        <div class="row">
+          <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromSearch">
+            <button class="btn btn-lg green-button w-100" @click="returnToSearch()" id="return-button" tabindex="9">Return to Search</button>
+          </div>
+        </div>
+
         <!--profile header, contains user search bar-->
         <ProfileHeader id="profile-header"/>
 
@@ -355,7 +361,9 @@ export default {
       // User card variables
       usersCards: [],
 
-      images: []
+      images: [],
+
+      fromSearch: false
     }
   },
   methods: {
@@ -416,7 +424,7 @@ export default {
     getCreatedDate(createdDate) {
       const dateJoined = new Date(createdDate);
 
-      const currentDate = new Date();
+      const currentDate = new Date(Date.now());
       let months = (currentDate.getFullYear() - dateJoined.getFullYear()) * 12
           + (currentDate.getMonth() - dateJoined.getMonth());
 
@@ -672,6 +680,7 @@ export default {
         let success = true;
         await Api.makeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
               if (response.status !== 200) {
+                success = false;
                 this.actionErrorMessage = "Sorry, but something went wrong..."
               }
             }
@@ -831,9 +840,25 @@ export default {
         id = this.urlID
       }
       this.$router.push({name: "EditProfile", params: {id}})
+    },
+    /**
+     * Returns the user to the previously visited page
+     * Only used for returning to the search page
+     */
+    returnToSearch() {
+      this.$router.back();
     }
   },
-
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from the search page then a return to search button
+      // should be rendered.
+      if (from.name === 'Search') {
+        vm.fromSearch = true;
+      }
+      next();
+    });
+  },
   /**
    * When mounted, initiate population of page.
    * If cookies are invalid or not present, redirect to login page.

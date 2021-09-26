@@ -64,6 +64,12 @@ public class Conversation {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    @Column(name = "read_by_receiver")
+    private boolean readByReceiver;
+
+    @Column(name = "read_by_instigator")
+    private boolean readByInstigator;
+
     /**
      * Constructor for Conversation
      * @param instigator Instigator User
@@ -77,14 +83,22 @@ public class Conversation {
         this.deletedByInstigator = false;
         this.deletedByReceiver = false;
         this.created = LocalDateTime.now();
+
+        this.readByInstigator = false;
+        this.readByReceiver = false;
     }
+
+    // Used for integration testing
+    public boolean getReadByInstigator() { return this.readByInstigator; }
+    public boolean getReadByReceiver() { return this.readByReceiver; }
+
 
     /**
      * Converts the Conversation into its payload representation to be sent to the frontend.
      * @return ConversationPayload object representing the conversation.
      */
     public ConversationPayload toConversationPayload() {
-        return new ConversationPayload(id, instigator, receiver, marketplaceCard, created, deletedByInstigator, deletedByReceiver);
+        return new ConversationPayload(id, instigator, receiver, marketplaceCard, created, deletedByInstigator, deletedByReceiver, readByInstigator, readByReceiver);
     }
 
     /**
