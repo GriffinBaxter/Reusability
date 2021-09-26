@@ -14,6 +14,7 @@ Feature: U25 Lost Password
     Then They should be logged in
 
   Scenario: AC5 - Change password
+    Given A user exists with the email "test@test.com"
     Given A forgot password entity exist for user
     When I try to change the password
     Then The password successfully changes
