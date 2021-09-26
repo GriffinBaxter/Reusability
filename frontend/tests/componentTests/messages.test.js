@@ -38,6 +38,14 @@ describe("Testing the Messages.vue component", () => {
             localVue,
             mocks: {
                 $router
+            },
+            data() {
+                return {
+                    conversations: [
+                        { images: [],
+                        userName: "Test"}
+                    ]
+                }
             }
         });
         await wrapper.vm.$nextTick();
