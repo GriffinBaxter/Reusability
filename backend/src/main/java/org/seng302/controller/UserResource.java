@@ -457,7 +457,7 @@ public class UserResource {
             try {
 
                 // Change email when testing
-                emailService.sendHTMLMessage("jlp89@uclive.ac.nz", "Password Reset", emailTemplate);
+                emailService.sendHTMLMessage(email, "Password Reset", emailTemplate);
 
             } catch (MessagingException exception) {
                 logger.error("500 [INTERNAL SERVER ERROR] - Messaging Exception {}", exception.getMessage());
