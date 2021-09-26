@@ -115,7 +115,6 @@ export default {
 
       selectedImage: null,
       primaryImage: 0,
-      primaryImageFilename: "",
 
       // if an error occurs when a user performs an action then the appropriate error message needs to be displayed.
       formErrorModalMessage: "",
@@ -210,12 +209,37 @@ export default {
     deleteSelectedImage() {
       Api.deleteImage(this.getQueryForParams(), this.selectedImage)
           .then(() => {
-            location.reload();
+            this.removeImage(this.selectedImage);
           })
           .catch((error) => {
             this.handleError(error);
           })
     },
+
+    removeImage(imageId) {
+      this.selectedImage = null;
+
+      // removes the image from currentData
+      for (let i=0; i < this.currentData.data.images.length; i++) {
+        if (this.currentData.data.images[i].id === imageId) {
+          this.currentData.data.images.splice(i, 1);
+        }
+      }
+
+      // if image is primary sets primary image to the first item in the list
+      if (this.primaryImage === imageId) {
+        if (this.currentData.data.images.length > 0) {
+          this.primaryImage = this.currentData.data.images[0].id;
+          this.currentData.data.images[0].isPrimary = true;
+          document.getElementById("primary-image").src = this.getImageSrc(this.currentData.data.images[0].filename);
+        } else {
+          this.primaryImage = null;
+          document.getElementById("primary-image").src = require('../../public/default-image.jpg');
+        }
+      }
+
+    },
+
 
     /**
      * Sets the selected image to the primary image.
