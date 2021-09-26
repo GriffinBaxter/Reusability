@@ -81,10 +81,11 @@
           </div>
         </div>
       </div>
-
       <div class="row">
         <div class="col d-flex justify-content-center" >
-          <button class="btn btn-lg my-sm-4 mb-4 green-button"
+          <button v-if="resetSuccess" class="btn btn-lg my-sm-4 mb-4 green-button"
+                  type="submit" tabindex="4">Success! Return to login</button>
+          <button v-else class="btn btn-lg my-sm-4 mb-4 green-button"
                   type="submit" tabindex="4">Change Password</button>
         </div>
       </div>
@@ -96,6 +97,7 @@
 import {toggleInvalidClass} from "../../src/validationUtils";
 import {togglePasswordInputType, checkPasswordCriteria} from "../../src/passwordUtil";
 import User from "../configs/User"
+import Api from "../Api"
 
 export default {
   name: "ResetPassword",
@@ -113,12 +115,54 @@ export default {
       // Confirm password related variables
       confirmPassword: "",
       confirmPasswordErrorMsg: "",
+
+      resetSuccess: false
     }
   },
   methods: {
     toggleInvalidClass: toggleInvalidClass,
     togglePasswordInputType: togglePasswordInputType,
     checkPasswordCriteria: checkPasswordCriteria,
+    /**
+     *
+     */
+    changePassword() {
+      let requestIsInvalid = false;
+      // Check criteria
+      this.passwordErrorMsg = this.getErrorMessage(
+          this.config.password.name,
+          this.password,
+          this.config.password.minLength,
+          this.config.password.maxLength,
+          this.config.password.regexStrongMessage,
+          this.config.password.regexStrong,
+      )
+      if (this.passwordErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      // Check password equality
+      if (this.password !== this.confirmPassword) {
+        this.confirmPasswordErrorMsg = "Confirmation password does not equal password field."
+      } else {
+        this.confirmPasswordErrorMsg = ""
+      }
+      if (this.confirmPasswordErrorMsg) {
+        requestIsInvalid = true
+      }
+
+      if (requestIsInvalid) return;
+
+      const token = this.$route.query["token"];
+
+      // make api call
+      Api.resetPassword(token, this.password).then(() => {
+        // handle success
+        this.resetSuccess = true;
+      }).catch((err) => {
+      // handle errors
+      })
+    }
   }
 }
 </script>
