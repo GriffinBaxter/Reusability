@@ -168,6 +168,10 @@ export default {
       this.modal.show();
     },
 
+    /**
+     * Sets/unsets the selected image
+     * @param id Id of image to select/unselect
+     */
     setSelected(id) {
       if (this.selectedImage === id) {
         this.selectedImage = null;
@@ -176,6 +180,10 @@ export default {
       }
     },
 
+    /**
+     * Gets the full image path from the server URL
+     * @param filename Name of file to get full path for
+     */
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     },
@@ -216,6 +224,11 @@ export default {
           })
     },
 
+    /**
+     * Removes the selected image from the list of images
+     * If image is primary, it also updates the primary image
+     * @param imageId Id of image to remove
+     */
     removeImage(imageId) {
       this.selectedImage = null;
 
@@ -248,7 +261,7 @@ export default {
       Api.setPrimaryImage(this.getQueryForParams(), this.selectedImage).then(
           response => {
             if (response.status === 200) {
-              location.reload();
+              this.setPrimary(this.selectedImage);
             } else {
               this.formErrorModalMessage = "Sorry, something went wrong...";
             }
@@ -256,6 +269,24 @@ export default {
       ).catch((error) => {
         this.handleError(error);
       })
+    },
+    /**
+     * Sets the selected image to the primary image
+     * @param imageId Id of image to set as primary
+     */
+    setPrimary(imageId) {
+      this.primaryImage = imageId;
+      for (let image of this.currentData.data.images) {
+        if (image.id === imageId) {
+          // updates the new primary image
+          image.isPrimary = true;
+          document.getElementById("primary-image").src = this.getImageSrc(image.filename);
+
+        } else if (image.isPrimary) {
+          // updates the old primary image
+          image.isPrimary = false;
+        }
+      }
     },
 
     /**
@@ -286,18 +317,26 @@ export default {
 
       Api.uploadImage(this.getQueryForParams(), image)
           .then((res) => {
-            // If image is the only image set as default
-            if (this.currentData.data.images.length === 0) {
-              res.data.isPrimary = true;
-              this.primaryImage = res.data.id;
-              document.getElementById("primary-image").src = this.getImageSrc(res.data.filename);
-            }
-
-            this.currentData.data.images.push(res.data);
+            this.addImage(res)
           }).catch((error) => {
         this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
         console.log(error.message);
       })
+    },
+    /**
+     * Adds the new image to the list of stored images
+     * If list is currently empty also sets image to primary image
+     * @param res response from upload image API call
+     */
+    addImage(res) {
+      // If image is the only image set as default
+      if (this.currentData.data.images.length === 0) {
+        res.data.isPrimary = true;
+        this.primaryImage = res.data.id;
+        document.getElementById("primary-image").src = this.getImageSrc(res.data.filename);
+      }
+
+      this.currentData.data.images.push(res.data);
     },
 
     onUploadClick() {
