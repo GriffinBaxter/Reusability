@@ -86,7 +86,7 @@
           <button v-if="resetSuccess" class="btn btn-lg my-sm-4 mb-4 green-button"
                   type="submit" tabindex="4">Success! Return to login</button>
           <button v-else class="btn btn-lg my-sm-4 mb-4 green-button"
-                  type="submit" tabindex="4">Change Password</button>
+                  type="submit" tabindex="4" @click="changePassword()">Change Password</button>
         </div>
       </div>
     </div>
@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {toggleInvalidClass} from "../../src/validationUtils";
+import {toggleInvalidClass, getErrorMessage} from "../../src/validationUtils";
 import {togglePasswordInputType, checkPasswordCriteria} from "../../src/passwordUtil";
 import User from "../configs/User"
 import Api from "../Api"
@@ -123,6 +123,7 @@ export default {
     toggleInvalidClass: toggleInvalidClass,
     togglePasswordInputType: togglePasswordInputType,
     checkPasswordCriteria: checkPasswordCriteria,
+    getErrorMessage: getErrorMessage,
     /**
      *
      */
@@ -159,8 +160,9 @@ export default {
       Api.resetPassword(token, this.password).then(() => {
         // handle success
         this.resetSuccess = true;
-      }).catch((err) => {
+      }).catch((error) => {
       // handle errors
+        console.log(error)
       })
     }
   }
