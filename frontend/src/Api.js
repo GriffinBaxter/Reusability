@@ -443,5 +443,10 @@ export default {
         return instance.get(`businesses/${id}/salesReport?fromDate=${fromDate}&toDate=${toDate}&granularity=${granularity}`, {
             withCredentials: true
         })
+    },
+
+    // Resets the password for an associated token.
+    resetPassword(token, password) {
+        return instance.put(`/users/forgotPassword?token=${token}`, {password: password});
     }
 }

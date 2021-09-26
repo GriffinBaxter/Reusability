@@ -1,15 +1,16 @@
 package org.seng302.controller;
 
 import org.seng302.exceptions.IllegalAddressArgumentException;
+import org.seng302.exceptions.IllegalForgotPasswordArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
+import org.seng302.model.ForgotPassword;
+import org.seng302.model.repository.ForgotPasswordRepository;
+import org.seng302.services.EmailService;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
-import org.seng302.view.incoming.UserIdPayload;
-import org.seng302.view.incoming.UserLoginPayload;
-import org.seng302.view.incoming.UserProfileModifyPayload;
-import org.seng302.view.incoming.UserRegistrationPayload;
+import org.seng302.view.incoming.*;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
@@ -33,6 +34,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -72,6 +75,12 @@ public class UserResource {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private ForgotPasswordRepository forgotPasswordRepository;
+
+    @Autowired
+    private EmailService emailService;
+
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
     // the name of the cookie used for authentication.
@@ -92,9 +101,10 @@ public class UserResource {
 
     private static final String REGISTRATION_ERROR_MESSAGE_EMAIL = "Registration Failure - Email already in use %s";
 
-    public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
+    public UserResource(UserRepository userRepository, AddressRepository addressRepository, ForgotPasswordRepository forgotPasswordRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
+        this.forgotPasswordRepository = forgotPasswordRepository;
     }
 
     /**
