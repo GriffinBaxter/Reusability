@@ -87,7 +87,8 @@
                   </button>
 
                   <hr v-if="isPrimaryAdministrator">
-                  <button type="button"
+                  <button id="editPrimaryAdminButton"
+                          type="button"
                           v-if="isPrimaryAdministrator"
                           style="width: 252px; max-width: 100%"
                           class="btn btn-md btn-outline-primary green-button"

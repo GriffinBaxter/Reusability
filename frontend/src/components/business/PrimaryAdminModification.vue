@@ -25,7 +25,8 @@
 
         <!-- admins -->
         <div class="modal-body">
-          <div class="row administrators"
+          <div :id="'primaryAdminCandidate_' + admin.id"
+               class="row administrators"
                v-for="admin in adminList"
                v-bind:key="admin.id"
                @click="setPrimaryAdmin(admin.id)">
