@@ -156,7 +156,7 @@ export default {
   .delete-icon-wrap {
     width: 18%;
     height: 100%;
-    margin-left: auto;
+    margin: auto;
 
     display: flex;
     justify-content: center;
