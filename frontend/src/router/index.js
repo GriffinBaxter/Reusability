@@ -17,6 +17,17 @@ const routes = [
         component: () => import('../views/Login')
     },
     {
+        path: '/forgotPassword',
+        name: 'ForgotPassword',
+        meta: {
+            title: 'ForgotPassword'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/ForgotPassword.vue')
+    },
+    {
         path: '/registration',
         name: 'Registration',
         meta: {
@@ -289,7 +300,7 @@ const router = new VueRouter({
     routes
 })
 router.beforeEach((to, from, next) => {
-    if(to.name !== "Login" && to.name !== "Registration" && to.name !== "ResetPassword") {
+    if(to.name !== "Login" && to.name !== "Registration" && to.name !== "ResetPassword" && to.name !== "ForgotPassword") {
         if (!Cookies.get('userID')) {
             next({ name: "Login"});
         } else {
