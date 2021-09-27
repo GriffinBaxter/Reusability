@@ -1087,7 +1087,6 @@ export default {
      */
     setAddressFields(address) {
       // Address
-      console.log(address)
       if (address.streetNumber !== null) { this.$refs.streetNumber.value = address.streetNumber }
       if (address.streetName !== null) { this.$refs.streetName.value = address.streetName }
       if (address.suburb !== null) { this.$refs.suburb.value = address.suburb }
