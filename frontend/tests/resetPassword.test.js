@@ -1,11 +1,30 @@
 import {mount} from "@vue/test-utils";
 import ResetPassword from "../src/views/ResetPassword";
-import {beforeEach, describe, expect, test} from "@jest/globals";
+import {beforeEach, describe, expect, jest, test} from "@jest/globals";
+import Api from '../src/Api';
 
 let wrapper;
+let $route;
+let $router;
+
+jest.mock("../src/Api");
 
 beforeEach(() => {
-    wrapper = mount(ResetPassword, {attachTo: document.body});
+    $router = {
+        push: jest.fn()
+    };
+    $route = {
+        query: {
+            token: "123token"
+        }
+    };
+    wrapper = mount(ResetPassword, {
+        attachTo: document.body,
+        mocks: {
+            $router,
+            $route
+        }
+    });
 })
 
 describe("Testing the password field", () => {
@@ -116,3 +135,113 @@ describe("Testing the dynamic criteria", () => {
     })
 
 })
+
+describe("Testing the changePassword message", () => {
+
+    test("Testing that the changePassword method updates the resetSuccess variable when a 200 response is received.", async () => {
+
+        const response = {
+            status: 200
+        }
+        Api.resetPassword.mockImplementation(() => Promise.resolve(response))
+
+        wrapper.vm.$data.password = "TestPassword123!"
+        wrapper.vm.$data.confirmPassword = "TestPassword123!";
+
+        wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+        expect(wrapper.vm.$data.resetSuccess).toBeTruthy();
+
+    });
+
+    test("Testing that the changePassword method pushes to the timeout page when no response is received.", async () => {
+
+        const data = {
+            request: true
+        }
+        Api.resetPassword.mockImplementation(() => Promise.reject(data))
+
+        wrapper.vm.$data.password = "TestPassword123!"
+        wrapper.vm.$data.confirmPassword = "TestPassword123!";
+
+        wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+        expect($router.push).toHaveBeenCalledWith({ path: `/timeout`});
+
+    });
+
+    test("Testing that the changePassword method sets the password error message when a 400 status is received", async () => {
+
+        const data = {
+            response: {
+                status: 400
+            }
+        }
+        Api.resetPassword.mockImplementation(() => Promise.reject(data))
+
+        wrapper.vm.$data.password = "TestPassword123!"
+        wrapper.vm.$data.confirmPassword = "TestPassword123!";
+
+        wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+
+        expect(wrapper.vm.$data.passwordErrorMsg).toEqual("Invalid password: Please check criteria.")
+
+    });
+
+    test("Testing that the changePassword method sets the invalidToken to true when a 406 status is received", async () => {
+
+        const data = {
+            response: {
+                status: 406
+            }
+        }
+        Api.resetPassword.mockImplementation(() => Promise.reject(data))
+
+        wrapper.vm.$data.password = "TestPassword123!"
+        wrapper.vm.$data.confirmPassword = "TestPassword123!";
+
+        wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+
+        expect(wrapper.vm.$data.invalidToken).toBeTruthy();
+
+    });
+
+    test("Testing that the changePassword method pushes to a timeout route when receiving a 500 error", async () => {
+
+        const data = {
+            response: {
+                status: 500
+            }
+        }
+        Api.resetPassword.mockImplementation(() => Promise.reject(data))
+
+        wrapper.vm.$data.password = "TestPassword123!"
+        wrapper.vm.$data.confirmPassword = "TestPassword123!";
+
+        wrapper.vm.changePassword();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+
+
+        expect($router.push).toHaveBeenCalledWith({ path: `/timeout`});
+
+    });
+
+    test("BackToLogin calls $router.push to the login route.", async () => {
+
+        wrapper.vm.backToLogin();
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+        expect($router.push).toHaveBeenCalledWith({name: "Login"});
+    })
+});
