@@ -1,15 +1,16 @@
 package org.seng302.controller;
 
 import org.seng302.exceptions.IllegalAddressArgumentException;
+import org.seng302.exceptions.IllegalForgotPasswordArgumentException;
 import org.seng302.exceptions.IllegalUserArgumentException;
 import org.seng302.model.Address;
 import org.seng302.Authorization;
+import org.seng302.model.ForgotPassword;
+import org.seng302.model.repository.ForgotPasswordRepository;
+import org.seng302.services.EmailService;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
-import org.seng302.view.incoming.UserIdPayload;
-import org.seng302.view.incoming.UserLoginPayload;
-import org.seng302.view.incoming.UserProfileModifyPayload;
-import org.seng302.view.incoming.UserRegistrationPayload;
+import org.seng302.view.incoming.*;
 import org.seng302.view.outgoing.AddressPayload;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.Business;
@@ -33,6 +34,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,6 +64,7 @@ import static org.seng302.model.enums.Role.*;
  * GET "/users/search" endpoint used to retrieve user accounts based on search criteria.
  * PUT "/users/{id}/makeAdmin" endpoint used to make a user account a GAA.
  * PUT "/users/{id}/revokeAdmin" endpoint used to revoke admin perms from user account (GAA -> normal user account)
+ * POST "users/forgotPassword" endpoint used to send an email with a reset password link to the email provided.
  */
 @RestController
 public class UserResource {
@@ -71,6 +74,12 @@ public class UserResource {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private ForgotPasswordRepository forgotPasswordRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     private static final Logger logger = LogManager.getLogger(UserResource.class.getName());
 
@@ -92,9 +101,10 @@ public class UserResource {
 
     private static final String REGISTRATION_ERROR_MESSAGE_EMAIL = "Registration Failure - Email already in use %s";
 
-    public UserResource(UserRepository userRepository, AddressRepository addressRepository) {
+    public UserResource(UserRepository userRepository, AddressRepository addressRepository, ForgotPasswordRepository forgotPasswordRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
+        this.forgotPasswordRepository = forgotPasswordRepository;
     }
 
     /**
@@ -451,6 +461,68 @@ public class UserResource {
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(convertToPayloadSecureAndRemoveRolesIfNotAuthenticated(pagedResult.getContent(), currentUser));
+    }
+
+    /**
+     * This method will be called on the forgot password page after the user has entered a valid email.
+     * Sends an email to the given email address with a link to the reset password page.
+     * @param forgotPasswordPayload Forgot password payload containing an email address.
+     */
+    @PostMapping("/users/forgotPassword")
+    @ResponseStatus(value = HttpStatus.CREATED, reason = "Email sent successfully")
+    public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload,
+                               HttpServletRequest request) {
+
+        String email = forgotPasswordPayload.getEmail();
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            ForgotPassword forgotPasswordEntity;
+            try {
+                forgotPasswordEntity = new ForgotPassword(user.getId());
+                forgotPasswordRepository.save(forgotPasswordEntity);
+            } catch (IllegalForgotPasswordArgumentException exception) {
+                logger.error("500 [NOT ACCEPTABLE] - User ID {} invalid", user.getId());
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "User ID Invalid"
+                );
+            }
+
+            String baseURL = request.getRequestURL().toString();
+
+            String resetPasswordURL;
+
+            switch (baseURL) {
+                case "http://localhost:9499/users/forgotPassword":
+                    resetPasswordURL = "http://localhost:9500/changePassword?token=";
+                    break;
+                case "https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword":
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/test/changePassword?token=";
+                    break;
+                case "https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword":
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/prod/changePassword?token=";
+                    break;
+                default:
+                    throw new ResponseStatusException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Invalid Request URL");
+            }
+
+            resetPasswordURL += forgotPasswordEntity.getToken();
+
+            // Change email for testing
+            emailService.sendSimpleMessage(email, "Reset Password", resetPasswordURL);
+
+
+        } else {
+            logger.error("406 [NOT ACCEPTABLE] - User with email {} does not exist.", email);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Email does not exist"
+            );
+        }
     }
 
     /**

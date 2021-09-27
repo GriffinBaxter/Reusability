@@ -7,6 +7,7 @@ import org.seng302.controller.UserResource;
 import org.seng302.Main;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
+import org.seng302.model.repository.ForgotPasswordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -52,6 +53,9 @@ class UserResourceIntegrationTests {
 
     @MockBean
     private AddressRepository addressRepository;
+
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
 
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
                                         "\"password\": \"%s\"}";
@@ -109,6 +113,8 @@ class UserResourceIntegrationTests {
             "\"currentPassword\": \"%s\",\n" +
             "\"newPassword\": \"%s\"\n" +
             "}";
+
+    private final String forgotPasswordJSON = "{\"email\":\"%s\"}";
 
     private MockHttpServletResponse response;
 
@@ -296,7 +302,7 @@ class UserResourceIntegrationTests {
         searchUser5.setId(8);
 
         // initializes the MockMVC object and tells it to use the userRepository
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
 
     }
 
@@ -2110,5 +2116,46 @@ class UserResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received from the forgot password endpoint when there is no user
+     * in the database with the supplied email.
+     */
+    @Test
+    void cantRequestForgotPasswordEmailWhenEmailDoesNotExist() throws Exception {
+        // given
+        String userEmail = "randomEmail@email.com";
+        given(userRepository.findByEmail(userEmail)).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(
+                        post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that an INTERNAL_SERVER_ERROR status is received from the forgot password endpoint when the request baseURL
+     * is not one of the following three allowed:
+     *     http://localhost:9499/users/forgotPassword
+     *     https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword
+     *     https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword
+     */
+    @Test
+    void cantRequestForgotPasswordEmailWhenRequestBaseURLisIncorrect() throws Exception {
+        // given
+        String userEmail = "randomEmail@email.com";
+        given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
+
+        // when
+        response = mvc.perform(
+                        post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

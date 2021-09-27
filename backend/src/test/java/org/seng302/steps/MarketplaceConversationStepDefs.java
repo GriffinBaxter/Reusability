@@ -74,6 +74,10 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
     @MockBean
     private MarketplaceConversationMessageRepository marketplaceConversationMessageRepository;
 
+    @Autowired
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
+
     private Address address1;
     private Address address2;
     private User instigator;
@@ -110,7 +114,7 @@ public class MarketplaceConversationStepDefs extends CucumberSpringConfiguration
         marketplaceConversationRepository = mock(MarketplaceConversationRepository.class);
         marketplaceConversationMessageRepository = mock(MarketplaceConversationMessageRepository.class);
         this.mvc = MockMvcBuilders.standaloneSetup(new MarketplaceConversationResource(userRepository, marketplaceCardRepository, marketplaceConversationRepository, marketplaceConversationMessageRepository)).build();
-        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
     }
 
     @Given("I am logged in as a user")
