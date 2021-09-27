@@ -10,7 +10,7 @@
       <!--Nav bar; displays either business account or individual account nav bar-->
       <Navbar></Navbar>
 
-      <div id="home" class="container all-but-footer">
+      <div id="home" class="container all-but-footer" v-if="isActingAsUser()">
         <h1 style="text-align: center">Home</h1>
 
         <ul class="nav nav-tabs" id="homepage-tabs" role="tablist">
@@ -100,6 +100,13 @@
         </div>
       </div>
 
+      <div class="container all-but-footer" v-else>
+        <h1 style="text-align: center">Home</h1>
+        <div class="sales-report-overview">Sales Report Overview</div>
+        <div class="box">
+        </div>
+      </div>
+
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
     <Footer/>
@@ -113,6 +120,7 @@ import Navbar from '../components/Navbar';
 import UserCardsComp from "../components/UserCardsComp"
 import Api from "../Api";
 import {formatDate} from "../dateUtils";
+import BarChart from '../components/saleInsights/SalesReportGraph.js'
 import Cookies from "js-cookie";
 import LoadingDots from "../components/LoadingDots";
 
@@ -122,6 +130,7 @@ export default {
     LoadingDots,
     Footer,
     Navbar,
+    BarChart,
     UserCardsComp
   },
   data() {
@@ -277,6 +286,16 @@ export default {
 body {
   background: #f1f1f1;
   margin: 0;
+}
+
+.sales-report-overview {
+  font-family: 'Roboto', sans-serif !important;
+  color: black !important;
+  font-size: 1.5rem;
+}
+
+.box {
+  border: 1px black solid;
 }
 
 .nav-link {
