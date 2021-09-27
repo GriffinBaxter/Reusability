@@ -232,12 +232,14 @@ export default {
     removeImage(imageId) {
       this.selectedImage = null;
 
-      // removes the image from currentData
       let images = this.currentData.data.images
       for (let i=0; i < images.length; i++) {
         if (images[i].id === imageId) {
-          if (i != 0) {
-            document.getElementById("image-carousel").children[0].classList.add("active");
+          let index = (i + 1) % images.length
+          if (i !== 0) {
+            document.getElementById("image-carousel").children[index].classList.add("active");
+          } else if (images.length > 1) {
+            document.getElementById("image-carousel").children[index].classList.add("active");
           }
           images.splice(i, 1);
           break;
