@@ -389,6 +389,7 @@ public class UserResource {
      * @param searchQuery Search query
      * @param orderBy Column to order the results by
      * @param page Page number to return results from
+     * @param pageSize Number of elements to return per page
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
@@ -396,16 +397,15 @@ public class UserResource {
             @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
             @RequestParam String searchQuery,
             @RequestParam(defaultValue = "fullNameASC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "5") String pageSize
     ) throws Exception {
-        logger.debug("User search request received with search query {}, order by {}, page {}", searchQuery, orderBy, page);
+        logger.debug("User search request received with search query {}, order by {}, page {}, page size {}", searchQuery, orderBy, page, pageSize);
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 5 users per page
-        int pageSize = 5;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
         Sort sortByEmailASC = Sort.by(Sort.Order.asc("email").ignoreCase());
@@ -444,7 +444,7 @@ public class UserResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
 
         Page<User> pagedResult = parseAndExecuteQuery(searchQuery, paging);
 
@@ -455,7 +455,7 @@ public class UserResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Search Success - 200 [OK] -  Users retrieved for search query {}, order by {}, page {}", searchQuery, orderBy, pageNo);
+        logger.info("Search Success - 200 [OK] -  Users retrieved for search query {}, order by {}, page {}, page size {}", searchQuery, orderBy, pageNo, pageSizeNo);
 
         logger.debug("Users Found: {}", pagedResult.toList());
         return ResponseEntity.ok()

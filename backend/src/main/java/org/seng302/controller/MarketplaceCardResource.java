@@ -263,6 +263,7 @@ public class MarketplaceCardResource {
      * @param section      Section of card
      * @param orderBy      Ordering
      * @param page         Page number
+     * @param pageSize     Number of elements to return per page
      * @return List of MarketplaceCardPayloads
      * @throws Exception when card can't be converted to payload (DTO).
      */
@@ -271,9 +272,10 @@ public class MarketplaceCardResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @RequestParam String section,
             @RequestParam(defaultValue = "createdDESC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "6") String pageSize
     ) throws Exception {
-        logger.debug("Get card request received with section {}, order by {}, page {}", section, orderBy, page);
+        logger.debug("Get card request received with section {}, order by {}, page {}, page size {}", section, orderBy, page, pageSize);
 
         // Checks user logged in 401
         Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -292,9 +294,7 @@ public class MarketplaceCardResource {
 
         // Checks page is number
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 20 cards per page
-        int pageSize = 6; // NOTE if changed must also be changed in MarketplaceCardResourceIntegrationTests
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
@@ -326,7 +326,7 @@ public class MarketplaceCardResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
 
         Page<MarketplaceCard> pagedResult = marketplaceCardRepository.findAllBySection(sectionType, paging);
 
@@ -337,7 +337,7 @@ public class MarketplaceCardResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Get Marketplace Cards Success - 200 [OK] -  Cards retrieved for Section {}, order by {}, page {}", section, orderBy, pageNo);
+        logger.info("Get Marketplace Cards Success - 200 [OK] -  Cards retrieved for Section {}, order by {}, page {}, page size {}", section, orderBy, pageNo, pageSizeNo);
         List<MarketplaceCard> cards = pagedResult.getContent();
         List<MarketplaceCardPayload> payload = new ArrayList<>();
         for (MarketplaceCard card : cards) {
