@@ -2215,14 +2215,14 @@ class UserResourceIntegrationTests {
     }
 
     /**
-     * Tests that a INTERNAL_SERVER_ERROR status is received from the forgot password endpoint when the request baseURL
+     * Tests that an INTERNAL_SERVER_ERROR status is received from the forgot password endpoint when the request baseURL
      * is not one of the following three allowed:
      *     http://localhost:9499/users/forgotPassword
      *     https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword
      *     https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword
      */
     @Test
-    void cantRequestForgotPasswordEmailWhenEmailDoesNotExistaa() throws Exception {
+    void cantRequestForgotPasswordEmailWhenRequestBaseURLisIncorrect() throws Exception {
         // given
         String userEmail = "randomEmail@email.com";
         given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
