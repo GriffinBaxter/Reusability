@@ -13,8 +13,17 @@
             <!-- Autofill success message card-->
             <div class="row my-lg-2">
               <div class="col-12 mx-auto">
-                <div v-if="autofilled" class="alert alert-success text-center">
+                <div v-if="autofilled" id="autofillSuccessMessage" class="alert alert-success text-center">
                   <label>Product information has been autofilled</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Autofill error message card-->
+            <div class="row my-lg-2">
+              <div class="col-12 mx-auto">
+                <div v-if="autofillError" id="autofillErrorMessage" class="alert alert-danger text-center">
+                  <label>Could not autofill, product may not exist in database</label>
                 </div>
               </div>
             </div>
@@ -42,7 +51,7 @@
                   </div>
                 </div>
               </div>
-
+              <hr>
               <!--product barcode-->
               <div class="form-group">
                 <label for="barcode-checkbox-in-update-modal">Edit Barcode?&nbsp;</label>
@@ -96,7 +105,7 @@
                   </button>
                 </div>
               </div>
-
+              <hr>
               <!--              Product Name-->
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
@@ -217,7 +226,8 @@ export default {
       productName: "",
       manufacturer: "",
       description: "",
-      autofilled: false
+      autofilled: false,
+      autofillError: false
 
     }
   },
@@ -251,6 +261,7 @@ export default {
 
         // Reset all the error messages
         this.autofilled = false;
+        this.autofillError = false;
         this.errorsMessages.id = "";
         this.errorsMessages.name = "";
         this.errorsMessages.manufacturer = "";
@@ -483,7 +494,8 @@ export default {
      * Autofills data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
-      this.formErrorModalMessage = "";
+      this.autofillError = false;
+      this.autofilled = false;
       this.barcode = this.newProduct.data.barcode;
       this.productName = this.newProduct.data.name;
       this.manufacturer = this.newProduct.data.manufacturer;
@@ -494,7 +506,6 @@ export default {
         outerThis.newProduct.data.name = outerThis.productName;
         outerThis.newProduct.data.manufacturer = outerThis.manufacturer;
         outerThis.newProduct.data.description = outerThis.description;
-        outerThis.autofilled = true;
       });
     }
   },

@@ -96,8 +96,16 @@
                 <!-- Autofill success message card-->
                 <div class="row my-lg-2">
                   <div class="col-12 mx-auto">
-                    <div v-if="autofilled" class="alert alert-success text-center">
+                    <div v-if="autofilled" id="autofillSuccessMessage" class="alert alert-success text-center">
                       <label>Product information has been autofilled</label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Autofill error message card-->
+                <div class="row my-lg-2">
+                  <div class="col-12 mx-auto">
+                    <div v-if="autofillError" id="autofillErrorMessage" class="alert alert-danger text-center">
+                      <label>Could not autofill, product may not exist in database</label>
                     </div>
                   </div>
                 </div>
@@ -113,6 +121,7 @@
                       {{ productIDErrorMsg }}
                     </div>
                   </div>
+                  <hr>
                   <!--product barcode-->
                   <div class="form-group py-2">
                     <label for="barcode-checkbox">Add Barcode?&nbsp;</label>
@@ -166,6 +175,7 @@
                       </button>
                     </div>
                   </div>
+                  <hr>
                   <!--product name-->
                   <div class="form-group">
                     <label for="product-name">Product Name*</label>
@@ -343,6 +353,7 @@ export default {
       liveStreaming: false,
       barcodeFound: false,
       autofilled: false,
+      autofillError: false,
 
       // Product name related variables
       productName: "",
@@ -474,6 +485,7 @@ export default {
       this.liveStreaming = false;
       this.barcodeFound = false;
       this.autofilled = false;
+      this.autofillError = false;
 
       this.modal.show();
     },
@@ -838,6 +850,8 @@ export default {
       // Reset product barcode related variables
       this.barcode = "";
       this.barcodeErrorMsg = "";
+      this.autofilled = false;
+      this.autofillError = false;
 
       // Reset product name related variables
       this.productName = "";
@@ -913,7 +927,8 @@ export default {
      * Autofill data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
-      this.toastErrorMessage = "";
+      this.autofilled = false;
+      this.autofillError = false;
       autofillProductFromBarcode(this, function () {
         return undefined;
       });
