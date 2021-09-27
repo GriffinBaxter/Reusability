@@ -9,7 +9,7 @@
   <div>
     <div id="main">
       <!--nav bar-->
-      <Navbar></Navbar>
+      <Navbar ref="navbar"></Navbar>
 
       <!--profile container-->
       <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
@@ -20,7 +20,7 @@
         <div class="row">
 
           <!-- Update images modal -->
-          <UpdateImagesModal ref="updateImagesModal" location="User" :id="userId" v-model="user"/>
+          <UpdateImagesModal v-on:updatePrimary="updatePrimaryNav" ref="updateImagesModal" location="User" :id="userId" v-model="user"/>
 
           <div class="col-xl-3 mb-3">
             <div class="card text-center shadow-sm">
@@ -400,6 +400,10 @@ export default {
     },
 
     // --------------------------------------------------------------------------------------------------------------------
+
+    updatePrimaryNav() {
+      // this.$refs.navbar.updatePrimaryImage();
+    },
 
     getImageSrc(filename) {
       if (filename === "") {
