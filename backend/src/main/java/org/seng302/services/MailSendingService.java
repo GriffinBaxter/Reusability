@@ -18,6 +18,11 @@ public class MailSendingService {
     @Value("${support.password}")
     private String supportPassword;
 
+    /**
+     * A JavaMailSender bean that sets up SMTP details for the support email account.
+     * To be used by an instance of EmailService.
+     * @return
+     */
     @Bean
     public JavaMailSender getJavaMailSender() {
 

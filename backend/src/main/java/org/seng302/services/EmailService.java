@@ -18,6 +18,12 @@ public class EmailService {
     @Value("${support.email}")
     private String supportEmail;
 
+    /**
+     * Sends a simple text only email to the given email address.
+     * @param to A string containing the email address to send to
+     * @param subject A string containing the email subject
+     * @param text A string containing the email content
+     */
     public void sendSimpleMessage(
             String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
