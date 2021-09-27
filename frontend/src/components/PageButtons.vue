@@ -67,6 +67,10 @@ export default {
     updatePage(newPageNumber) {
       this.$emit('updatePage', newPageNumber);
       this.$parent.$emit('updatePage', newPageNumber);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      })
     },
 
     /**
