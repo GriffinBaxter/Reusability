@@ -107,6 +107,13 @@ describe("Testing primaryAdminCandidate button", () => {
         expect(wrapper.find("#primaryAdminCandidate_17").exists()).toBeFalsy();
     })
 
+    test("Testing when adminList is empty, there is a message will shown", () => {
+        adminList = [];
+        createWrapper();
+
+        expect(wrapper.find("#noAdminInListMessage").exists()).toBeTruthy();
+    })
+
     test("Testing when adminList have a admin, one primaryAdminCandidate will be display", () => {
         adminList = [{
             "id": 15,
