@@ -481,7 +481,7 @@ export default {
           || role === UserRole.GLOBALAPPLICATIONADMIN
     },
     /**
-     * Given a id we attempt to see if the yser is an admin. And update the isAdministrator variable.
+     * Given a id we attempt to see if the user is an admin. And update the isAdministrator variable.
      *
      * @param currentID The user's id we are testing against.
      */
