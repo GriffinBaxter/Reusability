@@ -82,9 +82,9 @@
 </template>
 
 <script>
-import Product from "../configs/Product";
 import {Modal} from "bootstrap";
 import Api from "../Api"
+import Product from "../configs/Product"
 
 export default {
   name: "UpdateImagesModal",
@@ -133,13 +133,7 @@ export default {
     showModel(event) {
       // Prevent any default actions
       event.preventDefault();
-
-      // If the modal is already showing prevent the placeholders from being updated.
-      if (!this.$refs._updateImagesModal.classList.contains("show")) {
-        // Update the placeholders
-        this.currentData.data.id = this.value.data.id;
-        this.currentData.data.images = this.value.data.images;
-      }
+      this.currentData = this.value;
 
       if (this.location === "User") {
         this.currentData.data.firstName = this.value.data.firstName
@@ -156,7 +150,6 @@ export default {
       }
 
       this.images = this.currentData.data.images;
-
       if (this.images.length > 0) {
         document.getElementById("primary-image").src = this.getImageSrc(primaryImageFilename);
       } else {
@@ -235,11 +228,13 @@ export default {
       let images = this.currentData.data.images
       for (let i=0; i < images.length; i++) {
         if (images[i].id === imageId) {
-          let index = (i + 1) % images.length
-          if (i !== 0) {
-            document.getElementById("image-carousel").children[index].classList.add("active");
-          } else if (images.length > 1) {
-            document.getElementById("image-carousel").children[index].classList.add("active");
+          if (this.location !== "Product") {
+            let index = (i + 1) % images.length
+            if (i !== 0) {
+              document.getElementById("image-carousel").children[index].classList.add("active");
+            } else if (images.length > 1) {
+              document.getElementById("image-carousel").children[index].classList.add("active");
+            }
           }
           images.splice(i, 1);
           break;
@@ -258,6 +253,9 @@ export default {
         }
       }
 
+      if (this.location === "Product") {
+        this.updateValue(new Product(this.currentData.data));
+      }
     },
 
 
@@ -292,7 +290,11 @@ export default {
           image.isPrimary = false;
         }
       }
-      this.$emit("updatePrimary");
+      if (this.location === "Product") {
+        this.updateValue(new Product(this.currentData.data));
+      } else {
+        this.$emit("updatePrimary");
+      }
     },
 
     /**
@@ -344,7 +346,13 @@ export default {
       } else {
         this.currentData.data.images.push(res.data);
       }
+      if (this.location === "Product") {
+        this.updateValue(new Product(this.currentData.data));
+      }
+    },
 
+    updateValue(value) {
+      this.$emit('input', value);
     },
 
     onUploadClick() {
@@ -356,7 +364,7 @@ export default {
     this.modal = new Modal(this.$refs._updateImagesModal);
 
     if (this.location === "Product") {
-      this.currentData = new Product(this.value.data)
+      this.currentData = this.value
     } else if (this.location === "Business" || this.location === "User") {
       this.currentData = this.value
     }
