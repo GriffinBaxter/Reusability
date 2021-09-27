@@ -175,7 +175,7 @@ const createWrapper = async () => {
 describe("Testing that the change profile button appears only when allowed to.", () => {
 
 
-    test("Testing that if you are not acting as a business then the button does not appear.", async () => {
+    test("Testing that if you are not acting as a business then the button does appear.", async () => {
         await setupCookies(21, undefined);
 
         await createWrapper();
@@ -183,7 +183,7 @@ describe("Testing that the change profile button appears only when allowed to.",
         await wrapper.vm.$nextTick();
         const button = await wrapper.find("#update-business-image-button");
 
-        expect(button.exists()).toBeFalsy();
+        expect(button.exists()).toBeTruthy();
     });
 
     test("Testing that if you are acting as a business then the button does appear.", async () => {

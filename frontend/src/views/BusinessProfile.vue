@@ -25,7 +25,8 @@
           <PrimaryAdminModification
               ref="primaryAdminModification"
               :business-info="businessInfo"
-              :admin-list="adminList"/>
+              :admin-list="adminList"
+              :selected-user="null"/>
 
           <div class="col-xl-3 mb-3">
 
@@ -65,7 +66,7 @@
                 </div>
 
                 <div id="change-profile-picture-button" style="padding-top: 10px"
-                     v-if="isAdministrator && business.data.id">
+                     v-if="isAdministrator || business.data.id">
                   <button type="button" style="width: 252px; max-width: 100%" id="update-business-image-button"
                           class="btn btn-md btn-outline-primary green-button"
                           @click="(event) => {this.$refs.updateImagesModal.showModel(event)}">
@@ -287,7 +288,8 @@ export default {
         address: {},
         businessType: "",
         currencySymbol: "",
-        currencyCode: ""
+        currencyCode: "",
+        images: []
       }
     }
   },
@@ -360,6 +362,7 @@ export default {
       this.businessInfo.name = this.name;
 
       this.business.data.images = data.businessImages;
+      this.businessInfo.images = data.businessImages;
 
       this.description = data.description;
       this.businessInfo.description = this.description;

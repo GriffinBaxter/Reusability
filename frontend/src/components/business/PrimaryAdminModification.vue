@@ -13,7 +13,7 @@
           <div class="col">
             <!-- Business image -->
             <img class="rounded-circle img-fluid business-image"
-                 :src="require('../../../public/sample_business_logo.jpg')"
+                 :src="getPrimaryImageSrc(businessInfo.images)"
                  alt="Profile Image"/>
 
             <!-- Business info-->
@@ -24,12 +24,12 @@
         </div>
 
         <!-- admins -->
-        <div class="modal-body">
+        <div class="modal-body" v-if="selectedUser === null">
           <div :id="'primaryAdminCandidate_' + admin.id"
                class="row administrators"
                v-for="admin in adminList"
                v-bind:key="admin.id"
-               @click="setPrimaryAdmin(admin.id)">
+               @click="selectedUser = admin">
             <div class="col-3">
               <img class="rounded-circle img-fluid user-image"
                    :src="getPrimaryImageSrc(admin.images)"
@@ -40,9 +40,33 @@
               <p style="margin: 0 0 0 0">Email: {{ admin.email }}</p>
             </div>
           </div>
+
+          <div v-if="adminList.length === 0">
+            You are the only administrator for this business.
+          </div>
         </div>
 
-        <div class="modal-footer"></div>
+        <div class="modal-body" v-else>
+          <h6> Are you sure you want to make
+            <strong>{{ selectedUser.firstName }} {{ selectedUser.lastName }}</strong>
+            the primary administrator?</h6>
+
+          <button id="backButton"
+                  type="button"
+                  class="btn btn-outline-success"
+                  @click="selectedUser = null">
+            Back
+          </button>
+
+          <button id="confirmButton"
+                  type="button"
+                  class="btn btn-danger"
+                  @click="setPrimaryAdmin(selectedUser.id)">
+            Confirm
+          </button>
+        </div>
+
+        <div class="modal-footer"/>
 
       </div>
     </div>
@@ -65,11 +89,12 @@ export default {
     adminList: {
       type: Array,
       required: true
-    },
+    }
   },
   data() {
     return {
       modal: null,
+      selectedUser: null,
     }
   },
   methods: {
@@ -83,19 +108,17 @@ export default {
       if (images.length === 0) {
         return require('../../../public/default-image.jpg')
       }
-      try {
-        images.forEach((image) => {
-          if (image.isPrimary) throw (image.thumbnailFilename)
-        })
-      } catch (primaryImage) {
-        return Api.getServerURL() + "/" + primaryImage;
-      }
+      const primaryImage = images.filter((image) => image.isPrimary)
+      return Api.getServerURL() + '/' + primaryImage[0].thumbnailFilename;
     },
+    /**
+     * try to set the user which has given id to a primary admin
+     */
     setPrimaryAdmin(id) {
       const url = document.URL;
       const urlID = url.substring(url.lastIndexOf('/') + 1);
 
-      const businessDate = {
+      const businessData = {
         primaryAdministratorId: id,
         name: this.businessInfo.name,
         description: this.businessInfo.description,
@@ -104,7 +127,7 @@ export default {
         currencySymbol: this.businessInfo.currencySymbol,
         currencyCode: this.businessInfo.currencyCode
       }
-      Api.editBusiness(urlID, new Business(businessDate))
+      Api.editBusiness(urlID, new Business(businessData))
           .then(() => {
             location.reload()
           })
@@ -176,5 +199,14 @@ export default {
   position: absolute;
   right: 20px;
   top: 20px;
+}
+
+#backButton {
+  margin-left: 75px;
+}
+
+#confirmButton {
+  margin-right: 75px;
+  float: right;
 }
 </style>
