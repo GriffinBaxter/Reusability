@@ -504,6 +504,72 @@ class MarketplaceConversationResourceIntegrationTests {
     }
 
     /**
+     * Tests that the read by instigator/receiver are set correctly when sending a marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint as the instigator.
+     *
+     * @throws Exception exception
+     */
+    @Test
+    void testReadBy_WhenInstigatorCreateMessage() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+
+        given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
+
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+        given(marketplaceConversationRepository.findConversationById(conversation.getId())).willReturn(Optional.ofNullable(conversation));
+
+        // when
+        response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(conversation.getReadByReceiver()).isFalse();
+        assertThat(conversation.getReadByInstigator()).isTrue();
+    }
+
+    /**
+     * Tests that the read by instigator/receiver are set correctly when sending a marketplace conversation message
+     * to the /home/conversation/{conversationId} API endpoint as the receiver.
+     *
+     * @throws Exception exception
+     */
+    @Test
+    void testReadBy_WhenReceiverCreateMessage() throws Exception {
+        // given
+        given(userRepository.findById(instigator.getId())).willReturn(Optional.ofNullable(instigator));
+
+        payloadJson = String.format(messagePayloadJson, instigator.getId(), receiver.getId(),
+                marketplaceCard.getId(), content, LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)));
+
+        given(userRepository.findBySessionUUID(receiver.getSessionUUID())).willReturn(Optional.ofNullable(receiver));
+        given(userRepository.findById(receiver.getId())).willReturn(Optional.ofNullable(receiver));
+
+        given(marketplaceCardRepository.findById(marketplaceCard.getId())).willReturn(Optional.ofNullable(marketplaceCard));
+        given(marketplaceConversationRepository.findConversationById(conversation.getId())).willReturn(Optional.ofNullable(conversation));
+
+        // when
+        response = mvc.perform(post(String.format("/home/conversation/%d", conversation.getId()))
+                .cookie(new Cookie("JSESSIONID", receiver.getSessionUUID()))
+                .contentType(MediaType.APPLICATION_JSON).content(payloadJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(conversation.getReadByReceiver()).isTrue();
+        assertThat(conversation.getReadByInstigator()).isFalse();
+    }
+
+    /**
      * Tests that an OK status and a list of messages are received when trying to retrieve messages from an existing conversation.
      *
      * @throws Exception thrown if there's an error with the mock mvc methods.
@@ -522,6 +588,60 @@ class MarketplaceConversationResourceIntegrationTests {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
+    }
+
+    /**
+     * Tests the read by receiver/instigator is set correctly when receiver views the conversation
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void testReadBy_WhenReceiverGetConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(instigator.getSessionUUID())).willReturn(Optional.ofNullable(instigator));
+
+        conversation.setReadByInstigator(false);
+        conversation.setReadByReceiver(false);
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", instigator.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
+
+        assertThat(conversation.getReadByInstigator()).isTrue();
+        assertThat(conversation.getReadByReceiver()).isFalse();
+    }
+
+    /**
+     * Tests the read by receiver/instigator is set correctly when instigator views the conversation
+     *
+     * @throws Exception thrown if there's an error with the mock mvc methods.
+     */
+    @Test
+    void testReadBy_WhenInstigatorGetConversation() throws Exception {
+        // Given
+        given(userRepository.findBySessionUUID(receiver.getSessionUUID())).willReturn(Optional.ofNullable(receiver));
+
+        conversation.setReadByInstigator(false);
+        conversation.setReadByReceiver(false);
+
+        // When
+        when(marketplaceConversationRepository.findConversationById(1)).thenReturn(Optional.of(conversation));
+        when(marketplaceConversationMessageRepository.findAllByConversationId_OrderByCreatedDesc(1)).thenReturn(List.of(message));
+        response = mvc.perform(get("/home/conversation/" + conversation.getId() + "/messages")
+                .cookie(new Cookie("JSESSIONID", receiver.getSessionUUID()))).andReturn().getResponse();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("[" + message.toMessagePayload().toString() + "]");
+
+        assertThat(conversation.getReadByInstigator()).isFalse();
+        assertThat(conversation.getReadByReceiver()).isTrue();
     }
 
     /**
@@ -730,7 +850,7 @@ class MarketplaceConversationResourceIntegrationTests {
         conversationWithReceiverRemoved.setId(3);
         conversationWithReceiverRemoved.setDeletedByReceiver(true);
         given(marketplaceConversationRepository.findById(conversationWithReceiverRemoved.getId()))
-                .willReturn(Optional.ofNullable(conversationWithReceiverRemoved));
+                .willReturn(Optional.of(conversationWithReceiverRemoved));
 
         // When
         response = mvc.perform(delete(String.format("/users/conversation/%d", conversationWithReceiverRemoved.getId()))

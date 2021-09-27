@@ -45,7 +45,7 @@
           <!-- Adds extra rows to maintain table size -->
           <div v-if="currentPageRows.length < maxRowsPerPage">
             <!-- The index is equal to that because, we would have duplicates otherwise with the rows.-->
-            <div v-for="index in maxRowsPerPage - currentPageRows.length" :key="`${tableId}-row-${index + currentPageRows.length}`" :class="`row py-4 shadow-sm productRows row-colour`" style="min-height: 7em; margin-bottom: 1em"></div>
+            <div v-for="index in maxRowsPerPage - currentPageRows.length" :key="`${tableId}-row-${index + currentPageRows.length}`" :class="`row py-4 shadow-sm productRows`" style="min-height: 7em; margin-bottom: 1em"></div>
           </div>
 
       </div>
