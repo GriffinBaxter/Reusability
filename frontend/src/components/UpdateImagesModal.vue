@@ -233,9 +233,14 @@ export default {
       this.selectedImage = null;
 
       // removes the image from currentData
-      for (let i=0; i < this.currentData.data.images.length; i++) {
-        if (this.currentData.data.images[i].id === imageId) {
-          this.currentData.data.images.splice(i, 1);
+      let images = this.currentData.data.images
+      for (let i=0; i < images.length; i++) {
+        if (images[i].id === imageId) {
+          if (i != 0) {
+            document.getElementById("image-carousel").children[0].classList.add("active");
+          }
+          images.splice(i, 1);
+          break;
         }
       }
 

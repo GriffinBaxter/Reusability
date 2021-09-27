@@ -29,7 +29,7 @@
                 <!--user's profile image-->
                 <div id="imageDiv">
                   <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
+                    <div class="carousel-inner" id="image-carousel">
                       <div v-if="user.data.images === null || user.data.images.length === 0">
                         <img :src="getImageSrc('')"
                              class="rounded-circle img-fluid"
