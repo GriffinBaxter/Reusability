@@ -85,8 +85,8 @@ export default {
      */
     updateCurrency() {
       CurrencyAPI.currencyQuery(this.$parent.$refs.country.value).then((response) => {
-        const code = response.data[0].currencies[0].code;
-        const symbol = response.data[0].currencies[0].symbol;
+        const code = Object.keys(response.data[0].currencies)[0];
+        const symbol = response.data[0].currencies[code].symbol;
         this.$emit('currencyChange', code, symbol);
         this.modal.hide();
       }).catch((error) => console.log(error))
