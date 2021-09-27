@@ -35,7 +35,7 @@
             <form @submit.prevent>
               <div class="row">
                 <div class="col mb-4">
-                  <label for="email-input" class="form-label">Email Address*</label>
+                  <label for="email-input" class="form-label">Email Address</label>
                   <input type="email" class="form-control" id="email-input" ref="eInput" tabindex="1">
                 </div>
               </div>
