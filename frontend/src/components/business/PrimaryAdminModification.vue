@@ -4,6 +4,7 @@
        ref="_primaryAdminModification"
        tabindex="-1"
        aria-labelledby="primaryAdminModification"
+       data-bs-backdrop="static"
        aria-hidden="true"
        id="primary-admin-modification-modal">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -20,7 +21,11 @@
             <h5>{{ businessInfo.name }}</h5>
             <div class="text-secondary">{{ businessInfo.description }}</div>
           </div>
-          <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"/>
+          <button type="button"
+                  class="btn-close close-button"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  @click="selectedUser = null"/>
         </div>
 
         <!-- admins -->
@@ -41,7 +46,7 @@
             </div>
           </div>
 
-          <div v-if="adminList.length === 0">
+          <div id="noAdminInListMessage" v-if="adminList.length === 0">
             You are the only administrator for this business.
           </div>
         </div>
@@ -105,7 +110,7 @@ export default {
      * @returns {string|*} primary image address
      */
     getPrimaryImageSrc(images) {
-      if (images.length === 0) {
+      if (images === undefined || images.length === 0) {
         return require('../../../public/default-image.jpg')
       }
       const primaryImage = images.filter((image) => image.isPrimary)
@@ -155,7 +160,6 @@ export default {
     showModel(event) {
       // Prevent any default actions
       event.preventDefault();
-
       this.modal.show();
     }
   },
