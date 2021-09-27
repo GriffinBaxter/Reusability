@@ -127,7 +127,8 @@ export function getBarcodeLiveStream(outerThis, width, div, callback) {
 export function autofillProductFromBarcode(outerThis, callback) {
     OpenFoodFacts.retrieveProductByBarcode(outerThis.barcode).then((result) => {
         if (result.data.status === 1) {
-            outerThis.toastErrorMessage = "";
+            outerThis.autofilled = false;
+            outerThis.autofillError = false;
             let quantity = ""
             if (result.data.product.quantity !== undefined) {
                 quantity = " " + result.data.product.quantity;
@@ -144,8 +145,9 @@ export function autofillProductFromBarcode(outerThis, callback) {
             if (outerThis.description === "" && result.data.product.generic_name !== undefined) {
                 outerThis.description = result.data.product.generic_name;
             }
+            outerThis.autofilled = true;
         } else {
-            outerThis.toastErrorMessage = "Could not autofill, product may not exist in database";
+            outerThis.autofillError = true;
         }
         callback();
     });

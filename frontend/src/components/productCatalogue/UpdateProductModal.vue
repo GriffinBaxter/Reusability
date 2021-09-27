@@ -10,6 +10,24 @@
           </div>
           <div class="modal-body">
 
+            <!-- Autofill success message card-->
+            <div class="row my-lg-2">
+              <div class="col-12 mx-auto">
+                <div v-if="autofilled" id="autofillSuccessMessage" class="alert alert-success text-center">
+                  <label>Product information has been autofilled</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Autofill error message card-->
+            <div class="row my-lg-2">
+              <div class="col-12 mx-auto">
+                <div v-if="autofillError" id="autofillErrorMessage" class="alert alert-danger text-center">
+                  <label>Could not autofill, product may not exist in database</label>
+                </div>
+              </div>
+            </div>
+
             <!-- Modal form content wrapper-->
             <form class="needs-validation mb-3 px-5" novalidate @submit.prevent>
 
@@ -33,7 +51,61 @@
                   </div>
                 </div>
               </div>
-
+              <hr>
+              <!--product barcode-->
+              <div class="form-group">
+                <label for="barcode-checkbox-in-update-modal">Edit Barcode?&nbsp;</label>
+                <input type="checkbox" id="barcode-checkbox-in-update-modal" name="barcode-checkbox-in-update-modal" v-model="editBarcode">
+                <br>
+                <div v-if="editBarcode">
+                  <br>
+                  <label for="product-barcode">Barcode (EAN or UPC)</label>
+                  <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="newProduct.data.barcode"
+                         :class="toggleInvalidClass(errorsMessages.barcode)" :maxlength="config.barcode.maxLength">
+                  <div class="invalid-feedback">
+                    {{ errorsMessages.barcode }}
+                  </div>
+                  <br><br>
+                  <div class="row">
+                    <div class="col">
+                      <button class="btn green-button-transparent" @click="onUploadClick">Scan by uploading image</button>
+                      <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
+                             name="img" accept="image/png, image/gif, image/jpeg">
+                    </div>
+                    <div class="col">
+                      <button v-if="liveStreamAvailable && !liveStreaming" class="btn green-button-transparent"
+                              @click="getBarcodeLiveStream">
+                        Scan using camera
+                      </button>
+                      <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
+                              @click="
+                              liveStreaming = false;
+                              removeCameraError();
+                              ">
+                        Stop scanning  (barcode not found)
+                      </button>
+                    </div>
+                  </div>
+                  <button v-if="liveStreaming && barcodeFound" class="btn green-button"
+                          @click="liveStreaming = false">
+                    Save Scanned Barcode
+                  </button>
+                  <br>
+                  <div v-if="liveStreaming"><br></div>
+                  <div id="editLiveStreamCamera" style="padding-bottom: 6px"></div>
+                  <button id="autofill-button" type="button"
+                          :class="`btn green-button ${getErrorMessage(
+                              config.barcode.name,
+                              newProduct.data.barcode,
+                              config.barcode.minLength,
+                              config.barcode.maxLength,
+                              config.barcode.regexMessage,
+                              config.barcode.regex) === '' ? '': 'disabled'}`"
+                          @click="autofillProductFromBarcode()">Autofill Empty Fields
+                  </button>
+                </div>
+              </div>
+              <hr>
               <!--              Product Name-->
               <div class="row my-lg-2">
                 <div class="col-12 my-2 my-lg-0">
@@ -79,57 +151,6 @@
                   <div class="invalid-feedback">
                     {{errorsMessages.description}}
                   </div>
-                </div>
-              </div>
-
-              <!--product barcode-->
-              <div class="form-group">
-                <br>
-                <label for="barcode-checkbox-in-update-modal">Edit Barcode?&nbsp;</label>
-                <input type="checkbox" id="barcode-checkbox-in-update-modal" name="barcode-checkbox-in-update-modal" v-model="editBarcode">
-                <br>
-                <div v-if="editBarcode">
-                  <br>
-                  <label for="product-barcode">Barcode (EAN or UPC)</label>
-                  <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="newProduct.data.barcode"
-                         :class="toggleInvalidClass(errorsMessages.barcode)" :maxlength="config.barcode.maxLength">
-                  <div class="invalid-feedback">
-                    {{ errorsMessages.barcode }}
-                  </div>
-                  <br><br>
-                  <button class="btn green-button-transparent" @click="onUploadClick">Scan by uploading image</button>
-                  <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
-                                          name="img" accept="image/png, image/gif, image/jpeg">
-                  <br><br>
-                  <button v-if="liveStreamAvailable && !liveStreaming" class="btn green-button-transparent"
-                          @click="getBarcodeLiveStream">
-                    Scan using camera
-                  </button>
-                  <button v-if="liveStreaming && !barcodeFound" class="btn green-button-transparent"
-                          @click="
-                              liveStreaming = false;
-                              removeCameraError();
-                              ">
-                    Stop scanning  (barcode not found)
-                  </button>
-                  <button v-if="liveStreaming && barcodeFound" class="btn green-button"
-                          @click="liveStreaming = false">
-                    Save Scanned Barcode
-                  </button>
-                  <br>
-                  <div v-if="liveStreaming"><br></div>
-                  <div id="editLiveStreamCamera"></div>
-                  <br>
-                  <button id="autofill-button" type="button"
-                          :class="`btn green-button ${getErrorMessage(
-                              config.barcode.name,
-                              newProduct.data.barcode,
-                              config.barcode.minLength,
-                              config.barcode.maxLength,
-                              config.barcode.regexMessage,
-                              config.barcode.regex) === '' ? '': 'disabled'}`"
-                          @click="autofillProductFromBarcode()">Autofill Empty Fields
-                  </button>
                 </div>
               </div>
             </form>
@@ -205,6 +226,8 @@ export default {
       productName: "",
       manufacturer: "",
       description: "",
+      autofilled: false,
+      autofillError: false
 
     }
   },
@@ -237,6 +260,8 @@ export default {
         this.newProduct.data.barcode = this.value.data.barcode;
 
         // Reset all the error messages
+        this.autofilled = false;
+        this.autofillError = false;
         this.errorsMessages.id = "";
         this.errorsMessages.name = "";
         this.errorsMessages.manufacturer = "";
@@ -469,7 +494,8 @@ export default {
      * Autofills data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
-      this.formErrorModalMessage = "";
+      this.autofillError = false;
+      this.autofilled = false;
       this.barcode = this.newProduct.data.barcode;
       this.productName = this.newProduct.data.name;
       this.manufacturer = this.newProduct.data.manufacturer;
