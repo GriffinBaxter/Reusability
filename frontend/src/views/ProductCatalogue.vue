@@ -554,10 +554,10 @@ export default {
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
       this.loadingProducts = true;
-      this.barcode = this.$route.query["barcode"] || "";
+      this.searchBarcode = this.$route.query["barcode"] || "";
 
       // Perform the call to sort the products and get them back.
-      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.barcode, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.searchBarcode, this.orderByString, this.currentPage).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
