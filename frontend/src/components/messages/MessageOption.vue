@@ -110,7 +110,7 @@ export default {
   }
 
   .new-message-icon {
-    background-color: #2eda77;
+    background-color: red;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -156,7 +156,7 @@ export default {
   .delete-icon-wrap {
     width: 18%;
     height: 100%;
-    margin-left: auto;
+    margin: auto;
 
     display: flex;
     justify-content: center;

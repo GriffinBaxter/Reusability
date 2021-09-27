@@ -45,13 +45,13 @@ function detectBarcodeLiveStream(width, div, callback) {
         if (err) {
             if (err.message === "Could not start video source") {
                 document.querySelector(div).innerHTML =
-                    "<span style='color: red;'>Error: Camera in use by another program.</span>";
+                    "<span style='width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545;'>Error: Camera in use by another program.</span>";
             } else if (err.message === "Permission denied" || err.message === "Permission dismissed") {
                 document.querySelector(div).innerHTML =
-                    "<span style='color: red;'>Error: Insufficient browser permissions to use camera.</span>";
+                    "<span style='width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545;'>Error: Insufficient browser permissions to use camera.</span>";
             } else {
                 document.querySelector(div).innerHTML =
-                    "<span style='color: red;'>Error: Camera not found/available.</span>";
+                    "<span style='width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545;;'>Error: Camera not found/available.</span>";
             }
             return
         }
@@ -127,7 +127,8 @@ export function getBarcodeLiveStream(outerThis, width, div, callback) {
 export function autofillProductFromBarcode(outerThis, callback) {
     OpenFoodFacts.retrieveProductByBarcode(outerThis.barcode).then((result) => {
         if (result.data.status === 1) {
-            outerThis.toastErrorMessage = "";
+            outerThis.autofilled = false;
+            outerThis.autofillError = false;
             let quantity = ""
             if (result.data.product.quantity !== undefined) {
                 quantity = " " + result.data.product.quantity;
@@ -144,8 +145,9 @@ export function autofillProductFromBarcode(outerThis, callback) {
             if (outerThis.description === "" && result.data.product.generic_name !== undefined) {
                 outerThis.description = result.data.product.generic_name;
             }
+            outerThis.autofilled = true;
         } else {
-            outerThis.toastErrorMessage = "Could not autofill, product may not exist in database";
+            outerThis.autofillError = true;
         }
         callback();
     });

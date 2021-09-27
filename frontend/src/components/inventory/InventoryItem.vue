@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-secondary mb-3 px-2 py-2 shadow" @click="$emit('click')">
+  <div class="card border-secondary mb-3 px-2 py-2 shadow" style="cursor: pointer" @click="$emit('click')">
     <div class="row no-gutters">
 
       <!--image-->
@@ -20,7 +20,10 @@
         <div class="card-body px-2 py-2">
 
           <!--Product info-->
-          <h3 class="card-title">{{ productName }}</h3>
+          <h3 class="card-title">
+            {{ productName }}
+            <i class="card-text fas fa-edit float-end"></i>
+          </h3>
           <h6 class="card-text">
             {{ productId }}
           </h6>

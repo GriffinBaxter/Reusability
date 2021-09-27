@@ -63,9 +63,10 @@
 
             <!--price per item-->
             <div class="col-6 form-group py-1 px-3">
-              <label for="price-per-item">Price Per Item ({{ currencyCode }}): </label>
+              <label for="price-per-item" v-if="currencyCode !== ''">Price Per Item ({{ currencyCode }}): </label>
+              <label for="total-price" v-else>Price Per Item: </label>
               <div class="input-group">
-                <div class="input-group-prepend">
+                <div class="input-group-prepend" v-if="currencySymbol !== ''">
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="price-per-item" name="price-per-item" type="number" step="0.01"
@@ -80,9 +81,10 @@
 
             <!--total price-->
             <div class="col-6 form-group py-1 px-3">
-              <label for="total-price">Total Price ({{ currencyCode }}): </label>
+              <label for="total-price" v-if="currencyCode !== ''">Total Price ({{ currencyCode }}): </label>
+              <label for="total-price" v-else>Total Price: </label>
               <div class="input-group">
-                <div class="input-group-prepend">
+                <div class="input-group-prepend" v-if="currencySymbol !== ''">
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="total-price" name="total-price" type="number" step="0.01" v-model="totalPrice"

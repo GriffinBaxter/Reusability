@@ -65,6 +65,7 @@ import static org.seng302.model.enums.Role.*;
  * GET "/users/search" endpoint used to retrieve user accounts based on search criteria.
  * PUT "/users/{id}/makeAdmin" endpoint used to make a user account a GAA.
  * PUT "/users/{id}/revokeAdmin" endpoint used to revoke admin perms from user account (GAA -> normal user account)
+ * POST "users/forgotPassword" endpoint used to send an email with a reset password link to the email provided.
  */
 @RestController
 public class UserResource {
