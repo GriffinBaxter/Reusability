@@ -110,7 +110,7 @@ export default {
   }
 
   .new-message-icon {
-    background-color: #2eda77;
+    background-color: red;
     width: 10px;
     height: 10px;
     border-radius: 50%;
