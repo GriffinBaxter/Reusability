@@ -257,7 +257,7 @@ const routes = [
         component: () => import('../views/BrowseListings')
     },
     {
-        path: '/businessProfile/:businessId/sales',
+        path: '/businessProfile/:id/sales',
         name: 'Sales',
         meta: {
             title: 'Sales'

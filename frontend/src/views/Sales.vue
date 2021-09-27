@@ -51,6 +51,7 @@ import SalesReport from "../components/saleInsights/SalesReport";
 import Cookies from "js-cookie";
 import {checkAccessPermission} from "@/views/helpFunction";
 import Api from "../Api";
+import {manageError} from "../errorHandler";
 
 export default {
   name: "Sales",
@@ -70,6 +71,7 @@ export default {
     }
   },
   methods: {
+    manageError: manageError,
     /**
      * Opens a Bootstrap tab upon click via the passed in name.
      * @param tabName A string containing the name of the tab to switch to
@@ -113,14 +115,13 @@ export default {
       })
     })
 
-
     const actAs = Cookies.get('actAs');
-    if (checkAccessPermission(this.$route.params.businessId, actAs)) {
+    if (checkAccessPermission(this.$route.params.id, actAs)) {
       await this.$router.push({path: `/businessProfile/${actAs}/sales`});
     } else {
       const currentID = Cookies.get('userID');
       if (currentID) {
-        this.businessId = parseInt(this.$route.params.businessId);
+        this.businessId = parseInt(this.$route.params.id);
         await this.retrieveBusinessInfo();
         await this.$refs.saleHistory.retrieveSoldListings();
       }
