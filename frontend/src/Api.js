@@ -452,6 +452,6 @@ export default {
 
     // Sends a password reset email to the user
     forgotPasswordSendEmail(emailAddress) {
-        return instance.post(`/users/forgotPassword`, {email: emailAddress}, {withCredentials: true});
+        return instance.post(`/users/forgotPassword`, {email: emailAddress});
     }
 }
