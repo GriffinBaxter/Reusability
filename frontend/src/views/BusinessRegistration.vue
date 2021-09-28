@@ -705,8 +705,8 @@ export default {
      * @param response The response from the REST countries API
      */
     filterCurrencyResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
+      this.currencyCode = Object.keys(response[0].currencies)[0];
+      this.currencySymbol = response[0].currencies[this.currencyCode].symbol;
     }
   },
 
