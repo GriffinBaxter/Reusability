@@ -253,3 +253,33 @@ INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('27', '8');
 INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('28', '10');
 INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('29', '15');
 INSERT INTO `card_keywords` (`card_id`, `keyword_id`) VALUES ('30', '10');
+
+/* Sold listings for Business 1 (8) */
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (12, DATE'2020-05-12', 180.00, 'MANDARIN', 40, DATE'2021-05-12', 1, 12);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (4, DATE'2020-05-12', 250.00, 'TP-12PK', 59, DATE'2021-05-12', 1, 13);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (3, DATE'2020-05-12', 31.1, 'BEEF-MINCE', 40, DATE'2021-05-21', 1, 12);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (9, DATE'2020-05-12', 451.1, 'TP-6PK', 60, DATE'2021-06-01', 1, 12);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (0, DATE'2020-05-12', 731.1, 'KERI-OJ', 32, DATE'2021-06-30', 1, 13);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (0, DATE'2020-05-12', 431.1, 'ARNOTTS-CSCOTCH', 62, DATE'2021-07-01', 1, 14);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (3, DATE'2020-05-12', 471.1, 'ARNOTTS-CSCOTCH', 37, DATE'2021-09-27', 1, 10);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (4, DATE'2020-05-12', 47.1, 'ARNOTTS-CSCOTCH', 66, DATE'2021-09-27', 1, 5);
+
+/* Sold listings for Business 2 (8) */
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (17, DATE'2020-05-12', 180.00, 'CHOCOLATE', 40, DATE'2021-05-13', 2, 1);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (5, DATE'2020-05-12', 250.00, 'CHOCOLATE', 59, DATE'2021-05-13', 2, 1);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (3, DATE'2020-05-12', 435.1, 'CHOCOLATE', 40, DATE'2021-05-21', 2, 3);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (9, DATE'2020-05-12', 451.1, 'CHOCOLATE', 60, DATE'2021-06-01', 2, 4);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (7, DATE'2020-05-12', 735.1, 'KERI-APPLE', 32, DATE'2021-05-30', 2, 9);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (7, DATE'2020-05-12', 431.1, 'CARAMELLO', 62, DATE'2021-07-01', 2, 4);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (3, DATE'2020-05-12', 474.1, 'POTATO-CHIPS', 37, DATE'2021-09-27', 2, 4);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (4, DATE'2020-05-12', 74.1, 'CHICKEN-STEAKS', 66, DATE'2021-09-27', 2, 5);
+
+/* Sold listings for Business 2 (8) */
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (11, DATE'2020-05-12', 180.00, 'POTATO-CHIPS', 40, DATE'2021-05-12', 2, 12);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (10, DATE'2020-05-12', 250.00, 'FR-CHICKEN-TEND', 59, DATE'2021-05-12', 2, 19);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (3, DATE'2020-05-12', 31.1, 'FR-CHICKEN-TEND', 40, DATE'2021-05-21', 2, 20);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (9, DATE'2020-05-12', 951.1, 'PC-SALTED', 60, DATE'2021-06-01', 2, 12);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (0, DATE'2020-05-12', 631.1, 'PC-SALTED', 32, DATE'2021-06-30', 2, 17);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (15, DATE'2020-05-12', 531.1, 'PC-SALTED', 62, DATE'2021-08-01', 2, 18);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (0, DATE'2020-05-12', 471.1, 'COFFEE-MOCHA', 37, DATE'2021-09-27', 2, 18);
+INSERT INTO sold_listing (bookmarks, listing_date, price, product_id, quantity, sale_date, business, customer) VALUES (4, DATE'2020-05-12', 41.1, 'COFFEE-MOCHA', 66, DATE'2021-09-27', 2, 15);
