@@ -102,10 +102,7 @@
 
       <div class="container all-but-footer" v-else>
         <h1 style="text-align: center">Home</h1>
-        <div class="sales-report-overview" v-if="showGraph">Sales Report Overview</div>
-        <div class="box">
-          <BarChart :data-list="[]" :label-list="['total']"></BarChart>
-        </div>
+        <HomeSales></HomeSales>
       </div>
 
     </div>
@@ -123,16 +120,16 @@ import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
 import LoadingDots from "../components/LoadingDots";
-import BarChart from "../components/saleInsights/SalesReportGraph.js"
+import HomeSales from "@/components/saleInsights/HomeSales";
 
 export default {
   name: "Home",
   components: {
+    HomeSales,
     LoadingDots,
     Footer,
     Navbar,
-    UserCardsComp,
-    BarChart
+    UserCardsComp
   },
   data() {
     return {
@@ -145,20 +142,11 @@ export default {
       usersCards: [],
       userId: null,
       loadingCards: false,
-
-      businessId: 0,
-      businessName: "",
-      businessCountry: "",
-      currencySymbol: "",
-      currencyCode: "",
-      showGraph: false,
     }
   },
   mounted() {
     this.hasDataLoaded = false;
     this.showBookmarkMessages = true;
-
-    this.retrieveBusinessInfo();
 
     const actingAs = Cookies.get('actAs');
 
@@ -197,27 +185,6 @@ export default {
     formatDateVar(date, tf) {
       return formatDate(date, tf)
     },
-    /**
-     * Calls a GET request to the backend to retrieve the information of the current business.
-     */
-    async retrieveBusinessInfo() {
-      try {
-        this.businessId = parseInt(Cookies.get("actAs"));
-        await Api.getBusiness(this.businessId).then(response => {
-          this.businessName = response.data.name;
-          this.businessCountry = response.data.address.country;
-          this.currencySymbol = response.data.currencySymbol;
-          this.currencyCode = response.data.currencyCode;
-          this.showGraph = true;
-        }).catch((error) => {
-          this.manageError(error);
-          this.showGraph = false;
-        })
-      } catch (err) {
-        this.showGraph = false;
-      }
-    },
-
     /**
      * Routes the user to the listing page associated with their bookmarked message with the given business id and
      * listing id.
@@ -316,16 +283,6 @@ export default {
 body {
   background: #f1f1f1;
   margin: 0;
-}
-
-.sales-report-overview {
-  font-family: 'Roboto', sans-serif !important;
-  color: black !important;
-  font-size: 1.5rem;
-}
-
-.box {
-  border: 1px black solid;
 }
 
 .nav-link {
