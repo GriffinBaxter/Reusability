@@ -28,7 +28,6 @@ import Cookies from "js-cookie";
 import Api from "@/Api";
 import BarChart from "./SalesReportGraph"
 import LoadingDots from "../LoadingDots";
-import {manageError} from "../../errorHandler";
 
 export default {
   name: "HomeSales",
@@ -50,7 +49,6 @@ export default {
     }
   },
   methods: {
-    manageError: manageError,
     /**
      * Generates the range dates based off the current year.
      *
