@@ -46,13 +46,15 @@
             </div>
           </div>
 
-          <div id="noAdminInListMessage" v-if="adminList.length === 0">
+          <div id="noAdminInListMessage"
+               v-if="adminList.length === 0"
+               style="text-align: center">
             You are the only administrator for this business.
           </div>
         </div>
 
         <div class="modal-body" v-else>
-          <h6> Are you sure you want to make
+          <h6 style="text-align: center"> Are you sure you want to make
             <strong>{{ selectedUser.firstName }} {{ selectedUser.lastName }}</strong>
             the primary administrator?</h6>
 

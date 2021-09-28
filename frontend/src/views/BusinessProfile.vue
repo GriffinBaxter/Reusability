@@ -52,7 +52,7 @@
                     </div>
                   </div>
                   <div
-                      v-if="business.data.images !== undefined && business.data.images !== [] && business.data.images.length !== 0">
+                      v-if="business.data.images !== undefined && business.data.images !== [] && business.data.images.length > 1">
                     <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
                             data-bs-slide="prev">
                       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
