@@ -1,14 +1,17 @@
 <template>
-  <div>
+  <div style="max-width: 950px" class="mx-auto">
     <div class="sales-report-overview">Sales Report Overview</div>
     <div v-if="loading">
       <LoadingDots />
+    </div>
+    <div v-else-if="hideGraph">
+      Not data to show...
     </div>
     <div class="box" v-else>
       <div class="wrapper">
         <div class="left-side">
           <div class="total-header">Total Sales: {{totalSales}}</div>
-          <div class="total-header">Total Revenue: {{totalRevenue}}</div>
+          <div class="total-header">Total Revenue: {{currencySymbol}}{{totalRevenue}} {{currencyCode}}</div>
         </div>
         <div class="right-side">
           <button class="btn green-button">Full Sales Report</button>
@@ -40,6 +43,7 @@ export default {
       graphData: [],
       loading: false,
       totalRevenue: 0,
+      hideGraph: false,
       totalSales: 0,
 
       weekDays: ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"]
@@ -80,6 +84,10 @@ export default {
       let revenueData = [];
       try {
         const {fromDate, toDate} = await this.generateDates();
+        const bussinessResponse = await Api.getBusiness(businessId);
+        this.currencyCode = bussinessResponse.data.currencyCode;
+        this.currencySymbol = bussinessResponse.data.currencySymbol;
+
         const response = await Api.getSalesReport(businessId,
             fromDate,
             toDate,
@@ -92,11 +100,24 @@ export default {
         });
 
         this.graphData = revenueData;
-      } catch (err) {
-        await this.manageError(err);
+      } catch (error) {
+        await this.handleGraphError(error);
       }
 
       this.loading = false;
+    },
+    /**
+     * Handles possible errors from the get sales report API call.
+     *
+     * @param error The error object.
+     */
+    async handleGraphError(error) {
+      if (error.request && !error.response)      { await this.$router.push({path: '/timeout'});      }
+      else if (error.response?.status === 401)    { await this.$router.push({path: '/invalidtoken'}); }
+      else if (error.response?.status === 403)    { await this.$router.push({path: '/forbidden'});    }
+      else {
+        this.hideGraph = true
+      }
     },
     /**
      * Determines if the user is acting as a business. And verifies it is a number.
@@ -132,7 +153,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5em 0;
+  padding-bottom: 1.5em;
 }
 
 .total-header {
@@ -141,9 +162,10 @@ export default {
   font-weight: bold;
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
   .wrapper {
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .right-side {
