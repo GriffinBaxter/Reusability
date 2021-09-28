@@ -21,7 +21,7 @@ api change timeout
       </div>
 
       <!--fourth row of form-->
-      <div class="row my-lg-2">
+      <div class="row my-lg-2" v-if="!resetSuccess">
 
         <!--password validation information-->
         <div class="col my-2 my-lg-0">
@@ -43,7 +43,7 @@ api change timeout
       </div>
 
       <!--fifth row of form-->
-      <div class="row my-lg-2">
+      <div class="row my-lg-2" v-if="!resetSuccess">
 
         <!--password input field-->
         <div class="col my-2 my-lg-0">
@@ -70,7 +70,7 @@ api change timeout
       </div>
 
       <!--sixth row of form-->
-      <div class="row my-lg-2">
+      <div class="row my-lg-2" v-if="!resetSuccess">
 
         <!--confirm password input field-->
         <div class="col my-2 my-lg-0 mb-4">
@@ -83,6 +83,15 @@ api change timeout
           </div>
         </div>
       </div>
+
+      <div class="row my-lg-2" v-if="resetSuccess">
+
+        <!--confirm password input field-->
+        <div class="col my-2 my-lg-0 mb-4">
+          Password been successfully updated!
+        </div>
+      </div>
+
       <div class="row">
         <div v-if="invalidToken" class="invalid-token-container text-red">
           Token is either invalid or has expired.
@@ -92,7 +101,7 @@ api change timeout
         <div class="col d-flex justify-content-center" >
 
           <button v-if="resetSuccess" class="btn btn-lg my-sm-4 mb-4 green-button"
-                  type="submit" tabindex="4" @click="backToLogin()">Success! Return to login</button>
+                  type="submit" tabindex="4" @click="backToLogin()">Return to login</button>
           <button v-else class="btn btn-lg my-sm-4 mb-4 green-button"
                   type="submit" tabindex="4" @click="changePassword()">Change Password</button>
         </div>
