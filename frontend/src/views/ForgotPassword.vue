@@ -32,6 +32,9 @@
                     <label for="email-input" class="form-label">Email Address*</label>
                     <input type="email" class="form-control" id="email-input" ref="email" tabindex="1">
                   </div>
+                  <div v-if="loading">
+                    <LoadingDots/>
+                  </div>
                   <label id="error-message">{{ errorMessage }}</label>
                   <label id="success-message">{{ successMessage }}</label>
                 </div>
@@ -64,19 +67,22 @@
 
 <script>
 import Footer from "../components/main/Footer";
-import Api from "@/Api";
+import Api from "../Api";
+import LoadingDots from "../components/LoadingDots";
 
 export default {
   name: "ForgotPassword",
   components: {
-    Footer
+    Footer,
+    LoadingDots
   },
   data() {
     return {
       // the error message to show when an email is not sent
       errorMessage: "",
       successMessage: "",
-      canSendEmail: true
+      canSendEmail: true,
+      loading: false
     }
   },
   methods: {
@@ -84,10 +90,11 @@ export default {
       this.canSendEmail = false;
       this.errorMessage = "";
       this.successMessage = "";
-      // TODO: add loading indicator here
+      this.loading = true;
       Api.forgotPasswordSendEmail(this.$refs.email.value.trim()).then(() => {
         this.successMessage = "A password reset link from reusability.help@gmail.com has successfully been sent to " +
             "your email. Make sure to check your spam folder if it's not in your inbox.";
+        this.loading = false;
       })
       .catch((error) => {
         if (error.response && error.response.status === 406) {
@@ -96,6 +103,7 @@ export default {
           this.errorMessage = "Email was unable to be sent (the email address may not exist).";
         }
         this.canSendEmail = true;
+        this.loading = false;
       })
     }
   }
