@@ -71,7 +71,7 @@ export default {
     async buildGraph() {
       this.loading = true;
 
-      // If the data is not avilable then we don't try to get the data.
+      // If the data is not available then we don't try to get the data.
       if (!this.isActingAsUser()) {
         this.loading = false;
         return;
@@ -82,9 +82,9 @@ export default {
       let revenueData = [];
       try {
         const {fromDate, toDate} = await this.generateDates();
-        const bussinessResponse = await Api.getBusiness(businessId);
-        this.currencyCode = bussinessResponse.data.currencyCode;
-        this.currencySymbol = bussinessResponse.data.currencySymbol;
+        const businessResponse = await Api.getBusiness(businessId);
+        this.currencyCode = businessResponse.data.currencyCode;
+        this.currencySymbol = businessResponse.data.currencySymbol;
 
         const response = await Api.getSalesReport(businessId,
             fromDate,
@@ -111,7 +111,7 @@ export default {
      */
     async handleGraphError(error) {
       if (error.request && !error.response)      { await this.$router.push({path: '/timeout'});      }
-      else if (error.response?.status === 401)    { await this.$router.push({path: '/invalidtoken'}); }
+      else if (error.response?.status === 401)    { await this.$router.push({path: '/invalidToken'}); }
       else if (error.response?.status === 403)    { await this.$router.push({path: '/forbidden'});    }
       else {
         this.hideGraph = true
