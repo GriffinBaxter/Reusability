@@ -6,6 +6,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.seng302.model.Address;
+import org.seng302.model.ForgotPassword;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
