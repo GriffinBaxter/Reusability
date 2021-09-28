@@ -36,9 +36,11 @@ describe("Testing the currency methods in CurrencyChangeModal", () => {
         const response = {
             data: [
                 {
-                    "currencies": [
-                        {"code":"NZD","name":"New Zealand dollar","symbol":"$"}
-                    ]
+                    currencies: {
+                        "NZD": {
+                            symbol: "$"
+                        }
+                    }
                 }
             ]
         }

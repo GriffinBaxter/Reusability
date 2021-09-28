@@ -55,7 +55,7 @@ describe('Tests for BrowseListings',  () => {
                 listings: [],
                 notInitialLoad: true,
             });
-            expect(wrapper.find('.noListings').exists()).toBeTruthy()
+            expect(wrapper.find('.no-listing-container').exists()).toBeTruthy()
         })
 
         test('No Listings Found message component is not rendered when listings are retrieved in the Browse Listings page.', async () => {

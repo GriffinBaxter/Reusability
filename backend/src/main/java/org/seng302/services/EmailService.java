@@ -38,6 +38,13 @@ public class EmailService {
         emailSender.send(message);
     }
 
+    /**
+     * Sends a MimeMessage with the given HTML content to the given email address.
+     * @param to A string containing the email address to send to
+     * @param subject A string containing the email subject
+     * @param html A string containing the raw HTML to send.
+     * @throws MessagingException
+     */
     public void sendHTMLMessage(String to, String subject, String html) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
