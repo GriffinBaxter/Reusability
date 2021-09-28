@@ -642,6 +642,17 @@ export default {
       }
       return require('../../public/profile_icon_default.png');
     },
+    /**
+     * Updates the currently displayed acting as image
+     * @param newPrimaryImage filename of new image
+     */
+    updatePrimaryImage(newPrimaryImage) {
+      if (newPrimaryImage !== null) {
+        document.getElementById("act-as-image").src = Api.getServerURL() + "/" + newPrimaryImage;
+      } else {
+        document.getElementById("act-as-image").src = require('../../public/profile_icon_default.png');
+      }
+    }
   },
   async beforeMount() {
     if (this.loginRequired) {

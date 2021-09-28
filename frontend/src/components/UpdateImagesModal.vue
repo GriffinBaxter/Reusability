@@ -247,7 +247,10 @@ export default {
           this.primaryImage = this.currentData.data.images[0].id;
           this.currentData.data.images[0].isPrimary = true;
           document.getElementById("primary-image").src = this.getImageSrc(this.currentData.data.images[0].filename);
+          this.$emit("updatePrimary", this.currentData.data.images[0].thumbnailFilename);
+
         } else {
+          this.$emit("updatePrimary", null);
           this.primaryImage = null;
           document.getElementById("primary-image").src = require('../../public/default-image.jpg');
         }
@@ -285,6 +288,8 @@ export default {
           image.isPrimary = true;
           document.getElementById("primary-image").src = this.getImageSrc(image.filename);
 
+          // Update Navbar image (BusinessProfile/Profile)
+          this.$emit("updatePrimary", image.thumbnailFilename);
         } else if (image.isPrimary) {
           // updates the old primary image
           image.isPrimary = false;
@@ -292,8 +297,6 @@ export default {
       }
       if (this.location === "Product") {
         this.updateValue(new Product(this.currentData.data));
-      } else {
-        this.$emit("updatePrimary");
       }
     },
 
@@ -343,6 +346,7 @@ export default {
         this.primaryImage = res.data.id;
         this.currentData.data.images.push(res.data);
         document.getElementById("primary-image").src = this.getImageSrc(res.data.filename);
+        this.$emit("updatePrimary", res.data.thumbnailFilename)
       } else {
         this.currentData.data.images.push(res.data);
       }

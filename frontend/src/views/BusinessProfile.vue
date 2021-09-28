@@ -3,8 +3,8 @@
 
     <div id="main">
     <!--nav bar-->
-    <Navbar></Navbar>
-      <UpdateImagesModal ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
+    <Navbar ref="navbar"></Navbar>
+      <UpdateImagesModal v-on:updatePrimary="updatePrimaryNav" ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
 
     <!--profile container-->
     <div class="container p-5" id="profileContainer">
@@ -39,7 +39,7 @@
                          alt="Profile Image">
                   </div>
                 </div>
-                <div v-if="business.data.images !== null && business.data.images !== [] && business.data.images.length !== 0">
+                <div v-if="business.data.images.length > 1">
                   <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
                           data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -254,6 +254,16 @@ export default {
     }
   },
   methods: {
+    /**
+     * Updates the Navbar to display the new primary image.
+     * Only when acting as a business
+     * @param newPrimaryImage thumbnail filename of new image to display
+     */
+    updatePrimaryNav(newPrimaryImage) {
+      if (Cookies.get("actAs")) {
+        this.$refs.navbar.updatePrimaryImage(newPrimaryImage);
+      }
+    },
     /**
      * Formats the given age string using a Date object and removes the day from the result.
      * Returns a formatted string.

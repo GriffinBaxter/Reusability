@@ -401,10 +401,21 @@ export default {
 
     // --------------------------------------------------------------------------------------------------------------------
 
-    updatePrimaryNav() {
-      // this.$refs.navbar.updatePrimaryImage();
+    /**
+     * Updates the Navbar to display the new primary image.
+     * Only when acting as a user
+     * @param newPrimaryImage thumbnail filename of new image to display
+     */
+    updatePrimaryNav(newPrimaryImage) {
+      if (!Cookies.get("actAs")) {
+        this.$refs.navbar.updatePrimaryImage(newPrimaryImage);
+      }
     },
 
+    /**
+     * Gets the full URL of the file to display
+     * @param filename name of file
+     */
     getImageSrc(filename) {
       if (filename === "") {
         return require('../../public/default-image.jpg')
