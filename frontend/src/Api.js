@@ -448,5 +448,10 @@ export default {
     // Resets the password for an associated token.
     resetPassword(token, password) {
         return instance.put(`/users/forgotPassword?token=${token}`, {password: password});
+    },
+
+    // Sends a password reset email to the user
+    forgotPasswordSendEmail(emailAddress) {
+        return instance.post(`/users/forgotPassword`, {email: emailAddress}, {withCredentials: true});
     }
 }

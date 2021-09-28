@@ -30,9 +30,10 @@
                 <div class="row">
                   <div class="col mb-4">
                     <label for="email-input" class="form-label">Email Address*</label>
-                    <input type="email" class="form-control" id="email-input" ref="eInput" tabindex="1">
+                    <input type="email" class="form-control" id="email-input" ref="email" tabindex="1">
                   </div>
                   <label id="error-message">{{ errorMessage }}</label>
+                  <label id="success-message">{{ successMessage }}</label>
                 </div>
 
                 <div class="row">
@@ -43,7 +44,10 @@
 
                   <!--send email button-->
                   <div class="col">
-                    <button class="btn btn-lg float-end mt-4 mb-4 green-button" @click="sendEmail()" type="submit" id="sendEmailButton" tabindex="4">Send Password Reset Email</button>
+                    <button :class="`btn btn-lg float-end mt-4 mb-4 green-button ${canSendEmail ? '': 'disabled'}`"
+                            @click="sendEmail()" type="submit" id="sendEmailButton" tabindex="4">
+                      Send Password Reset Email
+                    </button>
                   </div>
                 </div>
               </form>
@@ -60,6 +64,7 @@
 
 <script>
 import Footer from "../components/main/Footer";
+import Api from "@/Api";
 
 export default {
   name: "ForgotPassword",
@@ -69,13 +74,29 @@ export default {
   data() {
     return {
       // the error message to show when an email is not sent
-      errorMessage: ""
+      errorMessage: "",
+      successMessage: "",
+      canSendEmail: true
     }
   },
   methods: {
-    //TODO implement in another task
     sendEmail() {
-      this.errorMessage = "Not implemented yet";
+      this.canSendEmail = false;
+      this.errorMessage = "";
+      this.successMessage = "";
+      // TODO: add loading indicator here
+      Api.forgotPasswordSendEmail(this.$refs.email.value.trim()).then(() => {
+        this.successMessage = "A password reset link from reusability.help@gmail.com has successfully been sent to " +
+            "your email. Make sure to check your spam folder if it's not in your inbox.";
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 406) {
+          this.errorMessage = "Email does not belong to a registered user.";
+        } else {
+          this.errorMessage = "Email was unable to be sent (the email address may not exist).";
+        }
+        this.canSendEmail = true;
+      })
     }
   }
 }
@@ -85,6 +106,10 @@ export default {
 
 #error-message {
   color: red;
+}
+
+#success-message {
+  color: #19b092;
 }
 
 .logo-container{
