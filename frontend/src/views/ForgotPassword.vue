@@ -80,7 +80,10 @@ export default {
     return {
       // the error message to show when an email is not sent
       errorMessage: "",
+
+      // the success message to show when an email is sent
       successMessage: "",
+
       canSendEmail: true,
       loading: false
     }
