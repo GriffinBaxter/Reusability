@@ -14,7 +14,7 @@
           <div class="total-header">Total Revenue: {{currencySymbol}}{{totalRevenue}} {{currencyCode}}</div>
         </div>
         <div class="right-side">
-          <button class="btn green-button">Full Sales Report</button>
+          <button class="btn green-button" @click="goToSales()">Full Sales Report</button>
         </div>
       </div>
       <BarChart :data-list="graphData" :label-list="weekDays"></BarChart>
@@ -127,6 +127,14 @@ export default {
      */
     isActingAsUser() {
       return !isNaN(parseInt(Cookies.get("actAs")));
+    },
+    /**
+     * Takes you to the sales page for your business.
+     */
+    async goToSales() {
+      const id = parseInt(Cookies.get("actAs"));
+      if (isNaN(id)) return;
+      await this.$router.push({path: `businessProfile/${id}/sales`})
     }
   },
   mounted() {
