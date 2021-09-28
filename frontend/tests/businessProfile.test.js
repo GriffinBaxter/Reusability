@@ -31,7 +31,49 @@ const setupCookies = async (userId, actAsId) => {
             "created": "2021-02-02T00:00",
             "role": "DEFAULTGLOBALAPPLICATIONADMIN",
             "businessesAdministered": [
-                {"id":4,"administrators":[{"id":21,"firstName":"John","lastName":"Doe","middleName":"S","nickname":"Johnny","bio":"Biography","email":"email@email.com","created":"2021-02-02T00:00","role":"DEFAULTGLOBALAPPLICATIONADMIN","businessesAdministered":[],"images":[],"dateOfBirth":"2000-02-02","phoneNumber":"0271316","homeAddress":{"streetNumber":"3/24","streetName":"Ilam Road","suburb":"Ilam","city":"Christchurch","region":"Canterbury","country":"New Zealand","postcode":"90210"}}],"primaryAdministratorId":21,"name":"Kartofell","description":null,"address":{"streetNumber":null,"streetName":null,"suburb":null,"city":null,"region":null,"country":"Deutschland","postcode":null},"businessType":"ACCOMMODATION_AND_FOOD_SERVICES","created":"2021-09-18T16:37:51.290710","currencySymbol":"€","currencyCode":"EUR"}
+                {
+                    "id": 4,
+                    "administrators": [{
+                        "id": 21,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "middleName": "S",
+                        "nickname": "Johnny",
+                        "bio": "Biography",
+                        "email": "email@email.com",
+                        "created": "2021-02-02T00:00",
+                        "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+                        "businessesAdministered": [],
+                        "images": [],
+                        "dateOfBirth": "2000-02-02",
+                        "phoneNumber": "0271316",
+                        "homeAddress": {
+                            "streetNumber": "3/24",
+                            "streetName": "Ilam Road",
+                            "suburb": "Ilam",
+                            "city": "Christchurch",
+                            "region": "Canterbury",
+                            "country": "New Zealand",
+                            "postcode": "90210"
+                        }
+                    }],
+                    "primaryAdministratorId": 21,
+                    "name": "Kartofell",
+                    "description": null,
+                    "address": {
+                        "streetNumber": null,
+                        "streetName": null,
+                        "suburb": null,
+                        "city": null,
+                        "region": null,
+                        "country": "Deutschland",
+                        "postcode": null
+                    },
+                    "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                    "created": "2021-09-18T16:37:51.290710",
+                    "currencySymbol": "€",
+                    "currencyCode": "EUR"
+                }
             ],
             "images": [],
             "dateOfBirth": "2000-02-02",
@@ -134,15 +176,15 @@ const createWrapper = async () => {
 describe("Testing that the change profile button appears only when allowed to.", () => {
 
 
-    test("Testing that if you are not acting as a business then the button does not appear.", async () => {
+    test("Testing that if you are not acting as a business then the button does appear.", async () => {
         await setupCookies(21, undefined);
 
-        await  createWrapper();
+        await createWrapper();
 
         await wrapper.vm.$nextTick();
         const button = await wrapper.find("#update-business-image-button");
 
-        expect(button.exists()).toBeFalsy();
+        expect(button.exists()).toBeTruthy();
     });
 
     test("Testing that if you are acting as a business then the button does appear.", async () => {
@@ -280,50 +322,54 @@ describe("Testing the retrieveBusiness function", () => {
 
 describe("Testing that data variables get populated correctly", () => {
 
-    const response = { data: {
-        id: 4,
-        administrators: [
-            {
-                id: 21,
-                firstName: "John",
-                lastName: "Doe",
-                middleName: "S",
-                nickname: "Johnny",
-                bio: "Biography",
-                email: "email@email.com",
-                created: "2021-02-02T00:00",
-                role: "DEFAULTGLOBALAPPLICATIONADMIN",
-                businessesAdministered: [],
-                images:[],
-                dateOfBirth: "2000-02-02",
-                phoneNumber: "0271316",
-                homeAddress: {
-                    streetNumber: "3/24",
-                    streetName:"Ilam Road",
-                    suburb:"Ilam",
-                    city:"Christchurch",
-                    region:"Canterbury",
-                    country:"New Zealand",
-                    postcode:"90210"}
-            }
-        ],
-        primaryAdministratorId:21,
-        name:"kartofell",
-        description:"asd",
-        address:{
-            streetNumber:"asd",
-            streetName:"asd",
-            suburb:"asd",
-            city:"asd",
-            region:"asd",
-            country:"Deautschland",
-            postcode:"123"},
-        businessType:"ACCOMMODATION_AND_FOOD_SERVICES",
-        created:"2021-09-19T15:36:42.328003",
-        currencySymbol:"#",
-        currencyCode:"123",
-        businessImages: []
-    }}
+    const response = {
+        data: {
+            id: 4,
+            administrators: [
+                {
+                    id: 21,
+                    firstName: "John",
+                    lastName: "Doe",
+                    middleName: "S",
+                    nickname: "Johnny",
+                    bio: "Biography",
+                    email: "email@email.com",
+                    created: "2021-02-02T00:00",
+                    role: "DEFAULTGLOBALAPPLICATIONADMIN",
+                    businessesAdministered: [],
+                    images: [],
+                    dateOfBirth: "2000-02-02",
+                    phoneNumber: "0271316",
+                    homeAddress: {
+                        streetNumber: "3/24",
+                        streetName: "Ilam Road",
+                        suburb: "Ilam",
+                        city: "Christchurch",
+                        region: "Canterbury",
+                        country: "New Zealand",
+                        postcode: "90210"
+                    }
+                }
+            ],
+            primaryAdministratorId: 21,
+            name: "kartofell",
+            description: "asd",
+            address: {
+                streetNumber: "asd",
+                streetName: "asd",
+                suburb: "asd",
+                city: "asd",
+                region: "asd",
+                country: "Deautschland",
+                postcode: "123"
+            },
+            businessType: "ACCOMMODATION_AND_FOOD_SERVICES",
+            created: "2021-09-19T15:36:42.328003",
+            currencySymbol: "#",
+            currencyCode: "123",
+            businessImages: []
+        }
+    }
 
     test("Testing that with a full response all the values are correctly assigned.", async () => {
         await setupCookies(21, 4);
@@ -386,6 +432,594 @@ describe("Testing the isGaaOrDgaa function", () => {
 
     test("Testing that '1231231' returns false.", async () => {
         expect(BusinessProfile.methods.isGaaOrDgaa("1231231")).toBeFalsy();
+    })
+})
+
+describe("Test 'Edit Primary Admin' button", () => {
+
+    test("Test that the button will show when current user is primary admin for this business", async () => {
+        await setupCookies(21);
+
+        await Api.getUser.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 21,
+                "firstName": "John",
+                "lastName": "Doe",
+                "middleName": "S",
+                "nickname": "Johnny",
+                "bio": "Biography",
+                "email": "email@email.com",
+                "created": "2021-02-02T00:00",
+                "role": "USER",
+                "businessesAdministered": [
+                    {
+                        "id": 4,
+                        "administrators": [{
+                            "id": 21,
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "middleName": "S",
+                            "nickname": "Johnny",
+                            "bio": "Biography",
+                            "email": "email@email.com",
+                            "created": "2021-02-02T00:00",
+                            "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+                            "businessesAdministered": [],
+                            "images": [],
+                            "dateOfBirth": "2000-02-02",
+                            "phoneNumber": "0271316",
+                            "homeAddress": {
+                                "streetNumber": "3/24",
+                                "streetName": "Ilam Road",
+                                "suburb": "Ilam",
+                                "city": "Christchurch",
+                                "region": "Canterbury",
+                                "country": "New Zealand",
+                                "postcode": "90210"
+                            }
+                        }],
+                        "primaryAdministratorId": 21,
+                        "name": "Kartofell",
+                        "description": null,
+                        "address": {
+                            "streetNumber": null,
+                            "streetName": null,
+                            "suburb": null,
+                            "city": null,
+                            "region": null,
+                            "country": "Deutschland",
+                            "postcode": null
+                        },
+                        "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                        "created": "2021-09-18T16:37:51.290710",
+                        "currencySymbol": "€",
+                        "currencyCode": "EUR"
+                    }
+                ],
+            },
+        }))
+        await Api.getBusiness.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 4,
+                "administrators": [
+                    {
+                        "id": 21,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "middleName": "S",
+                        "nickname": "Johnny",
+                        "bio": "Biography",
+                        "email": "email@email.com",
+                        "created": "2021-02-02T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [],
+                        "images": [],
+                        "dateOfBirth": "2000-02-02",
+                        "phoneNumber": "0271316",
+                        "homeAddress": {
+                            "streetNumber": "3/24",
+                            "streetName": "Ilam Road",
+                            "suburb": "Ilam",
+                            "city": "Christchurch",
+                            "region": "Canterbury",
+                            "country": "New Zealand",
+                            "postcode": "90210"
+                        }
+                    }
+                ],
+                "primaryAdministratorId": 21,
+                "name": "Kartofell",
+                "description": null,
+                "address": {
+                    "streetNumber": null,
+                    "streetName": null,
+                    "suburb": null,
+                    "city": null,
+                    "region": null,
+                    "country": "Deutschland",
+                    "postcode": null
+                },
+                "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                "created": "2021-09-18T16:37:51.290710",
+                "currencySymbol": "€",
+                "currencyCode": "EUR",
+                "businessImages": []
+            }
+        }))
+
+        await createWrapper();
+
+        expect(wrapper.find("#editPrimaryAdminButton").exists()).toBeTruthy()
+    })
+
+    test("Test that the button will show when current user is DGAA", async () => {
+        await setupCookies(21);
+
+        await Api.getUser.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 21,
+                "firstName": "John",
+                "lastName": "Doe",
+                "middleName": "S",
+                "nickname": "Johnny",
+                "bio": "Biography",
+                "email": "email@email.com",
+                "created": "2021-02-02T00:00",
+                "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+                "businessesAdministered": [
+                    {
+                        "id": 4,
+                        "administrators": [{
+                            "id": 21,
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "middleName": "S",
+                            "nickname": "Johnny",
+                            "bio": "Biography",
+                            "email": "email@email.com",
+                            "created": "2021-02-02T00:00",
+                            "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+                            "businessesAdministered": [],
+                            "images": [],
+                            "dateOfBirth": "2000-02-02",
+                            "phoneNumber": "0271316",
+                            "homeAddress": {
+                                "streetNumber": "3/24",
+                                "streetName": "Ilam Road",
+                                "suburb": "Ilam",
+                                "city": "Christchurch",
+                                "region": "Canterbury",
+                                "country": "New Zealand",
+                                "postcode": "90210"
+                            }
+                        }],
+                        "primaryAdministratorId": 20,
+                        "name": "Kartofell",
+                        "description": null,
+                        "address": {
+                            "streetNumber": null,
+                            "streetName": null,
+                            "suburb": null,
+                            "city": null,
+                            "region": null,
+                            "country": "Deutschland",
+                            "postcode": null
+                        },
+                        "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                        "created": "2021-09-18T16:37:51.290710",
+                        "currencySymbol": "€",
+                        "currencyCode": "EUR"
+                    }
+                ],
+            },
+        }))
+        await Api.getBusiness.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 4,
+                "administrators": [
+                    {
+                        "id": 21,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "middleName": "S",
+                        "nickname": "Johnny",
+                        "bio": "Biography",
+                        "email": "email@email.com",
+                        "created": "2021-02-02T00:00",
+                        "role": "DEFAULTGLOBALAPPLICATIONADMIN",
+                        "businessesAdministered": [],
+                        "images": [],
+                        "dateOfBirth": "2000-02-02",
+                        "phoneNumber": "0271316",
+                        "homeAddress": {
+                            "streetNumber": "3/24",
+                            "streetName": "Ilam Road",
+                            "suburb": "Ilam",
+                            "city": "Christchurch",
+                            "region": "Canterbury",
+                            "country": "New Zealand",
+                            "postcode": "90210"
+                        }
+                    }
+                ],
+                "primaryAdministratorId": 20,
+                "name": "Kartofell",
+                "description": null,
+                "address": {
+                    "streetNumber": null,
+                    "streetName": null,
+                    "suburb": null,
+                    "city": null,
+                    "region": null,
+                    "country": "Deutschland",
+                    "postcode": null
+                },
+                "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                "created": "2021-09-18T16:37:51.290710",
+                "currencySymbol": "€",
+                "currencyCode": "EUR",
+                "businessImages": []
+            }
+        }))
+
+        await createWrapper();
+
+        expect(wrapper.find("#editPrimaryAdminButton").exists()).toBeTruthy()
+    })
+
+    test("Test that the button will show when current user is GAA", async () => {
+        await setupCookies(21);
+
+        await Api.getUser.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 21,
+                "firstName": "John",
+                "lastName": "Doe",
+                "middleName": "S",
+                "nickname": "Johnny",
+                "bio": "Biography",
+                "email": "email@email.com",
+                "created": "2021-02-02T00:00",
+                "role": "GLOBALAPPLICATIONADMIN",
+                "businessesAdministered": [
+                    {
+                        "id": 4,
+                        "administrators": [{
+                            "id": 21,
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "middleName": "S",
+                            "nickname": "Johnny",
+                            "bio": "Biography",
+                            "email": "email@email.com",
+                            "created": "2021-02-02T00:00",
+                            "role": "GLOBALAPPLICATIONADMIN",
+                            "businessesAdministered": [],
+                            "images": [],
+                            "dateOfBirth": "2000-02-02",
+                            "phoneNumber": "0271316",
+                            "homeAddress": {
+                                "streetNumber": "3/24",
+                                "streetName": "Ilam Road",
+                                "suburb": "Ilam",
+                                "city": "Christchurch",
+                                "region": "Canterbury",
+                                "country": "New Zealand",
+                                "postcode": "90210"
+                            }
+                        }],
+                        "primaryAdministratorId": 20,
+                        "name": "Kartofell",
+                        "description": null,
+                        "address": {
+                            "streetNumber": null,
+                            "streetName": null,
+                            "suburb": null,
+                            "city": null,
+                            "region": null,
+                            "country": "Deutschland",
+                            "postcode": null
+                        },
+                        "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                        "created": "2021-09-18T16:37:51.290710",
+                        "currencySymbol": "€",
+                        "currencyCode": "EUR"
+                    }
+                ],
+            },
+        }))
+        await Api.getBusiness.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 4,
+                "administrators": [
+                    {
+                        "id": 21,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "middleName": "S",
+                        "nickname": "Johnny",
+                        "bio": "Biography",
+                        "email": "email@email.com",
+                        "created": "2021-02-02T00:00",
+                        "role": "GLOBALAPPLICATIONADMIN",
+                        "businessesAdministered": [],
+                        "images": [],
+                        "dateOfBirth": "2000-02-02",
+                        "phoneNumber": "0271316",
+                        "homeAddress": {
+                            "streetNumber": "3/24",
+                            "streetName": "Ilam Road",
+                            "suburb": "Ilam",
+                            "city": "Christchurch",
+                            "region": "Canterbury",
+                            "country": "New Zealand",
+                            "postcode": "90210"
+                        }
+                    }
+                ],
+                "primaryAdministratorId": 20,
+                "name": "Kartofell",
+                "description": null,
+                "address": {
+                    "streetNumber": null,
+                    "streetName": null,
+                    "suburb": null,
+                    "city": null,
+                    "region": null,
+                    "country": "Deutschland",
+                    "postcode": null
+                },
+                "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                "created": "2021-09-18T16:37:51.290710",
+                "currencySymbol": "€",
+                "currencyCode": "EUR",
+                "businessImages": []
+            }
+        }))
+
+        await createWrapper();
+
+        expect(wrapper.find("#editPrimaryAdminButton").exists()).toBeTruthy()
+    })
+
+    test("Test that the button will not show when current user a normal admin for current business", async () => {
+        await setupCookies(21);
+
+        await Api.getUser.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 21,
+                "firstName": "John",
+                "lastName": "Doe",
+                "middleName": "S",
+                "nickname": "Johnny",
+                "bio": "Biography",
+                "email": "email@email.com",
+                "created": "2021-02-02T00:00",
+                "role": "USER",
+                "businessesAdministered": [
+                    {
+                        "id": 4,
+                        "administrators": [{
+                            "id": 21,
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "middleName": "S",
+                            "nickname": "Johnny",
+                            "bio": "Biography",
+                            "email": "email@email.com",
+                            "created": "2021-02-02T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [],
+                            "images": [],
+                            "dateOfBirth": "2000-02-02",
+                            "phoneNumber": "0271316",
+                            "homeAddress": {
+                                "streetNumber": "3/24",
+                                "streetName": "Ilam Road",
+                                "suburb": "Ilam",
+                                "city": "Christchurch",
+                                "region": "Canterbury",
+                                "country": "New Zealand",
+                                "postcode": "90210"
+                            }
+                        }],
+                        "primaryAdministratorId": 20,
+                        "name": "Kartofell",
+                        "description": null,
+                        "address": {
+                            "streetNumber": null,
+                            "streetName": null,
+                            "suburb": null,
+                            "city": null,
+                            "region": null,
+                            "country": "Deutschland",
+                            "postcode": null
+                        },
+                        "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                        "created": "2021-09-18T16:37:51.290710",
+                        "currencySymbol": "€",
+                        "currencyCode": "EUR"
+                    }
+                ],
+            },
+        }))
+        await Api.getBusiness.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 4,
+                "administrators": [
+                    {
+                        "id": 21,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "middleName": "S",
+                        "nickname": "Johnny",
+                        "bio": "Biography",
+                        "email": "email@email.com",
+                        "created": "2021-02-02T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [],
+                        "images": [],
+                        "dateOfBirth": "2000-02-02",
+                        "phoneNumber": "0271316",
+                        "homeAddress": {
+                            "streetNumber": "3/24",
+                            "streetName": "Ilam Road",
+                            "suburb": "Ilam",
+                            "city": "Christchurch",
+                            "region": "Canterbury",
+                            "country": "New Zealand",
+                            "postcode": "90210"
+                        }
+                    }
+                ],
+                "primaryAdministratorId": 20,
+                "name": "Kartofell",
+                "description": null,
+                "address": {
+                    "streetNumber": null,
+                    "streetName": null,
+                    "suburb": null,
+                    "city": null,
+                    "region": null,
+                    "country": "Deutschland",
+                    "postcode": null
+                },
+                "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                "created": "2021-09-18T16:37:51.290710",
+                "currencySymbol": "€",
+                "currencyCode": "EUR",
+                "businessImages": []
+            }
+        }))
+
+        await createWrapper();
+
+        expect(wrapper.find("#editPrimaryAdminButton").exists()).toBeFalsy()
+    })
+
+    test("Test that the button will not show when current user a normal user", async () => {
+        await setupCookies(21);
+
+        await Api.getUser.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 21,
+                "firstName": "John",
+                "lastName": "Doe",
+                "middleName": "S",
+                "nickname": "Johnny",
+                "bio": "Biography",
+                "email": "email@email.com",
+                "created": "2021-02-02T00:00",
+                "role": "USER",
+                "businessesAdministered": [
+                    {
+                        "id": 4,
+                        "administrators": [{
+                            "id": 20,
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "middleName": "S",
+                            "nickname": "Johnny",
+                            "bio": "Biography",
+                            "email": "email@email.com",
+                            "created": "2021-02-02T00:00",
+                            "role": "USER",
+                            "businessesAdministered": [],
+                            "images": [],
+                            "dateOfBirth": "2000-02-02",
+                            "phoneNumber": "0271316",
+                            "homeAddress": {
+                                "streetNumber": "3/24",
+                                "streetName": "Ilam Road",
+                                "suburb": "Ilam",
+                                "city": "Christchurch",
+                                "region": "Canterbury",
+                                "country": "New Zealand",
+                                "postcode": "90210"
+                            }
+                        }],
+                        "primaryAdministratorId": 20,
+                        "name": "Kartofell",
+                        "description": null,
+                        "address": {
+                            "streetNumber": null,
+                            "streetName": null,
+                            "suburb": null,
+                            "city": null,
+                            "region": null,
+                            "country": "Deutschland",
+                            "postcode": null
+                        },
+                        "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                        "created": "2021-09-18T16:37:51.290710",
+                        "currencySymbol": "€",
+                        "currencyCode": "EUR"
+                    }
+                ],
+            },
+        }))
+        await Api.getBusiness.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: {
+                "id": 4,
+                "administrators": [
+                    {
+                        "id": 20,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "middleName": "S",
+                        "nickname": "Johnny",
+                        "bio": "Biography",
+                        "email": "email@email.com",
+                        "created": "2021-02-02T00:00",
+                        "role": "USER",
+                        "businessesAdministered": [],
+                        "images": [],
+                        "dateOfBirth": "2000-02-02",
+                        "phoneNumber": "0271316",
+                        "homeAddress": {
+                            "streetNumber": "3/24",
+                            "streetName": "Ilam Road",
+                            "suburb": "Ilam",
+                            "city": "Christchurch",
+                            "region": "Canterbury",
+                            "country": "New Zealand",
+                            "postcode": "90210"
+                        }
+                    }
+                ],
+                "primaryAdministratorId": 20,
+                "name": "Kartofell",
+                "description": null,
+                "address": {
+                    "streetNumber": null,
+                    "streetName": null,
+                    "suburb": null,
+                    "city": null,
+                    "region": null,
+                    "country": "Deutschland",
+                    "postcode": null
+                },
+                "businessType": "ACCOMMODATION_AND_FOOD_SERVICES",
+                "created": "2021-09-18T16:37:51.290710",
+                "currencySymbol": "€",
+                "currencyCode": "EUR",
+                "businessImages": []
+            }
+        }))
+
+        await createWrapper();
+
+        expect(wrapper.find("#editPrimaryAdminButton").exists()).toBeFalsy()
     })
 })
 
