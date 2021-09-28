@@ -150,7 +150,7 @@ public class UserResource {
                 }
             }
 
-                // User exists, account not locked and password is correct
+            // User exists, account not locked and password is correct
             if (user.verifyPassword(login.getPassword())) {
                 String sessionUUID = getUniqueSessionUUID();
 
@@ -549,13 +549,13 @@ public class UserResource {
 
             switch (baseURL) {
                 case "http://localhost:9499/users/forgotPassword":
-                    resetPasswordURL = "http://localhost:9500/changePassword?token=";
+                    resetPasswordURL = "http://localhost:9500/resetPassword?token=";
                     break;
                 case "https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword":
-                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/test/changePassword?token=";
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/test/resetPassword?token=";
                     break;
                 case "https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword":
-                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/prod/changePassword?token=";
+                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/prod/resetPassword?token=";
                     break;
                 default:
                     throw new ResponseStatusException(
