@@ -1,3 +1,13 @@
+/**
+ * Summary. This file contains the definition for the UserResource.
+ * <p>
+ * Description. This file contains the defintion for the UserResource.
+ *
+ * @link team-400/src/main/java/org/seng302/user/UserResource
+ * @file This file contains the definition for UserResource.
+ * @author team-400.
+ * @since 5.5.2021
+ */
 package org.seng302.controller;
 
 import org.seng302.exceptions.IllegalAddressArgumentException;
@@ -34,6 +44,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
@@ -43,17 +54,6 @@ import java.util.Optional;
 
 import static org.seng302.Authorization.*;
 import static org.seng302.model.enums.Role.*;
-
-/*
- * Summary. This file contains the definition for the UserResource.
- * <p>
- * Description. This file contains the definition for the UserResource.
- *
- * @link team-400/src/main/java/org/seng302/user/UserResource
- * @file This file contains the definition for UserResource.
- * @author team-400.
- * @since 5.5.2021
- */
 
 /**
  * UserResource class. This class includes:
@@ -464,6 +464,59 @@ public class UserResource {
     }
 
     /**
+     * This endpoint is for changing a users forgotten password
+     * Checks if the forgot password token is still valid and if so changes the users password
+     * @param token forgot password token
+     * @param payload NewPasswordPayload containing the new password
+     */
+    @PutMapping("/users/forgotPassword")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Password changed successfully")
+    public void changePassword(
+            @RequestParam String token,
+            @RequestBody NewPasswordPayload payload
+    ) {
+        logger.info("Forgot Password - Attempt to change users password");
+        Optional<ForgotPassword> foundForgotPasswordEntity = forgotPasswordRepository.findByToken(token);
+
+        if(foundForgotPasswordEntity.isPresent() && foundForgotPasswordEntity.get().isValidToken()) {
+            ForgotPassword forgotPassword = foundForgotPasswordEntity.get();
+            Integer userId = forgotPassword.getUserId();
+
+            Optional<User> foundUser = userRepository.findById(userId);
+
+            if(foundUser.isEmpty()) {
+                logger.error("500 [INTERNAL_SERVER_ERROR] - Forgot Password - Could not find user with ID {}", userId);
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Could not find user"
+                );
+            }
+
+            User user = foundUser.get();
+            try {
+                user.updatePassword(payload.getPassword());
+                userRepository.save(user);
+            } catch (IllegalUserArgumentException exception) {
+                logger.error("400 [BAD_REQUEST] - Forgot Password - Invalid Password");
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid Password"
+                );
+            }
+
+            // On success delete ForgotPassword Entity
+            forgotPasswordRepository.delete(forgotPassword);
+        } else {
+            // Calls if forgot password entity is expired
+            foundForgotPasswordEntity.ifPresent(forgotPassword -> forgotPasswordRepository.delete(forgotPassword));
+            logger.error("406 [NOT_ACCEPTABLE] - Forgot Password - Token is Invalid or has Expired");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE,
+                    "Token is Invalid");
+        }
+    }
+
+    /**
      * This method will be called on the forgot password page after the user has entered a valid email.
      * Sends an email to the given email address with a link to the reset password page.
      * @param forgotPasswordPayload Forgot password payload containing an email address.
@@ -483,7 +536,7 @@ public class UserResource {
                 forgotPasswordEntity = new ForgotPassword(user.getId());
                 forgotPasswordRepository.save(forgotPasswordEntity);
             } catch (IllegalForgotPasswordArgumentException exception) {
-                logger.error("500 [NOT ACCEPTABLE] - User ID {} invalid", user.getId());
+                logger.error("500 [INTERNAL SERVER ERROR] - User ID {} invalid", user.getId());
                 throw new ResponseStatusException(
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "User ID Invalid"
@@ -512,9 +565,20 @@ public class UserResource {
 
             resetPasswordURL += forgotPasswordEntity.getToken();
 
-            // Change email for testing
-            emailService.sendSimpleMessage(email, "Reset Password", resetPasswordURL);
+            String emailTemplate = "<html><head> <title>Reusability Password Reset</title> <style> .container { width: 35%; background-color: white; margin-top: 4%; margin: 4% auto; min-width: 450px; } html { background-color: #f9f9f9; min-width: 480px; } .image-container { padding-top: 1.8rem; text-align: center; margin-bottom: 1.4rem; } .title-span{ font-size: 28px; color: white; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } .title-container { background-color: #26e0aa; padding-top: 2rem; padding-left: 2rem; padding-right: 2rem; padding-bottom: 1rem; text-align: center; } p { color: #666666; font-size: 17px; font-family: Arial, Helvetica, sans-serif; } .subtext { color: #888888; font-style: italic; font-size: 16px; } .text-container { padding: 2rem; } .green-bottom { text-align: center; padding: 1rem; background-color: #26e0aa; } .copyright { color: black; font-size: 16px; font-family: Arial, Helvetica, sans-serif; } .link-text { font-size: 14px; } #password-link { background-color: #26e0aa; margin-top: 1rem; padding: 1rem; text-decoration: none; color: white; line-height: 300%; font-size: 18px; } </style></head><body> <div class=\"container\"> <div class=\"image-container\"> <img src=\"https://i.ibb.co/1QCwQqM/image-1.png\" alt=\"Reusability Logo Image\" width=\"170\"> </div> <div class=\"title-container\"> <img src=\"https://i.ibb.co/WDXHnrQ/image-2.png\" alt=\"Reset Logo\" width=\"80\"> <br> <span class=\"title-span\">Password Reset Request</span> </div> <div class=\"text-container\"> <p>Hello,</p> <p>We have sent you this email in response to your request to reset your password on Reusability.</p> <p>To set a new password, click to follow the link below:</p> <a id=\"password-link\" href=\"" + resetPasswordURL + "\">Change Password</a> <p class=\"link-text\">" + resetPasswordURL + "</p> <p class=\"subtext\">Please ignore this email if you did not request a password change.</p> </div> <div class=\"green-bottom\"> <p class=\"copyright\">© Reusability 2021</p> </div> </div> </body></html>";
 
+            try {
+
+                // Change email when testing
+                emailService.sendHTMLMessage(email, "Password Reset", emailTemplate);
+
+            } catch (MessagingException exception) {
+                logger.error("500 [INTERNAL SERVER ERROR] - Messaging Exception {}", exception.getMessage());
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Messaging Exception"
+                );
+            }
 
         } else {
             logger.error("406 [NOT ACCEPTABLE] - User with email {} does not exist.", email);

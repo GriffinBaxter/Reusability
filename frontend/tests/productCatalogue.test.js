@@ -1019,7 +1019,7 @@ describe('Testing autofill functionality', function () {
         });
     });
 
-    test("Testing that if result.data.status isn't 1, then the toast error message is set", async () => {
+    test("Testing that if result.data.status isn't 1, then the error message is shown", async () => {
         productCatalogueWrapper.vm.barcode = "111111111111";
 
         OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({data: {status: 0}}));
@@ -1027,8 +1027,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("Could not autofill, product may not exist in database");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeTruthy();
     });
 
     test("Testing that when product name is empty, then it is autofilled", async () => {
@@ -1050,8 +1054,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Description");
@@ -1076,8 +1084,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Description");
@@ -1102,8 +1114,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
@@ -1128,8 +1144,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");

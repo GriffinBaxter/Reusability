@@ -21,7 +21,7 @@ public class MailSendingService {
     /**
      * A JavaMailSender bean that sets up SMTP details for the support email account.
      * To be used by an instance of EmailService.
-     * @return
+     * @return A JavaMailSender that can send simple or MIME messages.
      */
     @Bean
     public JavaMailSender getJavaMailSender() {
