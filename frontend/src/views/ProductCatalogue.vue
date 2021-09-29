@@ -369,6 +369,8 @@ export default {
       // List of Business account current user account administrated
       linkBusinessAccount: [],
 
+      pageSize: this.$route.query["pageSize"] || "5"
+
     }
   },
   methods: {
@@ -529,11 +531,13 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
+      this.pageSize = this.$route.query["pageSize"] || "5";
+      this.rowsPerPage = parseInt(this.pageSize);
       this.loadingProducts = true;
       this.barcode = this.$route.query["barcode"] || "";
 
       // Perform the call to sort the products and get them back.
-      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.barcode, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.barcode, this.orderByString, this.currentPage, this.pageSize).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -592,7 +596,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString(), "pageSize": this.pageSize}
       });
       this.requestProducts();
     },
@@ -912,15 +916,17 @@ export default {
      * @param checked A list of selected checked boxes.
      * @param searchQuery The search query.
      * @param searchBarcode The barcode to search by.
+     * @param pageSize The number of entries for a page of results.
      */
-    onSearch (checked, searchQuery, searchBarcode) {
+    onSearch (checked, searchQuery, searchBarcode, pageSize) {
       this.searchBy = checked;
       this.searchQuery = searchQuery;
       this.searchBarcode = searchBarcode;
+      this.pageSize = pageSize;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0"}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0", "pageSize": this.pageSize}
       });
       this.requestProducts();
       this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
