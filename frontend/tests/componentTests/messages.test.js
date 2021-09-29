@@ -9,7 +9,7 @@ import Messages from "../../src/components/messages/Messages";
 import MessageOption from "../../src/components/messages/MessageOption";
 import Api from "../../src/Api";
 import VueLogger from "vuejs-logger";
-import ProfileImage from "../../public/sample_profile_image.jpg"
+import ProfileImage from "../../public/profile_icon_default.png"
 import Cookies from "js-cookie";
 import SendMessage from "../../src/components/messages/SendMessage";
 import MessageTitle from "../../src/components/messages/MessageTitle";

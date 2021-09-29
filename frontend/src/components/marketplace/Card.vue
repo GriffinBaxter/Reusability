@@ -13,9 +13,7 @@
         </div>
       </div>
 
-      <div id="card-img-container" class="row">
-        <img id="card-img" :src="cardImage" alt="Card Image">
-      </div>
+      <hr class="mb-0"><br>
 
       <img :src="creatorImage" id="avatar-image" alt="User Avatar">
       {{ creator.firstName }} {{ creator.lastName }}
@@ -59,15 +57,9 @@ export default {
       },
       required: true
     },
-    cardImage: {
-      type: String,
-      default: require("../../../public/apples.jpg"),
-      required: false
-    },
     creatorImage: {
       type: String,
-      default: require("../../../public/sample_profile_image.jpg"),
-      required: false
+      required: true
     },
     address: {
       type: String,
@@ -83,14 +75,6 @@ export default {
 #avatar-image {
   width: 30px;
   border-radius: 50px;
-}
-
-#card-img-container {
-  margin-bottom: 20px;
-}
-
-#card-img {
-  border-radius: 35px;
 }
 
 #address-container {

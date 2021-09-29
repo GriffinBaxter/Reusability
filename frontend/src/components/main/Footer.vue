@@ -8,7 +8,7 @@
     <!-- Copyright -->
     <div class="text-center p-2" id="copyright">
       <p></p>
-      <p class="text-white">© SENG302 Team 400 2021</p>
+      <p class="text-white">© Reusability 2021</p>
     </div>
     <!-- Copyright -->
 
@@ -19,12 +19,6 @@
 <!---------------------------------------------------- Footer Styling ------------------------------------------------->
 
 <style scoped>
-
-/* styling for dark mode */
-  .footer-styling {
-    bottom: 0;
-    width: 100%;
-  }
 
   #footer {
     background-color: #189570;
