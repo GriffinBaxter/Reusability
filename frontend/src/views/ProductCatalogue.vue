@@ -7,7 +7,8 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
-          <feedback-notification :is-error-feedback="isErrorFeedback" :feedback-text="feedbackText"></feedback-notification>
+          <feedback-notification :is-error-feedback="isErrorFeedback" :feedback-text="feedbackText"
+                                 style="position: fixed; right: 50px; bottom: 50px"/>
 
           <div class="row mt-3">
             <h2 style="text-align: center">Product Catalogue</h2>
