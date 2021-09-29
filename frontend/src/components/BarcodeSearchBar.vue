@@ -2,7 +2,7 @@
   <div class="row">
     <label class="d-inline-block fs-6">Barcode (EAN or UPC)</label>
     <div class="d-inline-block">
-      <input class="form-control d-inline-block" v-model="barcode" style="width: 150px; float: left" @keydown="enterPressed($event)" maxlength="13">
+      <input class="form-control d-inline-block" v-model="barcode" style="width: 150px; float: left;" @keydown="enterPressed($event)" maxlength="13">
       <button type="button" class="btn green-button "
               @click="(event) => {
                   this.$refs.barcodeScannerModal.showModel(event);
@@ -12,6 +12,7 @@
       <button type="button" class="btn green-button " @click="searchClicked()">
         <i class="fas fa-search" aria-hidden="true"></i>
       </button>
+      <PageSize></PageSize>
     </div>
     <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
   </div>
@@ -19,11 +20,13 @@
 
 <script>
 import BarcodeScannerModal from "../components/BarcodeScannerModal";
+import PageSize  from "@/components/PageSize";
 
 export default {
   name: "BarcodeSearchBar",
   components: {
-    BarcodeScannerModal
+    BarcodeScannerModal,
+    PageSize
   },
   data() {
     return {

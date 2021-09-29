@@ -11,7 +11,10 @@
             <button id="business-radio-button" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
           </div>
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
-          <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search" aria-hidden="true"></i></button>
+          <button class="btn green-search-button" id="search-button" style="border-radius: 10%;" @click="searchClicked()"><i class="fas fa-search" aria-hidden="true"></i></button>
+          <div v-if="showPageSize">
+            <PageSize style="margin-left: 2.25rem;"></PageSize>
+          </div>
         </div>
       </div>
       <br>
@@ -32,8 +35,18 @@
 
 <script>
 
+import PageSize from "@/components/PageSize";
+
 export default {
   name: "ProfileHeader",
+  components: {PageSize},
+  props: {
+    //
+    showPageSize: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       searchType: "User",

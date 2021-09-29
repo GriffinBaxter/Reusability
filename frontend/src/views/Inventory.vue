@@ -20,7 +20,7 @@
 
             <div class="row" role="group" aria-label="Button group with nested dropdown">
               <!--filter-->
-              <div class="btn-group col-md-3 py-1 align-self-center" role="group">
+              <div class="btn-group col-md-2 py-1 align-self-center" role="group">
                 <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                         data-bs-toggle="dropdown" aria-expanded="false">Filter Option
                 </button>
@@ -92,9 +92,9 @@
                 </button>
               </div>
 
-              <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
+              <div class="col-md-3 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
 
-              <div class="col-md-3 py-1">
+              <div class="col-md-4 py-1">
                 <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
               </div>
 

@@ -23,9 +23,10 @@
 
     <div class="input-group" id="search-inputs" style="alignment: center">
       <input type="text" id="product-search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
-      <button class="btn green-search-button" id="product-search-button" @click="searchClicked()">
+      <button class="btn green-search-button" id="product-search-button" style="border-radius: 10%" @click="searchClicked()">
         <i class="fas fa-search" aria-hidden="true"/>
       </button>
+      <PageSize style="margin-left: 2.25rem"></PageSize>
     </div>
 
     <!---------------------------------------- barcode filtering menu ----------------------------------------->
@@ -59,10 +60,12 @@
 <script>
 
 import BarcodeScannerModal from "../BarcodeScannerModal";
+import PageSize from "@/components/PageSize";
 
 export default {
   name: "ProductSearchBar",
   components: {
+    PageSize,
     BarcodeScannerModal
   },
   data() {
