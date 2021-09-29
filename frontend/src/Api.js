@@ -82,15 +82,15 @@ export default {
     },
 
     // Sends a get request to the backend asking for a list of users which match the search criteria.
-    searchUsers: (query, orderBy, page) => {
-        return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}`, {
+    searchUsers: (query, orderBy, page, pageSize) => {
+        return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
 
     // Sends a GET request to the backend asking for any businesses matching the given criteria
-    searchBusinesses: (query, businessType, orderBy, page) => {
-        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}`, {
+    searchBusinesses: (query, businessType, orderBy, page, pageSize) => {
+        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
