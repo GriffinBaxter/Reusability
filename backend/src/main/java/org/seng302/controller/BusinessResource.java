@@ -276,17 +276,17 @@ public class BusinessResource {
         if (optionalBusiness.isEmpty()){
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE,
-                    "Select business not exist"
+                    "Selected business does not exist"
             );
         }
         Business selectBusiness = optionalBusiness.get();
 
         //403
         if (currentUser.getRole() != Role.DEFAULTGLOBALAPPLICATIONADMIN &&
-                !selectBusiness.isAnAdministratorOfThisBusiness(currentUser)){
+                 !selectBusiness.isPrimaryBusinessAdministrator(currentUser)){
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "Current user is not DGAA or an administrator of this business"
+                    "Current user is not DGAA or a primary administrator of this business"
             );
         }
 
@@ -294,7 +294,7 @@ public class BusinessResource {
         if (optionalUser.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Select user not exist"
+                    "Selected user not exist"
             );
         }
         User selectUser = optionalUser.get();
@@ -302,20 +302,20 @@ public class BusinessResource {
             if (!selectBusiness.isAnAdministratorOfThisBusiness(selectUser)){
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Select user is not an administrator of this business"
+                        "Selected user is not an administrator of this business"
                 );
             }
             if (currentUser == selectUser){
                 throw new ResponseStatusException(
                         HttpStatus.FORBIDDEN,
-                        "Administrator can not remove administrator self"
+                        "Cannot remove yourself as an administrator"
                 );
             }
         } else {
             if (selectBusiness.isAnAdministratorOfThisBusiness(selectUser)){
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Select user already is an administrator of this business"
+                        "Selected user already is an administrator of this business"
                 );
             }
         }
@@ -345,10 +345,10 @@ public class BusinessResource {
     }
 
     /**
-     * remove a administrator user(for selected business) become non-administrator
-     * @param sessionToken session token
-     * @param userIdPayload selected user id payload
-     * @param id selected business id
+     * Remove an administrator from a business's administrators by user ID.
+     * @param sessionToken The current user's session token
+     * @param userIdPayload The user id payload of the user you want to remove.
+     * @param id The business to remove the user's administrator status from.
      */
     @PutMapping("/businesses/{id}/removeAdministrator")
     @ResponseStatus(value = HttpStatus.OK, reason = "Individual added as an administrator successfully")
