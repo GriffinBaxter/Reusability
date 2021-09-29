@@ -31,6 +31,7 @@
 import axios from 'axios'
 
 const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
+const CLIENT_URL = process.env.VUE_APP_CLIENT_ADD;
 
 const instance = axios.create({
     baseURL: SERVER_URL,
@@ -452,6 +453,6 @@ export default {
 
     // Sends a password reset email to the user
     forgotPasswordSendEmail(emailAddress) {
-        return instance.post(`/users/forgotPassword`, {email: emailAddress});
+        return instance.post(`/users/forgotPassword`, {email: emailAddress, clientURL: CLIENT_URL});
     }
 }
