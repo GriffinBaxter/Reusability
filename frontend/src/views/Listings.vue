@@ -194,7 +194,11 @@ name: "Listings",
       currentListingId: null,
       currentProductName: "",
       currentQuantity: "",
-      currentPrice: ""
+      currentPrice: "",
+
+      // For toast notifications
+      messages: [],
+      messageIdCounter: 0
     }
   },
   computed: {
@@ -226,6 +230,15 @@ name: "Listings",
       if (this.currentListingId !== null) {
         await Api.deleteListing(this.businessId, this.currentListingId).then(() => {
           this.getListings()
+          this.messageIdCounter += 1;
+          this.messages.push(
+              {
+                id: this.messageIdCounter,
+                isError: false,
+                topic: "Success",
+                text: "Listing successfully deleted."
+              }
+          )
         }).catch((err) => {
           if (err.response) {
             if (err.response.status === 406) {
@@ -482,6 +495,15 @@ name: "Listings",
     afterCreation() {
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
+      this.messageIdCounter += 1;
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Listing successfully created."
+          }
+      )
       setTimeout(() => {
         this.creationSuccess = false
       }, 5000);

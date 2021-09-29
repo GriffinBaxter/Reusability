@@ -11,12 +11,6 @@
 
           <div class="row mt-3">
             <h2 style="text-align: center">Product Catalogue</h2>
-            <!--Creation success info-->
-            <div class="alert alert-success" role="alert" v-if="creationSuccess">
-              <div class="row">
-                <div class="col" style="text-align: center">{{ userAlertMessage }}</div>
-              </div>
-            </div>
           </div>
 
           <div class="row">
@@ -386,9 +380,6 @@ export default {
       toastErrorMessage: "",
       cannotProceed: false,
 
-      // Message to display that product has been added to catalogue or has been edited.
-      userAlertMessage: "",
-
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
@@ -403,31 +394,8 @@ export default {
       linkBusinessAccount: [],
 
       // For toast notifications
-      messages: [
-        {
-          id: 1,
-          isError: true,
-          topic: "I'm a topic",
-          text: "some message"
-        },
-        {
-          id: 2,
-          isError: false,
-          topic: "I'm a topic",
-          text: "some message"
-        },
-        {
-          id: 3,
-          isError: true,
-          topic: "I'm a topic",
-          text: "some message"
-        },
-        {
-          id: 4,
-          isError: false,
-          topic: "I'm a topic",
-          text: "some message"
-        }]
+      messages: [],
+      messageIdCounter: 0
     }
   },
   methods: {
@@ -847,14 +815,22 @@ export default {
             if (res.status === 201) {
               // Set message so user knows product has been added.
               this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
-              this.userAlertMessage = this.addedMessage;
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
                   (error) => console.log(error)
               )
             }
-          }
+        this.messageIdCounter += 1;
+        this.messages.push(
+            {
+              id: this.messageIdCounter,
+              isError: false,
+              topic: "Success",
+              text: `${product.data.name} with ID ${product.data.id} was successfully created.`
+            }
+          )
+        }
       ).catch((error) => {
         this.cannotProceed = true;
         if (error.response) {
@@ -888,7 +864,15 @@ export default {
      * After edit success, show the edit info.
      */
     afterEdit() {
-      this.userAlertMessage = "Product Edited";
+      this.messageIdCounter += 1;
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Product successfully edited."
+          }
+      )
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {

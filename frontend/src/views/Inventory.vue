@@ -240,7 +240,11 @@ export default {
 
       // When page is initially loaded, we don't want 'No Inventory Items Found' message to display since, inventory has not
       // been retrieved yet.
-      notInitialLoad: false
+      notInitialLoad: false,
+
+      // For toast notifications
+      messages: [],
+      messageIdCounter: 0
     }
   },
   computed: {
@@ -631,7 +635,15 @@ export default {
      */
     afterCreation() {
       this.creationSuccess = true;
-      this.userAlertMessage = "New Inventory Item Created";
+      this.messageIdCounter += 1;
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Inventory item successfully created."
+          }
+      )
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
         this.creationSuccess = false
@@ -643,7 +655,15 @@ export default {
      */
     afterEdit() {
       this.creationSuccess = true;
-      this.userAlertMessage = "Product Edited";
+      this.messageIdCounter += 1;
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Inventory item successfully edited."
+          }
+      )
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
         this.creationSuccess = false
