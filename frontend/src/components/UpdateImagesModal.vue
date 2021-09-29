@@ -223,6 +223,8 @@ export default {
      * @param imageId Id of image to remove
      */
     removeImage(imageId) {
+      this.removeActiveCarouselElements();
+
       this.selectedImage = null;
 
       let images = this.currentData.data.images
@@ -241,6 +243,8 @@ export default {
 
       // if image is primary sets primary image to the first item in the list
       if (this.primaryImage === imageId) {
+        this.removeActiveCarouselElements();
+
         if (this.currentData.data.images.length > 0) {
           this.primaryImage = this.currentData.data.images[0].id;
           this.currentData.data.images[0].isPrimary = true;
@@ -279,12 +283,18 @@ export default {
      * @param imageId Id of image to set as primary
      */
     setPrimary(imageId) {
+      this.removeActiveCarouselElements();
+
       this.primaryImage = imageId;
-      for (let image of this.currentData.data.images) {
+      for (const [index, image] of this.currentData.data.images.entries()) {
         if (image.id === imageId) {
           // updates the new primary image
           image.isPrimary = true;
           document.getElementById("primary-image").src = this.getImageSrc(image.filename);
+
+          if (this.location !== "Product") {
+            document.getElementById("image-carousel").children[index].classList.add("active");
+          }
 
           // Update Navbar image (BusinessProfile/Profile)
           this.$emit("updatePrimary", image.thumbnailFilename);
@@ -359,6 +369,15 @@ export default {
 
     onUploadClick() {
       this.$refs.image.click();
+    },
+
+    /**
+     * Makes all elements of the image carousel inactive, for use before setting a new active image.
+     */
+    removeActiveCarouselElements() {
+      for (let child of document.getElementById("image-carousel").children) {
+        child.classList.remove("active");
+      }
     }
   },
   mounted: function () {

@@ -35,7 +35,8 @@
               <div class="card-body">
 
               <!--business's profile image-->
-              <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
+              <div id="profileCarouselControls" class="carousel carousel-dark slide"
+                   data-bs-interval="false" data-bs-ride="carousel">
                 <div class="carousel-inner" id="image-carousel">
                   <div v-if="business.data.images === undefined || business.data.images === [] || business.data.images.length === 0">
                     <img :src="getImageSrc()"
