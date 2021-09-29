@@ -244,13 +244,13 @@
             <tr v-for="line in salesReportData" v-bind:key="line.granularityName">
               <td>{{ line.granularityName }}</td>
               <td>{{ line.totalSales }}</td>
-              <td>{{ currencySymbol }} {{ line.totalRevenue }}</td>
+              <td>{{ currencySymbol }} {{ line.totalRevenue.toFixed(2) }}</td>
             </tr>
             </tbody>
           </table>
           <div v-else>
             <h3><strong>Total Sales:</strong> {{ salesReportData[0] ? salesReportData[0].totalSales : "0" }}</h3>
-            <h3><strong>Total Revenue:</strong> {{currencySymbol}}{{ salesReportData[0] ? salesReportData[0].totalRevenue : "0" }} {{currencyCode}}</h3>
+            <h3><strong>Total Revenue:</strong> {{currencySymbol}}{{ salesReportData[0] ? salesReportData[0].totalRevenue.toFixed(2) : "0" }} {{currencyCode}}</h3>
           </div>
         </div>
 
