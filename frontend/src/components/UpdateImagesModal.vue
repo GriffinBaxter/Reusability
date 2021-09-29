@@ -365,7 +365,7 @@ export default {
     // Create a modal and attach it to the updateProductModel reference.
     this.modal = new Modal(this.$refs._updateImagesModal);
 
-    this.currentData = this.value
+    this.currentData = this.value;
   }
 }
 </script>

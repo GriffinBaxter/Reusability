@@ -133,6 +133,9 @@ describe("Testing the set primary image, delete and upload image functionality",
         const $router = {
             push: jest.fn()
         };
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {};
+        });
         const wrapper = await factory({
             mocks: {
                 $router
@@ -214,6 +217,9 @@ describe("Testing the set primary image, delete and upload image functionality",
         const $router = {
             push: jest.fn()
         };
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {};
+        });
         const wrapper = await factory({
             mocks: {
                 $router
