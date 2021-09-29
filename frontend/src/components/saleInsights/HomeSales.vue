@@ -55,7 +55,7 @@ export default {
      * @return {String, String} Returns {fromDate, toDate} both are strings.
      */
     async generateDates() {
-      const today = new Date;
+      const today = Date.now();
 
       const startOfWeek = today.getDate() - today.getDay();
       const endOfWeek = startOfWeek + 6;
@@ -73,6 +73,7 @@ export default {
 
       // If the data is not available then we don't try to get the data.
       if (!this.isActingAsUser()) {
+        this.hideGraph = true
         this.loading = false;
         return;
       }
