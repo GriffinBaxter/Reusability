@@ -232,6 +232,7 @@ name: "Listings",
           this.getListings();
           this.creationSuccess = true;
           this.messageIdCounter += 1;
+          this.messages = [];
           this.messages.push(
               {
                 id: this.messageIdCounter,
