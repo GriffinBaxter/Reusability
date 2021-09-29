@@ -69,12 +69,14 @@ export default {
       event.preventDefault();
       // Show the modal
       this.modal.show();
+      this.formErrorModalMessage = "";
     },
     /**
      * Emit a custom event so that the EditBusinessProfile page knows that the user
      * does not want to change the currency for the business.
      */
     keepCurrency() {
+      this.formErrorModalMessage = "";
       this.$emit('currencyChange', null, null);
       this.modal.hide();
     },
@@ -84,12 +86,17 @@ export default {
      * currency information accordingly.
      */
     updateCurrency() {
+      this.formErrorModalMessage = "";
       CurrencyAPI.currencyQuery(this.$parent.$refs.country.value).then((response) => {
         const code = Object.keys(response.data[0].currencies)[0];
         const symbol = response.data[0].currencies[code].symbol;
         this.$emit('currencyChange', code, symbol);
         this.modal.hide();
-      }).catch((error) => console.log(error))
+      }).catch((error) => {
+        if (error.response && error.response.status === 404) {
+          this.formErrorModalMessage = "Country does not exist, currency cannot be updated."
+        }
+      })
     }
   },
   /**

@@ -86,4 +86,28 @@ describe("Testing the currency methods in CurrencyChangeModal", () => {
         expect(wrapper.emitted().currencyChange[0]).toEqual([null, null]);
     })
 
+    test('Testing the updateCurrency method sets an error message based on a country not existing in an ' +
+        'attempt to change the currency.', async () => {
+        const response = {
+            response: {
+                status: 404
+            }
+        }
+
+        wrapper.vm.$parent.$refs = {
+            country: {
+                value: "Not a Country"
+            }
+        };
+
+        CurrencyAPI.currencyQuery.mockImplementation(() => Promise.reject(response));
+
+        await wrapper.vm.updateCurrency();
+        await wrapper.vm.$nextTick();
+        
+        expect(wrapper.vm.$data.formErrorModalMessage).toEqual(
+            "Country does not exist, currency cannot be updated."
+        );
+    })
+
 })

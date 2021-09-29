@@ -494,7 +494,12 @@ public class UserResource {
 
             User user = foundUser.get();
             try {
+                // Checks if the password can be updated (save checks if the column value is valid)
                 user.updatePassword(payload.getPassword());
+                userRepository.save(user);
+
+                // Unlocks the account (saving again due to check required before for saving the new password)
+                user.unlockAccount();
                 userRepository.save(user);
             } catch (IllegalUserArgumentException exception) {
                 logger.error("400 [BAD_REQUEST] - Forgot Password - Invalid Password");
