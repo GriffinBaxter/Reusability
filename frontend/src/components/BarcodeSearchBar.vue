@@ -12,7 +12,6 @@
       <button type="button" class="btn green-button " @click="searchClicked()">
         <i class="fas fa-search" aria-hidden="true"></i>
       </button>
-      <PageSize></PageSize>
     </div>
     <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
   </div>

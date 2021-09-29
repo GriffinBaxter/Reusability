@@ -18,9 +18,9 @@
 
             <hr/>
 
-            <div class="row" role="group" aria-label="Button group with nested dropdown">
+            <div class="row" role="group" aria-label="Button group with nested dropdown" style="display: flex; align-items: flex-end">
               <!--filter-->
-              <div class="btn-group col-md-2 py-1 align-self-center" role="group">
+              <div class="btn-group col-md-2 py-1 align-self-end" role="group">
                 <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                         data-bs-toggle="dropdown" aria-expanded="false">Filter Option
                 </button>
@@ -84,7 +84,7 @@
                 </ul>
               </div>
 
-              <div class="col-md-2 py-1 align-self-center">
+              <div class="col-md-2 py-1 align-self-end">
                 <!--creation button-->
                 <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
                         data-bs-target="#creationPopup" style="height: 38px">
@@ -92,10 +92,14 @@
                 </button>
               </div>
 
-              <div class="col-md-3 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
+              <div class="col-3 col-md-3 text-secondary flex-nowrap align-self-end" style="margin-bottom: 0.7em">Filter By: {{convertToString()}}</div>
 
-              <div class="col-md-4 py-1">
+              <div class="col-md-3 justify-content-md-end" style="display: flex; ">
                 <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
+              </div>
+
+              <div class="col justify-content-md-end" style="display: flex; ">
+                <PageSize></PageSize>
               </div>
 
             </div>
@@ -181,6 +185,7 @@ import UpdateInventoryItemModal from "../components/inventory/UpdateInventoryIte
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
+import PageSize from "@/components/PageSize";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
 
 export default {
@@ -190,6 +195,7 @@ export default {
     Navbar,
     InventoryItem,
     Footer,
+    PageSize,
     PageButtons,
     BarcodeSearchBar
   },

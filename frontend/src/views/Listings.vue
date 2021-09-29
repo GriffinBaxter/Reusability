@@ -14,7 +14,7 @@
         <hr>
         <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
-          <div class="btn-group col-md-3 py-1 align-self-center" role="group">
+          <div class="btn-group col-md-2 py-1 align-text-center" role="group">
             <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                     data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
@@ -51,14 +51,18 @@
           </div>
 
           <!-- Create New Button -->
-          <div class="col-md-2 py-1 align-self-center" v-if="businessAdmin">
+          <div class="col-md-2 py-1 align-text-center" v-if="businessAdmin">
             <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup" style="height: 38px">Create New</button>
           </div>
 
-          <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
+          <div class="col-3 col-md-3 text-secondary flex-nowrap align-text-center">Filter By: {{convertToString()}}</div>
 
-          <div class="col-md-3 py-1">
+          <div class="col-md-3 justify-content-md-center" style="display: flex; ">
             <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
+          </div>
+
+          <div class="col justify-content-md-center" style="display: flex; ">
+            <PageSize></PageSize>
           </div>
 
         </div>
@@ -144,6 +148,7 @@ import Footer from "../components/main/Footer";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
+import PageSize from "@/components/PageSize";
 import WithdrawListingConfirmationModal from "../components/listing/WithdrawListingConfirmationModal";
 
 export default {
@@ -153,6 +158,7 @@ name: "Listings",
     CreateListing,
     ListingItem,
     Navbar,
+    PageSize,
     PageButtons,
     BarcodeSearchBar,
     WithdrawListingConfirmationModal
