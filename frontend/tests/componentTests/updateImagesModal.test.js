@@ -118,6 +118,12 @@ describe("Testing the set primary image, delete and upload image functionality",
             status: 200
         }
 
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
+
         Api.deleteImage.mockImplementation(() => Promise.resolve(data));
 
         wrapper.vm.$data.selectedImage = 2;
@@ -133,9 +139,6 @@ describe("Testing the set primary image, delete and upload image functionality",
         const $router = {
             push: jest.fn()
         };
-        jest.spyOn(document, 'getElementById').mockImplementation(() => {
-            return {};
-        });
         const wrapper = await factory({
             mocks: {
                 $router
@@ -145,6 +148,12 @@ describe("Testing the set primary image, delete and upload image functionality",
         const data = {
             status: 200
         }
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
 
         Api.deleteImage.mockImplementation(() => Promise.resolve(data));
 
@@ -176,6 +185,12 @@ describe("Testing the set primary image, delete and upload image functionality",
                 status: 403
             }
         }
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
 
         Api.setPrimaryImage.mockImplementation(() => Promise.reject(data));
 
@@ -229,6 +244,12 @@ describe("Testing the set primary image, delete and upload image functionality",
         const data = {
             status: 200
         }
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
 
         Api.setPrimaryImage.mockImplementation(() => Promise.resolve(data));
 
