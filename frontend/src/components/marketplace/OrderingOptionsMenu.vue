@@ -1,6 +1,6 @@
 <template>
 
-  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+  <div class="btn-toolbar w-100 align-items-end" role="toolbar" aria-label="Toolbar with button groups">
     <div class="btn-group me-2" role="group" aria-label="First group">
       <!------------------------------------------ ordering by options menu ------------------------------------------->
       <div class="btn-group col" role="group">
@@ -55,6 +55,11 @@
     <div class="btn-group me-2" role="group" aria-label="Second group" style="margin-top: 6px">
       <CreateCardModal @new-card-created="(e) => $emit('new-card-created', e)" v-bind:type="type"></CreateCardModal>
     </div>
+
+    <div class="float-end ms-auto">
+      <PageSize></PageSize>
+    </div>
+
   </div>
 
 </template>
@@ -62,10 +67,12 @@
 <script>
 
 import CreateCardModal from "./CreateCardModal";
+import PageSize from "@/components/PageSize";
 
 export default {
   name: "OrderingOptionsMenu",
   components: {
+    PageSize,
     CreateCardModal
   },
   data() {

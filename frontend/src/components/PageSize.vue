@@ -1,11 +1,11 @@
 <template>
-  <div class="float-end">
+  <div>
 
-  <label for="page-size-button" class="py-3">
+  <label for="page-size-button">
     Page Size:
   </label>
 
-  <div class="btn-group col d-inline-block p-2" role="group">
+  <div class="btn-group col d-inline-block ms-2" role="group">
 
     <button type="button" class="btn green-button dropdown-toggle order-by-options-btn w-100"
             id="page-size-button"
