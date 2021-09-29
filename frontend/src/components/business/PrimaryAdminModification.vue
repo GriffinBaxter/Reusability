@@ -29,6 +29,7 @@
         </div>
 
         <!-- admins -->
+        {{adminList}}
         <div class="modal-body" v-if="selectedUser === null">
           <div :id="'primaryAdminCandidate_' + admin.id"
                class="row administrators"

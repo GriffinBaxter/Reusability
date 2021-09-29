@@ -7,8 +7,7 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
-          <feedback-notification :is-error-feedback="isErrorFeedback" :feedback-text="feedbackText"
-                                 style="position: fixed; right: 50px; bottom: 50px"/>
+          <feedback-notification :messages="this.messages"/>
 
           <div class="row mt-3">
             <h2 style="text-align: center">Product Catalogue</h2>
@@ -22,7 +21,8 @@
 
           <div class="row">
             <div class="col">
-              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end" tabindex="0"
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end"
+                      tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>
@@ -70,7 +70,8 @@
                       <button class="btn btn-primary" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateImagesModal.showModel(event);
-                    }">Update Images</button>
+                    }">Update Images
+                      </button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateProductModel.showModel(event);
@@ -132,7 +133,8 @@
                     <div v-if="addBarcode">
                       <br>
                       <label for="product-barcode">Barcode (EAN or UPC)</label>
-                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="barcode"
+                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text"
+                             v-model="barcode"
                              :class="toggleInvalidClass(barcodeErrorMsg)" :maxlength="config.barcode.maxLength">
                       <div class="invalid-feedback">
                         {{ barcodeErrorMsg }}
@@ -191,7 +193,9 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price" v-if="currencyCode !== ''">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-if="currencyCode !== ''">Recommended Retail Price ({{
+                        currencyCode
+                      }})</label>
                     <label for="product-price" v-else>Recommended Retail Price</label>
                     <div class="input-group">
                       <div class="input-group-prepend" v-if="currencySymbol !== ''">
@@ -399,9 +403,31 @@ export default {
       linkBusinessAccount: [],
 
       // For toast notifications
-      feedbackText: "",
-      isErrorFeedback: false
-
+      messages: [
+        {
+          id: 1,
+          isError: true,
+          topic: "I'm a topic",
+          text: "some message"
+        },
+        {
+          id: 2,
+          isError: false,
+          topic: "I'm a topic",
+          text: "some message"
+        },
+        {
+          id: 3,
+          isError: true,
+          topic: "I'm a topic",
+          text: "some message"
+        },
+        {
+          id: 4,
+          isError: false,
+          topic: "I'm a topic",
+          text: "some message"
+        }]
     }
   },
   methods: {
@@ -427,13 +453,15 @@ export default {
      */
     convertSearchByStringToList() {
       let searchByString = this.$route.query["searchBy"];
-      if (searchByString) { return searchByString.split(","); }
+      if (searchByString) {
+        return searchByString.split(",");
+      }
       return ["name"]; // if searchBy does not exist in route query then return the default.
     },
     /**
      * set link business accounts
      */
-    setLinkBusinessAccount(data){
+    setLinkBusinessAccount(data) {
       this.linkBusinessAccount = data;
     },
     /**
@@ -454,9 +482,15 @@ export default {
       this.images = product.data.images;
       this.barcode = product.data.barcode;
       // these checks are needed so that the default prop is used if there is no data (is null)
-      if (!(this.description)) { this.description = undefined; }
-      if (!(this.manufacturer)) { this.manufacturer = undefined; }
-      if (!(this.barcode)) { this.barcode = undefined; }
+      if (!(this.description)) {
+        this.description = undefined;
+      }
+      if (!(this.manufacturer)) {
+        this.manufacturer = undefined;
+      }
+      if (!(this.barcode)) {
+        this.barcode = undefined;
+      }
       this.showModal = true;
     },
 
@@ -511,7 +545,13 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {
+          "searchQuery": this.searchQuery,
+          "searchBy": this.searchByString,
+          "barcode": this.searchBarcode,
+          "orderBy": this.orderByString,
+          "page": (this.currentPage).toString()
+        }
       })
       this.requestProducts();
     },
@@ -630,7 +670,13 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {
+          "searchQuery": this.searchQuery,
+          "searchBy": this.searchByString,
+          "barcode": this.searchBarcode,
+          "orderBy": this.orderByString,
+          "page": (this.currentPage).toString()
+        }
       });
       this.requestProducts();
     },
@@ -954,14 +1000,20 @@ export default {
      * @param searchQuery The search query.
      * @param searchBarcode The barcode to search by.
      */
-    onSearch (checked, searchQuery, searchBarcode) {
+    onSearch(checked, searchQuery, searchBarcode) {
       this.searchBy = checked;
       this.searchQuery = searchQuery;
       this.searchBarcode = searchBarcode;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0"}
+        query: {
+          "searchQuery": this.searchQuery,
+          "searchBy": this.searchByString,
+          "barcode": this.searchBarcode,
+          "orderBy": this.orderByString,
+          "page": "0"
+        }
       });
       this.requestProducts();
       this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
@@ -997,7 +1049,7 @@ export default {
             (e) => console.log(e)
         )
       } else {
-        await  this.$router.push({name: 'Login'});
+        await this.$router.push({name: 'Login'});
       }
     }
 
