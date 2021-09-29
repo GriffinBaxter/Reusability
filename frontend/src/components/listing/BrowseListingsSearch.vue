@@ -13,6 +13,7 @@
           </button>
           <a class="btn green-button" data-bs-toggle="collapse" href="#filter-ordering-options-container" role="button"><i
               class="fas fa-angle-double-down" aria-hidden="true"></i></a>
+          <PageSize style="margin-left: 2.25rem"></PageSize>
         </div>
 
 
@@ -258,10 +259,12 @@
 <script>
 import {isFirstDateBeforeSecondDate} from "../../dateUtils"
 import BarcodeScannerModal from "../BarcodeScannerModal";
+import PageSize from "@/components/PageSize";
 
 export default {
   name: "BrowseListingsSearch",
   components: {
+    PageSize,
     BarcodeScannerModal
   },
   data() {

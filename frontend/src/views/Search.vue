@@ -12,9 +12,13 @@
     <div id="outer-container" class="container text-font">
 
       <!--search bar - reusing the search bar in the profile header-->
-      <ProfileHeader
+      <div style="display: flex; align-items: center">
+        <ProfileHeader
           @requestUsers="requestUsers"
-          @requestBusinesses="requestBusinesses"/>
+          @requestBusinesses="requestBusinesses" style="width: 85%; margin-right: 0"/>
+        <PageSize style="margin-left: 2.25rem; margin-bottom: 0.35em"></PageSize>
+      </div>
+
 
       <div class="row mb-3 mt-3">
 
@@ -45,10 +49,12 @@ import ProfileHeader from "../components/ProfileHeader";
 import User from "../configs/User";
 import Table from "../components/Table";
 import Business from "../configs/Business";
+import PageSize from "@/components/PageSize";
 
 export default {
   name: "Search",
   components: {
+    PageSize,
     Footer,
     Navbar,
     ProfileHeader,
