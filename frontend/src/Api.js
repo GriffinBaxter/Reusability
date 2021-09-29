@@ -340,8 +340,9 @@ export default {
     },
 
     // Sends a GET request to the backend asking for any listings matching the given criteria (paginated)
-    searchListings: (searchQuery, searchType, orderBy, page, businessTypes, barcode, minimumPrice, maximumPrice, fromDate, toDate) => {
-        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessTypes=${businessTypes}&barcode=${barcode}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
+    searchListings: (searchQuery, searchType, orderBy, page, pageSize, businessTypes, barcode, minimumPrice, maximumPrice, fromDate, toDate) => {
+        console.log(pageSize);
+        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}&businessTypes=${businessTypes}&barcode=${barcode}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
             withCredentials: true
         })
     },

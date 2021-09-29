@@ -13,7 +13,7 @@
           </button>
           <a class="btn green-button" data-bs-toggle="collapse" href="#filter-ordering-options-container" role="button"><i
               class="fas fa-angle-double-down" aria-hidden="true"></i></a>
-          <PageSize style="margin-left: 2.25rem" class="mt-sm-2 mt-md-2 mt-lg-0"></PageSize>
+          <PageSize style="margin-left: 2.25rem" class="mt-sm-2 mt-md-2 mt-lg-0" :currentPageSize="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
         </div>
 
 
@@ -259,7 +259,7 @@
 <script>
 import {isFirstDateBeforeSecondDate} from "../../dateUtils"
 import BarcodeScannerModal from "../BarcodeScannerModal";
-import PageSize from "@/components/PageSize";
+import PageSize from "../../components/PageSize";
 
 export default {
   name: "BrowseListingsSearch",
@@ -285,6 +285,9 @@ export default {
       startDate: null,
       endDate: null,
       isTypeSame: true,
+
+      pageSizes: ["12", "24", "48"], // a list of page size options
+      pageSize: this.$route.query["pageSize"] || "12" // default page size
     }
   },
   methods: {
@@ -349,6 +352,7 @@ export default {
       const searchType = this.getSelectedRadio('match');
       const orderBy = this.orderByOption + this.orderBySequence;
       const page = 1;
+      const pageSize = this.pageSize;
       const businessTypes = this.getSelectedRadio('business');
       const barcode = this.barcode;
       const minimumPrice = this.lowestPrice;
@@ -378,6 +382,7 @@ export default {
           searchType !== this.$route.query.searchType ||
           orderBy !== this.$route.query.orderBy ||
           String(page) !== this.$route.query.page ||
+          pageSize !== this.$route.query.pageSize ||
           !this.isTypeSame ||
           barcode !== this.$route.query.barcode ||
           minimumPrice !== this.$route.query.minimumPrice ||
@@ -388,8 +393,8 @@ export default {
         this.$router.push({
           path: '/browseListings', query: {
             searchQuery: searchQuery, searchType: searchType,
-            orderBy: orderBy, page: page, businessTypes: businessTypes,
-            barcode: barcode,
+            orderBy: orderBy, page: page, pageSize: pageSize,
+            businessTypes: businessTypes, barcode: barcode,
             minimumPrice: minimumPrice, maximumPrice: maximumPrice,
             fromDate: fromDate, toDate: toDate
           }
@@ -515,8 +520,17 @@ export default {
      */
     updateBarcode(barcode) {
       this.barcode = barcode;
-    }
+    },
 
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.searchClicked();
+    }
   }
 }
 </script>

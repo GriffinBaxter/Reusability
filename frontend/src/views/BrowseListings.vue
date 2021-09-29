@@ -73,6 +73,7 @@ export default {
       toDate: "",
 
       currentPage: 0,
+      pageSize: "12",
       totalPages: 0,
       totalRows: 0,
 
@@ -98,6 +99,7 @@ export default {
       this.searchType = this.$route.query.searchType || '';
       this.orderBy = this.$route.query.orderBy || '';
       this.currentPage = parseInt(this.$route.query.page) - 1 || 0;
+      this.pageSize = this.$route.query.pageSize || '12';
       this.businessTypes = this.$route.query.businessTypes || [];
       this.barcode = this.$route.query.barcode || '';
       this.minimumPrice = this.$route.query.minimumPrice || '';
@@ -106,14 +108,14 @@ export default {
       this.toDate = this.$route.query.toDate || '';
 
       if (this.currentPage < 0) {
-        this.currentPage = 0
+        this.currentPage = 0;
       }
 
       this.hasDataLoaded = false;
       await Api.searchListings(
           this.searchQuery, this.searchType,
-          this.orderBy, this.currentPage, this.businessTypes,
-          this.barcode,
+          this.orderBy, this.currentPage, this.pageSize,
+          this.businessTypes, this.barcode,
           this.minimumPrice, this.maximumPrice,
           this.fromDate, this.toDate
       ).then((response) => {
@@ -143,8 +145,8 @@ export default {
       await this.$router.push({
         path: '/browseListings', query: {
           searchQuery: this.searchQuery, searchType: this.searchType,
-          orderBy: this.orderBy, page: (this.currentPage + 1).toString(), businessTypes: this.businessTypes,
-          barcode: this.barcode,
+          orderBy: this.orderBy, page: (this.currentPage + 1).toString(), pageSize: this.pageSize,
+          businessTypes: this.businessTypes, barcode: this.barcode,
           minimumPrice: this.minimumPrice, maximumPrice: this.maximumPrice,
           fromDate: this.fromDate, toDate: this.toDate
         }

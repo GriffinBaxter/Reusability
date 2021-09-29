@@ -33,7 +33,12 @@ export default {
   props: {
     pageSizes: {
       type: Array,
-      default: () => [5, 10, 15],
+      default: () => ["5", "10", "15"],
+      required: true
+    },
+    currentPageSize: {
+      type: String,
+      default: "5",
       required: true
     }
   },
@@ -51,6 +56,12 @@ export default {
     emitPageSize() {
       this.$emit('selectedPageSize', this.selectedPageSize);
     }
+  },
+  /**
+   * When mounted set the selected page size to the current page size.
+   */
+  mounted() {
+    this.selectedPageSize = this.$props.currentPageSize;
   }
 }
 </script>
