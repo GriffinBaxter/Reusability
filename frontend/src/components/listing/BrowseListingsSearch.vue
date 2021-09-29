@@ -6,14 +6,14 @@
     <!-- Search Bar  -->
     <div class="container mt-5">
       <div class="row" id="search-bar-container">
-        <div class="input-group" id="search-inputs" style="alignment: center">
+        <div class="input-group justify-content-center" id="search-inputs" style="alignment: center">
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
           <button class="btn green-search-button" id="search-button" @click="searchClicked()">
             <i class="fas fa-search" aria-hidden="true"/>
           </button>
           <a class="btn green-button" data-bs-toggle="collapse" href="#filter-ordering-options-container" role="button"><i
               class="fas fa-angle-double-down" aria-hidden="true"></i></a>
-          <PageSize style="margin-left: 2.25rem"></PageSize>
+          <PageSize style="margin-left: 2.25rem" class="mt-sm-2 mt-md-2 mt-lg-0"></PageSize>
         </div>
 
 

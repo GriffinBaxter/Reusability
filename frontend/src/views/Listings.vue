@@ -14,7 +14,7 @@
         <hr>
         <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
-          <div class="btn-group col-md-2 py-1 align-text-center" role="group">
+          <div class="btn-group col-md-2 py-1 align-text-center" role="group" style="display: flex; align-items: flex-end">
             <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                     data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
@@ -51,18 +51,18 @@
           </div>
 
           <!-- Create New Button -->
-          <div class="col-md-2 py-1 align-text-center" v-if="businessAdmin">
+          <div class="col-md-2 py-1 align-text-center" v-if="businessAdmin" style="display: flex; align-items: flex-end">
             <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup" style="height: 38px">Create New</button>
           </div>
 
-          <div class="col-3 col-md-3 text-secondary flex-nowrap align-text-center">Filter By: {{convertToString()}}</div>
+          <div class="col-3 col-md-3 text-secondary flex-nowrap align-text-center" style="margin-top: 1.7rem">Filter By: {{convertToString()}}</div>
 
-          <div class="col-md-3 justify-content-md-center" style="display: flex; ">
+          <div class="col-md-3 justify-content-md-center" >
             <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
           </div>
 
-          <div class="col justify-content-md-center" style="display: flex; ">
-            <PageSize></PageSize>
+          <div class="col justify-content-md-center" style="display: flex; align-items: flex-end">
+            <PageSize ></PageSize>
           </div>
 
         </div>
