@@ -120,6 +120,7 @@ public class ListingResource {
      * @param id business ID
      * @param orderBy ordering of results
      * @param page page number
+     * @param pageSize Number of elements to return per page
      * @param barcode Barcode number (Optional)
      * @return Listings for business
      */
@@ -128,9 +129,10 @@ public class ListingResource {
                                                                  @PathVariable Integer id,
                                                                  @RequestParam(defaultValue = "closesASC") String orderBy,
                                                                  @RequestParam(defaultValue = "0") String page,
+                                                                 @RequestParam(defaultValue = "5") String pageSize,
                                                                  @RequestParam(required = false) String barcode) throws Exception {
 
-        logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
+        logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}, page size {}", id, orderBy, page, pageSize);
 
         // Checks user logged in - 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -139,9 +141,7 @@ public class ListingResource {
 
         // Checks Page Num valid - 400
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 10 listings per page
-        int pageSize = 5;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
 
@@ -180,7 +180,7 @@ public class ListingResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
 
         Page<Listing> pagedResult;
 
@@ -277,6 +277,7 @@ public class ListingResource {
      * @param searchType Search type.
      * @param orderBy Column to order the results by.
      * @param page Page number to return results from.
+     * @param pageSize Number of elements to return per page.
      * @param businessTypes Business types to search by.
      * @param minimumPrice Minimum price.
      * @param maximumPrice Maximum price.
@@ -292,6 +293,7 @@ public class ListingResource {
             @RequestParam(defaultValue = "listingName") String searchType,
             @RequestParam(defaultValue = "productNameASC") String orderBy,
             @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "12") String pageSize,
             @RequestParam(required = false) List<String> businessTypes,
             @RequestParam(required = false) Double minimumPrice,
             @RequestParam(required = false) Double maximumPrice,
@@ -300,16 +302,14 @@ public class ListingResource {
             @RequestParam(required = false) String barcode
     ) throws Exception {
         logger.debug(
-                "Listing search request received with search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessTypes, orderBy, page
+                "Listing search request received with search query {}, business type {}, order by {}, page {}, page size {}",
+                searchQuery, businessTypes, orderBy, page, pageSize
         );
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 12 listings per page
-        int pageSize = 12;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
@@ -363,7 +363,7 @@ public class ListingResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
         Page<Listing> pagedResult = parseAndExecuteQuery(
                 searchQuery, paging, searchType, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
         );
@@ -376,8 +376,8 @@ public class ListingResource {
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
         logger.info(
-                "Search Success - 200 [OK] - Listings retrieved for search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessTypes, orderBy, pageNo
+                "Search Success - 200 [OK] - Listings retrieved for search query {}, business type {}, order by {}, page {}, page size {}",
+                searchQuery, businessTypes, orderBy, pageNo, pageSizeNo
         );
 
         logger.debug("Listings Found");

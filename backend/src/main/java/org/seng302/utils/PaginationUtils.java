@@ -40,4 +40,34 @@ public class PaginationUtils {
         }
         return pageNo;
     }
+
+    /**
+     * This method parses the page size number (i.e converts it from a string to an integer).
+     * If the string representation is not a valid page size number (can't be converted to an integer), then a 400 BAD REQUEST
+     * error is thrown.
+     *
+     * @param pageSize A string representation of the current page size number.
+     * @return an integer representation of the page size number.
+     *
+     * Preconditions:  A string representation of a page size number.
+     * Postconditions: An integer representation of a page size number.
+     */
+    public static int parsePageSizeNumber(String pageSize) {
+        int pageSizeNo;
+        try {
+            pageSizeNo = Integer.parseInt(pageSize);
+            if (pageSizeNo > 500) {
+                pageSizeNo = 500;
+            }
+        } catch (final NumberFormatException e) {
+            logger.error("400 [BAD REQUEST] - {} is not a valid page size", pageSize);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Page size parameter invalid"
+            );
+        }
+        return pageSizeNo;
+    }
+
+
 }

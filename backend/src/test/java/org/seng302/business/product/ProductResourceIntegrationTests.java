@@ -702,12 +702,12 @@ class ProductResourceIntegrationTests {
     /**
      * Tests that an OK status and a list of product payloads is received when the business ID in the
      * /businesses/{id}/products API endpoint exists.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page, and page size params provided are valid.
      *
      * @throws Exception Exception error
      */
     @Test
-    void canRetrieveProductsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithValidOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -726,13 +726,14 @@ class ProductResourceIntegrationTests {
         List<Product> list = List.of(product);
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -744,12 +745,12 @@ class ProductResourceIntegrationTests {
     /**
      * Tests that an OK status and a list of product payloads is received when the business ID in the
      * /businesses/{id}/products API endpoint exists.
-     * Test specifically for when the order by and page params provided are valid and a search query is provided.
+     * Test specifically for when the order by, page, and page size params provided are valid and a search query is provided.
      *
      * @throws Exception Exception error
      */
     @Test
-    void canRetrieveProductsWhenBusinessExistsWithSearchQueryAndValidOrderByAndPageParams() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithSearchQueryAndValidOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -768,7 +769,7 @@ class ProductResourceIntegrationTests {
         List<Product> list = List.of(product);
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of("Beans"), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
@@ -776,6 +777,7 @@ class ProductResourceIntegrationTests {
                         .param("searchQuery", "Beans")
                         .param("orderBy", "productIdASC")
                         .param("page", "0")
+                        .param("pageSize", "1")
                         .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -786,12 +788,12 @@ class ProductResourceIntegrationTests {
 
     /** Tests that an OK status and a list of product payloads is received when the business ID in the
      * /businesses/{id}/products API endpoint exists.
-     * Test specifically for when the order by and page params provided are valid and a search query and valid search by is provided.
+     * Test specifically for when the order by, page, and page size params provided are valid and a search query and valid search by is provided.
      *
      * @throws Exception Exception error
      */
     @Test
-    void canRetrieveProductsWhenBusinessExistsWithSearchQueryAndValidSearchByAndValidOrderByAndPageParams() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithSearchQueryAndValidSearchByAndValidOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -810,7 +812,7 @@ class ProductResourceIntegrationTests {
         List<Product> list = List.of(product);
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of("PROD"), List.of("id"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
@@ -819,6 +821,7 @@ class ProductResourceIntegrationTests {
                         .param("searchBy", "id")
                         .param("orderBy", "productIdASC")
                         .param("page", "0")
+                        .param("pageSize", "1")
                         .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -878,7 +881,7 @@ class ProductResourceIntegrationTests {
         List<Product> list = List.of(product);
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("name").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         String barcode = "9400547002634";
         when(productRepository.findAllProductsByBusinessIdAndIncludedFieldsAndBarcode(List.of("PROD"), List.of("id"), 1, paging, barcode)).thenReturn(pagedResponse);
 
@@ -888,6 +891,7 @@ class ProductResourceIntegrationTests {
                 .param("searchBy", "id")
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .param("barcode", barcode)
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
@@ -920,6 +924,7 @@ class ProductResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
                 .param("orderBy", "a")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -948,7 +953,37 @@ class ProductResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "a")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status and no product payloads are received when the business ID in the
+     * /businesses/{id}/products API endpoint exists but the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveProductsWhenBusinessExistsWithInvalidPageSizeParam() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
+                        .param("orderBy", "productIdASC")
+                        .param("page", "0")
+                        .param("pageSize", "a")
+                        .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -1050,12 +1085,12 @@ class ProductResourceIntegrationTests {
     /**
      * Tests that an OK status and a list of product payloads is received when the business ID in the
      * /businesses/{id}/products API endpoint exists.
-     * Test specifically for when the barcode ascending order by and page params provided are valid.
+     * Test specifically for when the barcode ascending order by, page, and page size params provided are valid.
      *
      * @throws Exception Exception error
      */
     @Test
-    void canRetrieveProductsWhenBusinessExistsWithValidBarcodeAscOrderByAndPageParams() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithValidBarcodeAscOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -1074,13 +1109,14 @@ class ProductResourceIntegrationTests {
         List<Product> list = List.of(product);
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
                         .param("orderBy", "barcodeASC")
                         .param("page", "0")
+                        .param("pageSize", "1")
                         .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -1092,12 +1128,12 @@ class ProductResourceIntegrationTests {
     /**
      * Tests that an OK status and a list of product payloads is received when the business ID in the
      * /businesses/{id}/products API endpoint exists.
-     * Test specifically for when the barcode descending order by and page params provided are valid.
+     * Test specifically for when the barcode descending order by, page, and page size params provided are valid.
      *
      * @throws Exception Exception error
      */
     @Test
-    void canRetrieveProductsWhenBusinessExistsWithValidBarcodeDescOrderByAndPageParams() throws Exception {
+    void canRetrieveProductsWhenBusinessExistsWithValidBarcodeDescOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -1116,13 +1152,14 @@ class ProductResourceIntegrationTests {
         List<Product> list = List.of(product);
         Page<Product> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.desc("barcode").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(productRepository.findAllProductsByBusinessIdAndIncludedFields(List.of(""), List.of("name"), 1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/products", business.getId()))
                         .param("orderBy", "barcodeDESC")
                         .param("page", "0")
+                        .param("pageSize", "1")
                         .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 

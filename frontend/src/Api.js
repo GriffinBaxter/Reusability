@@ -83,15 +83,15 @@ export default {
     },
 
     // Sends a get request to the backend asking for a list of users which match the search criteria.
-    searchUsers: (query, orderBy, page) => {
-        return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}`, {
+    searchUsers: (query, orderBy, page, pageSize) => {
+        return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
 
     // Sends a GET request to the backend asking for any businesses matching the given criteria
-    searchBusinesses: (query, businessType, orderBy, page) => {
-        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}`, {
+    searchBusinesses: (query, businessType, orderBy, page, pageSize) => {
+        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
@@ -111,15 +111,15 @@ export default {
     }),
 
     // Sends a get request to the backend asking for a sorted and paginated list of products matching the given search criteria for a business.
-    searchProducts: (businessID, searchQuery, searchBy, barcode, sortBy, page) => {
-        return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
+    searchProducts: (businessID, searchQuery, searchBy, barcode, sortBy, page, pageSize) => {
+        return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
 
     // Sends a get request to the backend asking for a sorted list of inventory items for a business.
-    sortInventoryItems: (id, sortBy, page, barcode) => {
-        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
+    sortInventoryItems: (id, sortBy, page, pageSize, barcode) => {
+        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
@@ -184,8 +184,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
-    sortListings: (businessId, sortBy, page, barcode) => {
-        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
+    sortListings: (businessId, sortBy, page, pageSize, barcode) => {
+        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true,
         })
     },
@@ -237,8 +237,8 @@ export default {
     },
 
     // Sends a get request to the backend to retrieve all marketplace cards (for a specific section, and paginated and sorted).
-    getAllCards: (section, sortBy, page) => {
-        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}`, {
+    getAllCards: (section, sortBy, page, pageSize) => {
+        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
@@ -341,8 +341,8 @@ export default {
     },
 
     // Sends a GET request to the backend asking for any listings matching the given criteria (paginated)
-    searchListings: (searchQuery, searchType, orderBy, page, businessTypes, barcode, minimumPrice, maximumPrice, fromDate, toDate) => {
-        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessTypes=${businessTypes}&barcode=${barcode}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
+    searchListings: (searchQuery, searchType, orderBy, page, pageSize, businessTypes, barcode, minimumPrice, maximumPrice, fromDate, toDate) => {
+        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}&businessTypes=${businessTypes}&barcode=${barcode}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
             withCredentials: true
         })
     },

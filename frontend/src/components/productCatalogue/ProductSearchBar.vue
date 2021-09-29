@@ -23,9 +23,10 @@
 
     <div class="input-group" id="search-inputs">
       <input type="text" id="product-search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
-      <button class="btn green-search-button" id="product-search-button" @click="searchClicked()">
+      <button class="btn green-search-button" id="product-search-button" style="border-radius: 10%" @click="searchClicked()">
         <i class="fas fa-search" aria-hidden="true"/>
       </button>
+      <PageSize style="margin-left: 2.25rem" :page-sizes="pageSizes" :current-page-size="pageSize" v-on:selectedPageSize="updatePageSize"></PageSize>
     </div>
 
     <!---------------------------------------- barcode filtering menu ----------------------------------------->
@@ -59,15 +60,19 @@
 <script>
 
 import BarcodeScannerModal from "../BarcodeScannerModal";
+import PageSize from "../../components/PageSize";
 
 export default {
   name: "ProductSearchBar",
   components: {
+    PageSize,
     BarcodeScannerModal
   },
   data() {
     return {
       barcode: null,
+      pageSizes: ["5", "10", "15", "25"], // list of page sizes
+      pageSize: this.$route.query["pageSize"] || "5"// default page size
     }
   },
   methods: {
@@ -108,12 +113,14 @@ export default {
       const checked = this.getSelectedCheckbox();
       const searchBarcode = this.barcode;
       const searchQuery = this.$refs.searchInput.value;
+      const pageSize = this.pageSize;
 
       if (
           searchQuery !== this.$route.query.searchQuery ||
-          searchBarcode !== this.$route.query.barcode
+          searchBarcode !== this.$route.query.barcode ||
+          pageSize !== this.$route.query.pageSize
       ) {
-        this.$emit('search', checked, searchQuery, searchBarcode);
+        this.$emit('search', checked, searchQuery, searchBarcode, pageSize);
       }
 
 
@@ -131,6 +138,16 @@ export default {
      */
     showBarcodeScannerModal(event) {
       this.$refs.barcodeScannerModal.showModel(event);
+    },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.searchClicked();
     }
 
   }

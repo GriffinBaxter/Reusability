@@ -2362,10 +2362,10 @@ class BusinessResourceIntegrationTests {
      * Tests that an OK status is received when searching for a business using the /businesses/search API endpoint
      * and that the JSON response is equal to the business searched for. The business is searched for using the
      * business name.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page and page size params provided are valid.
      */
     @Test
-    void canSearchBusinessesWhenBusinessExistsWithValidOrderByAndPageParamsTest() throws Exception {
+    void canSearchBusinessesWhenBusinessExistsWithValidOrderByAndPageAndPageSizeParamsTest() throws Exception {
         // given
         String searchQuery = "NAME";
         List<String> names = List.of(searchQuery);
@@ -2383,15 +2383,16 @@ class BusinessResourceIntegrationTests {
         List<Business> list = List.of(business);
         Page<Business> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
 
         when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
-                .param("orderBy", "nameASC")
-                .param("page", "0")
-                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+                            .param("orderBy", "nameASC")
+                            .param("page", "0")
+                            .param("pageSize", "1")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -2477,9 +2478,10 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/users/search").param("searchQuery", searchQuery)
-                .param("orderBy", "a")
-                .param("page", "0")
-                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+                            .param("orderBy", "a")
+                            .param("page", "0")
+                            .param("pageSize", "1")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -2500,8 +2502,33 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "nameASC")
+                            .param("page", "a")
+                            .param("pageSize", "1")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a business using the /businesses/search API endpoint
+     * when the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     */
+    @Test
+    void cantSearchBusinessesWithInvalidPageSizeParam() throws Exception {
+        // given
+        String searchQuery = "NAME";
+        expectedJson = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
                 .param("orderBy", "nameASC")
-                .param("page", "a")
+                .param("page", "0")
+                .param("pageSize", "a")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());

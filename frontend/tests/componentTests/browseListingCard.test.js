@@ -37,7 +37,9 @@ const propDefault = {
                     streetName: "Wangjing Zhonghuan Nanlu",
                     streetNumber: "7",
                     suburb: null
-                }
+                },
+                currencyCode: "NZD",
+                currencySymbol: "$"
             }
         }
     },

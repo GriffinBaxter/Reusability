@@ -874,7 +874,7 @@ class InventoryItemResourceIntegrationTests {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sortBy);
+        Pageable paging = PageRequest.of(0, 1, sortBy);
 
         when(inventoryItemRepository.findInventoryItemsByBusinessId(business.getId(), paging)).thenReturn(pagedResult);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -882,6 +882,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -920,7 +921,7 @@ class InventoryItemResourceIntegrationTests {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sortBy);
+        Pageable paging = PageRequest.of(0, 1, sortBy);
 
         when(inventoryItemRepository.findInventoryItemsByBusinessId(business.getId(), paging)).thenReturn(pagedResult);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -928,6 +929,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -957,6 +959,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -983,6 +986,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", "0")))
                 .andReturn().getResponse();
 
@@ -1010,6 +1014,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -1033,7 +1038,8 @@ class InventoryItemResourceIntegrationTests {
         // when
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
-                .param("page", "0"))
+                .param("page", "0")
+                .param("pageSize", "1"))
                 .andReturn().getResponse();
 
         // then
@@ -1060,18 +1066,103 @@ class InventoryItemResourceIntegrationTests {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResponse = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sortBy);
+        Pageable paging = PageRequest.of(0, 1, sortBy);
 
         when(inventoryItemRepository.findInventoryItemsByBusinessId(3, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
-                .param("page", "0"))
+                .param("page", "0")
+                .param("pageSize", "1"))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is given when the business exists and the user is the business
+     * admin BUT an invalid order by param is provided.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveInventoryItemsWhenOrderByIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                        .param("orderBy", "a")
+                        .param("page", "0")
+                        .param("pageSize", "1")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                        .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is given when the business exists and the user is the business
+     * admin BUT an invalid page param is provided.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveInventoryItemsWhenPageIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                        .param("orderBy", "productIdASC")
+                        .param("page", "a")
+                        .param("pageSize", "1")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is given when the business exists and the user is the business
+     * admin BUT an invalid page size param is provided.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveInventoryItemsWhenPageSizeIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                        .param("orderBy", "productIdASC")
+                        .param("page", "0")
+                        .param("pageSize", "a")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
@@ -1103,7 +1194,7 @@ class InventoryItemResourceIntegrationTests {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sortBy);
+        Pageable paging = PageRequest.of(0, 1, sortBy);
         
         when(inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(product.getBarcode(), business.getId(), paging)).thenReturn(pagedResult);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
@@ -1111,6 +1202,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .param("barcode", product.getBarcode())
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();

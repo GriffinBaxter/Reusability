@@ -376,6 +376,7 @@ public class BusinessResource {
      * @param businessType Business type to search by.
      * @param orderBy Column to order the results by.
      * @param page Page number to return results from.
+     * @param pageSize Number of elements to return per page
      * @return A list of BusinessPayload objects matching the search query
      *
      * Preconditions:  sessionToken is of a valid user.
@@ -390,17 +391,16 @@ public class BusinessResource {
             @RequestParam(defaultValue = "") String searchQuery,
             @RequestParam(defaultValue = "") String businessType,
             @RequestParam(defaultValue = "nameASC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "5") String pageSize
     ) throws Exception {
-        logger.debug("Business search request received with search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessType, orderBy, page);
+        logger.debug("Business search request received with search query {}, business type {}, order by {}, page {}, page size {}",
+                searchQuery, businessType, orderBy, page, pageSize);
 
         Authorization.getUserVerifySession(sessionToken, userRepository);
 
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 5 businesses per page
-        int pageSize = 5;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
@@ -438,7 +438,7 @@ public class BusinessResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
         Page<Business> pagedResult = parseAndExecuteQuery(searchQuery, businessType, paging);
 
         int totalPages = pagedResult.getTotalPages();
@@ -448,8 +448,8 @@ public class BusinessResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Search Success - 200 [OK] -  Businesses retrieved for search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessType, orderBy, pageNo);
+        logger.info("Search Success - 200 [OK] -  Businesses retrieved for search query {}, business type {}, order by {}, page {}, page size {}",
+                searchQuery, businessType, orderBy, pageNo, pageSizeNo);
 
         logger.debug("Businesses Found: {}", pagedResult.toList());
         return ResponseEntity.ok()
@@ -591,7 +591,7 @@ public class BusinessResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Country is required for modifying the business.");
         }
 
-        Address newAddress = null;
+        Address newAddress;
         Optional<Address> existingAddress = addressRepository.findAddressByStreetNumberAndStreetNameAndCityAndRegionAndCountryAndPostcodeAndSuburb(addressJSON.getStreetNumber(),
                 addressJSON.getStreetName(), addressJSON.getCity(), addressJSON.getRegion(), addressJSON.getCountry(), addressJSON.getPostcode(), addressJSON.getSuburb());
 
