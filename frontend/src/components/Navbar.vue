@@ -43,7 +43,7 @@
             </svg>
 
             <transition name="expand">
-              <Messages v-on:emittedDeleteConversation="onDeleteConversation" v-on:updateNotifications="updateNotificationState" v-on:newMessage="unreadMessage = true" v-if="showMessages"/>
+              <Messages v-on:emittedDeleteConversation="onDeleteConversation" v-on:updateNotifications="updateMessages" v-on:newMessage="unreadMessage = true" v-if="showMessages"/>
             </transition>
           </div>
 
@@ -401,17 +401,6 @@ export default {
               console.log(error)
             }
           });
-        Api.getConversations().then(response => {
-          this.unreadMessage = false;
-          for (let conversation of response.data) {
-            if (conversation.receiverId === this.currentUser.id && !conversation.readByReceiver) {
-              this.unreadMessage = true;
-              break;
-            } else if (conversation.instigatorId === this.currentUser.id && !conversation.readByInstigator) {
-              this.unreadMessage = true;
-            }
-          }
-        }).catch((err) => console.log(err))
       } else {
       Api.getBusinessNotifications(Cookies.get('actAs'))
           .then(response => this.newNotification = (response.data.length > 0))
@@ -647,6 +636,35 @@ export default {
       }
       return require('../../public/profile_icon_default.png');
     },
+    /**
+     * Updates the currently displayed acting as image
+     * @param newPrimaryImage filename of new image
+     */
+    updatePrimaryImage(newPrimaryImage) {
+      if (newPrimaryImage !== null) {
+        document.getElementById("act-as-image").src = Api.getServerURL() + "/" + newPrimaryImage;
+      } else {
+        document.getElementById("act-as-image").src = require('../../public/profile_icon_default.png');
+      }
+    },
+    /**
+     * Updates the messages when acting as a user
+     */
+    updateMessages() {
+      if (Cookies.get('actAs') === undefined) {
+        Api.getConversations().then(response => {
+          this.unreadMessage = false;
+          for (let conversation of response.data) {
+            if (conversation.receiverId === this.currentUser.id && !conversation.readByReceiver) {
+              this.unreadMessage = true;
+              break;
+            } else if (conversation.instigatorId === this.currentUser.id && !conversation.readByInstigator) {
+              this.unreadMessage = true;
+            }
+          }
+        }).catch((err) => console.log(err))
+      }
+    }
   },
   async beforeMount() {
     if (this.loginRequired) {
@@ -670,6 +688,7 @@ export default {
 
     // update notifications
     this.updateNotificationState();
+    this.updateMessages();
 
   }
 }

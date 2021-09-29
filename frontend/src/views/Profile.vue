@@ -9,7 +9,7 @@
   <div>
     <div id="main">
       <!--nav bar-->
-      <Navbar></Navbar>
+      <Navbar ref="navbar"></Navbar>
 
       <!--profile container-->
       <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
@@ -26,7 +26,7 @@
         <div class="row">
 
           <!-- Update images modal -->
-          <UpdateImagesModal ref="updateImagesModal" location="User" :id="userId" v-model="user"/>
+          <UpdateImagesModal v-on:updatePrimary="updatePrimaryNav" ref="updateImagesModal" location="User" :id="userId" v-model="user"/>
 
           <div class="col-xl-3 mb-3">
             <div class="card text-center shadow-sm">
@@ -34,8 +34,9 @@
 
                 <!--user's profile image-->
                 <div id="imageDiv">
-                  <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
+                  <div id="profileCarouselControls" class="carousel carousel-dark slide"
+                       data-bs-interval="false" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="image-carousel">
                       <div v-if="user.data.images === null || user.data.images.length === 0">
                         <img :src="getImageSrc('')"
                              class="rounded-circle img-fluid"
@@ -408,6 +409,21 @@ export default {
 
     // --------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Updates the Navbar to display the new primary image.
+     * Only when acting as a user
+     * @param newPrimaryImage thumbnail filename of new image to display
+     */
+    updatePrimaryNav(newPrimaryImage) {
+      if (!Cookies.get("actAs")) {
+        this.$refs.navbar.updatePrimaryImage(newPrimaryImage);
+      }
+    },
+
+    /**
+     * Gets the full URL of the file to display
+     * @param filename name of file
+     */
     getImageSrc(filename) {
       if (filename === "") {
         return require('../../public/default-image.jpg')

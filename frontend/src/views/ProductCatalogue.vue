@@ -60,7 +60,7 @@
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
                           v-bind:currencySymbol="currencySymbol"
-                          v-bind:images="images"
+                          v-bind:images="currentProduct.data.images"
                           v-bind:barcode="barcode"/>
                     </div>
                     <div class="modal-footer">
@@ -328,7 +328,8 @@ export default {
             name: 'temp-name',
             description: 'temp-desc',
             manufacturer: 'temp-man',
-            recommendedRetailPrice: 0
+            recommendedRetailPrice: 0,
+            images: []
           }
       ),
       currentProductIndex: null,
@@ -382,9 +383,6 @@ export default {
       currencyCode: "",
       currencySymbol: "",
 
-      // Image related variables
-      images: [],
-
       // If product creation was successful the user will be altered.
       creationSuccess: false,
 
@@ -432,15 +430,14 @@ export default {
      */
     showRowModal(productIndex) {
       let product = this.productList[productIndex % this.rowsPerPage];
+      this.currentProduct = product;
+      this.currentProductIndex = productIndex;
       this.productId = product.data.id;
       this.productName = product.data.name;
       this.description = product.data.description;
       this.manufacturer = product.data.manufacturer;
       this.recommendedRetailPrice = product.data.recommendedRetailPrice;
       this.created = product.data.created;
-      this.currentProduct = product;
-      this.currentProductIndex = productIndex;
-      this.images = product.data.images;
       this.barcode = product.data.barcode;
       // these checks are needed so that the default prop is used if there is no data (is null)
       if (!(this.description)) { this.description = undefined; }

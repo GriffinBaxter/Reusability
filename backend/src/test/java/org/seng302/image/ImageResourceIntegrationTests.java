@@ -127,6 +127,10 @@ class ImageResourceIntegrationTests {
 
     private MockHttpServletResponse response;
 
+    private String imageReturnPayload = "{\"id\":%d," +
+            "\"filename\":\"%s\"," +
+            "\"isPrimary\":%b," +
+            "\"thumbnailFilename\":\"%s\"}";
 
     @BeforeEach
     public void setup() throws Exception {
@@ -302,9 +306,12 @@ class ImageResourceIntegrationTests {
                         .param("userId", String.valueOf(user.getId())))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryUserImage.getId(), primaryUserImage.getFilename(),
+                primaryUserImage.getIsPrimary(), primaryUserImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -341,9 +348,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryUserImage.getId(), primaryUserImage.getFilename(),
+                primaryUserImage.getIsPrimary(), primaryUserImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -377,9 +387,12 @@ class ImageResourceIntegrationTests {
                         .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryBusinessImage.getId(), primaryBusinessImage.getFilename(),
+                primaryBusinessImage.getIsPrimary(), primaryBusinessImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -414,9 +427,12 @@ class ImageResourceIntegrationTests {
                         .param("userId", String.valueOf(user.getId())))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryUserImage.getId(), primaryUserImage.getFilename(),
+                primaryUserImage.getIsPrimary(), primaryUserImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -453,9 +469,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -490,9 +509,12 @@ class ImageResourceIntegrationTests {
                         .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryBusinessImage.getId(), primaryBusinessImage.getFilename(),
+                primaryBusinessImage.getIsPrimary(), primaryBusinessImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -771,9 +793,12 @@ class ImageResourceIntegrationTests {
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryUserImage.getId(), primaryUserImage.getFilename(),
+                primaryUserImage.getIsPrimary(), primaryUserImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -810,9 +835,13 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -849,9 +878,12 @@ class ImageResourceIntegrationTests {
                         .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryBusinessImage.getId(), primaryBusinessImage.getFilename(),
+                primaryBusinessImage.getIsPrimary(), primaryBusinessImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -884,9 +916,12 @@ class ImageResourceIntegrationTests {
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryUserImage.getId(), primaryUserImage.getFilename(),
+                primaryUserImage.getIsPrimary(), primaryUserImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -919,9 +954,12 @@ class ImageResourceIntegrationTests {
                         .param("userId", String.valueOf(userId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryUserImage.getId(), primaryUserImage.getFilename(),
+                primaryUserImage.getIsPrimary(), primaryUserImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -992,9 +1030,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -1029,9 +1070,12 @@ class ImageResourceIntegrationTests {
                         .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryBusinessImage.getId(), primaryBusinessImage.getFilename(),
+                primaryBusinessImage.getIsPrimary(), primaryBusinessImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -1068,9 +1112,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -1105,9 +1152,12 @@ class ImageResourceIntegrationTests {
                         .param("businessId", String.valueOf(businessId)))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryBusinessImage.getId(), primaryBusinessImage.getFilename(),
+                primaryBusinessImage.getIsPrimary(), primaryBusinessImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -1241,9 +1291,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     /**
@@ -1279,9 +1332,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
 
@@ -1318,9 +1374,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
 
@@ -1357,9 +1416,12 @@ class ImageResourceIntegrationTests {
                         .param("productId", productId))
                 .andReturn().getResponse();
 
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
 

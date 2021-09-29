@@ -248,7 +248,13 @@ public class ImageResource {
         logger.info("Successfully uploaded and stored image under filename \"{}\", {}, by a user (id: {})",
                 storedImageFileName, imageOwnerInfo, currentUser.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(storedImageId));
+        ImageCreatePayload payload = new ImageCreatePayload(
+                storedImageId,
+                storedImageFileName,
+                storedImage.getIsPrimary(),
+                storedImage.getThumbnailFilename());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(payload);
     }
 
     /**
