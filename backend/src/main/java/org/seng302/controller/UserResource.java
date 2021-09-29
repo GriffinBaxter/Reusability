@@ -496,6 +496,8 @@ public class UserResource {
             try {
                 user.updatePassword(payload.getPassword());
                 userRepository.save(user);
+                user.unlockAccount();
+                userRepository.save(user);
             } catch (IllegalUserArgumentException exception) {
                 logger.error("400 [BAD_REQUEST] - Forgot Password - Invalid Password");
                 throw new ResponseStatusException(
