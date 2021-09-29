@@ -17,7 +17,7 @@ public class MarketCardNotification {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
-    @ManyToOne(targetEntity = MarketplaceCard.class, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = MarketplaceCard.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "market_card_id", insertable = false, updatable = false)
     private MarketplaceCard marketplaceCard;
 

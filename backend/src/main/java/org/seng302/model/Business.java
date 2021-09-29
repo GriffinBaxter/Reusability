@@ -44,7 +44,7 @@ public class Business {
     private int id;
 
     @JsonBackReference
-    @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "businessesAdministeredObjects", fetch = FetchType.LAZY)
     private List<User> administrators = new ArrayList<>();
 
     @Column(name = "primaryAdministratorId")
@@ -57,7 +57,7 @@ public class Business {
     @Column(name = "description", length = 600)
     private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 

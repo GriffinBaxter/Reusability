@@ -27,7 +27,7 @@ public class MarketplaceCard {
     @Column(name = "id", nullable = false)
     private int id;
 
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
     @JoinColumn(name = "creator_id", insertable = false, updatable = false)
     private User creator;

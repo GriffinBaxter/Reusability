@@ -65,7 +65,7 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
     @JoinColumn(name = "address_id", nullable = false)
     private Address homeAddress;
@@ -81,7 +81,7 @@ public class User {
 
     @JsonManagedReference
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_businesses",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "businesses_id")})

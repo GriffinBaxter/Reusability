@@ -66,7 +66,7 @@ public class Listing {
 
     @JsonManagedReference
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_bookmarks",
             joinColumns = {@JoinColumn(name = "listings_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
