@@ -230,9 +230,7 @@ export default {
         if (images[i].id === imageId) {
           if (this.location !== "Product") {
             let index = (i + 1) % images.length
-            if (i !== 0) {
-              document.getElementById("image-carousel").children[index].classList.add("active");
-            } else if (images.length > 1) {
+            if (i !== 0 || images.length > 1) {
               document.getElementById("image-carousel").children[index].classList.add("active");
             }
           }
@@ -367,11 +365,7 @@ export default {
     // Create a modal and attach it to the updateProductModel reference.
     this.modal = new Modal(this.$refs._updateImagesModal);
 
-    if (this.location === "Product") {
-      this.currentData = this.value
-    } else if (this.location === "Business" || this.location === "User") {
-      this.currentData = this.value
-    }
+    this.currentData = this.value
   }
 }
 </script>
