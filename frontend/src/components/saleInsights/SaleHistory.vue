@@ -6,7 +6,8 @@
           <h1 id="page-title">{{ businessName }} Sale History</h1>
         </div>
         <div class="card p-3">
-        <table class="table table-borderless"  id="sale-table">
+        <table class="table table-borderless" id="sale-table">
+          <caption>{{ businessName }} Sales Report Data Table</caption>
           <thead>
           <tr>
             <th id="columns" v-for="column in columns" :key="column.title">{{ column.title }}</th>
@@ -204,6 +205,10 @@ export default {
 
 table td:hover {
   cursor: default;
+}
+
+caption {
+  display: none;
 }
 
 </style>

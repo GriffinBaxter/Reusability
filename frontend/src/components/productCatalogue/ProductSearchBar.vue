@@ -21,7 +21,7 @@
       <label class="form-check-label" for="checkbox-description">Description</label>
     </div>
 
-    <div class="input-group" id="search-inputs" style="alignment: center">
+    <div class="input-group" id="search-inputs">
       <input type="text" id="product-search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
       <button class="btn green-search-button" id="product-search-button" @click="searchClicked()">
         <i class="fas fa-search" aria-hidden="true"/>
