@@ -98,8 +98,8 @@
                 <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
               </div>
 
-              <div class="col justify-content-md-end" style="display: flex; ">
-                <PageSize></PageSize>
+              <div class="col justify-content-md-end" style="display: flex;">
+                <PageSize :current-page-size="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
               </div>
 
             </div>
@@ -185,7 +185,7 @@ import UpdateInventoryItemModal from "../components/inventory/UpdateInventoryIte
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
-import PageSize from "@/components/PageSize";
+import PageSize from "../components/PageSize";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
 
 export default {
@@ -231,7 +231,7 @@ export default {
       businessName: null,
       businessDescription: null,
 
-      inventories: null,
+      inventories: [],
       currentInventoryItem: null,
 
       // currency related variables
@@ -246,7 +246,10 @@ export default {
 
       // When page is initially loaded, we don't want 'No Inventory Items Found' message to display since, inventory has not
       // been retrieved yet.
-      notInitialLoad: false
+      notInitialLoad: false,
+
+      pageSizes: ["5", "10", "15", "25"], // a list of available page sizes
+      pageSize: this.$route.query["pageSize"] || "5" // default pages size
     }
   },
   computed: {
@@ -326,7 +329,7 @@ export default {
       this.currentPage = newPageNumber;
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
       })
       this.retrieveInventoryItems();
     },
@@ -526,7 +529,7 @@ export default {
 
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
       });
       this.retrieveInventoryItems();
     },
@@ -557,6 +560,8 @@ export default {
       // Getting query params from the route update.
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.pageSize = this.$route.query["pageSize"] || "5";
+      this.rowsPerPage = parseInt(this.pageSize);
       this.barcode = this.$route.query["barcode"] || "";
 
       if (this.barcode === undefined || null) {
@@ -564,7 +569,7 @@ export default {
       }
 
       // Perform the call to sort the products and get them back.
-      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage, this.barcode).then(response => {
+      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage, this.pageSize, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -662,8 +667,23 @@ export default {
     barcodeSearch(event) {
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"barcode": event, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": event, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
       });
+      this.retrieveInventoryItems();
+    },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.currentPage = 0;
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
+      })
       this.retrieveInventoryItems();
     }
   },

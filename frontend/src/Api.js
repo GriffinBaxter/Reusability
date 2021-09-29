@@ -117,8 +117,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of inventory items for a business.
-    sortInventoryItems: (id, sortBy, page, barcode) => {
-        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
+    sortInventoryItems: (id, sortBy, page, pageSize, barcode) => {
+        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
