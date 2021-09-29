@@ -235,20 +235,20 @@ class BusinessResourceIntegrationTests {
         newBusiness.addAdministrators(user);
 
         payloadJson = "{" +
-                        "\"primaryAdministratorId\": " + user.getId() + "," +
-                        "\"name\": \"Lumbridge General Stores\"," +
-                        "\"description\": \"A one-stop shop for all your adventuring needs\"," +
-                        "\"address\": {" +
-                                "\"streetNumber\": \"2/24\"," +
-                                "\"streetName\": \"Ilam Road\"," +
-                                "\"city\": \"Christchurch\"," +
-                                "\"region\": \"Canterbury\"," +
-                                "\"country\": \"New Zealand\"," +
-                                "\"postcode\": \"90210\"," +
-                                "\"suburb\": \"Ilam\"" +
-                                "}," +
-                        "\"businessType\": \"Accommodation and Food Services\"" +
-                        "}";
+                "\"primaryAdministratorId\": " + user.getId() + "," +
+                "\"name\": \"Lumbridge General Stores\"," +
+                "\"description\": \"A one-stop shop for all your adventuring needs\"," +
+                "\"address\": {" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
+                "}," +
+                "\"businessType\": \"Accommodation and Food Services\"" +
+                "}";
         sessionToken = user.getSessionUUID();
         Cookie cookie = new Cookie("JSESSIONID", sessionToken);
 
@@ -371,13 +371,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -406,13 +406,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"   \"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -442,13 +442,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"" + aName + "\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -478,13 +478,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"" + aDescription + "\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -514,13 +514,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"" + aString + "\"," +
-                    "\"streetName\": \"" + aString + "\"," +
-                    "\"city\": \"" + aString + "\"," +
-                    "\"region\": \"" + aString + "\"," +
-                    "\"country\": \"" + aString + "\"," +
-                    "\"postcode\": \"9\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"" + aString + "\"," +
+                "\"streetName\": \"" + aString + "\"," +
+                "\"city\": \"" + aString + "\"," +
+                "\"region\": \"" + aString + "\"," +
+                "\"country\": \"" + aString + "\"," +
+                "\"postcode\": \"9\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -549,13 +549,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"\"," +
-                    "\"postcode\": \"90210\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -584,13 +584,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\",\n" +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"example\"" +
                 "}";
@@ -619,13 +619,13 @@ class BusinessResourceIntegrationTests {
                 "\"name\": \"Lumbridge General Store\"," +
                 "\"description\": \"A one-stop shop for all your adventuring needs\"," +
                 "\"address\": {" +
-                    "\"streetNumber\": \"2/24\"," +
-                    "\"streetName\": \"Ilam Road\"," +
-                    "\"city\": \"Christchurch\"," +
-                    "\"region\": \"Canterbury\"," +
-                    "\"country\": \"New Zealand\"," +
-                    "\"postcode\": \"90210\"," +
-                    "\"suburb\": \"Ilam\"" +
+                "\"streetNumber\": \"2/24\"," +
+                "\"streetName\": \"Ilam Road\"," +
+                "\"city\": \"Christchurch\"," +
+                "\"region\": \"Canterbury\"," +
+                "\"country\": \"New Zealand\"," +
+                "\"postcode\": \"90210\"," +
+                "\"suburb\": \"Ilam\"" +
                 "}," +
                 "\"businessType\": \"Accommodation and Food Services\"" +
                 "}";
@@ -686,40 +686,40 @@ class BusinessResourceIntegrationTests {
         expectedJson = "{" +
                 "\"id\":" + id + "," +
                 "\"administrators\":" + "[{\"id\":1," +
-                    "\"firstName\":\"testfirst\"," +
-                    "\"lastName\":\"testlast\"," +
-                    "\"middleName\":\"testmiddle\"," +
-                    "\"nickname\":\"testnick\"," +
-                    "\"bio\":\"testbiography\"," +
-                    "\"email\":\"testemail@email.com\"," +
-                    "\"created\":\"2021-02-02T00:00\"," +
-                    "\"role\":\"USER\"," +
-                    "\"businessesAdministered\":[]," +
-                    "\"images\":[]," +
-                    "\"dateOfBirth\":\"2007-02-02\"," +
-                    "\"phoneNumber\":\"0271316\"," +
-                    "\"homeAddress\":{" +
-                        "\"streetNumber\":\"3/24\"," +
-                        "\"streetName\":\"Ilam Road\"," +
-                        "\"suburb\":\"Ilam\"," +
-                        "\"city\":\"Christchurch\"," +
-                        "\"region\":\"Canterbury\"," +
-                        "\"country\":\"New Zealand\"," +
-                        "\"postcode\":\"90210\"" +
-                        "}" +
+                "\"firstName\":\"testfirst\"," +
+                "\"lastName\":\"testlast\"," +
+                "\"middleName\":\"testmiddle\"," +
+                "\"nickname\":\"testnick\"," +
+                "\"bio\":\"testbiography\"," +
+                "\"email\":\"testemail@email.com\"," +
+                "\"created\":\"2021-02-02T00:00\"," +
+                "\"role\":\"USER\"," +
+                "\"businessesAdministered\":[]," +
+                "\"images\":[]," +
+                "\"dateOfBirth\":\"2007-02-02\"," +
+                "\"phoneNumber\":\"0271316\"," +
+                "\"homeAddress\":{" +
+                "\"streetNumber\":\"3/24\"," +
+                "\"streetName\":\"Ilam Road\"," +
+                "\"suburb\":\"Ilam\"," +
+                "\"city\":\"Christchurch\"," +
+                "\"region\":\"Canterbury\"," +
+                "\"country\":\"New Zealand\"," +
+                "\"postcode\":\"90210\"" +
+                "}" +
                 "}]" + "," +
                 "\"primaryAdministratorId\":" + business.getPrimaryAdministratorId() + "," +
                 "\"name\":\"" + business.getName() + "\"," +
                 "\"description\":\"" + business.getDescription() + "\"," +
                 "\"address\":{" +
-                    "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
-                    "\"streetName\":\"" + address.getStreetName() + "\"," +
-                    "\"suburb\":\"" + address.getSuburb() + "\"," +
-                    "\"city\":\"" + address.getCity() + "\"," +
-                    "\"region\":\"" + address.getRegion() + "\"," +
-                    "\"country\":\"" + address.getCountry() + "\"," +
-                    "\"postcode\":\"" + address.getPostcode() + "\"" +
-                    "}," +
+                "\"streetNumber\":\"" + address.getStreetNumber() + "\"," +
+                "\"streetName\":\"" + address.getStreetName() + "\"," +
+                "\"suburb\":\"" + address.getSuburb() + "\"," +
+                "\"city\":\"" + address.getCity() + "\"," +
+                "\"region\":\"" + address.getRegion() + "\"," +
+                "\"country\":\"" + address.getCountry() + "\"," +
+                "\"postcode\":\"" + address.getPostcode() + "\"" +
+                "}," +
                 "\"businessType\":\"" + business.getBusinessType() + "\"," +
                 "\"created\":\"" + business.getCreated() + "\"," +
                 "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
@@ -1389,7 +1389,7 @@ class BusinessResourceIntegrationTests {
      * @throws Exception thrown by MockMvc
      */
     @Test
-    void CanNotMakeUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
+    void canNotMakeUserBecomeAdministratorWhenBusinessNotExist() throws Exception {
         User anotherUser = new User(
                 "John",
                 "Doe",
@@ -1847,7 +1847,7 @@ class BusinessResourceIntegrationTests {
 
     /**
      * Tests that an FORBIDDEN(403) status is received when sending a userId payload to the
-     * /businesses/{id}/removeAdministrator API endpoint. But current session token is for an normal user.
+     * /businesses/{id}/removeAdministrator API endpoint. But current session token is for a normal user.
      * @throws Exception thrown by MockMvc
      */
     @Test
@@ -1917,6 +1917,179 @@ class BusinessResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(business.getAdministrators().size()).isZero();
+    }
+
+    /**
+     * Tests that an FORBIDDEN(403) status is received when a business administrator that is not the primary business
+     * administrator requests to remove another administrator.
+     * Testing /businesses/{id}/removeAdministrator API endpoint.
+     * @throws Exception thrown by MockMvc
+     */
+    @Test
+    void aNonPrimaryAdminCannotRemoveAnotherAdministrator() throws Exception {
+        User anotherUser = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        User aThirdUser = new User("newfirst",
+                "newlast",
+                "newmiddle",
+                "newnick",
+                "newbiography",
+                "newemail@email.com",
+                LocalDate.of(2020, 3, 2).minusYears(13),
+                "02799999",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD"
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + aThirdUser.getId() +
+                "}";
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // Add business to user and anotherUser
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        anotherUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        aThirdUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        // Add anotherUser and a third user to the business's administrators
+        business.addAdministrators(anotherUser);
+        business.addAdministrators(aThirdUser);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(aThirdUser.getId())).thenReturn(Optional.ofNullable(aThirdUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Current user is not DGAA or a primary administrator of this business");
+    }
+
+    /**
+     * Tests that an FORBIDDEN(403) status is received when a business administrator that is not the primary business
+     * administrator requests to remove the primary administrator.
+     * Testing /businesses/{id}/removeAdministrator API endpoint.
+     * @throws Exception thrown by MockMvc
+     */
+    @Test
+    void aNonPrimaryAdminCannotRemoveAPrimaryAdministrator() throws Exception {
+        User anotherUser = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD"
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + user.getId() +
+                "}";
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // Add business to user and anotherUser
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        anotherUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        // Add anotherUser to the business's administrators
+        business.addAdministrators(anotherUser);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/removeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Current user is not DGAA or a primary administrator of this business");
     }
 
     /**
@@ -2084,7 +2257,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
-                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -2121,9 +2294,9 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
-                            .param("orderBy", "nameASC")
-                            .param("page", "0")
-                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+                .param("orderBy", "nameASC")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -2187,7 +2360,7 @@ class BusinessResourceIntegrationTests {
         when(businessRepository.findAllBusinessesByNames(names, paging)).thenReturn(pagedResponse);
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
-                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -2209,9 +2382,9 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/users/search").param("searchQuery", searchQuery)
-                            .param("orderBy", "a")
-                            .param("page", "0")
-                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+                .param("orderBy", "a")
+                .param("page", "0")
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -2232,9 +2405,9 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery)
-                            .param("orderBy", "nameASC")
-                            .param("page", "a")
-                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
+                .param("orderBy", "nameASC")
+                .param("page", "a")
+                .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
@@ -2254,7 +2427,7 @@ class BusinessResourceIntegrationTests {
         when(userRepository.findBySessionUUID("0")).thenReturn(Optional.empty());
 
         response = mvc.perform(get("/businesses/search").param("searchQuery", searchQuery).cookie(
-                            new Cookie("JSESSIONID", "0"))).andReturn().getResponse();
+                new Cookie("JSESSIONID", "0"))).andReturn().getResponse();
 
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());

@@ -2276,7 +2276,9 @@ describe("Testing the processUpdateAdministratorError method", () => {
         let result = profileWrapper.vm.processUpdateAdministratorError(data);
 
         expect(result).toBeFalsy();
-        expect(profileWrapper.vm.actionErrorMessage).toBe("Sorry, but you lack permissions to perform this action.");
+        expect(profileWrapper.vm.actionErrorMessage).toBe(
+            "Sorry, but you lack the permissions to perform this action."
+        );
     });
 
     test("Testing that when the error has a response status 406, actionErrorMessage becomes 'Sorry, but something went wrong...' and false is returned", async () => {
