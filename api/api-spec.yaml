@@ -2418,7 +2418,7 @@ paths:
       security: []
       parameters:
         - name: token
-          in: path
+          in: query
           description: ForgotPassword token
           required: true
           schema:
