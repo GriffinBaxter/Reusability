@@ -1274,6 +1274,8 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
             push: jest.fn()
         }
 
+        jest.useFakeTimers();
+
         wrapper = shallowMount(ProductCatalogue, {
             mocks: {
                 $route,
@@ -1324,11 +1326,6 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         expect(wrapper.vm.$data.description).toEqual("");
     })
 
-    test('Test the afterEdit method sets the user alert message', () => {
-        expect(wrapper.vm.$data.userAlertMessage).toEqual("");
-        wrapper.vm.afterEdit();
-        expect(wrapper.vm.$data.userAlertMessage).toEqual("Product Edited");
-    })
 
     test( 'Test the trimTextInputFields method removes whitespace from start and end of string', () => {
         // "mock" values for text input fields
@@ -1386,5 +1383,32 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         const searchBy = wrapper.vm.convertSearchByStringToList();
 
         expect(searchBy).toEqual(["name"]);
+    })
+
+    test('Test the afterCreation method successfully sets creationSuccess', () => {
+        wrapper.vm.afterCreation();
+
+        expect(wrapper.vm.$data.creationSuccess).toBeTruthy();
+
+        jest.advanceTimersByTime(5000);
+
+        expect(wrapper.vm.$data.creationSuccess).toBeFalsy();
+    })
+
+    test('Test the afterEdit method successfully sets messages and creationSuccess', () => {
+        wrapper.vm.afterEdit();
+
+        expect(wrapper.vm.$data.creationSuccess).toBeTruthy();
+        expect(wrapper.vm.$data.messageIdCounter).toEqual(1); // one increment
+        expect(wrapper.vm.$data.messages).toEqual([{
+            id: wrapper.vm.$data.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Product successfully edited."
+        }]);
+
+        jest.advanceTimersByTime(5000);
+
+        expect(wrapper.vm.$data.creationSuccess).toBeFalsy();
     })
 })
