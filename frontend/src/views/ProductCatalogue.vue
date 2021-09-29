@@ -7,6 +7,8 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
+          <feedback-notification :is-error-feedback="isErrorFeedback" :feedback-text="feedbackText"></feedback-notification>
+
           <div class="row mt-3">
             <h2 style="text-align: center">Product Catalogue</h2>
             <!--Creation success info-->
@@ -250,6 +252,8 @@
         </div>
 
       </div>
+
+
     </div>
     <Footer></Footer>
 
@@ -272,10 +276,12 @@ import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from
 import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
 import UpdateImagesModal from "../components/UpdateImagesModal";
 import {toggleInvalidClass} from "../validationUtils";
+import FeedbackNotification from "../components/feedbackNotification/FeedbackNotification";
 
 export default {
   name: "ProductCatalogue",
   components: {
+    FeedbackNotification,
     ProductSearchBar,
     UpdateProductModal,
     UpdateImagesModal,
@@ -390,6 +396,10 @@ export default {
 
       // List of Business account current user account administrated
       linkBusinessAccount: [],
+
+      // For toast notifications
+      feedbackText: "",
+      isErrorFeedback: false
 
     }
   },
@@ -605,6 +615,9 @@ export default {
         }
       })
       this.loadingProducts = false;
+
+      this.feedbackText = "some message here";
+      this.isErrorFeedback = false;
     },
 
     /**

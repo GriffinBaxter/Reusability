@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="true"
-         data-bs-animation="true" data-bs-delay="5000">
-      <div class="toast-header" id="toast-heading">
-        <strong class="mr-auto">{{ this.headingText }}</strong>
-      </div>
-      <div class="toast-body">
-        {{ feedbackText }}
-      </div>
+  <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed">
+    <div class="toast-header">
+      <strong class="me-auto" id="toast-heading">{{headingText}}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      {{feedbackText}}
     </div>
   </div>
 </template>
@@ -18,12 +16,10 @@ export default {
   props: {
     isErrorFeedback: {
       type: Boolean,
-      default: true,
       required: true
     },
     feedbackText: {
       type: String,
-      default: "",
       required: true
     },
     data() {
@@ -53,12 +49,6 @@ export default {
    */
   mounted() {
     this.setFeedbackStyling();
-
-    // Initialize toast
-    const toastElementList = [].slice.call(document.querySelectorAll('.toast'));
-    const toastList = toastElementList.map(function (toastElement) {
-      return new this.bootstrap.Toast(toastElement);
-    })
   }
 
 }
