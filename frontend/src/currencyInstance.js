@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an instance to use for the REST Countries API
 const currencyInstance = axios.create({
-    baseURL: "https://restcountries.eu/rest/v2",
+    baseURL: "https://restcountries.com/v3",
     timeout: 10000
 });
 

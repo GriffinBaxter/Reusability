@@ -168,16 +168,19 @@ describe('Tests methods in the SaleHistory component.', () => {
             const response = {
                 status: 200,
                 data: [{
-                        currencies: [{
-                            code: "NZD",
-                            symbol: "$"
-                        }]
+                        currencies: {
+                            "NZD": {
+                                symbol: "$"
+                            }
+                        }
                 }]
             };
             CurrencyAPI.currencyQuery.mockImplementation(() => Promise.resolve(response));
 
-            expect(wrapper.vm.$props.currencyCode).toEqual(response.data[0].currencies[0].code);
-            expect(wrapper.vm.$props.currencySymbol).toEqual(response.data[0].currencies[0].symbol);
+            expect(wrapper.vm.$props.currencyCode).toEqual(Object.keys(response.data[0].currencies)[0]);
+            expect(wrapper.vm.$props.currencySymbol).toEqual(
+                response.data[0].currencies[Object.keys(response.data[0].currencies)[0]].symbol
+            );
         })
 
     })

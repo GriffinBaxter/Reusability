@@ -4,7 +4,6 @@
     <div v-if="actingBusinessId == null" class="tag-vertical discount"
          :id="'bookmarkButton_'+id"
          style="position:absolute; right: 5px"
-         type="button"
          @click="changeBookmarkStatus">
       <div :id="'bookmark_'+id" v-if="isMarked">&#9829;</div>
     </div>

@@ -75,6 +75,9 @@ public class ModifyUserStepDefs {
     @MockBean
     private BusinessImageRepository businessImageRepository;
 
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
+
     private MockMultipartFile image;
 
     private MockMultipartFile anotherImage;
@@ -138,7 +141,7 @@ public class ModifyUserStepDefs {
         userImageRepository = mock(UserImageRepository.class);
         fileStorageService = Mockito.mock(FileStorageService.class, withSettings().stubOnly());
 
-        this.userMvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.userMvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
         this.imageMvc = MockMvcBuilders.standaloneSetup(new ImageResource(
                 businessRepository, userRepository, productRepository, productImageRepository,
                 userImageRepository, businessImageRepository, fileStorageService)
