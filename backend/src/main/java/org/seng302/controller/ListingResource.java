@@ -518,6 +518,7 @@ public class ListingResource {
             );
         }
 
+
         // 400 if granularity does not exist
         ArrayList<SalesReportPayload> salesReportPayloads = new ArrayList<>();
         LocalDateTime currentDate = fromDate;

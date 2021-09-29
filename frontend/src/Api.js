@@ -31,10 +31,11 @@
 import axios from 'axios'
 
 const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
+const CLIENT_URL = process.env.VUE_APP_CLIENT_ADD;
 
 const instance = axios.create({
     baseURL: SERVER_URL,
-    timeout: 10000
+    timeout: 20000
 });
 
 export default {
@@ -444,5 +445,15 @@ export default {
         return instance.get(`businesses/${id}/salesReport?fromDate=${fromDate}&toDate=${toDate}&granularity=${granularity}`, {
             withCredentials: true
         })
+    },
+
+    // Resets the password for an associated token.
+    resetPassword(token, password) {
+        return instance.put(`/users/forgotPassword?token=${token}`, {password: password});
+    },
+
+    // Sends a password reset email to the user
+    forgotPasswordSendEmail(emailAddress) {
+        return instance.post(`/users/forgotPassword`, {email: emailAddress, clientURL: CLIENT_URL});
     }
 }

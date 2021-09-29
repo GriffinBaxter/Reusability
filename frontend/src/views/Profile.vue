@@ -93,7 +93,6 @@
             </div>
 
             <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
-              <div class="card-header">Something went wrong with your action...</div>
               <div class="card-body">{{ actionErrorMessage }}</div>
             </div>
 
@@ -752,7 +751,7 @@ export default {
 
         if (error.response.status === 403) {
           // Lacks permissions
-          this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+          this.actionErrorMessage = "Sorry, but you lack the permissions to perform this action."
         }
 
         if (error.response.status === 406) {

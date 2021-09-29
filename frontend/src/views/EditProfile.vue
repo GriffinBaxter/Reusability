@@ -230,7 +230,7 @@
                 <!--street number input field-->
                 <div class="col my-2 my-lg-0">
                   <label for="streetNumber">Street Number</label>
-                  <input :class="toggleInvalidClass(streetNumberErrorMsg)" tabindex="12" id="streetNumber" v-model="streetNumber"
+                  <input :class="toggleInvalidClass(streetNumberErrorMsg)" tabindex="12" id="streetNumber"
                          name="streetNumber" ref="streetNumber" autocomplete="off">
                   <div class="invalid-feedback">
                     {{streetNumberErrorMsg}}
@@ -240,7 +240,7 @@
                 <!--street name input field-->
                 <div class="col my-2 my-lg-0">
                   <label for="streetName">Street Name</label>
-                  <input :class="toggleInvalidClass(streetNameErrorMsg)" tabindex="13" id="streetName" v-model="streetName"
+                  <input :class="toggleInvalidClass(streetNameErrorMsg)" tabindex="13" id="streetName"
                          name="streetName" ref="streetName" autocomplete="off">
                   <div class="invalid-feedback">
                     {{streetNameErrorMsg}}
@@ -255,7 +255,7 @@
                 <!--suburb input field-->
                 <div class="col-lg-6 my-2 my-lg-0">
                   <label for="suburb">Suburb</label>
-                  <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="14" name="suburb" id="suburb" v-model="suburb"
+                  <input :class="toggleInvalidClass(suburbErrorMsg)" tabindex="14" name="suburb" id="suburb"
                          ref="suburb" autocomplete="off">
                   <div class="invalid-feedback">
                     {{suburbErrorMsg}}
@@ -265,7 +265,7 @@
                 <!--city input field-->
                 <div class="col-lg-6 my-2 my-lg-0">
                   <label for="city">City</label>
-                  <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="15" name="city" id="city" ref="city" v-model="city"
+                  <input :class="toggleInvalidClass(cityErrorMsg)" tabindex="15" name="city" id="city" ref="city"
                          autocomplete="off">
                   <div class="invalid-feedback">
                     {{cityErrorMsg}}
@@ -279,7 +279,7 @@
                 <!--state input field-->
                 <div class="col-lg-6 my-2 my-lg-0">
                   <label for="region">State/Region</label>
-                  <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="16" name="region" id="region" ref="region" v-model="region"
+                  <input :class="toggleInvalidClass(regionErrorMsg)" tabindex="16" name="region" id="region" ref="region"
                          autocomplete="off">
                   <div class="invalid-feedback">
                     {{regionErrorMsg}}
@@ -289,7 +289,7 @@
                 <!--postcode input field-->
                 <div class="col-lg-6 my-2 my-lg-0">
                   <label for="postcode">Postcode</label>
-                  <input :class="toggleInvalidClass(postcodeErrorMsg)" tabindex="17" name="postcode" id="postcode" ref="postcode" v-model="postcode"
+                  <input :class="toggleInvalidClass(postcodeErrorMsg)" tabindex="17" name="postcode" id="postcode" ref="postcode"
                          autocomplete="off">
                   <div class="invalid-feedback">
                     {{postcodeErrorMsg}}
@@ -303,7 +303,7 @@
                 <!--country input field-->
                 <div class="col my-2 my-lg-0">
                   <label for="country">Country*</label>
-                  <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="18" id="country" name="country" v-model="country"
+                  <input :class="toggleInvalidClass(countryErrorMsg)" tabindex="18" id="country" name="country"
                          ref="country" autocomplete="off" required>
                   <div class="invalid-feedback">
                     {{countryErrorMsg}}
@@ -440,31 +440,24 @@ export default {
       homeAddressErrorMsg: "",
 
       // Street number related variables
-      streetNumber: "",
       streetNumberErrorMsg: "",
 
       // Street name related variables
-      streetName: "",
       streetNameErrorMsg: "",
 
       // Suburb related variables
-      suburb: "",
       suburbErrorMsg: "",
 
       // Postcode related variables
-      postcode: "",
       postcodeErrorMsg: "",
 
       // City related variables
-      city: "",
       cityErrorMsg: "",
 
       // State/ region related variables
-      region: "",
       regionErrorMsg: "",
 
       // Country related variables
-      country: "",
       countryErrorMsg: "",
 
       // Error message related variables
@@ -1094,13 +1087,13 @@ export default {
      */
     setAddressFields(address) {
       // Address
-      if (address.streetNumber !== null) { this.streetNumber = address.streetNumber }
-      if (address.streetName !== null) { this.streetName = address.streetName }
-      if (address.suburb !== null) { this.suburb = address.suburb }
-      if (address.city !== null) { this.city = address.city }
-      if (address.region !== null) { this.region = address.region }
-      if (address.postcode !== null) { this.postcode = address.postcode }
-      if (address.country !== null) { this.country = address.country }
+      if (address.streetNumber !== null) { this.$refs.streetNumber.value = address.streetNumber }
+      if (address.streetName !== null) { this.$refs.streetName.value = address.streetName }
+      if (address.suburb !== null) { this.$refs.suburb.value = address.suburb }
+      if (address.city !== null) { this.$refs.city.value = address.city }
+      if (address.region !== null) { this.$refs.region.value = address.region }
+      if (address.postcode !== null) { this.$refs.postcode.value = address.postcode }
+      if (address.country !== null) { this.$refs.country.value = address.country }
     },
     /**
      * Sets Name Fields if they exist (this is done to prevent setting inputs as undefined)

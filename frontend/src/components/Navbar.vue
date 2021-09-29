@@ -50,7 +50,6 @@
           <!-- Mid screen notification icon -->
           <div>
             <div
-                type="button"
                 @click="switchNotificationBox()">
 
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16" v-if="newNotification">
@@ -96,25 +95,25 @@
         <ul id="links-list" v-if="showNavbar">
         <li class="a-nav-item" >
           <router-link to="/home" class="router-nav-link" active-class="active-link">
-            <i class="side-nav-link-icon fas fa-home"></i>Home
+            <em class="side-nav-link-icon fas fa-home"></em>Home
           </router-link>
         </li>
 
         <li class="a-nav-item" v-if="actAsId">
           <router-link :to="'/businessProfile/' + actAsId" class="router-nav-link" exact-active-class="active-link">
-            <i class="side-nav-link-icon fas fa-user-alt"></i>Profile
+            <em class="side-nav-link-icon fas fa-user-alt"></em>Profile
           </router-link>
         </li>
 
         <li class="a-nav-item" v-else>
           <router-link to="/profile" class="router-nav-link" active-class="active-link">
-            <i class="side-nav-link-icon fas fa-user-alt"></i>Profile
+            <em class="side-nav-link-icon fas fa-user-alt"></em>Profile
           </router-link>
         </li>
 
           <li class="a-nav-item">
             <router-link to="/search?type=User&searchQuery=&orderBy=fullNameASC&page=1" class="router-nav-link" active-class="active-link">
-              <i class="side-nav-link-icon fas fa-search"></i>Search
+              <em class="side-nav-link-icon fas fa-search"></em>Search
             </router-link>
           </li>
 
@@ -129,13 +128,13 @@
 
         <li class="a-nav-item" v-if="!isActAsBusiness">
           <router-link to="/marketplace" class="router-nav-link" active-class="active-link">
-            <i class="side-nav-link-icon fas fa-store"></i>Marketplace
+            <em class="side-nav-link-icon fas fa-store"></em>Marketplace
           </router-link>
         </li>
 
         <li class="a-nav-item" v-if="isActAsBusiness">
           <button class="router-nav-link add-dropdown-icon" @click="toggleBusinessDropdown">
-            <i class="side-nav-link-icon fas fa-briefcase"></i>Business
+            <em class="side-nav-link-icon fas fa-briefcase"></em>Business
           </button>
           <transition name="expand" >
             <ul class="is-dropdown" v-if="showBusinessDropdown">

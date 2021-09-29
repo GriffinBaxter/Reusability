@@ -3242,11 +3242,16 @@ components:
       description: Email for user to reset their password
       required:
         - email
+        - clientURL
       properties:
         email:
           type: string
           example: 'example@email.com'
           description: Users email
+        clientURL:
+          type: string
+          example: 'http://localhost:9500'
+          description: The client URL
 
     ChangePassword:
       type: object

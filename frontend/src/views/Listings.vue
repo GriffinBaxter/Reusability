@@ -219,7 +219,7 @@ name: "Listings",
     withdrawListingConfirmation(data) {
 
       const listingId = data.listingId;
-      const listing = this.listings.find(listing => listing.id === listingId);
+      const listing = this.listings.find(listingItem => listingItem.id === listingId);
 
       this.currentProductName = listing.productName;
       this.currentQuantity = listing.quantity;

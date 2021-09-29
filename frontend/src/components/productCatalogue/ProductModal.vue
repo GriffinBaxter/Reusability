@@ -36,7 +36,7 @@
             <br>
             <strong>Manufacturer:</strong> {{ manufacturer }}
             <br>
-            <strong>RRP:</strong> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
+            <strong>RRP:</strong> {{ recommendedRetailPrice ? currencySymbol : "" }}{{ recommendedRetailPrice ? recommendedRetailPrice : "N/A" }} {{ recommendedRetailPrice ? currencyCode: "" }}
             <br>
             <strong>Description:</strong>
             <br>

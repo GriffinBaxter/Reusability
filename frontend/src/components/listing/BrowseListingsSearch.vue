@@ -6,7 +6,7 @@
     <!-- Search Bar  -->
     <div class="container mt-5">
       <div class="row" id="search-bar-container">
-        <div class="input-group justify-content-center" id="search-inputs" style="alignment: center">
+        <div class="input-group" id="search-inputs">
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)">
           <button class="btn green-search-button" id="search-button" @click="searchClicked()">
             <i class="fas fa-search" aria-hidden="true"/>

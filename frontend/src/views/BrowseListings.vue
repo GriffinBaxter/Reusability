@@ -6,12 +6,6 @@
 
       <h1 style="text-align: center" class="mt-5 mb-0">Browse Listings</h1>
 
-      <div class="noListings" v-if="noListings">
-        <div class="card p-1">
-          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
-        </div>
-      </div>
-      
       <BrowseListingsSearch  @requestListings="requestListings"/>
       <br>
       <div v-if="hasDataLoaded" id="all-listings-cards-container" class="row pb-5 mb-4">
@@ -31,6 +25,11 @@
       </div>
       <div v-else>
         <LoadingDots></LoadingDots>
+      </div>
+      <div class="no-listing-container" v-if="noListings">
+        <div class="card p-1">
+          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
+        </div>
       </div>
 
       <PageButtons
@@ -134,7 +133,7 @@ export default {
         this.hasDataLoaded = true;
       });
     },
-    
+
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
      *
@@ -168,6 +167,12 @@ export default {
 
 @media (min-width: 720px) {
   #all-listings-cards-container {
+    margin-left: 120px;
+    margin-right: 120px;
+  }
+}
+@media (min-width: 720px) {
+  .no-listing-container {
     margin-left: 120px;
     margin-right: 120px;
   }
