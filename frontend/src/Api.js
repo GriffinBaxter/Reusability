@@ -183,8 +183,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
-    sortListings: (businessId, sortBy, page, barcode) => {
-        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}`, {
+    sortListings: (businessId, sortBy, page, pageSize, barcode) => {
+        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true,
         })
     },
