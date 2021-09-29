@@ -1383,6 +1383,99 @@ class BusinessResourceIntegrationTests {
     }
 
     /**
+     * Tests that an FORBIDDEN(403) status is received when a business administrator that is not the primary
+     * administrator requests to make a user a business administrator.
+     * @throws Exception thrown by MockMvc
+     */
+    @Test
+    void aNonPrimaryAdministratorCannotMakeUserBecomeAdministrator() throws Exception {
+        User anotherUser = new User(
+                "John",
+                "Doe",
+                "S",
+                "Generic",
+                "Biography",
+                "email@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Password123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        anotherUser.setId(3);
+        anotherUser.setSessionUUID(User.generateSessionUUID());
+        User user = new User("testfirst",
+                "testlast",
+                "testmiddle",
+                "testnick",
+                "testbiography",
+                "testemail@email.com",
+                LocalDate.of(2020, 2, 2).minusYears(13),
+                "0271316",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        user.setId(1);
+        user.setSessionUUID(User.generateSessionUUID());
+        User aThirdUser = new User("newfirst",
+                "newlast",
+                "newmiddle",
+                "newnick",
+                "newbiography",
+                "newemail@email.com",
+                LocalDate.of(2020, 3, 2).minusYears(13),
+                "02799999",
+                address,
+                "Testpassword123!",
+                LocalDateTime.of(LocalDate.of(2021, 2, 2),
+                        LocalTime.of(0, 0)),
+                Role.USER);
+        aThirdUser.setId(5);
+        aThirdUser.setSessionUUID(User.generateSessionUUID());
+        Business business = new Business(
+                user.getId(),
+                "name",
+                "some text",
+                address,
+                BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
+                LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0, 0)),
+                user,
+                "$",
+                "NZD"
+        );
+        business.setId(2);
+        // given
+        id = business.getId();
+        expectedJson = "{" +
+                "\"userId\":" + aThirdUser.getId() +
+                "}";
+        sessionToken = anotherUser.getSessionUUID();
+        Cookie cookie = new Cookie("JSESSIONID", sessionToken);
+
+        // Add business to user's and anotherUser's administrated businesses lists
+        List<Business> businessesAdministeredObjects = user.getBusinessesAdministeredObjects();
+        businessesAdministeredObjects.add(business);
+        user.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        anotherUser.setBusinessesAdministeredObjects(businessesAdministeredObjects);
+        business.addAdministrators(anotherUser);
+
+        // when
+        when(userRepository.findBySessionUUID(sessionToken)).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(aThirdUser.getId())).thenReturn(Optional.ofNullable(aThirdUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.ofNullable(business));
+
+        response = mvc.perform(put(String.format("/businesses/%d/makeAdministrator", id)).cookie(cookie)
+                .content(expectedJson).contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Current user is not DGAA or a primary administrator of this business");
+    }
+
+    /**
      * Tests that an NOT_ACCEPTABLE(406) status is received when sending a non-administrator(for this business) userId payload to
      * the /businesses/{id}/makeAdministrator API endpoint. And current session token is for an administrator of this
      * business. But given business not exist.
@@ -1971,6 +2064,8 @@ class BusinessResourceIntegrationTests {
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
                 Role.USER);
+        aThirdUser.setId(5);
+        aThirdUser.setSessionUUID(User.generateSessionUUID());
         Business business = new Business(
                 user.getId(),
                 "name",
