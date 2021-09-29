@@ -57,7 +57,7 @@
     </div>
 
     <div class="float-end ms-auto">
-      <PageSize></PageSize>
+      <PageSize :current-page-size="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
     </div>
 
   </div>
@@ -67,7 +67,7 @@
 <script>
 
 import CreateCardModal from "./CreateCardModal";
-import PageSize from "@/components/PageSize";
+import PageSize from "../../components/PageSize";
 
 export default {
   name: "OrderingOptionsMenu",
@@ -79,7 +79,10 @@ export default {
     return {
       orderByOption: "Select Order By",         // default
       orderDirectionOption: "Select Direction",  // default
-      orderBy: this.$route.query["orderBy"] || "dateDESC" // gets orderBy from URL or (if not there) sets to default
+      orderBy: this.$route.query["orderBy"] || "dateDESC", // gets orderBy from URL or (if not there) sets to default
+
+      pageSizes: ["6", "12", "18"], // a list of page size options
+      pageSize: this.$route.query["pageSize"] || "6" // default page size
     }
   },
   props: {
@@ -144,6 +147,16 @@ export default {
       // now can use this.orderBy to request cards from backend
 
     },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.$parent.$emit("selectedPageSize", this.pageSize);
+    }
   }
 }
 </script>

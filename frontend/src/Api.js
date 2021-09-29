@@ -236,8 +236,8 @@ export default {
     },
 
     // Sends a get request to the backend to retrieve all marketplace cards (for a specific section, and paginated and sorted).
-    getAllCards: (section, sortBy, page) => {
-        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}`, {
+    getAllCards: (section, sortBy, page, pageSize) => {
+        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
