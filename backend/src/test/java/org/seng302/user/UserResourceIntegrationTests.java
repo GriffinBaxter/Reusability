@@ -116,7 +116,8 @@ class UserResourceIntegrationTests {
             "\"newPassword\": \"%s\"\n" +
             "}";
 
-    private final String forgotPasswordJSON = "{\"email\":\"%s\"}";
+    private final String forgotPasswordJSON = "{\"email\":\"%s\"," +
+                                                "\"clientURL\":\"%s\"}";
 
     private MockHttpServletResponse response;
 
@@ -2207,32 +2208,10 @@ class UserResourceIntegrationTests {
 
         // when
         response = mvc.perform(
-                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
+                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail, "http://localhost")))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-    }
-
-    /**
-     * Tests that an INTERNAL_SERVER_ERROR status is received from the forgot password endpoint when the request baseURL
-     * is not one of the following three allowed:
-     *     http://localhost:9499/users/forgotPassword
-     *     https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword
-     *     https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword
-     */
-    @Test
-    void cantRequestForgotPasswordEmailWhenRequestBaseURLisIncorrect() throws Exception {
-        // given
-        String userEmail = "randomEmail@email.com";
-        given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
-
-        // when
-        response = mvc.perform(
-                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
-                .andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
