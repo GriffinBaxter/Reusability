@@ -372,11 +372,14 @@ export default {
     },
 
     /**
-     * Makes all elements of the image carousel inactive, for use before setting a new active image.
+     * Makes all elements of the image carousel inactive, for use before setting a new active image (irrelevant to
+     * product images).
      */
     removeActiveCarouselElements() {
-      for (let child of document.getElementById("image-carousel").children) {
-        child.classList.remove("active");
+      if (this.location !== "Product") {
+        for (let child of document.getElementById("image-carousel").children) {
+          child.classList.remove("active");
+        }
       }
     }
   },
