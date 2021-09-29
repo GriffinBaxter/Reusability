@@ -7,6 +7,11 @@
     <create-listing @updateListings="afterCreation"
                     v-bind:currency-code="currencyCode"
                     v-bind:currency-symbol="currencySymbol"/>
+
+      <div v-if="creationSuccess">
+        <feedback-notification :messages="messages" style="z-index:999;"/>
+      </div>
+
     <!-- Listing Container -->
     <div class="container mt-4">
       <div class="card p-3">
@@ -65,13 +70,6 @@
 
         <!--space-->
         <br>
-
-        <!--creation success info-->
-        <div class="alert alert-success" role="alert" v-if="creationSuccess">
-          <div class="row">
-            <div class="col" style="text-align: center">New Listing Created</div>
-          </div>
-        </div>
 
         <!-- Listings -->
         <ListingItem
@@ -145,6 +143,7 @@ import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
 import WithdrawListingConfirmationModal from "../components/listing/WithdrawListingConfirmationModal";
+import FeedbackNotification from "../components/feedbackNotification/FeedbackNotification";
 
 export default {
 name: "Listings",
@@ -155,7 +154,8 @@ name: "Listings",
     Navbar,
     PageButtons,
     BarcodeSearchBar,
-    WithdrawListingConfirmationModal
+    WithdrawListingConfirmationModal,
+    FeedbackNotification
   },
   data() {
     return {
@@ -229,7 +229,8 @@ name: "Listings",
     async deleteListing() {
       if (this.currentListingId !== null) {
         await Api.deleteListing(this.businessId, this.currentListingId).then(() => {
-          this.getListings()
+          this.getListings();
+          this.creationSuccess = true;
           this.messageIdCounter += 1;
           this.messages.push(
               {
@@ -239,6 +240,9 @@ name: "Listings",
                 text: "Listing successfully deleted."
               }
           )
+          setTimeout(() => {
+            this.creationSuccess = false
+          }, 5000);
         }).catch((err) => {
           if (err.response) {
             if (err.response.status === 406) {
@@ -496,6 +500,7 @@ name: "Listings",
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
       this.messageIdCounter += 1;
+      this.messages = [];
       this.messages.push(
           {
             id: this.messageIdCounter,

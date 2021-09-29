@@ -596,7 +596,6 @@ export default {
                     // Custom event so that Inventory.vue knows edit was a success and can alert the user.
                     this.$root.$emit('editedInventory');
                     this.modal.hide();
-                    this.$router.go();
                   }
                 }
             )

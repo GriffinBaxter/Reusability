@@ -1,8 +1,14 @@
 <template>
   <div>
+    <div v-if="creationSuccess">
+      <feedback-notification :messages="messages" style="z-index:999;"/>
+    </div>
+
     <div id="main">
+
       <!--nav bar-->
       <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
+
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"
                              v-bind:currency-code="currencyCode"
@@ -103,13 +109,6 @@
             <!--space-->
             <br>
 
-            <!--creation success info-->
-            <div class="alert alert-success" role="alert" v-if="creationSuccess">
-              <div class="row">
-                <div class="col" style="text-align: center"> {{userAlertMessage}} </div>
-              </div>
-            </div>
-
             <UpdateInventoryItemModal ref="updateInventoryItemModal"
                                       :business-id=businessId
                                       :currency-code="currencyCode"
@@ -182,6 +181,7 @@ import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
+import FeedbackNotification from "../components/feedbackNotification/FeedbackNotification";
 
 export default {
   components: {
@@ -191,7 +191,8 @@ export default {
     InventoryItem,
     Footer,
     PageButtons,
-    BarcodeSearchBar
+    BarcodeSearchBar,
+    FeedbackNotification
   },
   data() {
     return {
@@ -636,6 +637,7 @@ export default {
     afterCreation() {
       this.creationSuccess = true;
       this.messageIdCounter += 1;
+      this.messages = [];
       this.messages.push(
           {
             id: this.messageIdCounter,
@@ -656,6 +658,7 @@ export default {
     afterEdit() {
       this.creationSuccess = true;
       this.messageIdCounter += 1;
+      this.messages = [];
       this.messages.push(
           {
             id: this.messageIdCounter,
@@ -668,6 +671,7 @@ export default {
       setTimeout(() => {
         this.creationSuccess = false
       }, 5000);
+      this.retrieveInventoryItems();
     },
 
     /**

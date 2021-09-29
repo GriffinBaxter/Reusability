@@ -7,7 +7,9 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
-          <feedback-notification :messages="this.messages"/>
+          <div v-if="creationSuccess">
+            <feedback-notification :messages="messages"/>
+          </div>
 
           <div class="row mt-3">
             <h2 style="text-align: center">Product Catalogue</h2>
@@ -813,8 +815,6 @@ export default {
       Api.addNewProduct(this.businessId, product
       ).then((res) => {
             if (res.status === 201) {
-              // Set message so user knows product has been added.
-              this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
@@ -822,6 +822,7 @@ export default {
               )
             }
         this.messageIdCounter += 1;
+        this.messages = [];
         this.messages.push(
             {
               id: this.messageIdCounter,
@@ -865,6 +866,7 @@ export default {
      */
     afterEdit() {
       this.messageIdCounter += 1;
+      this.messages = [];
       this.messages.push(
           {
             id: this.messageIdCounter,
