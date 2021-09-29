@@ -87,8 +87,8 @@ api change timeout
       <div class="row my-lg-2" v-if="resetSuccess">
 
         <!--confirm password input field-->
-        <div class="col my-2 my-lg-0 mb-4">
-          Password been successfully updated!
+        <div class="col my-2 my-lg-0 mb-4" style="text-align: center">
+          Password has been successfully updated!
         </div>
       </div>
 
