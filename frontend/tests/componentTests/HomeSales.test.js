@@ -341,13 +341,51 @@ describe("Testing the build graph function",() => {
 
 describe("Testing the handleGraphError function", () => {
 
-    test("Testing error with timeout", async () => {})
+    test("Testing error with timeout", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        });
+        await wrapper.vm.handleGraphError({request: true});
+        expect($router.push).toHaveBeenCalledWith({path: "/timeout"});
+    })
 
-    test("Testing error with 401", async () => {})
+    test("Testing error with 401", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        });
+        await wrapper.vm.handleGraphError({request: true, response: {status: 401}});
+        expect($router.push).toHaveBeenCalledWith({path: "/invalidToken"});})
 
-    test("Testing error with 403", async () => {})
+    test("Testing error with 403", async () => {
+        wrapper = shallowMount(HomeSales, {
+        mocks: {
+            $router,
+            $route,
+            Date
+        }
+    });
+        await wrapper.vm.handleGraphError({request: true, response: {status: 403}});
+        expect($router.push).toHaveBeenCalledWith({path: "/forbidden"});
+    })
 
-    test("Testing error with 500", async () => {})
+    test("Testing error with 500", async () => {wrapper = shallowMount(HomeSales, {
+        mocks: {
+            $router,
+            $route,
+            Date
+        }
+    });
+        await wrapper.vm.handleGraphError({request: true, response: {status: 500}});
+        expect(wrapper.vm.$data.hideGraph).toStrictEqual(true);
+    })
 
 })
 
