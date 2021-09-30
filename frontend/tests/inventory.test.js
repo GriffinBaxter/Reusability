@@ -621,7 +621,7 @@ describe("Test methods in the inventory component", () => {
         });
     });
 
-    describe("Test afterBlah methods", () => {
+    describe("Test afterCreation and afterEdit methods", () => {
 
         beforeEach(() => {
 
