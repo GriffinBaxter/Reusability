@@ -101,7 +101,7 @@
               <div class="col-3 col-md-3 text-secondary flex-nowrap align-self-end" style="margin-bottom: 0.7em">Filter By: {{convertToString()}}</div>
 
               <div class="col-md-3 justify-content-md-end" style="display: flex; ">
-                <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
+                <BarcodeSearchBar @barcodeSearch="barcodeSearch" search-bar-identifier="inventory-business"/>
               </div>
 
               <div class="col justify-content-md-end" style="display: flex;">

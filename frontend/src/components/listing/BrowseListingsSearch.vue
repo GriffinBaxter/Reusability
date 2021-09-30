@@ -247,7 +247,7 @@
           </div>
         </div>
 
-        <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
+        <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode" modal-identifier="listings"/>
 
       </div>
     </div>

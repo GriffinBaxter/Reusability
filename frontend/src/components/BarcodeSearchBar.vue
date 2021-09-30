@@ -13,7 +13,7 @@
         <i class="fas fa-search" aria-hidden="true"></i>
       </button>
     </div>
-    <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
+    <BarcodeScannerModal ref="barcodeScannerModal" @scannedBarcode="updateBarcode" :modal-identifier="this.searchBarIdentifier"/>
   </div>
 </template>
 
@@ -28,6 +28,12 @@ export default {
   data() {
     return {
       barcode: null
+    }
+  },
+  props: {
+    searchBarIdentifier: {
+      type: String,
+      required: true
     }
   },
   methods: {
