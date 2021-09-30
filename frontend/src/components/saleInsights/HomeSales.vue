@@ -10,7 +10,7 @@
     <div class="box" v-else>
       <div class="wrapper">
         <div class="left-side">
-          <div class="total-header" id="total-sales">Total Sales: {{totalSales.toFixed(2)}}</div>
+          <div class="total-header" id="total-sales">Total Sales: {{totalSales}}</div>
           <div class="total-header" id="total-revenue">Total Revenue: {{currencySymbol}}{{totalRevenue.toFixed(2)}} {{currencyCode}}</div>
         </div>
         <div class="right-side">

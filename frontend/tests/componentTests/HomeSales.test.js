@@ -139,7 +139,7 @@ describe("Testing the graph", () => {
         const totalRevenueAmount = 2000;
         const totalRevenue = await wrapper.find("#total-revenue");
         expect(totalRevenue.exists()).toBeTruthy();
-        expect(totalRevenue.text()).toStrictEqual(`Total Revenue: $${totalRevenueAmount} asd`);
+        expect(totalRevenue.text()).toStrictEqual(`Total Revenue: $${totalRevenueAmount.toFixed(2)} asd`);
         expect(wrapper.vm.$data.totalRevenue).toStrictEqual(totalRevenueAmount);
     })
 
