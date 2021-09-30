@@ -7,19 +7,18 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
+          <div v-if="creationSuccess">
+            <feedback-notification :messages="messages"/>
+          </div>
+
           <div class="row mt-3">
             <h2 style="text-align: center">Product Catalogue</h2>
-            <!--Creation success info-->
-            <div class="alert alert-success" role="alert" v-if="creationSuccess">
-              <div class="row">
-                <div class="col" style="text-align: center">{{ userAlertMessage }}</div>
-              </div>
-            </div>
           </div>
 
           <div class="row">
             <div class="col">
-              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end" tabindex="0"
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end"
+                      tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>
@@ -64,10 +63,11 @@
                           v-bind:barcode="barcode"/>
                     </div>
                     <div class="modal-footer">
-                      <button class="btn btn-primary" @click="(event) => {
+                      <button class="btn btn-primary green-button" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateImagesModal.showModel(event);
-                    }">Update Images</button>
+                    }">Update Images
+                      </button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateProductModel.showModel(event);
@@ -129,7 +129,8 @@
                     <div v-if="addBarcode">
                       <br>
                       <label for="product-barcode">Barcode (EAN or UPC)</label>
-                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="barcode"
+                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text"
+                             v-model="barcode"
                              :class="toggleInvalidClass(barcodeErrorMsg)" :maxlength="config.barcode.maxLength">
                       <div class="invalid-feedback">
                         {{ barcodeErrorMsg }}
@@ -188,7 +189,9 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price" v-if="currencyCode !== ''">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-if="currencyCode !== ''">Recommended Retail Price ({{
+                        currencyCode
+                      }})</label>
                     <label for="product-price" v-else>Recommended Retail Price</label>
                     <div class="input-group">
                       <div class="input-group-prepend" v-if="currencySymbol !== ''">
@@ -250,6 +253,8 @@
         </div>
 
       </div>
+
+
     </div>
     <Footer></Footer>
 
@@ -272,10 +277,12 @@ import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from
 import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
 import UpdateImagesModal from "../components/UpdateImagesModal";
 import {toggleInvalidClass} from "../validationUtils";
+import FeedbackNotification from "../components/feedbackNotification/FeedbackNotification";
 
 export default {
   name: "ProductCatalogue",
   components: {
+    FeedbackNotification,
     ProductSearchBar,
     UpdateProductModal,
     UpdateImagesModal,
@@ -376,9 +383,6 @@ export default {
       toastErrorMessage: "",
       cannotProceed: false,
 
-      // Message to display that product has been added to catalogue or has been edited.
-      userAlertMessage: "",
-
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
@@ -388,6 +392,10 @@ export default {
 
       // List of Business account current user account administrated
       linkBusinessAccount: [],
+
+      // For toast notifications
+      messages: [],
+      messageIdCounter: 0,
 
       pageSize: this.$route.query["pageSize"] || "5"
 
@@ -416,13 +424,15 @@ export default {
      */
     convertSearchByStringToList() {
       let searchByString = this.$route.query["searchBy"];
-      if (searchByString) { return searchByString.split(","); }
+      if (searchByString) {
+        return searchByString.split(",");
+      }
       return ["name"]; // if searchBy does not exist in route query then return the default.
     },
     /**
      * set link business accounts
      */
-    setLinkBusinessAccount(data){
+    setLinkBusinessAccount(data) {
       this.linkBusinessAccount = data;
     },
     /**
@@ -442,9 +452,15 @@ export default {
       this.created = product.data.created;
       this.barcode = product.data.barcode;
       // these checks are needed so that the default prop is used if there is no data (is null)
-      if (!(this.description)) { this.description = undefined; }
-      if (!(this.manufacturer)) { this.manufacturer = undefined; }
-      if (!(this.barcode)) { this.barcode = undefined; }
+      if (!(this.description)) {
+        this.description = undefined;
+      }
+      if (!(this.manufacturer)) {
+        this.manufacturer = undefined;
+      }
+      if (!(this.barcode)) {
+        this.barcode = undefined;
+      }
       this.showModal = true;
     },
 
@@ -499,7 +515,14 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {
+          "searchQuery": this.searchQuery,
+          "searchBy": this.searchByString,
+          "barcode": this.searchBarcode,
+          "orderBy": this.orderByString,
+          "page": (this.currentPage).toString(),
+          "pageSize": this.pageSize
+        }
       })
       this.requestProducts();
     },
@@ -606,6 +629,9 @@ export default {
         }
       })
       this.loadingProducts = false;
+
+      this.feedbackText = "some message here";
+      this.isErrorFeedback = false;
     },
 
     /**
@@ -786,16 +812,23 @@ export default {
       Api.addNewProduct(this.businessId, product
       ).then((res) => {
             if (res.status === 201) {
-              // Set message so user knows product has been added.
-              this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
-              this.userAlertMessage = this.addedMessage;
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
                   (error) => console.log(error)
               )
             }
-          }
+        this.messageIdCounter += 1;
+        this.messages = [];
+        this.messages.push(
+            {
+              id: this.messageIdCounter,
+              isError: false,
+              topic: "Success",
+              text: `${product.data.name} with ID ${product.data.id} was successfully created.`
+            }
+          )
+        }
       ).catch((error) => {
         this.cannotProceed = true;
         if (error.response) {
@@ -829,7 +862,16 @@ export default {
      * After edit success, show the edit info.
      */
     afterEdit() {
-      this.userAlertMessage = "Product Edited";
+      this.messageIdCounter += 1;
+      this.messages = [];
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Product successfully edited."
+          }
+      )
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
@@ -942,7 +984,7 @@ export default {
      * @param searchBarcode The barcode to search by.
      * @param pageSize The number of entries for a page of results.
      */
-    onSearch (checked, searchQuery, searchBarcode, pageSize) {
+    onSearch(checked, searchQuery, searchBarcode, pageSize) {
       this.searchBy = checked;
       this.searchQuery = searchQuery;
       this.searchBarcode = searchBarcode;
@@ -986,7 +1028,7 @@ export default {
             (e) => console.log(e)
         )
       } else {
-        await  this.$router.push({name: 'Login'});
+        await this.$router.push({name: 'Login'});
       }
     }
 

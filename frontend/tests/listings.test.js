@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils'
 import Listings from '../src/views/Listings.vue'
 import VueLogger from "vuejs-logger";
-import {jest} from "@jest/globals";
+import {expect, jest, test} from "@jest/globals";
 import Api from "./../src/Api";
 import Cookies from "js-cookie";
 
@@ -130,6 +130,8 @@ describe("Testing the Listing pages methods", () => {
             Api.getBusiness.mockImplementation(() => Promise.resolve(businessResponse))
             Api.sortListings.mockImplementation(() => Promise.resolve(listingsResponse))
 
+            jest.useFakeTimers();
+
             listingWrapper = shallowMount(Listings, {
                 localVue,
                 mocks: {
@@ -160,8 +162,21 @@ describe("Testing the Listing pages methods", () => {
             listingWrapper.vm.deleteListing()
             await listingWrapper.vm.$nextTick()
 
-            expect(Api.sortListings).toHaveBeenCalled()
-            expect(Api.sortListings).toHaveBeenCalledTimes(2)
+            expect(Api.sortListings).toHaveBeenCalled();
+            expect(Api.sortListings).toHaveBeenCalledTimes(2);
+
+            expect(listingWrapper.vm.$data.creationSuccess).toBeTruthy();
+            expect(listingWrapper.vm.$data.messageIdCounter).toEqual(1); // one increment
+            expect(listingWrapper.vm.$data.messages).toEqual([{
+                id: listingWrapper.vm.$data.messageIdCounter,
+                isError: false,
+                topic: "Success",
+                text: "Listing successfully deleted."
+            }]);
+
+            jest.advanceTimersByTime(5000);
+
+            expect(listingWrapper.vm.$data.creationSuccess).toBeFalsy();
         })
 
         test("Test 406 response on attempted deletion of listing", async () => {
@@ -209,5 +224,23 @@ describe("Testing the Listing pages methods", () => {
             expect($router.push).toHaveBeenCalled()
             expect($router.push).toHaveBeenCalledWith({name: "InvalidToken"})
         })
+
+        test('Test the afterCreation method successfully sets messages and creationSuccess', () => {
+            listingWrapper.vm.afterCreation();
+
+            expect(listingWrapper.vm.$data.creationSuccess).toBeTruthy();
+            expect(listingWrapper.vm.$data.messageIdCounter).toEqual(1); // one increment
+            expect(listingWrapper.vm.$data.messages).toEqual([{
+                id: listingWrapper.vm.$data.messageIdCounter,
+                isError: false,
+                topic: "Success",
+                text: "Listing successfully created."
+            }]);
+
+            jest.advanceTimersByTime(5000);
+
+            expect(listingWrapper.vm.$data.creationSuccess).toBeFalsy();
+        })
     })
+
 })

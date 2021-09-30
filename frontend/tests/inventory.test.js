@@ -31,6 +31,8 @@ describe("Test methods in the inventory component", () => {
 
         retrieveInventoryItemsSpyOn = jest.spyOn(Inventory.methods, 'retrieveInventoryItems');
 
+        jest.useFakeTimers();
+
         wrapper = shallowMount(
             Inventory,
             {
@@ -616,15 +618,59 @@ describe("Test methods in the inventory component", () => {
             await wrapper.vm.$nextTick();
 
             expect($router.push).toHaveBeenCalledWith({path: "/forbidden"});
-
         });
-
-
     });
 
+    describe("Test afterCreation and afterEdit methods", () => {
 
+        beforeEach(() => {
 
+            const sortInventoryItemsResponse = {
+                status: 200,
+                data: [],
+                headers: {
+                    "total-pages": "0",
+                    "total-rows": "0"
+                }
+            }
 
+            Api.sortInventoryItems.mockImplementation(() => Promise.resolve(sortInventoryItemsResponse));
+        })
 
+        test('Test the afterCreation method successfully sets messages and creationSuccess', () => {
+            wrapper.vm.afterCreation();
+
+            expect(wrapper.vm.$data.creationSuccess).toBeTruthy();
+            expect(wrapper.vm.$data.messageIdCounter).toEqual(1); // one increment
+            expect(wrapper.vm.$data.messages).toEqual([{
+                id: wrapper.vm.$data.messageIdCounter,
+                isError: false,
+                topic: "Success",
+                text: "Inventory item successfully created."
+            }]);
+
+            jest.advanceTimersByTime(5000);
+
+            expect(wrapper.vm.$data.creationSuccess).toBeFalsy();
+        })
+
+        test('Test the afterEdit method successfully sets messages and creationSuccess', () => {
+            wrapper.vm.afterEdit();
+
+            expect(wrapper.vm.$data.creationSuccess).toBeTruthy();
+            expect(wrapper.vm.$data.messageIdCounter).toEqual(1); // one increment
+            expect(wrapper.vm.$data.messages).toEqual([{
+                id: wrapper.vm.$data.messageIdCounter,
+                isError: false,
+                topic: "Success",
+                text: "Inventory item successfully edited."
+            }]);
+
+            jest.advanceTimersByTime(5000);
+
+            expect(wrapper.vm.$data.creationSuccess).toBeFalsy();
+        })
+
+    });
 
 });
