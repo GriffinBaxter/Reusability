@@ -714,7 +714,7 @@ export default {
 
       // Wrapping up the business submitted fields into a class object (Business).
       const businessData = {
-        primaryAdministratorId: Cookies.get('userID'),
+        primaryAdministratorId: null,
         name: this.businessName,
         description: this.description,
         // NOTE: Using v-model for this address input apparently does not update.
