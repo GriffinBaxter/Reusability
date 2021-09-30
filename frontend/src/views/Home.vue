@@ -120,7 +120,7 @@ import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
 import LoadingDots from "../components/LoadingDots";
-import HomeSales from "@/components/saleInsights/HomeSales";
+import HomeSales from "../components/saleInsights/HomeSales";
 
 export default {
   name: "Home",
