@@ -15,30 +15,30 @@ import static org.seng302.utils.PaginationUtils.parsePageSizeNumber;
 class PaginationUtilsTests {
 
     @Test
-    void canParseValidPageSizeLessThan500() {
-        String integerToParse = "499";
+    void canParseValidPageSizeLessThan48() {
+        String integerToParse = "47";
 
         int parsedInteger = parsePageSizeNumber(integerToParse);
 
-        assertEquals(499, parsedInteger);
+        assertEquals(47, parsedInteger);
     }
 
     @Test
-    void canParseValidPageSizeEqualTo500() {
-        String integerToParse = "500";
+    void canParseValidPageSizeEqualTo48() {
+        String integerToParse = "48";
 
         int parsedInteger = parsePageSizeNumber(integerToParse);
 
-        assertEquals(500, parsedInteger);
+        assertEquals(48, parsedInteger);
     }
 
     @Test
-    void canParseValidPageSizeGreaterThan500() {
-        String integerToParse = "501";
+    void canParseValidPageSizeGreaterThan48() {
+        String integerToParse = "49";
 
         int parsedInteger = parsePageSizeNumber(integerToParse);
 
-        assertEquals(500, parsedInteger);
+        assertEquals(48, parsedInteger);
     }
 
     @Test
