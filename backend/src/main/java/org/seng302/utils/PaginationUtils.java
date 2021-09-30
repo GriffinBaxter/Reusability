@@ -10,6 +10,8 @@ import org.springframework.web.server.ResponseStatusException;
  */
 public class PaginationUtils {
 
+    private static final int MAX_PAGE_SIZE = 48;
+
     private static final Logger logger = LogManager.getLogger(PaginationUtils.class.getName());
 
     private PaginationUtils() {
@@ -56,8 +58,8 @@ public class PaginationUtils {
         int pageSizeNo;
         try {
             pageSizeNo = Integer.parseInt(pageSize);
-            if (pageSizeNo > 48) {
-                pageSizeNo = 48;
+            if (pageSizeNo > MAX_PAGE_SIZE) {
+                pageSizeNo = MAX_PAGE_SIZE;
             }
         } catch (final NumberFormatException e) {
             logger.error("400 [BAD REQUEST] - {} is not a valid page size", pageSize);
