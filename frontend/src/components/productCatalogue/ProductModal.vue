@@ -38,9 +38,9 @@
             <br>
             <strong>RRP:</strong> {{ recommendedRetailPrice ? currencySymbol : "" }}{{ recommendedRetailPrice ? recommendedRetailPrice : "N/A" }} {{ recommendedRetailPrice ? currencyCode: "" }}
             <br>
-            <strong>Description:</strong>
+            <strong>Description:</strong> {{ description === "" ? "N/A" : ""}}
             <br>
-            {{ description }}
+            {{ description === "" ? "" : description}}
           </p>
           <hr>
           <div class="row">
