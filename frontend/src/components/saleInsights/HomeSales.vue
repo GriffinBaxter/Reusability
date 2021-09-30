@@ -72,13 +72,13 @@ export default {
       this.loading = true;
 
       // If the data is not available then we don't try to get the data.
-      if (!this.isActingAsUser()) {
+      if (!this.isActingAsBusiness()) {
         this.hideGraph = true
         this.loading = false;
         return;
       }
 
-      // Perform the call as the isActingAsUser tests for it being a number as well.
+      // Perform the call as the isActingAsBusiness tests for it being a number as well.
       const businessId = parseInt(Cookies.get("actAs"));
       let revenueData = [];
       try {
@@ -124,7 +124,7 @@ export default {
      * @return {boolean} Returns true if the user is acting as a business and providing a valid business
      * id type (number). Otherwise return false.
      */
-    isActingAsUser() {
+    isActingAsBusiness() {
       return !isNaN(parseInt(Cookies.get("actAs")));
     },
     /**

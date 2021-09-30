@@ -143,7 +143,7 @@ describe("Testing the graph", () => {
         expect(wrapper.vm.$data.totalRevenue).toStrictEqual(totalRevenueAmount);
     })
 
-    test("Testing that the Fulle Sales Report button takes you to the sales page", async () => {
+    test("Testing that the Full Sales Report button takes you to the sales page", async () => {
         const button = await wrapper.find("#go-to-sales");
         await button.trigger("click");
         expect($router.push).toHaveBeenCalledWith({path: `businessProfile/4/sales`})
@@ -376,13 +376,14 @@ describe("Testing the handleGraphError function", () => {
         expect($router.push).toHaveBeenCalledWith({path: "/forbidden"});
     })
 
-    test("Testing error with 500", async () => {wrapper = shallowMount(HomeSales, {
-        mocks: {
-            $router,
-            $route,
-            Date
-        }
-    });
+    test("Testing error with 500", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        });
         await wrapper.vm.handleGraphError({request: true, response: {status: 500}});
         expect(wrapper.vm.$data.hideGraph).toStrictEqual(true);
     })
@@ -391,24 +392,101 @@ describe("Testing the handleGraphError function", () => {
 
 describe("Testing isActingAsUser function", () => {
 
-    test("Testing with a number for actAs", async () => {})
+    const factory = async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        });
+    }
 
-    test("Testing with a string for actAs", async () => {})
+    test("Testing with a number for actAs", async () => {
+        Cookies.get.mockImplementation(() => {return 2});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(true);
+    })
 
-    test("Testing with a undefined for actAs", async () => {})
+    test("Testing with a string as number for actAs", async () => {
+        Cookies.get.mockImplementation(() => {return "2"});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(true);
+    })
 
-    test("Testing with a null for actAs", async () => {})
+    test("Testing with a string non number for actAs", async () => {
+        Cookies.get.mockImplementation(() => {return "asdasda2asdasxxx"});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(false);
+    })
+
+    test("Testing with a string non number for actAs", async () => {
+        Cookies.get.mockImplementation(() => {return "2axaxsxa"});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(true);
+    })
+
+    test("Testing with a undefined for actAs", async () => {
+        Cookies.get.mockImplementation(() => {return undefined});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(false);
+    })
+
+    test("Testing with a null for actAs", async () => {
+        Cookies.get.mockImplementation(() => {return null});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(false);
+    })
 })
 
 describe("Testing goToSales", () => {
 
-    test("Testing with a number for actAs, that the router.push is called", async () => {})
+    const factory = async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        });
+    }
 
-    test("Testing with a number for actAs, that the router.push is called", async () => {})
+    test("Testing with a number for actAs, that the router.push is called", async () => {
+        Cookies.get.mockImplementation(() => {return 2});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(true);
+        await wrapper.vm.goToSales()
+        expect($router.push).toHaveBeenCalledWith({path: `businessProfile/2/sales`})
+    })
 
-    test("Testing with a string for actAs, that the router.push is called", async () => {})
+    test("Testing with a string as number for actAs, that the router.push is called", async () => {
+            Cookies.get.mockImplementation(() => {return "2"});
+            await factory();
+            expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(true);
+            await wrapper.vm.goToSales()
+            expect($router.push).toHaveBeenCalledWith({path: `businessProfile/2/sales`})})
 
-    test("Testing with a undefined for actAs, that the router.push is called", async () => {})
+    test("Testing with a string as not a number for actAs, that the router.push is called", async () => {
+        Cookies.get.mockImplementation(() => {return "asdasxasd2da"});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(false);
+        await wrapper.vm.goToSales()
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
 
-    test("Testing with a null for actAs, that the router.push is called", async () => {})
+    test("Testing with a undefined for actAs, that the router.push is not called", async () => {
+        Cookies.get.mockImplementation(() => {return undefined});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(false);
+        await wrapper.vm.goToSales()
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
+
+    test("Testing with a null for actAs, that the router.push is not called", async () => {
+        Cookies.get.mockImplementation(() => {return null});
+        await factory();
+        expect(await wrapper.vm.isActingAsBusiness()).toStrictEqual(false);
+        await wrapper.vm.goToSales()
+        expect($router.push).toHaveBeenCalledTimes(0);
+    })
 })
