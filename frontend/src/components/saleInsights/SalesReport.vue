@@ -28,6 +28,10 @@
                     @click="period = 'Month'; retrieveSalesReport()">
                   Month
                 </li>
+                <li id="week-option" class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="period = 'Week'; retrieveSalesReport()">
+                  Week
+                </li>
                 <li id="day-option" class="btn green-button-transparent col-12 order-by-options-btn"
                     @click="period = 'Day'; retrieveSalesReport()">
                   Day
@@ -75,6 +79,16 @@
                   {{ validYear }}
                 </li>
               </ul>
+            </div>
+
+            <div v-if="period === 'Week'" class="btn-group col-xl-3 p-2" role="group">
+              <input type="date" id="sales-period-select-week" class="form-control" v-model="selectedDay"
+                     :min="'2021-01-01'" :max="currentDay" :class="toggleInvalidClass(invalidDayMsg)">
+
+              <button class="btn green-button" @click="retrieveSalesReport()">
+                Apply
+              </button>
+
             </div>
 
             <div v-if="period === 'Day'" class="btn-group col-xl-3 p-2" role="group">
@@ -263,7 +277,7 @@
 
 <script>
 
-import {isFuture, parseISO, formatISO, format, lastDayOfMonth, isBefore} from "date-fns";
+import {isFuture, parseISO, formatISO, format, lastDayOfMonth, isBefore, startOfWeek, endOfWeek} from "date-fns";
 import {isFirstDateBeforeSecondDate} from "../../dateUtils";
 import {toggleInvalidClass} from "../../validationUtils";
 import Api from "../../Api";
@@ -411,6 +425,20 @@ export default {
     },
 
     /**
+     * Returns the start date and end date for the week.
+     * @param day A week to give the dates of.
+     */
+    generateDatesFromWeek(day) {
+      const startOfWeekDate = startOfWeek(new Date(day));
+      const endOfWeekDate = endOfWeek(new Date(day));
+
+      return {
+        fromDate: formatISO(startOfWeekDate, {representation: 'date'}) + "T00:00:00",
+        toDate: formatISO(endOfWeekDate, {representation: 'date'}) + "T23:59:59"
+      }
+    },
+
+    /**
      * Returns the start date and end date for the day.
      * @param day A year to give the dates of.
      */
@@ -436,6 +464,8 @@ export default {
         dates = this.generateDatesFromYear(this.selectedYear);
       } else if (this.period === 'Month') {
         dates = this.generateDatesFromMonth(this.selectedMonth);
+      } else if (this.period === 'Week') {
+        dates = this.generateDatesFromWeek(this.selectedDay);
       } else if (this.period === 'Day') {
         dates = this.generateDatesFromDay(this.selectedDay);
       }
