@@ -97,6 +97,11 @@ public class ModifyBusinessStepDefs {
 
     private BusinessImage newPrimaryBusinessImage;
 
+    private String imageReturnPayload = "{\"id\":%d," +
+            "\"filename\":\"%s\"," +
+            "\"isPrimary\":%b," +
+            "\"thumbnailFilename\":\"%s\"}";
+
     @Before
     public void createMockMvc() throws Exception{
         addressRepository = mock(AddressRepository.class);
@@ -250,8 +255,11 @@ public class ModifyBusinessStepDefs {
 
     @Then("This business image will be stored.")
     public void thisBusinessImageWillBeStored() throws UnsupportedEncodingException {
+        String expectedResponse = String.format(imageReturnPayload, primaryBusinessImage.getId(), primaryBusinessImage.getFilename(),
+                primaryBusinessImage.getIsPrimary(), primaryBusinessImage.getThumbnailFilename());
+
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryBusinessImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     @And("There is no image for my business.")

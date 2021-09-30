@@ -853,13 +853,14 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/listings", 0))
                 .param("orderBy", "createdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -882,7 +883,8 @@ class ListingResourceIntegrationTests {
         // when
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "createdASC")
-                .param("page", "0"))
+                .param("page", "0")
+                .param("pageSize", "1"))
                 .andReturn().getResponse();
 
         // then
@@ -905,6 +907,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "createdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", "0")))
                 .andReturn().getResponse();
 
@@ -916,12 +919,12 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that an OK status and a list of listing payloads is received when the business ID in the
      * /businesses/{id}/listings API endpoint exists.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page, and page size params provided are valid.
      *
      * @throws Exception Exception error
      */
     @Test
-    void canRetrieveListingsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
+    void canRetrieveListingsWhenBusinessExistsWithValidOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -943,13 +946,14 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(listingRepository.findListingsByBusinessId(1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "closesASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -978,6 +982,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "a")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -1006,7 +1011,37 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "closesASC")
                 .param("page", "a")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status and no listing payloads are received when the business ID in the
+     * /businesses/{id}/listings API endpoint exists but the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveListingsWhenBusinessExistsWithInvalidPageSizeParam() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJSON = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                        .param("orderBy", "closesASC")
+                        .param("page", "0")
+                        .param("pageSize", "a")
+                        .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -1063,10 +1098,10 @@ class ListingResourceIntegrationTests {
      * Tests that an OK status is received when searching for a listing using the /listings API endpoint
      * and that the JSON response is equal to the listing searched for. The listing is searched for using the
      * listing name.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page, and page size params provided are valid.
      */
     @Test
-    void canSearchListingsWhenListingExistsWithValidOrderByAndPageParamsTest() throws Exception {
+    void canSearchListingsWhenListingExistsWithValidOrderByAndPageAndPageSizeParamsTest() throws Exception {
         // given
         String searchQuery = "Beans";
         List<String> names = Arrays.asList(searchQuery);
@@ -1088,7 +1123,7 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 12, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
 
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null, null, null, null
@@ -1098,6 +1133,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("orderBy", "productNameASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1196,6 +1232,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("orderBy", "b")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -1220,6 +1257,32 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("orderBy", "productNameASC")
                 .param("page", "b")
+                .param("pageSize", "1")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a listing using the /listings API endpoint
+     * when the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     */
+    @Test
+    void cantSearchListingsWithInvalidPageSizeParam() throws Exception {
+        // given
+        String searchQuery = "Beans";
+
+        expectedJSON = "";
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("orderBy", "productNameASC")
+                .param("page", "0")
+                .param("pageSize", "a")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());

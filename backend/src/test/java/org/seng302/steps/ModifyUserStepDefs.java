@@ -108,6 +108,11 @@ public class ModifyUserStepDefs {
             "\"newPassword\": \"%s\"\n" +
             "}";
 
+    private String imageReturnPayload = "{\"id\":%d," +
+            "\"filename\":\"%s\"," +
+            "\"isPrimary\":%b," +
+            "\"thumbnailFilename\":\"%s\"}";
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -479,8 +484,11 @@ public class ModifyUserStepDefs {
 
     @Then("This image will be stored.")
     public void this_image_will_be_stored() throws UnsupportedEncodingException {
+        String expectedResponse = String.format(imageReturnPayload, primaryUserImage.getId(), primaryUserImage.getFilename(),
+                primaryUserImage.getIsPrimary(), primaryUserImage.getThumbnailFilename());
+
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryUserImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
     }
 
     @Given("There is no image for my account.")

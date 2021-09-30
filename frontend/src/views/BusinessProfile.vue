@@ -3,8 +3,8 @@
 
     <div id="main">
       <!--nav bar-->
-      <Navbar></Navbar>
-      <UpdateImagesModal ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
+      <Navbar ref="navbar"></Navbar>
+      <UpdateImagesModal v-on:updatePrimary="updatePrimaryNav" ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
 
       <!--profile container-->
       <div class="container p-5" id="profileContainer">
@@ -34,37 +34,36 @@
             <div class="card text-center shadow-sm">
               <div class="card-body">
 
-                <!--business's profile image-->
-                <div id="profileCarouselControls" class="carousel carousel-dark slide" data-bs-ride="carousel">
-                  <div class="carousel-inner">
-                    <div
-                        v-if="business.data.images === undefined || business.data.images === [] || business.data.images.length === 0">
-                      <img :src="getImageSrc()"
-                           class="rounded-circle img-fluid"
-                           alt="Profile Image">
-                    </div>
-                    <div v-for="image of business.data.images"
-                         v-bind:key="image.id"
-                         :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
-                      <img :src="getImageSrc(image.thumbnailFilename)"
-                           class="rounded-circle img-fluid"
-                           alt="Profile Image">
-                    </div>
+              <!--business's profile image-->
+              <div id="profileCarouselControls" class="carousel carousel-dark slide"
+                   data-bs-interval="false" data-bs-ride="carousel">
+                <div class="carousel-inner" id="image-carousel">
+                  <div v-if="business.data.images === undefined || business.data.images === [] || business.data.images.length === 0">
+                    <img :src="getImageSrc()"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
                   </div>
-                  <div
-                      v-if="business.data.images !== undefined && business.data.images !== [] && business.data.images.length > 1">
-                    <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
-                            data-bs-slide="prev">
-                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#profileCarouselControls"
-                            data-bs-slide="next">
-                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Next</span>
-                    </button>
+                  <div v-for="image of business.data.images"
+                       v-bind:key="image.id"
+                       :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
+                    <img :src="getImageSrc(image.thumbnailFilename)"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
                   </div>
                 </div>
+                <div v-if="business.data.images !== null && business.data.images !== [] && business.data.images.length > 1">
+                  <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+              </div>
 
                 <div id="change-profile-picture-button" style="padding-top: 10px"
                      v-if="isAdministrator || business.data.id">
@@ -300,6 +299,16 @@ export default {
     }
   },
   methods: {
+    /**
+     * Updates the Navbar to display the new primary image.
+     * Only when acting as a business
+     * @param newPrimaryImage thumbnail filename of new image to display
+     */
+    updatePrimaryNav(newPrimaryImage) {
+      if (Cookies.get("actAs")) {
+        this.$refs.navbar.updatePrimaryImage(newPrimaryImage);
+      }
+    },
     /**
      * Formats the given age string using a Date object and removes the day from the result.
      * Returns a formatted string.

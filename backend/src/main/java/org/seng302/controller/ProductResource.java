@@ -143,6 +143,7 @@ public class ProductResource {
      * @param searchBy A list of fields to search by (Optional)
      * @param orderBy Column to order the results by
      * @param page Page number to return results from
+     * @param pageSize Number of elements to return per page
      * @param barcode Barcode number (Optional)
      * @return A list of ProductPayload objects representing the products belonging to the given business
      */
@@ -154,10 +155,11 @@ public class ProductResource {
             @RequestParam(required = false) List<String> searchBy,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
             @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "5") String pageSize,
             @RequestParam(required = false) String barcode
     ) throws Exception {
         logger.debug("Product retrieval request received with business ID {}, search query {}, search by {}, " +
-                "order by {}, page {}, barcode {}", id, searchQuery, searchBy, orderBy, page, barcode);
+                "order by {}, page {}, page size {}, barcode {}", id, searchQuery, searchBy, orderBy, page, pageSize, barcode);
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
@@ -166,9 +168,7 @@ public class ProductResource {
         Authorization.verifyBusinessAdmin(currentUser, id);
 
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 5 users per page
-        int pageSize = 5;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
 
@@ -219,7 +219,7 @@ public class ProductResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
 
         Page<Product> pagedResult = parseAndExecuteQuery(searchQuery, searchBy, id, paging, barcode);
 
@@ -230,7 +230,7 @@ public class ProductResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Product Retrieval Success - 200 [OK] -  Products retrieved for business with ID {}, order by {}, page {}", id, orderBy, pageNo);
+        logger.info("Product Retrieval Success - 200 [OK] -  Products retrieved for business with ID {}, order by {}, page {}, page size {}", id, orderBy, pageNo, pageSizeNo);
 
         List<ProductPayload> productPayloads = convertToPayload(pagedResult.getContent());
 

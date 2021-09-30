@@ -84,7 +84,7 @@ test("Testing the barcodeSearch method in Inventory triggers a router push with 
             id: 1
         },
         path: `/businessProfile/1/inventory`,
-        query: {'barcode': "123", 'orderBy': "createdASC", 'page': "1"}
+        query: {'barcode': "123", 'orderBy': "createdASC", 'page': "1", 'pageSize': "5"}
     };
 
     const response = {
@@ -147,7 +147,7 @@ test("Testing the barcodeSearch method in Inventory triggers a router push with 
 
     await Promise.resolve();
 
-    expect($router.push).toHaveBeenLastCalledWith({path: `/businessProfile/1/inventory`, query: {'barcode': "12345", 'orderBy': "createdASC", 'page': "1"}});
+    expect($router.push).toHaveBeenLastCalledWith({path: `/businessProfile/1/inventory`, query: {'barcode': "12345", 'orderBy': "createdASC", 'page': "1", 'pageSize': "5"}});
     expect(retrieveInventoryItemsSpy).toHaveBeenCalledTimes(1);
 });
 
@@ -161,7 +161,7 @@ test("Testing the barcodeSearch method in Listings triggers a router push with t
             id: 1
         },
         path: `/businessProfile/1/listings`,
-        query: {'barcode': "123", 'orderBy': "createdASC", 'page': "1"}
+        query: {'barcode': "123", 'orderBy': "createdASC", 'page': "1", 'pageSize': "5"}
     };
 
     const response = {
@@ -214,6 +214,6 @@ test("Testing the barcodeSearch method in Listings triggers a router push with t
 
     await Promise.resolve();
 
-    expect($router.push).toHaveBeenLastCalledWith({path: `/businessProfile/1/listings`, query: {'barcode': "12345", 'orderBy': "createdASC", 'page': "1"}});
+    expect($router.push).toHaveBeenLastCalledWith({path: `/businessProfile/1/listings`, query: {'barcode': "12345", 'orderBy': "createdASC", 'page': "1", 'pageSize': "5"}});
     expect(getListingsSpy).toHaveBeenCalledTimes(1);
 });

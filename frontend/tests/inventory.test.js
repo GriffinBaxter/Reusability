@@ -143,7 +143,7 @@ describe("Test methods in the inventory component", () => {
 
             wrapper.vm.updatePage(89);
 
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "", page: "90"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "", page: "90", pageSize: '5'}});
 
         });
 
@@ -154,7 +154,7 @@ describe("Test methods in the inventory component", () => {
             wrapper.vm.$data.orderByString = "expiresASC"
             wrapper.vm.updatePage(1);
 
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/8/inventory", query: {barcode: "9400547002634", orderBy: "expiresASC", page: "2"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/8/inventory", query: {barcode: "9400547002634", orderBy: "expiresASC", page: "2", pageSize: '5'}});
             expect(retrieveInventoryItemsSpyOn).toHaveBeenCalledTimes(2);
         });
 
@@ -310,7 +310,7 @@ describe("Test methods in the inventory component", () => {
             expect(productIdIcon.classes()).toContain('fas');
             expect(productIdIcon.classes()).toContain('fa-chevron-down');
             expect(productIdIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "productIdDESC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "productIdDESC", page: "1", pageSize: '5'}});
         });
 
         test("Test orderInventory sets quantity ascending value and adds the fas chevron classes to the correct icon when ordering by quantity", async () => {
@@ -328,7 +328,7 @@ describe("Test methods in the inventory component", () => {
             expect(quantityIcon.classes()).toContain('fas');
             expect(quantityIcon.classes()).toContain('fa-chevron-up');
             expect(quantityIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "quantityASC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "quantityASC", page: "1", pageSize: '5'}});
         });
 
         test("Test orderInventory sets price per item ascending value and adds the fas chevron classes to the correct icon when ordering by price per item", async () => {
@@ -346,7 +346,7 @@ describe("Test methods in the inventory component", () => {
             expect(pricePerItemIcon.classes()).toContain('fas');
             expect(pricePerItemIcon.classes()).toContain('fa-chevron-down');
             expect(pricePerItemIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "pricePerItemDESC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "pricePerItemDESC", page: "1", pageSize: '5'}});
         });
 
         test("Test orderInventory sets total price ascending value and adds the fas chevron classes to the correct icon when ordering by total price", async () => {
@@ -364,7 +364,7 @@ describe("Test methods in the inventory component", () => {
             expect(totalPriceIcon.classes()).toContain('fas');
             expect(totalPriceIcon.classes()).toContain('fa-chevron-up');
             expect(totalPriceIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "totalPriceASC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "totalPriceASC", page: "1", pageSize: '5'}});
         });
 
         test("Test orderInventory sets manufactured ascending value and adds the fas chevron classes to the correct icon when ordering by manufactured date", async () => {
@@ -382,7 +382,7 @@ describe("Test methods in the inventory component", () => {
             expect(manufacturedIcon.classes()).toContain('fas');
             expect(manufacturedIcon.classes()).toContain('fa-chevron-down');
             expect(manufacturedIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "manufacturedDESC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "manufacturedDESC", page: "1", pageSize: '5'}});
         });
 
         test("Test orderInventory sets sell by ascending value and adds the fas chevron classes to the correct icon when ordering by sell by date", async () => {
@@ -400,7 +400,7 @@ describe("Test methods in the inventory component", () => {
             expect(sellByIcon.classes()).toContain('fas');
             expect(sellByIcon.classes()).toContain('fa-chevron-up');
             expect(sellByIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "sellByASC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "sellByASC", page: "1", pageSize: '5'}});
         });
 
         test("Test orderInventory sets best before ascending value and adds the fas chevron classes to the correct icon when ordering by best before date", async () => {
@@ -418,7 +418,7 @@ describe("Test methods in the inventory component", () => {
             expect(bestBeforeIcon.classes()).toContain('fas');
             expect(bestBeforeIcon.classes()).toContain('fa-chevron-down');
             expect(bestBeforeIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "bestBeforeDESC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "bestBeforeDESC", page: "1", pageSize: '5'}});
         });
 
         test("Test orderInventory sets expires ascending value and adds the fas chevron classes to the correct icon when ordering by expiry date", async () => {
@@ -436,7 +436,7 @@ describe("Test methods in the inventory component", () => {
             expect(expiresIcon.classes()).toContain('fas');
             expect(expiresIcon.classes()).toContain('fa-chevron-up');
             expect(expiresIcon.classes()).toContain('float-end');
-            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "expiresASC", page: "1"}});
+            expect($router.push).toHaveBeenCalledWith({path: "/businessProfile/0/inventory", query: {barcode: "", orderBy: "expiresASC", page: "1", pageSize: '5'}});
         });
 
     });

@@ -137,7 +137,9 @@ describe("Tests for getMainImage function.", () => {
                     mainImageIndex: -1,
                     saleImages: [
                         {filename: "testing.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -157,7 +159,9 @@ describe("Tests for getMainImage function.", () => {
                     saleImages: [
                         {filename: "testing0.png"},
                         {filename: "testing1.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -177,7 +181,9 @@ describe("Tests for getMainImage function.", () => {
                     saleImages: [
                         {filename: "testing0.png"},
                         {filename: "testing1.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -199,7 +205,9 @@ describe("Tests for getMainImage function.", () => {
                         {filename: "testing1.png"},
                         {filename: "testing2.png"},
                         {filename: "testing3.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -219,7 +227,9 @@ describe("Tests for getMainImage function.", () => {
                     saleImages: [
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -245,7 +255,9 @@ describe("Tests for getCarouselImage function", () => {
                 return {
                     saleImages: [
                         {thumbnailFilename: "testing.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -264,7 +276,9 @@ describe("Tests for getCarouselImage function", () => {
                     saleImages: [
                         {thumbnailFilename: "testing0.png"},
                         {thumbnailFilename: "testing1.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -283,7 +297,9 @@ describe("Tests for getCarouselImage function", () => {
                     saleImages: [
                         {thumbnailFilename: "testing0.png"},
                         {thumbnailFilename: "testing1.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -304,7 +320,9 @@ describe("Tests for getCarouselImage function", () => {
                         {thumbnailFilename: "testing1.png"},
                         {thumbnailFilename: "testing2.png"},
                         {thumbnailFilename: "testing3.png"}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -323,7 +341,9 @@ describe("Tests for getCarouselImage function", () => {
                     saleImages: [
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -353,7 +373,9 @@ describe("Tests for getVisibleImages function", () => {
                         {},
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -375,7 +397,9 @@ describe("Tests for getVisibleImages function", () => {
                         {},
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -397,7 +421,9 @@ describe("Tests for getVisibleImages function", () => {
                         {},
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -419,7 +445,9 @@ describe("Tests for getVisibleImages function", () => {
                         {},
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -441,7 +469,9 @@ describe("Tests for getVisibleImages function", () => {
                         {},
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {
@@ -465,7 +495,9 @@ describe("Tests for getVisibleImages function", () => {
                         {},
                         {},
                         {}
-                    ]
+                    ],
+                    currencyCode: "NZD",
+                    currencySymbol: "$"
                 }
             },
             mocks: {

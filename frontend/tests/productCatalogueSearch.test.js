@@ -198,7 +198,7 @@ describe("Testing the ProductSearchBar methods", () => {
             await productCatalogueSearchWrapper.vm.$nextTick();
 
             expect(router.currentRoute.name).toBe('ProductCatalogue')
-            expect(productCatalogueSearchWrapper.emitted().search[0]).toEqual([["name"], inputQuery, barcode]);
+            expect(productCatalogueSearchWrapper.emitted().search[0]).toEqual([["name"], inputQuery, barcode, "5"]);
         });
 
         test('Testing that clicking the search button prompts the search', async () => {
@@ -213,7 +213,7 @@ describe("Testing the ProductSearchBar methods", () => {
                 searchButton.trigger('click');
 
                 expect(router.currentRoute.name).toBe('ProductCatalogue')
-                expect(productCatalogueSearchWrapper.emitted().search[1]).toEqual([["name"], inputQuery, barcode]);
+                expect(productCatalogueSearchWrapper.emitted().search[1]).toEqual([["name"], inputQuery, barcode, "5"]);
 
 
             });

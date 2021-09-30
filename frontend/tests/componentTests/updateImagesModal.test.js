@@ -104,6 +104,71 @@ describe("Testing the set primary image, delete and upload image functionality",
         expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, something went wrong...");
     })
 
+    test("Testing when a user deletes an image, it is removed from the list of images", async() => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
+
+        const data = {
+            status: 200
+        }
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
+
+        Api.deleteImage.mockImplementation(() => Promise.resolve(data));
+
+        wrapper.vm.$data.selectedImage = 2;
+
+        await wrapper.vm.deleteSelectedImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.currentData.data.images.length).toBe(1);
+        expect(wrapper.vm.$data.currentData.data.images[0].id).toBe(1);
+    });
+
+    test("Testing when a user deletes the primary image, it is removed from the list of images and a new primary image is set", async() => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
+
+        const data = {
+            status: 200
+        }
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
+
+        Api.deleteImage.mockImplementation(() => Promise.resolve(data));
+
+        wrapper.vm.$data.selectedImage = 1;
+
+        wrapper.vm.$data.primaryImage = 1;
+
+        await wrapper.vm.deleteSelectedImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.currentData.data.images.length).toBe(1);
+        expect(wrapper.vm.$data.currentData.data.images[0].id).toBe(2);
+        expect(wrapper.vm.$data.currentData.data.images[0].isPrimary).toBeTruthy();
+    });
+
     test('Testing an error message is sent when a user without permission tries to ' +
         'set a primary image and the frontend receives a 403 error.', async () => {
         const $router = {
@@ -120,6 +185,12 @@ describe("Testing the set primary image, delete and upload image functionality",
                 status: 403
             }
         }
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
 
         Api.setPrimaryImage.mockImplementation(() => Promise.reject(data));
 
@@ -157,6 +228,42 @@ describe("Testing the set primary image, delete and upload image functionality",
         expect(wrapper.vm.formErrorModalMessage).toBe("Sorry, something went wrong...");
     })
 
+    test("Testing when a user sets the primary an image, it is removed from the list of images", async() => {
+        const $router = {
+            push: jest.fn()
+        };
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {};
+        });
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
+
+        const data = {
+            status: 200
+        }
+
+        jest.spyOn(document, 'getElementById').mockImplementation(() => {
+            return {
+                children: []
+            };
+        });
+
+        Api.setPrimaryImage.mockImplementation(() => Promise.resolve(data));
+
+        wrapper.vm.$data.selectedImage = 2;
+        wrapper.vm.$data.primaryImage = 1;
+
+        await wrapper.vm.setPrimarySelectedImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.primaryImage).toBe(2);
+        expect(wrapper.vm.$data.currentData.data.images[0].isPrimary).toBeFalsy();
+        expect(wrapper.vm.$data.currentData.data.images[1].isPrimary).toBeTruthy();
+    });
+
     test('Testing an error message is sent when a user tries to upload an invalid file (not an image).',
         async () => {
         const $router = {
@@ -184,6 +291,78 @@ describe("Testing the set primary image, delete and upload image functionality",
         );
 
     })
+
+    test("Testing when a user uploads an image, it is added to the list of images", async() => {
+        const $router = {
+            push: jest.fn()
+        };
+        const wrapper = await factory({
+            mocks: {
+                $router
+            }
+        });
+
+        const data = {
+            status: 200,
+            data: {
+                id: 3,
+                filename: "fakeFilename3.jpg",
+                isPrimary: false,
+                thumbnailFilename: "fakeThumbnail.jpg"
+            }
+        }
+
+        Api.uploadImage.mockImplementation(() => Promise.resolve(data));
+
+        wrapper.vm.$data.primaryImage = 1;
+
+        await wrapper.vm.uploadImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.currentData.data.images.length).toBe(3);
+    });
+
+    test("Testing when a user uploads an image when none exist, it is added to the list of images and sets it as the primary image", async() => {
+        const wrapper = shallowMount(updateImagesModal, {
+            propsData: {
+                value: new Product({
+                    id: "VEGE",
+                    name:"Lettuce",
+                    description: "Green and fresh",
+                    manufacturer: "Pams",
+                    recommendedRetailPrice: 1.99,
+                    created: endOfToday(),
+                    images: []
+                }),
+                businessId: 1,
+                location: "Product"
+            }
+        });
+
+        const data = {
+            status: 200,
+            data: {
+                id: 3,
+                filename: "fakeFilename3.jpg",
+                isPrimary: false,
+                thumbnailFilename: "fakeThumbnail.jpg"
+            }
+        }
+
+        Api.uploadImage.mockImplementation(() => Promise.resolve(data));
+
+        wrapper.vm.$data.primaryImage = null;
+        wrapper.vm.$data.currentData.data.images = [];
+
+        await wrapper.vm.uploadImage();
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.$data.currentData.data.images.length).toBe(1);
+        expect(wrapper.vm.$data.currentData.data.images[0].id).toBe(3);
+        expect(wrapper.vm.$data.currentData.data.images[0].isPrimary).toBeTruthy();
+        expect(wrapper.vm.$data.primaryImage).toBe(3);
+
+    });
 })
 
 describe("Testing getQueryForParams() function", () => {

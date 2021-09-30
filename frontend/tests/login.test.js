@@ -74,7 +74,10 @@ describe("Testing the login", () => {
         await loginWrapper.vm.login();
         await loginWrapper.vm.$nextTick();
 
-        expect(loginWrapper.vm.$refs.errorLbl.innerText).toBe('Exceeded login attempts. Please wait 1 hour for your account to be unlocked.');
+        expect(loginWrapper.vm.$refs.errorLbl.innerText).toBe(
+            'Exceeded login attempts. Please wait 1 hour for your account to be unlocked, or use the ' +
+            'forgotten password functionality above.'
+        );
     })
 
     test('Test error message is visible when the login API gives a 400', async () => {

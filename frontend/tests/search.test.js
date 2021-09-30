@@ -183,6 +183,7 @@ describe("Testing the Search page functionality", () => {
             searchWrapper.vm.searchType = 'User';
             searchWrapper.vm.query = 'Search';
             searchWrapper.vm.orderByString = 'fullNameDESC';
+            searchWrapper.vm.pageSize = '10';
 
             let event = {
                 newPageNumber: 3
@@ -190,7 +191,7 @@ describe("Testing the Search page functionality", () => {
 
             searchWrapper.vm.updatePage(event);
 
-            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: 'Search', orderBy: 'fullNameDESC', page: (event.newPageNumber + 1).toString()}});
+            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: 'Search', orderBy: 'fullNameDESC', page: (event.newPageNumber + 1).toString(), pageSize: '10'}});
             // 2 as it was called once during the shallowMount, and once during updatePage
             expect(requestUsersSpy).toHaveBeenCalledTimes(2);
         });
@@ -199,6 +200,7 @@ describe("Testing the Search page functionality", () => {
             searchWrapper.vm.searchType = 'Business';
             searchWrapper.vm.query = 'Search';
             searchWrapper.vm.orderByString = 'nameDESC';
+            searchWrapper.vm.pageSize = '10';
 
             let event = {
                 newPageNumber: 2
@@ -206,7 +208,7 @@ describe("Testing the Search page functionality", () => {
 
             searchWrapper.vm.updatePage(event);
 
-            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, searchQuery: 'Search', businessType: 'Any', orderBy: 'nameDESC', page: (event.newPageNumber + 1).toString()}});
+            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, searchQuery: 'Search', businessType: 'Any', orderBy: 'nameDESC', page: (event.newPageNumber + 1).toString(), pageSize: '10'}});
             expect(requestBusinessesSpy).toHaveBeenCalledTimes(1);
         });
 
@@ -606,7 +608,7 @@ describe("Testing the Search page functionality", () => {
 
             searchWrapper.vm.orderData(event);
 
-            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: 'Search', orderBy: searchWrapper.vm.orderByUserHeaders[0] + 'DESC', page: (searchWrapper.vm.currentPage + 1).toString()}});
+            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `User`, searchQuery: 'Search', orderBy: searchWrapper.vm.orderByUserHeaders[0] + 'DESC', page: (searchWrapper.vm.currentPage + 1).toString(), pageSize: searchWrapper.vm.pageSize}});
             expect(requestUsersSpy).toHaveBeenCalledTimes(2);
         });
 
@@ -622,7 +624,7 @@ describe("Testing the Search page functionality", () => {
 
             searchWrapper.vm.orderData(event);
 
-            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, searchQuery: 'Search', businessType: 'Any', orderBy: searchWrapper.vm.orderByBusinessHeaders[0] + 'DESC', page: (searchWrapper.vm.currentPage + 1).toString()}});
+            expect($router.push).toHaveBeenCalledWith({ path: '/search', query: { type: `Business`, searchQuery: 'Search', businessType: 'Any', orderBy: searchWrapper.vm.orderByBusinessHeaders[0] + 'DESC', page: (searchWrapper.vm.currentPage + 1).toString(), pageSize: searchWrapper.vm.pageSize}});
             expect(requestBusinessesSpy).toHaveBeenCalledTimes(1);
         });
 

@@ -59,7 +59,7 @@
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
                           v-bind:currencySymbol="currencySymbol"
-                          v-bind:images="images"
+                          v-bind:images="currentProduct.data.images"
                           v-bind:barcode="barcode"/>
                     </div>
                     <div class="modal-footer">
@@ -335,7 +335,8 @@ export default {
             name: 'temp-name',
             description: 'temp-desc',
             manufacturer: 'temp-man',
-            recommendedRetailPrice: 0
+            recommendedRetailPrice: 0,
+            images: []
           }
       ),
       currentProductIndex: null,
@@ -386,9 +387,6 @@ export default {
       currencyCode: "",
       currencySymbol: "",
 
-      // Image related variables
-      images: [],
-
       // If product creation was successful the user will be altered.
       creationSuccess: false,
 
@@ -397,7 +395,10 @@ export default {
 
       // For toast notifications
       messages: [],
-      messageIdCounter: 0
+      messageIdCounter: 0,
+
+      pageSize: this.$route.query["pageSize"] || "5"
+
     }
   },
   methods: {
@@ -441,15 +442,14 @@ export default {
      */
     showRowModal(productIndex) {
       let product = this.productList[productIndex % this.rowsPerPage];
+      this.currentProduct = product;
+      this.currentProductIndex = productIndex;
       this.productId = product.data.id;
       this.productName = product.data.name;
       this.description = product.data.description;
       this.manufacturer = product.data.manufacturer;
       this.recommendedRetailPrice = product.data.recommendedRetailPrice;
       this.created = product.data.created;
-      this.currentProduct = product;
-      this.currentProductIndex = productIndex;
-      this.images = product.data.images;
       this.barcode = product.data.barcode;
       // these checks are needed so that the default prop is used if there is no data (is null)
       if (!(this.description)) {
@@ -574,11 +574,13 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
+      this.pageSize = this.$route.query["pageSize"] || "5";
+      this.rowsPerPage = parseInt(this.pageSize);
       this.loadingProducts = true;
       this.searchBarcode = this.$route.query["barcode"] || "";
 
       // Perform the call to sort the products and get them back.
-      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.searchBarcode, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.searchBarcode, this.orderByString, this.currentPage, this.pageSize).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -640,13 +642,7 @@ export default {
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {
-          "searchQuery": this.searchQuery,
-          "searchBy": this.searchByString,
-          "barcode": this.searchBarcode,
-          "orderBy": this.orderByString,
-          "page": (this.currentPage).toString()
-        }
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString(), "pageSize": this.pageSize}
       });
       this.requestProducts();
     },
@@ -985,21 +981,17 @@ export default {
      * @param checked A list of selected checked boxes.
      * @param searchQuery The search query.
      * @param searchBarcode The barcode to search by.
+     * @param pageSize The number of entries for a page of results.
      */
-    onSearch(checked, searchQuery, searchBarcode) {
+    onSearch(checked, searchQuery, searchBarcode, pageSize) {
       this.searchBy = checked;
       this.searchQuery = searchQuery;
       this.searchBarcode = searchBarcode;
+      this.pageSize = pageSize;
       this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {
-          "searchQuery": this.searchQuery,
-          "searchBy": this.searchByString,
-          "barcode": this.searchBarcode,
-          "orderBy": this.orderByString,
-          "page": "0"
-        }
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0", "pageSize": this.pageSize}
       });
       this.requestProducts();
       this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""

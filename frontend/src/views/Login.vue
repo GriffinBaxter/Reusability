@@ -136,7 +136,8 @@ export default {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 403) {
-            this.$refs.errorLbl.innerText = 'Exceeded login attempts. Please wait 1 hour for your account to be unlocked.';
+            this.$refs.errorLbl.innerText = 'Exceeded login attempts. Please wait 1 hour for your account to be ' +
+                'unlocked, or use the forgotten password functionality above.';
           } else if (error.response.status === 400) {
             this.$refs.errorLbl.innerText = 'Failed login attempt, email or password incorrect.';
           }

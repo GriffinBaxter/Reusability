@@ -187,7 +187,7 @@ describe("Testing the ProductSearchBar methods", () => {
             wrapper.vm.$refs.searchInput.value = "Hello";
             wrapper.vm.searchClicked();
             expect(wrapper.emitted().search).toBeTruthy();
-            expect(wrapper.emitted().search[0]).toEqual([["name"], "Hello", null]);
+            expect(wrapper.emitted().search[0]).toEqual([["name"], "Hello", null, "5"]);
         })
 
     })

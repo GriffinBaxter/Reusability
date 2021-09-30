@@ -116,7 +116,8 @@ class UserResourceIntegrationTests {
             "\"newPassword\": \"%s\"\n" +
             "}";
 
-    private final String forgotPasswordJSON = "{\"email\":\"%s\"}";
+    private final String forgotPasswordJSON = "{\"email\":\"%s\"," +
+                                                "\"clientURL\":\"%s\"}";
 
     private MockHttpServletResponse response;
 
@@ -860,10 +861,10 @@ class UserResourceIntegrationTests {
      * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
      * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
      * names: first, last, middle, first middle last, first last.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page, and page size params provided are valid.
      */
     @Test
-    void canSearchUsersWhenUserExistsWithValidOrderByAndPageParams() throws Exception {
+    void canSearchUsersWhenUserExistsWithValidOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -886,7 +887,7 @@ class UserResourceIntegrationTests {
                 .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
                 .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
                 .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
 
         when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging))
                 .thenReturn(pagedResponse);
@@ -907,6 +908,7 @@ class UserResourceIntegrationTests {
                     get("/users/search").param("searchQuery", searchQuery)
                             .param("orderBy", "fullNameASC")
                             .param("page", "0")
+                            .param("pageSize", "1")
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
@@ -1096,6 +1098,7 @@ class UserResourceIntegrationTests {
                     get("/users/search").param("searchQuery", searchQuery)
                             .param("orderBy", "a")
                             .param("page", "0")
+                            .param("pageSize", "1")
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
@@ -1133,6 +1136,45 @@ class UserResourceIntegrationTests {
                     get("/users/search").param("searchQuery", searchQuery)
                             .param("orderBy", "fullNameASC")
                             .param("page", "a")
+                            .param("pageSize", "1")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a user using the /users/search API endpoint
+     * when the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     */
+    @Test
+    void cantSearchUsersWithInvalidPageSizeParam() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "fullNameASC")
+                            .param("page", "0")
+                            .param("pageSize", "a")
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
@@ -2207,32 +2249,10 @@ class UserResourceIntegrationTests {
 
         // when
         response = mvc.perform(
-                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
+                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail, "http://localhost")))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
-    }
-
-    /**
-     * Tests that an INTERNAL_SERVER_ERROR status is received from the forgot password endpoint when the request baseURL
-     * is not one of the following three allowed:
-     *     http://localhost:9499/users/forgotPassword
-     *     https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword
-     *     https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword
-     */
-    @Test
-    void cantRequestForgotPasswordEmailWhenRequestBaseURLisIncorrect() throws Exception {
-        // given
-        String userEmail = "randomEmail@email.com";
-        given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
-
-        // when
-        response = mvc.perform(
-                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail)))
-                .andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

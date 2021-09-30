@@ -17,6 +17,13 @@ const factory = (values = {}) => {
             return {
                 ...values
             }
+        },
+        mocks:{
+            $route: {
+                query: {
+                    pageSize: "5"
+                }
+            }
         }
     })
 }
@@ -26,6 +33,8 @@ describe('Test No Listings Found message is displayed correctly.',  () => {
         const wrapper = factory({
             listings: [],
             notInitialLoad: true,
+            currencyCode: "NZD",
+            currencySymbol: "$"
         });
         expect(wrapper.find('.noListings').exists()).toBeTruthy()
     })
@@ -47,6 +56,8 @@ describe('Test No Listings Found message is displayed correctly.',  () => {
                 }
                 ],
             notInitialLoad: true,
+            currencyCode: "NZD",
+            currencySymbol: "$"
             })
         expect(wrapper.find('.noListings').exists()).toBeFalsy()
     })
@@ -55,6 +66,8 @@ describe('Test No Listings Found message is displayed correctly.',  () => {
         const wrapper = factory({
             listings: [],
             notInitialLoad: false,
+            currencyCode: "NZD",
+            currencySymbol: "$"
         });
         expect(wrapper.find('.noListings').exists()).toBeFalsy()
     })
@@ -124,6 +137,12 @@ describe("Testing the Listing pages methods", () => {
                 mocks: {
                     $route,
                     $router
+                },
+                data() {
+                    return {
+                        currencySymbol: "$",
+                        currencyCode: "NZD"
+                    }
                 }
             });
             listingWrapper.vm.$data.currentListingId = 1;

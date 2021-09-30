@@ -150,7 +150,7 @@ public class UserResource {
                 }
             }
 
-                // User exists, account not locked and password is correct
+            // User exists, account not locked and password is correct
             if (user.verifyPassword(login.getPassword())) {
                 String sessionUUID = getUniqueSessionUUID();
 
@@ -389,6 +389,7 @@ public class UserResource {
      * @param searchQuery Search query
      * @param orderBy Column to order the results by
      * @param page Page number to return results from
+     * @param pageSize Number of elements to return per page
      * @return A list of UserPayload objects matching the search query
      */
     @GetMapping("/users/search")
@@ -396,16 +397,15 @@ public class UserResource {
             @CookieValue(value = COOKIE_AUTH, required = false) String sessionToken,
             @RequestParam String searchQuery,
             @RequestParam(defaultValue = "fullNameASC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "5") String pageSize
     ) throws Exception {
-        logger.debug("User search request received with search query {}, order by {}, page {}", searchQuery, orderBy, page);
+        logger.debug("User search request received with search query {}, order by {}, page {}, page size {}", searchQuery, orderBy, page, pageSize);
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 5 users per page
-        int pageSize = 5;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
         Sort sortByEmailASC = Sort.by(Sort.Order.asc("email").ignoreCase());
@@ -444,7 +444,7 @@ public class UserResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
 
         Page<User> pagedResult = parseAndExecuteQuery(searchQuery, paging);
 
@@ -455,7 +455,7 @@ public class UserResource {
         responseHeaders.add("Total-Pages", String.valueOf(totalPages));
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
-        logger.info("Search Success - 200 [OK] -  Users retrieved for search query {}, order by {}, page {}", searchQuery, orderBy, pageNo);
+        logger.info("Search Success - 200 [OK] -  Users retrieved for search query {}, order by {}, page {}, page size {}", searchQuery, orderBy, pageNo, pageSizeNo);
 
         logger.debug("Users Found: {}", pagedResult.toList());
         return ResponseEntity.ok()
@@ -494,7 +494,12 @@ public class UserResource {
 
             User user = foundUser.get();
             try {
+                // Checks if the password can be updated (save checks if the column value is valid)
                 user.updatePassword(payload.getPassword());
+                userRepository.save(user);
+
+                // Unlocks the account (saving again due to check required before for saving the new password)
+                user.unlockAccount();
                 userRepository.save(user);
             } catch (IllegalUserArgumentException exception) {
                 logger.error("400 [BAD_REQUEST] - Forgot Password - Invalid Password");
@@ -523,8 +528,7 @@ public class UserResource {
      */
     @PostMapping("/users/forgotPassword")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Email sent successfully")
-    public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload,
-                               HttpServletRequest request) {
+    public void forgotPassword(@RequestBody UserForgotPasswordPayload forgotPasswordPayload) {
 
         String email = forgotPasswordPayload.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -543,29 +547,9 @@ public class UserResource {
                 );
             }
 
-            String baseURL = request.getRequestURL().toString();
+            String resetPasswordURL = forgotPasswordPayload.getClientURL() + "/resetPassword?token=" + forgotPasswordEntity.getToken();
 
-            String resetPasswordURL;
-
-            switch (baseURL) {
-                case "http://localhost:9499/users/forgotPassword":
-                    resetPasswordURL = "http://localhost:9500/changePassword?token=";
-                    break;
-                case "https://csse-s302g4.canterbury.ac.nz/test/api/users/forgotPassword":
-                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/test/changePassword?token=";
-                    break;
-                case "https://csse-s302g4.canterbury.ac.nz/prod/api/users/forgotPassword":
-                    resetPasswordURL = "https://csse-s302g4.canterbury.ac.nz/prod/changePassword?token=";
-                    break;
-                default:
-                    throw new ResponseStatusException(
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Invalid Request URL");
-            }
-
-            resetPasswordURL += forgotPasswordEntity.getToken();
-
-            String emailTemplate = "<html><head> <title>Reusability Password Reset</title> <style> .container { width: 35%; background-color: white; margin-top: 4%; margin: 4% auto; min-width: 450px; } html { background-color: #f9f9f9; min-width: 480px; } .image-container { padding-top: 1.8rem; text-align: center; margin-bottom: 1.4rem; } .title-span{ font-size: 28px; color: white; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } .title-container { background-color: #26e0aa; padding-top: 2rem; padding-left: 2rem; padding-right: 2rem; padding-bottom: 1rem; text-align: center; } p { color: #666666; font-size: 17px; font-family: Arial, Helvetica, sans-serif; } .subtext { color: #888888; font-style: italic; font-size: 16px; } .text-container { padding: 2rem; } .green-bottom { text-align: center; padding: 1rem; background-color: #26e0aa; } .copyright { color: black; font-size: 16px; font-family: Arial, Helvetica, sans-serif; } .link-text { font-size: 14px; } #password-link { background-color: #26e0aa; margin-top: 1rem; padding: 1rem; text-decoration: none; color: white; line-height: 300%; font-size: 18px; } </style></head><body> <div class=\"container\"> <div class=\"image-container\"> <img src=\"https://i.ibb.co/1QCwQqM/image-1.png\" alt=\"Reusability Logo Image\" width=\"170\"> </div> <div class=\"title-container\"> <img src=\"https://i.ibb.co/WDXHnrQ/image-2.png\" alt=\"Reset Logo\" width=\"80\"> <br> <span class=\"title-span\">Password Reset Request</span> </div> <div class=\"text-container\"> <p>Hello,</p> <p>We have sent you this email in response to your request to reset your password on Reusability.</p> <p>To set a new password, click to follow the link below:</p> <a id=\"password-link\" href=\"" + resetPasswordURL + "\">Change Password</a> <p class=\"link-text\">" + resetPasswordURL + "</p> <p class=\"subtext\">Please ignore this email if you did not request a password change.</p> </div> <div class=\"green-bottom\"> <p class=\"copyright\">© Reusability 2021</p> </div> </div> </body></html>";
+            String emailTemplate = "<html><head> <title>Reusability Password Reset</title> <style> .container { width: 35%; background-color: white; margin-top: 4%; margin: 4% auto; min-width: 450px; } html { background-color: #f9f9f9; min-width: 480px; } .image-container { padding-top: 1.8rem; text-align: center; margin-bottom: 1.4rem; } .title-span{ font-size: 28px; color: white; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } .title-container { background-color: #26e0aa; padding-top: 2rem; padding-left: 2rem; padding-right: 2rem; padding-bottom: 1rem; text-align: center; } p { color: #666666; font-size: 17px; font-family: Arial, Helvetica, sans-serif; } .subtext { color: #888888; font-style: italic; font-size: 16px; } .text-container { padding: 2rem; } .green-bottom { text-align: center; padding: 1rem; background-color: #26e0aa; } .copyright { color: black; font-size: 16px; font-family: Arial, Helvetica, sans-serif; } .link-text { font-size: 14px; } #password-link { background-color: #26e0aa; margin-top: 1rem; padding: 1rem; text-decoration: none; color: white; line-height: 300%; font-size: 18px; } </style></head><body> <div class=\"container\"> <div class=\"image-container\"> <img src=\"https://i.ibb.co/1QCwQqM/image-1.png\" alt=\"Reusability Logo Image\" width=\"170\"> </div> <div class=\"title-container\"> <img src=\"https://i.ibb.co/WDXHnrQ/image-2.png\" alt=\"Reset Logo\" width=\"80\"> <br> <span class=\"title-span\">Password Reset Request</span> </div> <div class=\"text-container\"> <p>Hello,</p> <p>We have sent you this email in response to your request to reset your password on Reusability.</p> <p>To set a new password, click to follow the link below:</p> <a id=\"password-link\" href=\"" + resetPasswordURL + "\">Change Password</a> <p class=\"link-text\">" + resetPasswordURL + "</p> <p class=\"subtext\">Please ignore this email if you did not request a password change.</p> </div> <div class=\"green-bottom\"> <p class=\"copyright\">Copyright Reusability 2021</p> </div> </div> </body></html>";
 
             try {
 
