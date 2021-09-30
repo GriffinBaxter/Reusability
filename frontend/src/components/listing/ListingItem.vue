@@ -48,7 +48,7 @@
               </div>
               <div class="col d-flex align-items-end flex-column">
                 <p>{{ description }}</p>
-                <p v-if="barcode != null" class="card-text">
+                <p v-if="barcode != null && barcode !== ''" class="card-text">
                   Barcode: {{ barcode }}
                 </p>
                 <label v-if="closed" id="closed-label" class="card-text" style="color: red">
