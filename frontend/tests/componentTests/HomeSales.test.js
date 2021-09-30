@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 
-import {test, expect, describe, beforeAll, beforeEach, jest} from "@jest/globals"
+import {test, expect, describe, beforeAll, beforeEach, jest, afterEach} from "@jest/globals"
 import Api from "../../src/Api";
 import Cookies from "js-cookie"
 import {shallowMount} from "@vue/test-utils";
@@ -154,18 +154,57 @@ describe("Testing the graph", () => {
 // Mock the Date.now()
 describe("Testing generate dates", () => {
 
-    test("Testing that the generated dates are the current week when today is the middle of the week", async () => {})
+    afterEach( async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        })
 
-    test("Testing that the generated dates are the current week when today is the start of the week", async () => {})
+        expect(await wrapper.vm.generateDates()).toStrictEqual({
+            "fromDate": "2021-10-24T00:00:00.000Z",
+            "toDate": "2021-10-30T00:00:00.000Z"
+        });
+    })
 
-    test("Testing that the generated dates are the current week when today is the end of the week", async () => {})
+    test("Testing that the generated dates are the current week when today is the middle of the week", async () => {
+        Date.now = jest.fn(() => new Date(Date.UTC(2021, 9, 30)).valueOf());
+    })
+
+    test("Testing that the generated dates are the current week when today is the start of the week", async () => {
+        Date.now = jest.fn(() => new Date(Date.UTC(2021, 9, 27)).valueOf());
+    })
+
+    test("Testing that the generated dates are the current week when today is the end of the week", async () => {
+        Date.now = jest.fn(() => new Date(Date.UTC(2021, 9, 30)).valueOf());})
 })
 
 describe("Testing the build graph function",() => {
 
-    test("Testing that if the user is acting as a user. The hide graph message appears", async () => {})
+    test("Testing that if the user is acting as a user. The hide graph message appears", async () => {
+        Cookies.get.mockImplementation(() => {
+            return undefined;
+        });
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        })
+        expect(Cookies.get("actAs")).toStrictEqual(undefined);
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        const hideGraph = await wrapper.find("#hide-graph");
+        expect(hideGraph.exists()).toBeTruthy();
+    })
 
-    test("Testing that the correct total are calculated and currency is set correctly.", async () => {})
+    test("Testing that the correct total are calculated and currency is set correctly.", async () => {
+
+    })
 
     test("Testing that if an error is thrown from getBusiness handleGraphError is called", async () => {})
 
