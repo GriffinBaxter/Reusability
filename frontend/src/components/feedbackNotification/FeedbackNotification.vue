@@ -2,7 +2,7 @@
   <div class="main-feedback-container">
 
     <div class="toast-container" v-for="message in messages" v-bind:key="message.id">
-      <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" v-if="message.isError">
+      <div class="toast show" data-bs-animation="true" role="alert" aria-live="assertive" aria-atomic="true" v-if="message.isError">
         <div class="toast-header notification-error" :id="'toast-heading-' + message.id">
           <strong class="me-auto notification-error-font">{{ message.topic }}</strong>
         </div>

@@ -63,7 +63,7 @@
                           v-bind:barcode="barcode"/>
                     </div>
                     <div class="modal-footer">
-                      <button class="btn btn-primary" @click="(event) => {
+                      <button class="btn btn-primary green-button" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateImagesModal.showModel(event);
                     }">Update Images
@@ -520,7 +520,8 @@ export default {
           "searchBy": this.searchByString,
           "barcode": this.searchBarcode,
           "orderBy": this.orderByString,
-          "page": (this.currentPage).toString()
+          "page": (this.currentPage).toString(),
+          "pageSize": this.pageSize
         }
       })
       this.requestProducts();
