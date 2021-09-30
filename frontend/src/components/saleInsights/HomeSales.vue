@@ -100,7 +100,6 @@ export default {
 
         this.graphData = revenueData;
       } catch (error) {
-        console.log(error)
         await this.handleGraphError(error);
       }
 

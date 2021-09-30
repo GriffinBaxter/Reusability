@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 
-import {test, expect, describe, beforeAll, beforeEach, jest, afterEach} from "@jest/globals"
+import {test, expect, describe, beforeEach, jest, afterEach} from "@jest/globals"
 import Api from "../../src/Api";
 import Cookies from "js-cookie"
 import {shallowMount} from "@vue/test-utils";
@@ -203,28 +203,139 @@ describe("Testing the build graph function",() => {
     })
 
     test("Testing that the correct total are calculated and currency is set correctly.", async () => {
-
+        Api.getBusiness.mockImplementation(() => Promise.resolve({data: {
+                currencyCode: "NZD",
+                currencySymbol: "XXXX"
+            }}));
+        Api.getSalesReport.mockImplementation(() => Promise.resolve({data: [
+                {totalRevenue: 2000, totalSales: 150},
+                {totalRevenue: 2000, totalSales: 150},
+                {totalRevenue: 2005, totalSales: 153}
+            ]}))
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        })
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.totalSales).toStrictEqual(453);
+        expect(wrapper.vm.$data.totalRevenue).toStrictEqual(6005);
+        expect(wrapper.vm.$data.currencyCode).toStrictEqual("NZD");
+        expect(wrapper.vm.$data.currencySymbol).toStrictEqual("XXXX");
     })
 
-    test("Testing that if an error is thrown from getBusiness handleGraphError is called", async () => {})
+    const factory = async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        });
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+        await wrapper.vm.$nextTick()
+    }
 
-    test("Testing that if an error is thrown from getSalesReport handleGraphError is called", async () => {})
+    test("Testing that if an error is thrown from getBusiness handleGraphError is called", async () => {
+        Api.getBusiness.mockImplementation(() => Promise.reject({request: true}));
+        const handleGraphError = jest.spyOn(HomeSales.methods, "handleGraphError");
+        await factory();
+        expect(handleGraphError).toBeCalled();
+    })
 
-    test("Testing a 401 from getBusiness", async () => {})
+    test("Testing that if an error is thrown from getSalesReport handleGraphError is called", async () => {
+        Api.getSalesReport.mockImplementation(() => Promise.reject({request: true}));
+        const handleGraphError = jest.spyOn(HomeSales.methods, "handleGraphError");
+        await factory();
+        expect(handleGraphError).toBeCalled();
+    })
 
-    test("Testing a 403 from getBusiness", async () => {})
+    test("Testing a 401 from getBusiness", async () => {
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            request: true,
+            response: {
+                status: 401
+            }
+        }))
+        await factory();
+        expect($router.push).toHaveBeenCalledWith({path: '/invalidToken'})
+    })
 
-    test("Testing a 500 from getBusiness", async () => {})
+    test("Testing a 403 from getBusiness", async () => {
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            request: true,
+            response: {
+                status: 403
+            }
+        }))
+        await factory();
+        expect($router.push).toHaveBeenCalledWith({path: '/forbidden'})
+    })
 
-    test("Testing a timeout from getBusiness", async () => {})
+    test("Testing a 500 from getBusiness", async () => {
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            request: true,
+            response: {
+                status: 500
+            }
+        }))
+        await factory();
+        expect(wrapper.vm.$data.hideGraph).toStrictEqual(true);
+    })
 
-    test("Testing a 401 from getSalesReport", async () => {})
+    test("Testing a timeout from getBusiness", async () => {
+        Api.getBusiness.mockImplementation(() => Promise.reject({
+            request: true
+        }))
+        await factory();
+        expect($router.push).toHaveBeenCalledWith({path: '/timeout'})
+    })
 
-    test("Testing a 403 from getSalesReport", async () => {})
+    test("Testing a 401 from getSalesReport", async () => {
+        Api.getSalesReport.mockImplementation(() => Promise.reject({
+            request: true,
+            response: {
+                status: 401
+            }
+        }))
+        await factory();
+        expect($router.push).toHaveBeenCalledWith({path: '/invalidToken'})
+    })
 
-    test("Testing a 500 from getSalesReport", async () => {})
+    test("Testing a 403 from getSalesReport", async () => {
+        Api.getSalesReport.mockImplementation(() => Promise.reject({
+            request: true,
+            response: {
+                status: 403
+            }
+        }))
+        await factory();
+        expect($router.push).toHaveBeenCalledWith({path: '/forbidden'})
+    })
 
-    test("Testing a timeout from getSalesReport", async () => {})
+    test("Testing a 500 from getSalesReport", async () => {
+        Api.getSalesReport.mockImplementation(() => Promise.reject({
+            request: true,
+            response: {
+                status: 500
+            }
+        }))
+        await factory();
+        expect(wrapper.vm.$data.hideGraph).toStrictEqual(true);
+    })
+
+    test("Testing a timeout from getSalesReport", async () => {
+        Api.getSalesReport.mockImplementation(() => Promise.reject({
+            request: true
+        }))
+        await factory();
+        expect($router.push).toHaveBeenCalledWith({path: '/timeout'})
+    })
 
 })
 
