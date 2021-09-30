@@ -270,7 +270,7 @@ export default {
         this.errorsMessages.barcode = "";
       }
 
-      this.editBarcode = this.newProduct.data.barcode !== null;
+      this.editBarcode = this.newProduct.data.barcode !== null && this.newProduct.data.barcode !== "";
       this.barcode = ""
       this.liveStreaming = false;
       this.barcodeFound = false;
@@ -390,7 +390,7 @@ export default {
             this.config.barcode.regexMessage,
             this.config.barcode.regex)
       } else {
-        this.newProduct.data.barcode = this.value.data.barcode;
+        this.newProduct.data.barcode = '';
         this.errorsMessages.barcode = '';
       }
       if (this.errorsMessages.barcode) {

@@ -608,7 +608,7 @@ export default {
             newTableData.push(this.productList[i].data.manufacturer);
             newTableData.push(this.productList[i].data.recommendedRetailPrice);
             newTableData.push(formatDate(this.productList[i].data.created));
-            newTableData.push(this.productList[i].data.barcode);
+            newTableData.push(this.productList[i].data.barcode === '' ? null : this.productList[i].data.barcode);
           }
         }
         this.tableData = newTableData;
