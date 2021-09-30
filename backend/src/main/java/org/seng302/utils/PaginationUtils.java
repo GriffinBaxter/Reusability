@@ -56,8 +56,8 @@ public class PaginationUtils {
         int pageSizeNo;
         try {
             pageSizeNo = Integer.parseInt(pageSize);
-            if (pageSizeNo > 500) {
-                pageSizeNo = 500;
+            if (pageSizeNo > 48) {
+                pageSizeNo = 48;
             }
         } catch (final NumberFormatException e) {
             logger.error("400 [BAD REQUEST] - {} is not a valid page size", pageSize);
