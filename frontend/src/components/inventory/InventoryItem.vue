@@ -22,7 +22,7 @@
           <!--Product info-->
           <h3 class="card-title">
             {{ productName }}
-            <i class="card-text fas fa-edit float-end"></i>
+            <em class="card-text fas fa-edit float-end"></em>
           </h3>
           <h6 class="card-text">
             {{ productId }}
