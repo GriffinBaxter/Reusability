@@ -1,6 +1,6 @@
 <template>
   <!-- Modal -->
-  <div class="modal fade" id="creationPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <div class="modal fade" id="creationPopup" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="creationPopupTitle" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">

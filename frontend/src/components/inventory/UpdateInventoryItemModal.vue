@@ -1,6 +1,6 @@
 <template>
   <!-- Modal -->
-  <div class="modal fade" ref="_updateInventoryItemModal" id="updateInventoryItemModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <div class="modal fade" ref="_updateInventoryItemModal" id="updateInventoryItemModal" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="updateInventoryItemModalTitle" aria-hidden="false">
     <div class="modal-dialog">
       <div class="modal-content">
