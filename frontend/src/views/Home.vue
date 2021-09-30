@@ -10,7 +10,7 @@
       <!--Nav bar; displays either business account or individual account nav bar-->
       <Navbar></Navbar>
 
-      <div id="home" class="container all-but-footer">
+      <div id="home" class="container all-but-footer" v-if="isActingAsUser()">
         <h1 style="text-align: center">Home</h1>
 
         <ul class="nav nav-tabs" id="homepage-tabs" role="tablist">
@@ -100,6 +100,11 @@
         </div>
       </div>
 
+      <div class="container all-but-footer" v-else>
+        <h1 style="text-align: center">Home</h1>
+        <HomeSales></HomeSales>
+      </div>
+
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
     <Footer/>
@@ -115,10 +120,12 @@ import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
 import LoadingDots from "../components/LoadingDots";
+import HomeSales from "../components/saleInsights/HomeSales";
 
 export default {
   name: "Home",
   components: {
+    HomeSales,
     LoadingDots,
     Footer,
     Navbar,
@@ -134,7 +141,7 @@ export default {
 
       usersCards: [],
       userId: null,
-      loadingCards: false
+      loadingCards: false,
     }
   },
   mounted() {
@@ -178,7 +185,6 @@ export default {
     formatDateVar(date, tf) {
       return formatDate(date, tf)
     },
-
     /**
      * Routes the user to the listing page associated with their bookmarked message with the given business id and
      * listing id.
@@ -266,7 +272,7 @@ export default {
       const value = Cookies.get("actAs")
       return value === undefined || value === null;
     }
-  }
+  },
 }
 </script>
 
