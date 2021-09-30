@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <BarcodeScannerModal id="barcode-scanner-modal-parent" ref="barcodeScannerModal" @scannedBarcode="updateBarcode"/>
+    <BarcodeScannerModal id="barcode-scanner-modal-parent" ref="barcodeScannerModal" @scannedBarcode="updateBarcode" modal-identifier="products-business"/>
 
     <!--------------------------------------------------------------------------------------------------------->
 

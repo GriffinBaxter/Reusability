@@ -36,7 +36,7 @@
           </button>
           <br>
           <div v-if="liveStreaming"><br></div>
-          <div id="scannerModalLiveStreamCamera"></div>
+          <div :id="`scannerModalLiveStreamCamera` + this.$props.modalIdentifier"></div>
         </div>
         
         <div class="modal-footer">
@@ -67,6 +67,12 @@ export default {
       barcodeFound: false,
 
       hasBeenShown: false
+    }
+  },
+  props: {
+    modalIdentifier: {
+      type: String,
+      required: true
     }
   },
   methods: {
@@ -116,7 +122,7 @@ export default {
     getBarcodeLiveStream() {
       const outerThis = this;
       this.barcodeErrorMsg = "";
-      getBarcodeLiveStream(this, 460, "#scannerModalLiveStreamCamera", function () {
+      getBarcodeLiveStream(this, 460, "#scannerModalLiveStreamCamera" + outerThis.$props.modalIdentifier, function () {
         if (outerThis.barcodeErrorMsg === "" && outerThis.barcode !== "") {
           outerThis.$emit('scannedBarcode', outerThis.barcode);
           outerThis.modal.hide();
@@ -128,7 +134,7 @@ export default {
      * Removes the camera error message after stopping the scanning.
      */
     removeCameraError() {
-      document.querySelector('#scannerModalLiveStreamCamera').innerHTML = ""
+      document.querySelector('#scannerModalLiveStreamCamera' + this.$props.modalIdentifier).innerHTML = ""
     },
   },
 

@@ -96,7 +96,6 @@ function retrieveBarcodeLiveStream(outerThis, width, div, callback) {
             outerThis.barcode = barcodeScanned;
         }
         if (!outerThis.liveStreaming) {
-            Quagga.stop();
             try {
                 document.querySelector(div).innerHTML = "";
                 outerThis.barcodeFound = false;

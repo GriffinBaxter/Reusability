@@ -63,7 +63,7 @@
           <div class="col-3 col-md-3 text-secondary flex-nowrap align-text-center" style="margin-top: 1.7rem">Filter By: {{convertToString()}}</div>
 
           <div class="col-md-3 justify-content-md-center" >
-            <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
+            <BarcodeSearchBar @barcodeSearch="barcodeSearch" search-bar-identifier="listings-business"/>
           </div>
 
           <div class="col justify-content-md-center" style="display: flex; align-items: flex-end">
