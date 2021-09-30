@@ -270,7 +270,7 @@ export default {
         this.errorsMessages.barcode = "";
       }
 
-      this.editBarcode = this.newProduct.data.barcode !== null;
+      this.editBarcode = this.newProduct.data.barcode !== null && this.newProduct.data.barcode !== "";
       this.barcode = ""
       this.liveStreaming = false;
       this.barcodeFound = false;
@@ -390,7 +390,8 @@ export default {
             this.config.barcode.regexMessage,
             this.config.barcode.regex)
       } else {
-        this.newProduct.data.barcode = this.value.data.barcode;
+        this.newProduct.data.barcode = '';
+        this.errorsMessages.barcode = '';
       }
       if (this.errorsMessages.barcode) {
         this.inputError = true;
@@ -406,7 +407,7 @@ export default {
       Api.modifyProduct(this.value.data.id, this.businessId, this.newProduct)
           .then(
               res => {
-                // This means that the modification was successfull
+                // This means that the modification was successful
                 if (res.data.status === 200) {
                   this.updateValue(new Product(this.newProduct.data));
                   // Custom event so that ProductCatalogue.vue knows edit was a success and can alert the user.
@@ -440,7 +441,7 @@ export default {
 
 
                 } else if (error.request) {
-                  // Timeout occured
+                  // Timeout occurred
                   this.formErrorModalMessage = "Server timeout"
                   this.$router.push({path: "/timeout"})
                 } else {
