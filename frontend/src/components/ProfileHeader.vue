@@ -11,7 +11,10 @@
             <button id="business-radio-button" type="button" :class="`btn green-button-transparent ${this.searchType === 'Business' ? 'active': ''}`" @click="changeSearchType('Business')">Business</button>
           </div>
           <input type="text" id="search-bar" ref="searchInput" class="form-control" @keydown="enterPressed($event)" :placeholder="placeholder">
-          <button class="btn green-search-button" id="search-button" @click="searchClicked()"><i class="fas fa-search" aria-hidden="true"></i></button>
+          <button class="btn green-search-button" id="search-button" style="border-radius: 10%;" @click="searchClicked()"><i class="fas fa-search" aria-hidden="true"></i></button>
+          <div v-if="showPageSize">
+            <PageSize style="margin-left: 2.25rem;" :current-page-size="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
+          </div>
         </div>
       </div>
       <br>
@@ -32,8 +35,18 @@
 
 <script>
 
+import PageSize from "../components/PageSize";
+
 export default {
   name: "ProfileHeader",
+  components: {PageSize},
+  props: {
+    // only show the page size when on search page
+    showPageSize: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       searchType: "User",
@@ -45,6 +58,9 @@ export default {
         { businessType: 'charitable-organisation', value: 'Charitable Organisation' },
         { businessType: 'non-profit-organisation', value: 'Non Profit Organisation' }
       ],
+
+      pageSizes: ["5", "10", "15", "25"], // list of pages sizes
+      pageSize: "5" // default page size
     }
   },
   computed: {
@@ -76,10 +92,10 @@ export default {
         }
 
         if (this.searchType === 'User') {
-          this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+          this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1", pageSize: this.pageSize}});
           this.$emit('requestUsers', inputQuery);
         } else if (this.searchType === 'Business') {
-          this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
+          this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1", pageSize: this.pageSize}});
           this.$emit('requestBusinesses', inputQuery, this.selectedBusinessType);
         }
       }
@@ -91,7 +107,7 @@ export default {
     searchClicked() {
       const inputQuery = this.$refs.searchInput.value;
       // Checks current route isn't target route
-      if (this.$route.name === 'Search' && this.$route.query['type'] === this.searchType && this.$route.query['searchQuery'] === inputQuery) {
+      if (this.$route.name === 'Search' && this.$route.query['type'] === this.searchType && this.$route.query['searchQuery'] === inputQuery && this.$route.query['pageSize'] === this.pageSize) {
         if (this.searchType === 'Business') {
           if (this.$route.query['businessType'] === this.selectedBusinessType) {
             return
@@ -101,10 +117,10 @@ export default {
         }
       }
       if (this.searchType === 'User') {
-        this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1"}});
+        this.$router.push({ path: '/search', query: { type: `User`, searchQuery: `${inputQuery}`, orderBy: `fullNameASC`, page: "1", pageSize: this.pageSize}});
         this.$emit('requestUsers', inputQuery);
       } else if (this.searchType === 'Business') {
-        this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1"}});
+        this.$router.push({ path: '/search', query: { type: `Business`, searchQuery: `${inputQuery}`, businessType: `${this.selectedBusinessType}`, orderBy: `nameASC`, page: "1", pageSize: this.pageSize}});
         this.$emit('requestBusinesses', inputQuery, this.selectedBusinessType);
       }
     },
@@ -114,6 +130,16 @@ export default {
      */
     changeSearchType(type) {
       this.searchType = type;
+    },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.searchClicked();
     }
   },
   mounted() {

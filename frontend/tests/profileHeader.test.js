@@ -241,7 +241,7 @@ describe("Testing the search type functionality", () => {
                 searchBar.trigger('keydown.enter');
 
                 expect(router.currentRoute.name).toBe('Search')
-                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1`)
+                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1&pageSize=5`)
             });
         });
 
@@ -259,7 +259,7 @@ describe("Testing the search type functionality", () => {
                 searchButton.trigger('click');
 
                 expect(router.currentRoute.name).toBe('Search')
-                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1`)
+                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1&pageSize=5`)
             });
         });
 
@@ -305,7 +305,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Any";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -324,7 +324,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Any";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -349,7 +349,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Accommodation%20and%20Food%20Services";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -371,7 +371,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Accommodation%20and%20Food%20Services";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -396,7 +396,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Retail%20Trade";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -418,7 +418,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Retail%20Trade";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -443,7 +443,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Charitable%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -465,7 +465,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Charitable%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -490,7 +490,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Non%20Profit%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -512,7 +512,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Non%20Profit%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -653,7 +653,8 @@ describe("Testing the search type functionality", () => {
                 query: {
                     type: 'Business',
                     searchQuery: 'Hello World',
-                    businessType: 'Retail Trade'
+                    businessType: 'Retail Trade',
+                    pageSize: '5'
                 }
             };
             profileHeaderWrapper = shallowMount(ProfileHeader, {

@@ -14,7 +14,7 @@
         <hr>
         <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
-          <div class="btn-group col-md-3 py-1 align-self-center" role="group">
+          <div class="btn-group col-md-2 py-1 align-text-center" role="group" style="display: flex; align-items: flex-end">
             <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                     data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
@@ -51,14 +51,18 @@
           </div>
 
           <!-- Create New Button -->
-          <div class="col-md-2 py-1 align-self-center" v-if="businessAdmin">
+          <div class="col-md-2 py-1 align-text-center" v-if="businessAdmin" style="display: flex; align-items: flex-end">
             <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup" style="height: 38px">Create New</button>
           </div>
 
-          <div class="col-3 col-md-4 text-secondary flex-nowrap align-self-center">Filter By: {{convertToString()}}</div>
+          <div class="col-3 col-md-3 text-secondary flex-nowrap align-text-center" style="margin-top: 1.7rem">Filter By: {{convertToString()}}</div>
 
-          <div class="col-md-3 py-1">
+          <div class="col-md-3 justify-content-md-center" >
             <BarcodeSearchBar @barcodeSearch="barcodeSearch"/>
+          </div>
+
+          <div class="col justify-content-md-center" style="display: flex; align-items: flex-end">
+            <PageSize :current-page-size="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
           </div>
 
         </div>
@@ -144,6 +148,7 @@ import Footer from "../components/main/Footer";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
 import BarcodeSearchBar from "../components/BarcodeSearchBar";
+import PageSize from "../components/PageSize";
 import WithdrawListingConfirmationModal from "../components/listing/WithdrawListingConfirmationModal";
 
 export default {
@@ -153,6 +158,7 @@ name: "Listings",
     CreateListing,
     ListingItem,
     Navbar,
+    PageSize,
     PageButtons,
     BarcodeSearchBar,
     WithdrawListingConfirmationModal
@@ -194,7 +200,10 @@ name: "Listings",
       currentListingId: null,
       currentProductName: "",
       currentQuantity: "",
-      currentPrice: ""
+      currentPrice: "",
+
+      pageSizes: ["5", "10", "15", "25"], // a list of available page sizes.
+      pageSize: this.$route.query["pageSize"] || "5" // default page size
     }
   },
   computed: {
@@ -210,7 +219,7 @@ name: "Listings",
     withdrawListingConfirmation(data) {
 
       const listingId = data.listingId;
-      const listing = this.listings.find(listing => listing.id === listingId);
+      const listing = this.listings.find(listingItem => listingItem.id === listingId);
 
       this.currentProductName = listing.productName;
       this.currentQuantity = listing.quantity;
@@ -265,7 +274,7 @@ name: "Listings",
      */
     updatePage(newPageNumber) {
       this.currentPage = newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}})
       this.getListings();
     },
 
@@ -349,7 +358,7 @@ name: "Listings",
 
       }
 
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}});
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}});
       this.getListings();
     },
 
@@ -371,13 +380,15 @@ name: "Listings",
       */
       this.orderBy = this.$route.query["orderBy"] || "closesASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.pageSize = this.$route.query["pageSize"] || "5";
+      this.rowsPerPage = parseInt(this.pageSize);
       this.barcode = this.$route.query["barcode"] || "";
 
       if (this.barcode === undefined || this.barcode === null) {
         this.barcode = "";
       }
 
-      await Api.sortListings(this.businessId, this.orderBy, this.currentPage, this.barcode).then(response => {
+      await Api.sortListings(this.businessId, this.orderBy, this.currentPage, this.pageSize, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -493,7 +504,19 @@ name: "Listings",
      */
     barcodeSearch(event) {
       this.$router.push({path: `/businessProfile/${this.businessId}/listings`,
-        query: {"barcode": event, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+        query: {"barcode": event, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}})
+      this.getListings();
+    },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.currentPage = 0;
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}});
       this.getListings();
     }
   },

@@ -25,7 +25,9 @@ describe("Testing the listing item functionality", () => {
                 expires: "20th October 2022",
                 images: [],
                 isAdmin: true,
-                listingId: 1
+                listingId: 1,
+                currencyCode: "NZD",
+                currencySymbol: "$"
             }
         });
     });

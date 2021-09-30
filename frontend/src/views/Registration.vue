@@ -113,15 +113,15 @@
               <div class="col my-2 my-lg-0">
                 <h6>Password must meet the following conditions:</h6>
                 <ul>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase, passwordWasTyped)">
                     One lowercase letter</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase, passwordWasTyped)">
                     One uppercase letter</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainNumber)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainNumber, passwordWasTyped)">
                     One number</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol, passwordWasTyped)">
                     One of the following: !, @, #, $, %, ^, & and or*</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainLength)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLength, passwordWasTyped)">
                     At least 8 characters in length</li>
                 </ul>
               </div>
@@ -341,7 +341,8 @@ import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
 import {isValidDateOfBirth, getAddressConcatenation} from "./helpFunction";
-import {toggleInvalidClass} from "../validationUtils";
+import {toggleInvalidClass, getErrorMessage, between} from "../validationUtils";
+import {checkPasswordCriteria, togglePasswordInputType} from "../../src/passwordUtil";
 
 export default {
   name: "Registration",
@@ -438,49 +439,12 @@ export default {
   },
   methods: {
     toggleInvalidClass: toggleInvalidClass,
+    togglePasswordInputType: togglePasswordInputType,
+    checkPasswordCriteria: checkPasswordCriteria,
+    getErrorMessage: getErrorMessage,
+    between: between,
 
-    /**
-     * This method toggles the appearance of the password field, where the password will be shown if showPassword is
-     * true, else it is hidden.
-     * @param showPassword, whether the password should be displayed.
-     * @returns {string}, String, the visibility of the password.
-     */
-    togglePasswordInputType(showPassword) {
-      if (showPassword) {
-        return 'text'
-      } else {
-        return 'password'
-      }
-    },
 
-    /**
-     * This method checks the password against the given criteria and determines whether it meets the criteria.
-     * If it does, the colour is changed from black to red.
-     *
-     * @param password, string, the current input of the password field.
-     * @param regex, string, the password criteria that the password is checked against.
-     * @returns {[string]}, classList, a List containing a String of classes for the password criteria to used.
-     */
-    checkPasswordCriteria(password, regex) {
-
-      let classList = ['small']
-      if (!regex.test(password) && this.passwordWasTyped) {
-        classList.push('text-red');
-      }
-      return classList;
-    },
-
-    /**
-     * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
-     *
-     * @param val, int, the value to be tested for being within the range.
-     * @param min, int, the minimum value in the range.
-     * @param max, int, the maximum value in the range.
-     * @returns Boolean, true if within range, false is not within range.
-     */
-    between(val, min, max) {
-      return min <= val && val <= max;
-    },
 
     /**
      * This method determines the maximum possible date of birth.
@@ -506,32 +470,6 @@ export default {
       }
 
       return `${year.toString()}-${month.toString()}-${day.toString()}`
-    },
-
-    /**
-     * This method determines the error message to be generated for a given input value based on the field type and
-     * its associated validity (determined by a regex).
-     *
-     * @param name, string, name of the input field.
-     * @param inputVal, string, the value entered in the stated field.
-     * @param minLength, number, the minimum allowed length of the inputVal.
-     * @param maxLength, number, the maximum allowed length of the inputVal.
-     * @param regexMessage, string, the tailored message about the expected syntax for the inputVal if it does not
-     *                              meet the regex given.
-     * @param regex, string, the allowed format for the given input field.
-     * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
-     */
-    getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = "";
-      if (inputVal === "" && minLength >= 1) {
-        errorMessage = "Please enter input";
-      }
-      else if (!regex.test(inputVal)) {
-        errorMessage = regexMessage;
-      } else if (!this.between(inputVal.length, minLength, maxLength)) {
-        errorMessage = `Input must be between ${minLength} and ${maxLength} characters long.`
-      }
-      return errorMessage;
     },
 
     /**

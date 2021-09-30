@@ -357,6 +357,15 @@ public class Business {
     }
 
     /**
+     * Check if a user is the primary administrator of this business
+     * @param user The given user to check
+     * @return True when the user is a primary administrator of this business.
+     */
+    public boolean isPrimaryBusinessAdministrator(User user) {
+        return (user.getId() == primaryAdministratorId);
+    }
+
+    /**
      * Converts the business to payload form and returns it.
      * @return A payload representation of the business
      */

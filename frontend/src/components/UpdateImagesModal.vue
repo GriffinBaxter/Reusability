@@ -82,9 +82,9 @@
 </template>
 
 <script>
-import Product from "../configs/Product";
 import {Modal} from "bootstrap";
 import Api from "../Api"
+import Product from "../configs/Product"
 
 export default {
   name: "UpdateImagesModal",
@@ -115,7 +115,6 @@ export default {
 
       selectedImage: null,
       primaryImage: 0,
-      primaryImageFilename: "",
 
       // if an error occurs when a user performs an action then the appropriate error message needs to be displayed.
       formErrorModalMessage: "",
@@ -134,13 +133,7 @@ export default {
     showModel(event) {
       // Prevent any default actions
       event.preventDefault();
-
-      // If the modal is already showing prevent the placeholders from being updated.
-      if (!this.$refs._updateImagesModal.classList.contains("show")) {
-        // Update the placeholders
-        this.currentData.data.id = this.value.data.id;
-        this.currentData.data.images = this.value.data.images;
-      }
+      this.currentData = this.value;
 
       if (this.location === "User") {
         this.currentData.data.firstName = this.value.data.firstName
@@ -148,17 +141,17 @@ export default {
         this.currentData.data.name = this.value.data.name;
       }
 
+      let primaryImageFilename;
       for (let image of this.currentData.data.images) {
         if (image.isPrimary) {
           this.primaryImage = image.id;
-          this.primaryImageFilename = image.filename;
+          primaryImageFilename = image.filename;
         }
       }
 
       this.images = this.currentData.data.images;
-
       if (this.images.length > 0) {
-        document.getElementById("primary-image").src = this.getImageSrc(this.primaryImageFilename);
+        document.getElementById("primary-image").src = this.getImageSrc(primaryImageFilename);
       } else {
         document.getElementById("primary-image").src = require('../../public/default-image.jpg');
       }
@@ -168,6 +161,10 @@ export default {
       this.modal.show();
     },
 
+    /**
+     * Sets/unsets the selected image
+     * @param id Id of image to select/unselect
+     */
     setSelected(id) {
       if (this.selectedImage === id) {
         this.selectedImage = null;
@@ -176,6 +173,10 @@ export default {
       }
     },
 
+    /**
+     * Gets the full image path from the server URL
+     * @param filename Name of file to get full path for
+     */
     getImageSrc(filename) {
       return Api.getServerURL() + "/" + filename;
     },
@@ -209,12 +210,59 @@ export default {
     deleteSelectedImage() {
       Api.deleteImage(this.getQueryForParams(), this.selectedImage)
           .then(() => {
-            location.reload();
+            this.removeImage(this.selectedImage);
           })
           .catch((error) => {
             this.handleError(error);
           })
     },
+
+    /**
+     * Removes the selected image from the list of images
+     * If image is primary, it also updates the primary image
+     * @param imageId Id of image to remove
+     */
+    removeImage(imageId) {
+      this.removeActiveCarouselElements();
+
+      this.selectedImage = null;
+
+      let images = this.currentData.data.images
+      for (let i=0; i < images.length; i++) {
+        if (images[i].id === imageId) {
+          if (this.location !== "Product") {
+            let index = (i + 1) % images.length
+            if (i !== 0 || images.length > 1) {
+              document.getElementById("image-carousel").children[index].classList.add("active");
+            }
+          }
+          images.splice(i, 1);
+          break;
+        }
+      }
+
+      // if image is primary sets primary image to the first item in the list
+      if (this.primaryImage === imageId) {
+        this.removeActiveCarouselElements();
+
+        if (this.currentData.data.images.length > 0) {
+          this.primaryImage = this.currentData.data.images[0].id;
+          this.currentData.data.images[0].isPrimary = true;
+          document.getElementById("primary-image").src = this.getImageSrc(this.currentData.data.images[0].filename);
+          this.$emit("updatePrimary", this.currentData.data.images[0].thumbnailFilename);
+
+        } else {
+          this.$emit("updatePrimary", null);
+          this.primaryImage = null;
+          document.getElementById("primary-image").src = require('../../public/default-image.jpg');
+        }
+      }
+
+      if (this.location === "Product") {
+        this.updateValue(new Product(this.currentData.data));
+      }
+    },
+
 
     /**
      * Sets the selected image to the primary image.
@@ -223,14 +271,41 @@ export default {
       Api.setPrimaryImage(this.getQueryForParams(), this.selectedImage).then(
           response => {
             if (response.status === 200) {
-              location.reload();
-            } else {
-              this.formErrorModalMessage = "Sorry, something went wrong...";
+              this.setPrimary(this.selectedImage);
             }
           }
       ).catch((error) => {
         this.handleError(error);
       })
+    },
+    /**
+     * Sets the selected image to the primary image
+     * @param imageId Id of image to set as primary
+     */
+    setPrimary(imageId) {
+      this.removeActiveCarouselElements();
+
+      this.primaryImage = imageId;
+      for (const [index, image] of this.currentData.data.images.entries()) {
+        if (image.id === imageId) {
+          // updates the new primary image
+          image.isPrimary = true;
+          document.getElementById("primary-image").src = this.getImageSrc(image.filename);
+
+          if (this.location !== "Product") {
+            document.getElementById("image-carousel").children[index].classList.add("active");
+          }
+
+          // Update Navbar image (BusinessProfile/Profile)
+          this.$emit("updatePrimary", image.thumbnailFilename);
+        } else if (image.isPrimary) {
+          // updates the old primary image
+          image.isPrimary = false;
+        }
+      }
+      if (this.location === "Product") {
+        this.updateValue(new Product(this.currentData.data));
+      }
     },
 
     /**
@@ -260,29 +335,59 @@ export default {
       image.append("images", file)
 
       Api.uploadImage(this.getQueryForParams(), image)
-          .then(() => {
-            location.reload();
+          .then((res) => {
+            this.addImage(res)
           }).catch((error) => {
         this.formErrorModalMessage = "Sorry, the file you uploaded is not a valid image.";
         console.log(error.message);
       })
     },
+    /**
+     * Adds the new image to the list of stored images
+     * If list is currently empty also sets image to primary image
+     * @param res response from upload image API call
+     */
+    addImage(res) {
+      // If image is the only image set primary as default
+      if (this.currentData.data.images.length === 0) {
+        res.data.isPrimary = true;
+        this.primaryImage = res.data.id;
+        this.currentData.data.images.push(res.data);
+        document.getElementById("primary-image").src = this.getImageSrc(res.data.filename);
+        this.$emit("updatePrimary", res.data.thumbnailFilename)
+      } else {
+        this.currentData.data.images.push(res.data);
+      }
+      if (this.location === "Product") {
+        this.updateValue(new Product(this.currentData.data));
+      }
+    },
+
+    updateValue(value) {
+      this.$emit('input', value);
+    },
 
     onUploadClick() {
       this.$refs.image.click();
+    },
+
+    /**
+     * Makes all elements of the image carousel inactive, for use before setting a new active image (irrelevant to
+     * product images).
+     */
+    removeActiveCarouselElements() {
+      if (this.location !== "Product") {
+        for (let child of document.getElementById("image-carousel").children) {
+          child.classList.remove("active");
+        }
+      }
     }
   },
-  mounted() {
+  mounted: function () {
     // Create a modal and attach it to the updateProductModel reference.
     this.modal = new Modal(this.$refs._updateImagesModal);
 
-    if (this.location === "Product") {
-      this.currentData = new Product(this.value.data)
-    } else if (this.location === "Business" || this.location === "User") {
-      this.currentData = this.value
-    }
-    // temp
-    this.primaryImage = 0;
+    this.currentData = this.value;
   }
 }
 </script>

@@ -85,6 +85,11 @@ public class ProductImagesStepDefs {
     private Integer businessId;
     private String sessionToken;
 
+    private String imageReturnPayload = "{\"id\":%d," +
+            "\"filename\":\"%s\"," +
+            "\"isPrimary\":%b," +
+            "\"thumbnailFilename\":\"%s\"}";
+
     @Before
     public void createMockMvc() throws IOException {
         productRepository = mock(ProductRepository.class);
@@ -214,9 +219,11 @@ public class ProductImagesStepDefs {
 
     @Then("this image is stored and displayed")
     public void this_image_is_stored_and_displayed() throws UnsupportedEncodingException {
-        System.out.println(response.getErrorMessage());
+        String expectedResponse = String.format(imageReturnPayload, primaryProductImage.getId(), primaryProductImage.getFilename(),
+                primaryProductImage.getIsPrimary(), primaryProductImage.getThumbnailFilename());
+
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.getContentAsString()).isEqualTo(String.format("{\"id\":%d}", primaryProductImage.getId()));
+        assertThat(response.getContentAsString()).isEqualTo(expectedResponse);
 
     }
 
