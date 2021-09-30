@@ -131,6 +131,8 @@ export default {
      * @param event The event (i.e. click event) that triggered the call.
      */
     showModel(event) {
+      this.formErrorModalMessage = "";
+
       // Prevent any default actions
       event.preventDefault();
       this.currentData = this.value;
