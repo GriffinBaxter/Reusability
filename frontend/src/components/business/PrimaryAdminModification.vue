@@ -4,7 +4,6 @@
        ref="_primaryAdminModification"
        tabindex="-1"
        aria-labelledby="primaryAdminModification"
-       data-bs-backdrop="static"
        aria-hidden="true"
        id="primary-admin-modification-modal">
     <div class="modal-dialog modal-dialog-scrollable">
