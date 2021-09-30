@@ -3,34 +3,151 @@
  * @jest-environment jsdom
  */
 
-import {test, expect, describe, beforeAll} from "@jest/globals"
+import {test, expect, describe, beforeAll, beforeEach, jest} from "@jest/globals"
+import Api from "../../src/Api";
+import Cookies from "js-cookie"
 import {shallowMount} from "@vue/test-utils";
 import HomeSales from "../../src/components/saleInsights/HomeSales";
 
+let wrapper;
+let $router;
+let $route
+
+jest.mock("../../src/Api");
+jest.mock("js-cookie");
+
+
+beforeEach(() => {
+
+    $router = {
+        push: jest.fn()
+    }
+
+    Date.now = jest.fn(() => new Date(Date.UTC(2021, 1, 14)).valueOf());
+
+    $route = {
+
+    }
+
+    Cookies.get.mockImplementation(() => 4);
+    Api.getBusiness.mockImplementation(() => Promise.resolve({data: {
+            currencyCode: "asd",
+            currencySymbol: "$"
+        }}));
+    Api.getSalesReport.mockImplementation(() => Promise.resolve({data: []}))
+})
+
+
 describe("Testing the loading component", () => {
 
-    test("Testing that the loading component appears if loading ", async () => {})
+    test("Testing that the loading component appears if loading ", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route
+            }
+        })
+        await wrapper.setData({loading: true})
+        const loading = await wrapper.find("#loading-dots");
+        expect(loading.exists()).toBeTruthy();
+    })
 
-    test("Testing that the loading component is not visible when not loading", async () => {})
+    test("Testing that the loading component is not visible when not loading", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route
+            }
+        })
+        await wrapper.setData({loading: false})
+        const loading = await wrapper.find("#loading-dots");
+        expect(loading.exists()).toBeFalsy();
+    })
 
 })
 
 describe("Testing the hide graph part.", () => {
 
-    test("Testing that the no data to show message appears if not loading and hiding the graph", async () => {})
+    test("Testing that the no data to show message appears if not loading and hiding the graph", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route
+            }
+        })
+        await wrapper.setData({loading: false})
+        await wrapper.setData({hideGraph: true})
+        const loading = await wrapper.find("#hide-graph");
+        expect(loading.exists()).toBeTruthy();
+    })
 
-    test("Testing that the no data to show message does not appear when loading", async () => {})
+    test("Testing that the no data to show message does not appear when loading", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route
+            }
+        })
+        await wrapper.setData({loading: true})
+        await wrapper.setData({hideGraph: false})
+        const loading = await wrapper.find("#hide-graph");
+        expect(loading.exists()).toBeFalsy();
+    })
 
-    test("Testing that the no dat to show message does not appear when not hiding the graph", async () => {})
+    test("Testing that the no data to show message does not appear when not hiding the graph", async () => {
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route
+            }
+        })
+        await wrapper.setData({loading: false})
+        await wrapper.setData({hideGraph: false})
+        const loading = await wrapper.find("#hide-graph");
+        expect(loading.exists()).toBeFalsy();
+    })
 });
 
 describe("Testing the graph", () => {
 
-    test("Testing that the total sales is shown on screen", async () => {})
+    beforeEach(async () => {
+        Api.getSalesReport.mockImplementation(() => Promise.resolve({data: [
+                {totalRevenue: 2000, totalSales: 150}
+            ]}))
+        wrapper = shallowMount(HomeSales, {
+            mocks: {
+                $router,
+                $route,
+                Date
+            }
+        })
 
-    test("Testing that the total revenue appears with the correct currency code and symbol", async () => {})
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+        await wrapper.vm.$nextTick();
+    })
 
-    test("Testing that the Fulle Sales Report button takes you to the sales page", async () => {})
+    test("Testing that the total sales is shown on screen", async () => {
+        const totalSalesAmount = 150;
+        const totalSales = await wrapper.find("#total-sales");
+        expect(totalSales.exists()).toBeTruthy();
+        expect(totalSales.text()).toStrictEqual(`Total Sales: ${totalSalesAmount}`);
+        expect(wrapper.vm.$data.totalSales).toStrictEqual(totalSalesAmount);
+    })
+
+    test("Testing that the total revenue appears with the correct currency code and symbol", async () => {
+        const totalRevenueAmount = 2000;
+        const totalRevenue = await wrapper.find("#total-revenue");
+        expect(totalRevenue.exists()).toBeTruthy();
+        expect(totalRevenue.text()).toStrictEqual(`Total Revenue: $${totalRevenueAmount} asd`);
+        expect(wrapper.vm.$data.totalRevenue).toStrictEqual(totalRevenueAmount);
+    })
+
+    test("Testing that the Fulle Sales Report button takes you to the sales page", async () => {
+        const button = await wrapper.find("#go-to-sales");
+        await button.trigger("click");
+        expect($router.push).toHaveBeenCalledWith({path: `businessProfile/4/sales`})
+    })
 
 })
 
@@ -95,7 +212,7 @@ describe("Testing isActingAsUser function", () => {
     test("Testing with a null for actAs", async () => {})
 })
 
-describe("Testing goToSales", async () => {
+describe("Testing goToSales", () => {
 
     test("Testing with a number for actAs, that the router.push is called", async () => {})
 

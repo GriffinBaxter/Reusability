@@ -2,19 +2,19 @@
   <div style="max-width: 950px" class="mx-auto">
     <div class="sales-report-overview">Sales Report Overview</div>
     <div v-if="loading">
-      <LoadingDots />
+      <LoadingDots id="loading-dots"/>
     </div>
-    <div v-else-if="hideGraph">
+    <div v-else-if="hideGraph" id="hide-graph">
       Not data to show...
     </div>
     <div class="box" v-else>
       <div class="wrapper">
         <div class="left-side">
-          <div class="total-header">Total Sales: {{totalSales}}</div>
-          <div class="total-header">Total Revenue: {{currencySymbol}}{{totalRevenue}} {{currencyCode}}</div>
+          <div class="total-header" id="total-sales">Total Sales: {{totalSales}}</div>
+          <div class="total-header" id="total-revenue">Total Revenue: {{currencySymbol}}{{totalRevenue}} {{currencyCode}}</div>
         </div>
         <div class="right-side">
-          <button class="btn green-button" @click="goToSales()">Full Sales Report</button>
+          <button class="btn green-button" id="go-to-sales" @click="goToSales()">Full Sales Report</button>
         </div>
       </div>
       <BarChart :data-list="graphData" :label-list="weekDays"></BarChart>
@@ -25,7 +25,7 @@
 
 <script>
 import Cookies from "js-cookie";
-import Api from "@/Api";
+import Api from "../../Api";
 import BarChart from "./SalesReportGraph"
 import LoadingDots from "../LoadingDots";
 
@@ -55,7 +55,7 @@ export default {
      * @return {String, String} Returns {fromDate, toDate} both are strings.
      */
     async generateDates() {
-      const today = Date.now();
+      const today = new Date(Date.now());
 
       const startOfWeek = today.getDate() - today.getDay();
       const endOfWeek = startOfWeek + 6;
@@ -100,6 +100,7 @@ export default {
 
         this.graphData = revenueData;
       } catch (error) {
+        console.log(error)
         await this.handleGraphError(error);
       }
 
