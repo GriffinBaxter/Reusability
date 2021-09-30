@@ -164,21 +164,22 @@ describe("Testing generate dates", () => {
         })
 
         expect(await wrapper.vm.generateDates()).toStrictEqual({
-            "fromDate": "2021-10-24T00:00:00.000Z",
-            "toDate": "2021-10-30T00:00:00.000Z"
+            "fromDate": "2021-09-26T00:00:00",
+            "toDate": "2021-10-02T23:59:59"
         });
     })
 
     test("Testing that the generated dates are the current week when today is the middle of the week", async () => {
-        Date.now = jest.fn(() => new Date(Date.UTC(2021, 9, 30)).valueOf());
+        Date.now = jest.fn(() => new Date(2021, 9 - 1, 30).valueOf());
     })
 
     test("Testing that the generated dates are the current week when today is the start of the week", async () => {
-        Date.now = jest.fn(() => new Date(Date.UTC(2021, 9, 27)).valueOf());
+        Date.now = jest.fn(() => new Date(2021, 9 - 1, 27).valueOf());
     })
 
     test("Testing that the generated dates are the current week when today is the end of the week", async () => {
-        Date.now = jest.fn(() => new Date(Date.UTC(2021, 9, 30)).valueOf());})
+        Date.now = jest.fn(() => new Date(2021, 10 - 1, 2).valueOf());
+    })
 })
 
 describe("Testing the build graph function",() => {

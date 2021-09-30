@@ -28,6 +28,7 @@ import Cookies from "js-cookie";
 import Api from "../../Api";
 import BarChart from "./SalesReportGraph"
 import LoadingDots from "../LoadingDots";
+import { startOfWeek, endOfWeek, formatISO } from "date-fns";
 
 export default {
   name: "HomeSales",
@@ -57,12 +58,12 @@ export default {
     async generateDates() {
       const today = new Date(Date.now());
 
-      const startOfWeek = today.getDate() - today.getDay();
-      const endOfWeek = startOfWeek + 6;
+      const startOfWeekDate = startOfWeek(today);
+      const endOfWeekDate = endOfWeek(today);
 
       return {
-        fromDate: new Date(today.setDate(startOfWeek)).toISOString(),
-        toDate: new Date(today.setDate(endOfWeek)).toISOString()
+        fromDate: formatISO(startOfWeekDate, {representation: 'date'}) + "T00:00:00",
+        toDate: formatISO(endOfWeekDate, {representation: 'date'}) + "T23:59:59"
       }
     },
     /**
