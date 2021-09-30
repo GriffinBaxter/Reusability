@@ -1350,7 +1350,7 @@ describe('Tests miscellaneous methods in Product Catalogue', () => {
         wrapper.vm.updatePage(mockedEvent);
 
         expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
-            query: { "searchQuery": "", "searchBy": "name", "orderBy": "productIdASC", "page": "2", "barcode": ""}})
+            query: { "searchQuery": "", "searchBy": "name", "orderBy": "productIdASC", "page": "2", "pageSize": "5", "barcode": ""}})
     })
 
     test('Test the convertSearchByListToString method generates the correct string when searchBy only contains name', () => {
