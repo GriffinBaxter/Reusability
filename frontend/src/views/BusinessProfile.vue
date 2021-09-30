@@ -497,13 +497,13 @@ export default {
     checkIsAdmin(currentID) {
       Api.getUser(currentID).then((response) => {
         response.data.businessesAdministered.forEach(business => {
-          if (business.id.toString() === this.$route.params.id) {
+          if (business.id === this.$route.params.id) {
             this.isAdministrator = true;
           }
         });
         this.isAdministrator = this.isAdministrator || this.isGaaOrDgaa(response.data.role);
         this.isPrimaryAdministrator = this.isPrimaryAdministrator || this.isGaaOrDgaa(response.data.role);
-        if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+        if (Cookies.get('actAs') !== undefined && this.$route.params.id.toString() !== Cookies.get('actAs')) {
           this.isAdministrator = false;
         }
       }).catch((error) => {
