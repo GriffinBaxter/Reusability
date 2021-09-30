@@ -14,7 +14,8 @@
       <!--search bar - reusing the search bar in the profile header-->
       <ProfileHeader
           @requestUsers="requestUsers"
-          @requestBusinesses="requestBusinesses"/>
+          @requestBusinesses="requestBusinesses" :show-page-size="true"/>
+
 
       <div class="row mb-3 mt-3">
 
@@ -84,7 +85,8 @@ export default {
       query: "",
       searchType: "",
       userList: [],
-      businessList: []
+      businessList: [],
+      pageSize: this.$route.query["pageSize"] || "5" // default page size
     }
   },
 
@@ -100,13 +102,13 @@ export default {
       if (this.searchType === 'User') {
         this.$router.push({
           path: "/search",
-          query: {"type": "User", "searchQuery": this.query, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+          query: {"type": "User", "searchQuery": this.query, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
         });
         this.requestUsers(this.query);
       } else if (this.searchType === 'Business') {
         this.$router.push({
           path: "/search",
-          query: {"type": "Business", "searchQuery": this.query, "businessType": this.selectedBusinessType, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+          query: {"type": "Business", "searchQuery": this.query, "businessType": this.selectedBusinessType, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
         });
         this.requestBusinesses(this.query, this.selectedBusinessType);
       } else {
@@ -154,8 +156,8 @@ export default {
      * If successful it sets the dataList variable to the response data.
      * @return {Promise}
      *
-     * @param {inputQuery} The query received from the search bar
-     * @param {businessType} The type of business the user would like to search for
+     * @param inputQuery The query received from the search bar
+     * @param businessType The type of business the user would like to search for
      */
     async requestBusinesses(inputQuery, businessType) {
       this.searchType = 'Business';
@@ -169,12 +171,14 @@ export default {
 
         this.orderByString = this.$route.query["orderBy"] || "nameASC";
         this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+        this.pageSize = this.$route.query["pageSize"] || "5";
+        this.rowsPerPage = parseInt(this.pageSize);
 
         if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
           await this.$router.push({path: '/pageDoesNotExist'});
         }
 
-        await Api.searchBusinesses(this.query, this.convertBusinessType(this.selectedBusinessType), this.orderByString, this.currentPage).then(response => {
+        await Api.searchBusinesses(this.query, this.convertBusinessType(this.selectedBusinessType), this.orderByString, this.currentPage, this.pageSize).then(response => {
 
           // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
           const {orderBy, isAscending} = this.parseOrderBy();
@@ -224,7 +228,7 @@ export default {
      * Converts a provided string representing a business type to a backend-friendly
      * string representation and vice versa.
      *
-     * @param {businessType} The business type to be converted into a backend-friendly format and vice versa
+     * @param businessType The business type to be converted into a backend-friendly format and vice versa
      * @return a backend-friendly or frontend-friendly string conversion of the provided business type
      */
     convertBusinessType(businessType) {
@@ -257,7 +261,7 @@ export default {
      * If successful it sets the dataList variable to the response data.
      * @return {Promise}
      *
-     * @param {inputQuery} The query received from the search bar
+     * @param inputQuery The query received from the search bar
      */
     async requestUsers(inputQuery) {
       this.searchType = 'User';
@@ -270,12 +274,14 @@ export default {
 
         this.orderByString = this.$route.query["orderBy"] || "fullNameASC";
         this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+        this.pageSize = this.$route.query["pageSize"] || "5";
+        this.rowsPerPage = parseInt(this.pageSize);
 
         if (this.totalPages > 0 && this.currentPage > this.totalPages - 1) {
           await this.$router.push({path: '/pageDoesNotExist'});
         }
 
-        await Api.searchUsers(this.query, this.orderByString, this.currentPage).then(response => {
+        await Api.searchUsers(this.query, this.orderByString, this.currentPage, this.pageSize).then(response => {
 
           // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
           const {orderBy, isAscending} = this.parseOrderBy();
@@ -400,7 +406,7 @@ export default {
         this.$router.push({
           path: "/search",
           query: {
-            "type": "User", "searchQuery": this.query, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()
+            "type": "User", "searchQuery": this.query, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize
           }
         });
         this.requestUsers(this.query);
@@ -408,7 +414,7 @@ export default {
         this.$router.push({
           path: "/search",
           query: {
-            "type": "Business", "searchQuery": this.query, "businessType": this.selectedBusinessType, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString()
+            "type": "Business", "searchQuery": this.query, "businessType": this.selectedBusinessType, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize
           }
         });
         this.requestBusinesses(this.query, this.selectedBusinessType);
@@ -420,7 +426,7 @@ export default {
     /**
      * When a user selects a table row (user or business) then they need to be redirected to the profile page of the
      * selected user or business.
-     * @param id the id of the selected user or business.
+     * @param index the id of the selected user or business.
      */
     routeToProfile(index) {
       if (this.searchType === 'User') {
@@ -446,6 +452,9 @@ export default {
   mounted() {
     this.searchType = this.$route.query["type"];
     this.query = this.$route.query["searchQuery"];
+    if (this.$route.query["pageSize"]) {
+      this.rowsPerPage = parseInt(this.$route.query["pageSize"]);
+    }
 
     if (this.searchType === 'User') {
       this.requestUsers(this.query);

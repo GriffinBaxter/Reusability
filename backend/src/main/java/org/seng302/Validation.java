@@ -77,6 +77,17 @@ public class Validation {
                 (productId.matches("^[A-Z0-9-]+$"));
     }
 
-
+    /**
+     * Check to see the given image file type is valid.
+     *
+     * @param imageFileType image file Type
+     * @param imageName     image name
+     */
+    public static boolean verifyImageExtension(String imageFileType, String imageName) {
+        return !imageFileType.equalsIgnoreCase("jpg")
+                && !imageFileType.equalsIgnoreCase("jpeg")
+                && !imageFileType.equalsIgnoreCase("png")
+                && !imageFileType.equalsIgnoreCase("gif");
+    }
 
 }

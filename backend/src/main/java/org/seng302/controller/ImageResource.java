@@ -3,15 +3,9 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.seng302.Authorization;
-import org.seng302.model.Business;
-import org.seng302.model.Image;
-import org.seng302.model.Product;
-import org.seng302.model.User;
-import org.seng302.model.enums.Role;
-import org.seng302.model.repository.BusinessRepository;
-import org.seng302.model.repository.ImageRepository;
-import org.seng302.model.repository.ProductRepository;
-import org.seng302.model.repository.UserRepository;
+import org.seng302.model.*;
+import org.seng302.model.enums.ImageType;
+import org.seng302.model.repository.*;
 import org.seng302.services.FileStorageService;
 import org.seng302.view.outgoing.ImageCreatePayload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +23,13 @@ import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 import java.util.List;
 
+import static org.seng302.Validation.verifyImageExtension;
+
 /**
  * Controller class for images. This class includes:
- * POST "/businesses/{businessId}/products/{productId}/images" endpoint used for adding image to a product of a businesses.
- * DELETE "/businesses/{businessId}/products/{productId}/images/{imageId}" endpoint for deleting an image for a product of a business.
- * PUT "/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary" endpoint for changing the primary image of a product.
+ * POST   "/images" endpoint used for adding image to a user profile or a business profile or a product of a businesses.
+ * DELETE "images/{imageId}" endpoint for deleting a product image of a business, user image, or business image.
+ * PUT    "/images/{imageId}/makePrimary" endpoint for changing the primary image of a user or a business or a product.
  */
 @RestController
 public class ImageResource {
@@ -48,44 +44,56 @@ public class ImageResource {
     private ProductRepository productRepository;
 
     @Autowired
-    private ImageRepository imageRepository;
+    private ProductImageRepository productImageRepository;
 
     @Autowired
-    @Value("product-images")
+    private UserImageRepository userImageRepository;
+
+    @Autowired
+    private BusinessImageRepository businessImageRepository;
+
+    @Autowired
+    @Value("images")
     private FileStorageService fileStorageService;
 
     private static final Logger logger = LogManager.getLogger(ImageResource.class.getName());
 
-    public ImageResource() {}
+    // constants for switch cases.
+    private static final String USER_IMAGE_STRING = "USER_IMAGE";
+    private static final String BUSINESS_IMAGE_STRING = "BUSINESS_IMAGE";
+    private static final String PRODUCT_IMAGE_STRING = "PRODUCT_IMAGE";
+
+    // constants for error messages.
+    private static final String LOGGER_INVALID_IMAGE_TYPE = "Given image type {} invalid";
+    private static final String INVALID_IMAGE_TYPE = "Invalid image type";
+    private static final String HTTP_NOT_ACCEPTABLE_MESSAGE = "The requested route does exist (so not a 404) but some part of the request is not acceptable, for example trying to access a resource by an ID that does not exist.";
+
+    public ImageResource() {
+    }
 
     public ImageResource(BusinessRepository businessRepository, UserRepository userRepository,
-                         ProductRepository productRepository, ImageRepository imageRepository, FileStorageService fileStorageService) {
+                         ProductRepository productRepository, ProductImageRepository productImageRepository,
+                         UserImageRepository userImageRepository, BusinessImageRepository businessImageRepository,
+                         FileStorageService fileStorageService
+    ) {
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
-        this.imageRepository = imageRepository;
+        this.productImageRepository = productImageRepository;
+        this.businessImageRepository = businessImageRepository;
+        this.userImageRepository = userImageRepository;
         this.fileStorageService = fileStorageService;
     }
 
-    @PostMapping("/businesses/{businessId}/products/{productId}/images")
-    public ResponseEntity<ImageCreatePayload> createImage(
-            @RequestParam("images") MultipartFile image,
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer businessId,
-            @PathVariable String productId
-    ) {
-
-        // Verify token access
-        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
-
-        // Verify business parameter
-        Optional<Business> business = getVerifiedBusiness(businessId);
-
-        // Verify access rights of the user to the business
-        verifyAdministrationRights(user, business);
-
-        // Verify Product id
-        verifyProductId(productId, business, user);
+    /**
+     * Take a image file to process imageFilePath and  thumbnailFilePath
+     *
+     * @param image      image file
+     * @param imageOwner image owner info
+     * @return a list contain imageFilePath and thumbnailFilePath
+     */
+    public List<String> processImage(MultipartFile image, String imageOwner) {
+        String imageName = image.getName();
 
         // Verify the file type
         String imageFileName = image.getOriginalFilename();
@@ -97,27 +105,20 @@ public class ImageResource {
         }
 
         // Checking file extension
-        String imageType = getFileExtension(imageFileName);
-        if (!imageType.equalsIgnoreCase("jpg") && !imageType.equalsIgnoreCase("jpeg") &&
-                !imageType.equalsIgnoreCase("png") && !imageType.equalsIgnoreCase("gif")) {
-
-            String errorMessage = String.format("Creating another image with unknown if it is actually an IMAGE (name: %s) !!!", image.getName());
-            logger.error(errorMessage);
+        String fileExtension = getFileExtension(imageFileName);
+        if (verifyImageExtension(fileExtension, imageName)) {
+            logger.error("Creating another image with unknown if it is actually an IMAGE (name: {}) !!!",
+                    image.getName());
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The file type of the image uploaded is not " +
                     "supported. Only JPG, JPEG, PNG and GIF are supported.");
         }
 
-        String fileExtension = getFileExtension(imageFileName);
-        
         // Creating thumbnail image
         InputStream thumbnailInputStream;
         try {
             thumbnailInputStream = fileStorageService.generateThumbnail(image, fileExtension);
         } catch (IOException e) {
-            String errorMessage = String.format(
-                    "Thumbnail unable to be created from image (name: %s)", image.getName()
-            );
-            logger.error(errorMessage);
+            logger.error("Thumbnail unable to be created from image (name: {})", image.getName());
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Thumbnail unable to be created from image.");
         }
 
@@ -128,29 +129,28 @@ public class ImageResource {
             UUID uuid = UUID.randomUUID();
             fileName = uuid + "." + fileExtension;
             thumbnailFilename = "thumbnail" + fileName;
-            
-            if (
-                    !fileStorageService.storeFile(image.getInputStream(), fileName) ||
-                    !fileStorageService.storeFile(thumbnailInputStream, thumbnailFilename)
-            ) {
+
+            if (!fileStorageService.storeFile(image.getInputStream(), fileName)
+                    || !fileStorageService.storeFile(thumbnailInputStream, thumbnailFilename)) {
                 throw new IOException("Failed to store images");
             }
         }
         // If the file already exists then we need to just something went wrong
         catch (FileAlreadyExistsException e) {
-            String errorMessage = String.format("File already existed. Canceling storage of image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
-            logger.error(errorMessage);
+            logger.error("File already existed. Canceling storage of image with filename {}, {}",
+                    imageFileName, imageOwner);
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored.");
         }
         // If this fails we need to ensure it was removed.
         catch (IOException e) {
-            String errorMessage = String.format("Failed to store image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
-            logger.error(errorMessage);
+            logger.error("Failed to store image with filename {}, {}", imageFileName, imageOwner);
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored.");
         }
 
         // If we cannot get the file path, then we have to assume that it failed.
@@ -159,106 +159,265 @@ public class ImageResource {
         if (imageFilePath == null || thumbnailFilePath == null) {
             fileStorageService.deleteFile(fileName);
             fileStorageService.deleteFile(thumbnailFilename);
-            String errorMessage = String.format("Failed to locate image with filename %s, for user (id: %d), for business (id: %d), for product (id: %s)", imageFileName, user.getId(), businessId, productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "One or more of the images failed to be stored");
+            logger.error("Failed to locate image with filename {}, {}", imageFileName, imageOwner);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "One or more of the images failed to be stored");
         }
 
-        // Store the image data in an object
-        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
-        boolean isFirstImage = primaryImages.isEmpty();
-        Image storedImage = imageRepository.saveAndFlush(
-                new Image(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage)
-        );
-
-        String successMessage = String.format("Successfully uploaded and stored image under filename \"%s\", for product id: \"%s\", for business id: \"%d\", by a user (id: %d)", storedImage.getFilename(), productId, businessId, user.getId());
-        logger.info(successMessage);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ImageCreatePayload(storedImage.getId()));
-
-    }
-
-    @Transactional
-    @DeleteMapping("/businesses/{businessId}/products/{productId}/images/{imageId}")
-    @ResponseStatus(value = HttpStatus.OK, reason = "Image deleted successfully")
-    public void deleteImage(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer businessId,
-            @PathVariable String productId,
-            @PathVariable Integer imageId
-    ) {
-
-        // Verify token access
-        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
-
-        // Verify business parameter
-        Optional<Business> business = getVerifiedBusiness(businessId);
-
-        // Verify access rights of the user to the business
-        verifyAdministrationRights(user, business);
-
-        // Verify Product id
-        verifyProductId(productId, business, user);
-
-        // Verify image id
-        Image image = verifyImageId(imageId, businessId, productId, user);
-
-        // verify file exists & delete image
-        boolean imageDeleted = fileStorageService.deleteFile(image.getFilename());
-        boolean thumbnailDeleted = fileStorageService.deleteFile(image.getThumbnailFilename());
-        if (!imageDeleted || !thumbnailDeleted) {
-            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
-        }
-
-        // Delete from database
-        imageRepository.deleteByIdAndBusinessIdAndProductId(imageId, businessId, productId);
-        imageRepository.flush();
-        // Check if primary image and update primary image if it is
-        updatePrimaryImage(businessId, productId);
-    }
-
-    @PutMapping("/businesses/{businessId}/products/{productId}/images/{imageId}/makeprimary")
-    @ResponseStatus(value = HttpStatus.OK, reason = "Primary image successfully updated")
-    public void makePrimaryImage(
-            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
-            @PathVariable Integer businessId,
-            @PathVariable String productId,
-            @PathVariable Integer imageId
-    ) {
-
-        // Verify token access
-        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
-
-        // Verify business parameter
-        Optional<Business> business = getVerifiedBusiness(businessId);
-
-        // Verify access rights of the user to the business
-        verifyAdministrationRights(user, business);
-
-        // Verify Product id
-        verifyProductId(productId, business, user);
-
-        // Verify image id
-        Image image = verifyImageId(imageId, businessId, productId, user);
-
-        // Set existing primary image to non-primary
-        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
-        for (Image primaryImage: primaryImages) {
-            primaryImage.setIsPrimary(false);
-        }
-        
-        // Set desired image to primary image
-        image.setIsPrimary(true);
-        
-        // Save the image in the repository
-        imageRepository.save(image);
+        return List.of(imageFilePath, thumbnailFilePath);
     }
 
     /**
+     * Upload an image for given user/business/product.
+     *
+     * @param image              image file
+     * @param sessionToken       current user session token
+     * @param uncheckedImageType image type (user/business/product) (owner type)
+     * @param userId             selected user id
+     * @param businessId         selected business id
+     * @param productId          selected product id
+     * @return image create payload
+     */
+    @PostMapping("/images")
+    public ResponseEntity<ImageCreatePayload> createImage(@RequestParam("images") MultipartFile image,
+                                                          @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                                          @RequestParam String uncheckedImageType,
+                                                          @RequestParam(required = false) Integer userId,
+                                                          @RequestParam(required = false) Integer businessId,
+                                                          @RequestParam(required = false) String productId) {
+        // Verify token access
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        ImageType imageType;
+        String imageOwnerInfo;
+        List<UserImage> primaryUserImages = new ArrayList<>();
+        List<BusinessImage> primaryBusinessImages = new ArrayList<>();
+        List<ProductImage> primaryProductImages = new ArrayList<>();
+        switch (uncheckedImageType) {
+            case USER_IMAGE_STRING:
+                validateUserImageParams(userId, currentUser);
+                imageType = ImageType.USER_IMAGE;
+                imageOwnerInfo = String.format("for product (id: %s)", userId);
+                primaryUserImages = userImageRepository.findUserImagesByUserIdAndIsPrimary(userId, true);
+                break;
+            case BUSINESS_IMAGE_STRING:
+                validateBusinessImageParams(businessId, currentUser);
+                imageType = ImageType.BUSINESS_IMAGE;
+                imageOwnerInfo = String.format("for business (id: %s)", businessId);
+                primaryBusinessImages = businessImageRepository.findBusinessImageByBusinessIdAndIsPrimary(
+                        businessId, true
+                );
+                break;
+            case PRODUCT_IMAGE_STRING:
+                validateProductImageParams(businessId, currentUser, productId);
+                imageType = ImageType.PRODUCT_IMAGE;
+                imageOwnerInfo = String.format("for business (id: %s), product (id: %s)", businessId, productId);
+                primaryProductImages = productImageRepository.findProductImageByBusinessIdAndProductIdAndIsPrimary(
+                        businessId, productId, true
+                );
+                break;
+            default:
+                logger.error(LOGGER_INVALID_IMAGE_TYPE, uncheckedImageType);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, INVALID_IMAGE_TYPE);
+        }
+
+        // Process Image
+        List<String> imageInfo = processImage(image, imageOwnerInfo);
+        String imageFilePath = imageInfo.get(0);
+        String thumbnailFilePath = imageInfo.get(1);
+        Image storedImage;
+
+        // Store the image data in an object
+        if (imageType.equals(ImageType.USER_IMAGE)) {
+            boolean isFirstImage = primaryUserImages.isEmpty();
+            storedImage = userImageRepository.saveAndFlush(
+                    new UserImage(userId, imageFilePath, thumbnailFilePath, isFirstImage));
+        } else if (imageType.equals(ImageType.BUSINESS_IMAGE)) {
+            boolean isFirstImage = primaryBusinessImages.isEmpty();
+            storedImage = businessImageRepository.saveAndFlush(
+                    new BusinessImage(businessId, imageFilePath, thumbnailFilePath, isFirstImage));
+        } else {
+            boolean isFirstImage = primaryProductImages.isEmpty();
+            storedImage = productImageRepository.saveAndFlush(
+                    new ProductImage(productId, businessId, imageFilePath, thumbnailFilePath, isFirstImage));
+        }
+
+        Integer storedImageId = storedImage.getId();
+        String storedImageFileName = storedImage.getFilename();
+
+        logger.info("Successfully uploaded and stored image under filename \"{}\", {}, by a user (id: {})",
+                storedImageFileName, imageOwnerInfo, currentUser.getId());
+
+        ImageCreatePayload payload = new ImageCreatePayload(
+                storedImageId,
+                storedImageFileName,
+                storedImage.getIsPrimary(),
+                storedImage.getThumbnailFilename());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(payload);
+    }
+
+    /**
+     * This method checks to see whether a user is logged in before calling the necessary helper functions
+     * needed to delete an image.
+     *
+     * @param sessionToken a token used to identify a logged in user.
+     * @param uncheckedImageType a string representation of the image type to be checked.
+     * @param userId the id of user which the image belongs to. This is only required when deleting a user image.
+     * @param businessId the id of business which the product (and image) belong to. This is only required when deleting
+     *                   a business or product image.
+     * @param productId the id of the product which the image belongs to. This is only required when deleting a product
+     *                  image.
+     * @param imageId the id of the image to be deleted.
+     */
+    @Transactional
+    @DeleteMapping("/images/{imageId}")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Image deleted successfully")
+    public void deleteImage(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @RequestParam String uncheckedImageType,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Integer businessId,
+            @RequestParam(required = false) String productId,
+            @PathVariable Integer imageId
+    ) {
+        // Verify token access
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        switch (uncheckedImageType) {
+            case PRODUCT_IMAGE_STRING:
+                handleProductImageDeletion(businessId, user, productId, imageId);
+                break;
+            case USER_IMAGE_STRING:
+                handleUserImageDeletion(user, userId, imageId);
+                break;
+            case BUSINESS_IMAGE_STRING:
+                handleBusinessImageDeletion(businessId, user, imageId);
+                break;
+            default:
+                logger.error(LOGGER_INVALID_IMAGE_TYPE, uncheckedImageType);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, INVALID_IMAGE_TYPE);
+        }
+    }
+
+    /**
+     * make given image be primary image for given owner
+     *
+     * @param sessionToken       current user session token
+     * @param imageId            selected
+     * @param uncheckedImageType image type (user/business/product) (owner type)
+     * @param userId             selected user id
+     * @param businessId         selected business id
+     * @param productId          selected product id
+     */
+    @PutMapping("/images/{imageId}/makePrimary")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Primary image successfully updated")
+    public void makePrimaryImage(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+                                 @PathVariable Integer imageId,
+                                 @RequestParam String uncheckedImageType,
+                                 @RequestParam(required = false) Integer userId,
+                                 @RequestParam(required = false) Integer businessId,
+                                 @RequestParam(required = false) String productId) {
+
+        // Verify token access
+        User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        switch (uncheckedImageType) {
+            case USER_IMAGE_STRING:
+                validateUserImageParams(userId, currentUser);
+
+                // Verify image id
+                Optional<UserImage> optionalUserImage = userImageRepository.findById(imageId);
+                if (optionalUserImage.isEmpty()) {
+                    logger.error("Given user image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given user image does not exist.");
+                }
+                UserImage newPrimaryUserImage = optionalUserImage.get();
+                logger.info("User image (ID: {}) retrieved", imageId);
+
+                // Set new primary image
+                List<UserImage> allUserImages = userImageRepository
+                        .findUserImagesByUserIdAndIsPrimary(userId, true);
+                for (UserImage userImage : allUserImages) {
+                    userImage.setIsPrimary(false);
+                    userImageRepository.saveAndFlush(userImage);
+                }
+
+                // Set desired image to primary image
+                newPrimaryUserImage.setIsPrimary(true);
+
+                // Save the image in the repository
+                userImageRepository.saveAndFlush(newPrimaryUserImage);
+                break;
+            case BUSINESS_IMAGE_STRING:
+                validateBusinessImageParams(businessId, currentUser);
+
+                // Verify image id
+                Optional<BusinessImage> optionalBusinessImage = businessImageRepository.findById(imageId);
+
+                if (optionalBusinessImage.isEmpty()) {
+                    logger.error("Given business image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(
+                            HttpStatus.NOT_ACCEPTABLE, "Given business image does not exist."
+                    );
+                }
+
+                BusinessImage newPrimaryBusinessImage = optionalBusinessImage.get();
+                logger.info("Business image (ID: {}) retrieved", imageId);
+
+                // Set existing primary image to non-primary
+                List<BusinessImage> allBusinessImages = businessImageRepository
+                        .findBusinessImageByBusinessIdAndIsPrimary(businessId, true);
+                for (BusinessImage businessImage : allBusinessImages) {
+                    businessImage.setIsPrimary(false);
+                    businessImageRepository.saveAndFlush(businessImage);
+                }
+
+                // Set desired image to primary image
+                newPrimaryBusinessImage.setIsPrimary(true);
+
+                // Save the image in the repository
+                businessImageRepository.saveAndFlush(newPrimaryBusinessImage);
+                break;
+            case PRODUCT_IMAGE_STRING:
+                validateProductImageParams(businessId, currentUser, productId);
+
+                // Verify image id
+                Optional<ProductImage> optionalProductImage = productImageRepository.findById(imageId);
+
+                if (optionalProductImage.isEmpty()) {
+                    logger.error("Given product image (Id: {}) does not exist.", imageId);
+                    throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given product image does not exist.");
+                }
+
+                ProductImage newPrimaryProductImage = optionalProductImage.get();
+                logger.info("Product image (ID: {}) retrieved", imageId);
+
+                // Set existing primary image to non-primary
+                List<ProductImage> allProductImages = productImageRepository
+                        .findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+                for (ProductImage productImage : allProductImages) {
+                    productImage.setIsPrimary(false);
+                    productImageRepository.saveAndFlush(productImage);
+                }
+
+                // Set desired image to primary image
+                newPrimaryProductImage.setIsPrimary(true);
+
+                // Save the image in the repository
+                productImageRepository.saveAndFlush(newPrimaryProductImage);
+                break;
+            default:
+                logger.error(LOGGER_INVALID_IMAGE_TYPE, uncheckedImageType);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, INVALID_IMAGE_TYPE);
+        }
+    }
+
+    // ---------------------------------------------- Helper Methods --------------------------------------------------
+
+    /**
      * Gets the file extension of the given file name. This is based on the content after the last punctuation mark.
+     *
      * @param fileName, the file name
      * @return extension of file name if present, otherwise the empty string
      */
@@ -267,110 +426,347 @@ public class ImageResource {
             if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
                 return fileName.substring(fileName.lastIndexOf(".") + 1);
             }
-        } catch ( Exception e) {
+        } catch (Exception e) {
             return "";
         }
         return "";
     }
 
     /**
-     * Verifies that the given business id exists and returns the associated business if it exists.
-     * Throws a NOT_ACCEPTABLE error is the business id does not exist.
+     * Verifies that the given user id exists and returns the user if it exists.
+     * Throws a NOT_ACCEPTABLE error is the user id does not exist.
      *
-     * PRECONDITIONS:
-     * POST CONDITIONS:
-     * @param businessId
-     * @return business
+     * @param userId the id of the user to check if it exists.
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
-    private Optional<Business> getVerifiedBusiness(Integer businessId) throws ResponseStatusException {
-        Optional<Business> business = businessRepository.findBusinessById(businessId);
-        if (business.isEmpty()) {
-            logger.error("The requested route does exist, but some part of the request is not acceptable.");
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
+    private void verifyUser(Integer userId) throws ResponseStatusException {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            logger.error("Given user (ID: {}) does not exist.", userId);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given user does not exist.");
         }
-        return business;
     }
 
     /**
-     * Verifies that the given user has the administration rights to access and potentially modify the associated business content.
-     * Throws FORBIDDEN error message is the user has incorrect administration rights.
+     * Verifies that the given business id exists and returns the associated business if it exists.
+     * Throws a NOT_ACCEPTABLE error is the business id does not exist.
      *
-     * PRECONDITIONS:
-     * POST CONDITIONS:
-     * @param user, the user who wants to access the information of the given business
-     * @param business, the business that is desired to be accessed
+     * @param businessId the id of the business to check if it exists.
+     * @return business a business which has an id matching businessId
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
-    private void verifyAdministrationRights(User user, Optional<Business> business) throws ResponseStatusException {
-        if (user.getRole().equals(Role.USER) && !user.getBusinessesAdministered().contains(business.get().getId())) {
-            String errorMessage = String.format("User (id: %d) lacks permissions to modify business (id: %d) product images.", user.getId(), business.get().getId());
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden: Returned when a user tries to add an image for a product that it is in a catalogue for a " +
-                    "business they do not administer AND the user is not a global application admin");
+    private Business getVerifiedBusiness(Integer businessId) throws ResponseStatusException {
+        Optional<Business> business = businessRepository.findBusinessById(businessId);
+        if (business.isEmpty()) {
+            logger.error("Given business (ID: {}) does not exist", businessId);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given business does not exist.");
         }
+        return business.get();
     }
 
     /**
      * Verifies that the given product id exists.
      * Throws NOT_ACCEPTABLE error if product id does not exists.
      *
-     * PRECONDITIONS:
-     * POST CONDITIONS:
-     * @param productId
-     * @param business
-     * @param user
+     * @param productId the id of the product to check if it exists.
+     * @param business a business which has the product.
+     * @throws ResponseStatusException an HTTP error with code and error message.
      */
-    private void verifyProductId(String productId, Optional<Business> business, User user) throws ResponseStatusException {
-        Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.get().getId());
+    private void verifyProductId(String productId, Business business) throws ResponseStatusException {
+        Optional<Product> product = productRepository.findProductByIdAndBusinessId(productId, business.getId());
         if (product.isEmpty()) {
-            String errorMessage = String.format("User (id: %d) attempted to access a non-existent product with product id %s.", user.getId(), productId);
-            logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
+            logger.error("Given product (ID: {}) does not exist in current business (ID: {})",
+                    productId, business.getId());
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Given Product does not exist in current business.");
         }
     }
 
-    /**
-     * Verifies that the given image id exists.
-     * Throws NOT_ACCEPTABLE error if image id does not exists.
-     *
-     * PRECONDITIONS:
-     * POST CONDITIONS:
-     * @param imageId
-     * @param businessId
-     * @param productId
-     */
-    private Image verifyImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
-        Optional<Image> image = imageRepository.findImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
+    // ------------------------------------------- Product Image Methods -----------------------------------------------
 
-        if (image.isEmpty()) {
+    /**
+     * Validates the parameters for modifying a product image (verifies the business/product exists and that the user
+     * has access rights to modify the image).
+     *
+     * @param businessId the id of the business.
+     * @param currentUser the currently logged-in user.
+     * @param productId the id of the product.
+     */
+    private void validateProductImageParams(Integer businessId, User currentUser, String productId) {
+        // Verify businessId parameter
+        Business business = getVerifiedBusiness(businessId);
+
+        // Verify access rights of the user to the business
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
+
+        // Verify Product id
+        verifyProductId(productId, business);
+    }
+
+    /**
+     * This method performs verification before deleting a product image.
+     * In order for an image to be deleted:
+     *                                    the supplied businessId must be for an existing business
+     *                                    the logged in user must be a business admin or application admin
+     *                                    the productId must be for an existing product
+     *                                    the imageId must be for an existing image
+     * If all this criteria is met then the image is deleted. If the primary image is deleted then another
+     * image will be set as the primary image (if another image exists).
+     * @param businessId the id of business which has the product.
+     * @param user the currently logged in user.
+     * @param productId the id of the product which has images.
+     * @param imageId the id of the image for a product.
+     */
+    private void handleProductImageDeletion(Integer businessId, User user, String productId, Integer imageId) {
+        validateProductImageParams(businessId, user, productId);
+
+        // Verify image id
+        ProductImage productImage = verifyProductImageId(imageId, businessId, productId, user);
+
+        // verify file exists & delete image
+        boolean imageDeleted = fileStorageService.deleteFile(productImage.getFilename());
+        boolean thumbnailDeleted = fileStorageService.deleteFile(productImage.getThumbnailFilename());
+        if (!imageDeleted || !thumbnailDeleted) {
             String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.", user.getId(), imageId, businessId, productId);
             logger.error(errorMessage);
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The requested route does exist (so not a 404) but some part of the request is not acceptable, " +
-                    "for example trying to access a resource by an ID that does not exist.");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+
+        // Delete from database
+        productImageRepository.deleteByIdAndBusinessIdAndProductId(imageId, businessId, productId);
+        productImageRepository.flush();
+        // Check if primary image and update primary image if it is
+        updatePrimaryProductImage(businessId, productId);
+    }
+
+    /**
+     * Verifies that the given product image id exists.
+     * Throws NOT_ACCEPTABLE error if product image id does not exists.
+     *
+     * @param imageId the id of the image.
+     * @param businessId the id of the business which has the product.
+     * @param productId the id of the product which has the images,
+     * @throws ResponseStatusException an HTTP error with code and error message.
+     */
+    private ProductImage verifyProductImageId(Integer imageId, Integer businessId, String productId, User user) throws ResponseStatusException {
+        Optional<ProductImage> image = productImageRepository.findProductImageByIdAndBusinessIdAndProductId(imageId, businessId, productId);
+        if (image.isEmpty()) {
+            String errorMessage =
+                    String.format("User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d and product id %s.",
+                            user.getId(), imageId, businessId, productId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
         }
         return image.get();
     }
 
     /**
-     * Updates the primary image and enforces the primary image constraint.
+     * Updates the primary image of a product and enforces the primary image constraint.
      * If there are other images for the given product id that are not the primary image, then next one of these becomes
      * the primary image. If there are no other images, then there is no primary image (i.e. default used in front end).
      *
-     * PRECONDITIONS:
-     * POST CONDITIONS:
-     * @param businessId
-     * @param productId
+     * @param businessId the id of business which has the product.
+     * @param productId the id of product which has the images.
      */
-    private void updatePrimaryImage(Integer businessId, String productId) {
-        List<Image> primaryImages = imageRepository.findImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
-        if (primaryImages.isEmpty()) {
-            List<Image> images = imageRepository.findImageByBusinessIdAndProductId(businessId, productId);
-            if (!images.isEmpty()) {
-                images.get(0).setIsPrimary(true);
-                imageRepository.save(images.get(0));
+    private void updatePrimaryProductImage(Integer businessId, String productId) {
+        List<ProductImage> primaryProductImages = productImageRepository
+                .findProductImageByBusinessIdAndProductIdAndIsPrimary(businessId, productId, true);
+        if (primaryProductImages.isEmpty()) {
+            List<ProductImage> productImages = productImageRepository
+                    .findProductImageByBusinessIdAndProductId(businessId, productId);
+            if (!productImages.isEmpty()) {
+                productImages.get(0).setIsPrimary(true);
+                productImageRepository.save(productImages.get(0));
             }
         }
     }
 
+    // -------------------------------------------- User Image Methods ------------------------------------------------
+
+    /**
+     * Validates the parameters for modifying a user image (verifies the user exists and that the user has
+     * access rights to modify the image).
+     *
+     * @param userId the id of user.
+     * @param currentUser the currently logged-in user.
+     */
+    private void validateUserImageParams(Integer userId, User currentUser) {
+        // Verify userId parameter
+        verifyUser(userId);
+
+        if (userId != currentUser.getId() && !Authorization.isGAAorDGAA(currentUser)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to modify this user's images.");
+        }
+    }
+
+    /**
+     * This method performs verification before deleting a user image.
+     * In order for an image to be deleted:
+     *                                    the userId must be for an existing user
+     *                                    the currentUser trying to delete the user must be the "owner" or an application admin
+     *                                    the imageId must be for an existing image.
+     * If all this criteria is met then the image is deleted. If the primary image is deleted then another
+     * image will be set as the primary image (if another image exists).
+     * @param currentUser the currently logged in user.
+     * @param userId the id of the user who's image is to be deleted.
+     * @param imageId the id of the image for a user.
+     */
+    private void handleUserImageDeletion(User currentUser, Integer userId, Integer imageId) {
+        validateUserImageParams(userId, currentUser);
+
+        // Verify image id
+        UserImage userImage = verifyUserImageId(imageId, userId, currentUser);
+
+        // verify file exists & delete image
+        boolean imageDeleted = fileStorageService.deleteFile(userImage.getFilename());
+        boolean thumbnailDeleted = fileStorageService.deleteFile(userImage.getThumbnailFilename());
+        if (!imageDeleted || !thumbnailDeleted) {
+            String errorMessage = String.format("User (id: %d) attempted to delete a non-existent image with image id %d for user with id %d.", currentUser.getId(), imageId, userId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+
+        // Delete from database
+        userImageRepository.deleteByIdAndUserId(imageId, userId);
+        userImageRepository.flush();
+        // Check if primary image and update primary image if it is
+        updatePrimaryUserImage(userId);
+    }
+
+    /**
+     * Verifies that the given user image id exists.
+     * Throws NOT_ACCEPTABLE error if user image id does not exists.
+     *
+     * @param userId the id of the user which has images.
+     * @param imageId the id of the image.
+     * @throws ResponseStatusException an HTTP error with code and error message.
+     */
+    private UserImage verifyUserImageId(Integer imageId, Integer userId, User currentUser) throws ResponseStatusException  {
+        Optional<UserImage> image = userImageRepository.findImageByIdAndUserId(imageId, userId);
+
+        if (image.isEmpty()) {
+            String errorMessage =
+                    String.format("User (id: %d) attempted to delete a non-existent image with image id %d for user with id %d.",
+                            currentUser.getId(), imageId, userId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+        return image.get();
+    }
+
+    /**
+     * Updates the primary image of a user and enforces the primary image constraint.
+     * If there are other images for the given user id that are not the primary image, then next one of these becomes
+     * the primary image. If there are no other images, then there is no primary image (i.e. default used in front end).
+     *
+     * @param userId the id of the user who has the image.
+     */
+    private void updatePrimaryUserImage(Integer userId) {
+        List<UserImage> primaryUserImages = userImageRepository.findUserImageByUserIdAndIsPrimary(userId, true);
+        if (primaryUserImages.isEmpty()) {
+            List<UserImage> userImages = userImageRepository.findUserImageByUserId(userId);
+            if (!userImages.isEmpty()) {
+                userImages.get(0).setIsPrimary(true);
+                userImageRepository.save(userImages.get(0));
+            }
+        }
+    }
+
+    // ------------------------------------------ Business Image Methods ----------------------------------------------
+
+    /**
+     * Validates the parameters for modifying a business image (verifies the business exists and that the user has
+     * access rights to the business).
+     * 
+     * @param businessId the id of business.
+     * @param currentUser the currently logged-in user.
+     */
+    private void validateBusinessImageParams(Integer businessId, User currentUser) {
+        // Verify businessId parameter
+        getVerifiedBusiness(businessId);
+
+        // Verify access rights of the user to the business
+        Authorization.verifyBusinessAdmin(currentUser, businessId);
+    }
+
+    /**
+     * This method performs verification before deleting a business image.
+     * In order for an image to be deleted:
+     *                                    the supplied businessId must be for an existing business
+     *                                    the logged-in user must be a business admin or application admin
+     *                                    the imageId must be for an existing image
+     * If all the criteria is met then the image is deleted. If the primary image is deleted then another
+     * image will be set as the primary image (if another image exists).
+     * 
+     * @param businessId the id of business.
+     * @param user the currently logged-in user.
+     * @param imageId the id of the image for a product.
+     */
+    private void handleBusinessImageDeletion(Integer businessId, User user, Integer imageId) {
+        validateBusinessImageParams(businessId, user);
+
+        // Verify image id
+        BusinessImage businessImage = verifyBusinessImageId(imageId, businessId, user);
+
+        // verify file exists & delete image
+        boolean imageDeleted = fileStorageService.deleteFile(businessImage.getFilename());
+        boolean thumbnailDeleted = fileStorageService.deleteFile(businessImage.getThumbnailFilename());
+        if (!imageDeleted || !thumbnailDeleted) {
+            String errorMessage = String.format(
+                    "User (id: %d) attempted to delete a non-existent image with image id %d for business with id %d.",
+                    user.getId(), imageId, businessId
+            );
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+
+        // Delete from database
+        businessImageRepository.deleteByIdAndBusinessId(imageId, businessId);
+        businessImageRepository.flush();
+        // Check if primary image and update primary image if it is
+        updatePrimaryBusinessImage(businessId);
+    }
+
+    /**
+     * Verifies that the given business image id exists.
+     * Throws NOT_ACCEPTABLE error if product image id does not exist.
+     *
+     * @param imageId the id of the image.
+     * @param businessId the id of the business.
+     * @param user the user attempting to delete the image.
+     * @throws ResponseStatusException an HTTP error with code and error message.
+     */
+    private BusinessImage verifyBusinessImageId(Integer imageId, Integer businessId, User user)
+            throws ResponseStatusException {
+        Optional<BusinessImage> image = businessImageRepository.findBusinessImageByIdAndBusinessId(imageId, businessId);
+        if (image.isEmpty()) {
+            String errorMessage =
+                    String.format("User (id: %d) attempted to delete a non-existent image with image id %d for " +
+                                    "business with id %d.",
+                            user.getId(), imageId, businessId
+                    );
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, HTTP_NOT_ACCEPTABLE_MESSAGE);
+        }
+        return image.get();
+    }
+
+    /**
+     * Updates the primary image of a business and enforces the primary image constraint.
+     * If there are other images for the given product id that are not the primary image, then next one of these becomes
+     * the primary image. If there are no other images, then there is no primary image (i.e. default used in front end).
+     *
+     * @param businessId the id of business.
+     */
+    private void updatePrimaryBusinessImage(Integer businessId) {
+        List<BusinessImage> primaryBusinessImages = businessImageRepository
+                .findBusinessImageByBusinessIdAndIsPrimary(businessId, true);
+        if (primaryBusinessImages.isEmpty()) {
+            List<BusinessImage> businessImages = businessImageRepository
+                    .findBusinessImageByBusinessId(businessId);
+            if (!businessImages.isEmpty()) {
+                businessImages.get(0).setIsPrimary(true);
+                businessImageRepository.save(businessImages.get(0));
+            }
+        }
+    }
 }

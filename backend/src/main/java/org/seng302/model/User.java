@@ -1,12 +1,12 @@
 /**
  * Summary. This file contains the definition for the User.
- *
+ * <p>
  * Description. This file contains the defintion for the User.
  *
- * @link   team-400/src/main/java/org/seng302/user/User
- * @file   This file contains the definition for User.
+ * @link team-400/src/main/java/org/seng302/user/User
+ * @file This file contains the definition for User.
  * @author team-400.
- * @since  5.5.2021
+ * @since 5.5.2021
  */
 package org.seng302.model;
 
@@ -65,7 +65,8 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false) //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    //EAGER to allow access to this attribute outside of a context of an open hibernate session (for loading initial data SQL script)
     @JoinColumn(name = "address_id", nullable = false)
     private Address homeAddress;
 
@@ -82,8 +83,8 @@ public class User {
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_businesses",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "businesses_id") })
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "businesses_id")})
     private List<Business> businessesAdministeredObjects = new ArrayList<>();
 
     @Column(name = "session_uuid")
@@ -111,6 +112,15 @@ public class User {
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private List<BookmarkedListingMessage> bookmarkedListingMessages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<UserImage> userImages;
+
+    @Column(name = "remaining_login_attempts")
+    private Integer remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
+
+    @Column(name = "time_when_unlocked")
+    private LocalDateTime timeWhenUnlocked;
+
     // Values need for validation.
     private static final Integer FIRST_NAME_MIN_LENGTH = 2;
     private static final Integer FIRST_NAME_MAX_LENGTH = 255;
@@ -137,6 +147,9 @@ public class User {
 
     private static final Integer PASSWORD_MIN_LENGTH = 8;
     private static final Integer PASSWORD_MAX_LENGTH = 30;
+
+    private static final Integer LOGIN_ATTEMPTS_LIMIT = 3;
+    private static final Integer HOURS_LOCKED_FOR = 1;
 
     /**
      * User account constructor.
@@ -169,31 +182,31 @@ public class User {
             Role role
     ) throws IllegalUserArgumentException {
         if (!isValidFirstName(firstName)) {
-            throw new IllegalUserArgumentException ("Invalid first name");
+            throw new IllegalUserArgumentException("Invalid first name");
         }
         if (!isValidMiddleName(middleName)) {
-            throw new IllegalUserArgumentException ("Invalid middle name");
+            throw new IllegalUserArgumentException("Invalid middle name");
         }
-        if (!isValidLastName(lastName)){
-            throw new IllegalUserArgumentException ("Invalid last name");
+        if (!isValidLastName(lastName)) {
+            throw new IllegalUserArgumentException("Invalid last name");
         }
         if (!isValidNickname(nickname)) {
-            throw new IllegalUserArgumentException ("Invalid nickname");
+            throw new IllegalUserArgumentException("Invalid nickname");
         }
         if (!isValidBio(bio)) {
-            throw new IllegalUserArgumentException ("Invalid bio");
+            throw new IllegalUserArgumentException("Invalid bio");
         }
         if (!isValidEmail(email)) {
-            throw new IllegalUserArgumentException ("Invalid email address");
+            throw new IllegalUserArgumentException("Invalid email address");
         }
         if (!isValidDOB(dateOfBirth)) {
-            throw new IllegalUserArgumentException ("Invalid date of birth");
+            throw new IllegalUserArgumentException("Invalid date of birth");
         }
         if (!isValidPhoneNumber(phoneNumber)) {
-            throw new IllegalUserArgumentException ("Invalid phone number");
+            throw new IllegalUserArgumentException("Invalid phone number");
         }
-        if (!isValidPassword(password)){
-            throw new IllegalUserArgumentException ("Invalid password");
+        if (!isValidPassword(password)) {
+            throw new IllegalUserArgumentException("Invalid password");
         }
 
         this.firstName = firstName;
@@ -346,6 +359,130 @@ public class User {
         this.bookmarkedListingMessages = bookmarkedListingMessages;
     }
 
+    public void setUserImages(List<UserImage> userImages) {
+        this.userImages = userImages;
+    }
+
+    public Integer getRemainingLoginAttempts() { return remainingLoginAttempts; }
+
+    public void setRemainingLoginAttempts(Integer newAmountOfAttempts) { this.remainingLoginAttempts = newAmountOfAttempts; }
+
+    public LocalDateTime getTimeWhenUnlocked() { return timeWhenUnlocked; }
+
+    public void setTimeWhenUnlocked(LocalDateTime time) {
+        this.timeWhenUnlocked = time;
+    }
+
+
+
+    /**
+     * validate and set firstName
+     * @param firstName firstName
+     * @throws IllegalUserArgumentException Invalid first name
+     */
+    public void updateFirstName(String firstName) throws IllegalUserArgumentException {
+        if (!isValidFirstName(firstName)) {
+            throw new IllegalUserArgumentException("Invalid first name");
+        }
+        setFirstName(firstName);
+    }
+
+    /**
+     * validate and set lastName
+     * @param lastName lastName
+     * @throws IllegalUserArgumentException Invalid last name
+     */
+    public void updateLastName(String lastName) throws IllegalUserArgumentException {
+        if (!isValidLastName(lastName)) {
+            throw new IllegalUserArgumentException("Invalid last name");
+        }
+        setLastName(lastName);
+    }
+
+    /**
+     * validate and set middleName
+     * @param middleName middleName
+     * @throws IllegalUserArgumentException Invalid middle name
+     */
+    public void updateMiddleName(String middleName) throws IllegalUserArgumentException {
+        if (!isValidMiddleName(middleName)) {
+            throw new IllegalUserArgumentException("Invalid middle name");
+        }
+        setMiddleName(middleName);
+    }
+
+    /**
+     * validate and set nickname
+     * @param nickname nickname
+     * @throws IllegalUserArgumentException Invalid nickname
+     */
+    public void updateNickname(String nickname) throws IllegalUserArgumentException {
+        if (!isValidNickname(nickname)) {
+            throw new IllegalUserArgumentException("Invalid nickname");
+        }
+        setNickname(nickname);
+    }
+
+    /**
+     * validate and set bio
+     * @param bio bio
+     * @throws IllegalUserArgumentException Invalid bio
+     */
+    public void updateBio(String bio) throws IllegalUserArgumentException {
+        if (!isValidBio(bio)) {
+            throw new IllegalUserArgumentException("Invalid bio");
+        }
+        setBio(bio);
+    }
+
+    /**
+     * validate and set email
+     * @param email email
+     * @throws IllegalUserArgumentException Invalid email address
+     */
+    public void updateEmail(String email) throws IllegalUserArgumentException {
+        if (!isValidEmail(email)) {
+            throw new IllegalUserArgumentException("Invalid email address");
+        }
+        setEmail(email);
+    }
+
+    /**
+     * validate and set dateOfBirth
+     * @param dateOfBirth dateOfBirth
+     * @throws IllegalUserArgumentException Invalid date of birth
+     */
+    public void updateDateOfBirth(LocalDate dateOfBirth) throws IllegalUserArgumentException {
+        if (!isValidDOB(dateOfBirth)) {
+            throw new IllegalUserArgumentException("Invalid date of birth");
+        }
+        setDateOfBirth(dateOfBirth);
+    }
+
+    /**
+     * validate and set phoneNumber
+     * @param phoneNumber phoneNumber
+     * @throws IllegalUserArgumentException Invalid phone number
+     */
+    public void updatePhoneNumber(String phoneNumber) throws IllegalUserArgumentException {
+        if (!isValidPhoneNumber(phoneNumber)) {
+            throw new IllegalUserArgumentException("Invalid phone number");
+        }
+        setPhoneNumber(phoneNumber);
+    }
+
+    /**
+     * validate and set
+     * @param password password
+     * @throws IllegalUserArgumentException Invalid password
+     */
+    public void updatePassword(String password) throws IllegalUserArgumentException {
+        if (!isValidPassword(password)) {
+            throw new IllegalUserArgumentException("Invalid password");
+        }
+        setPassword(encode(password));
+    }
+
     /**
      * Calculates the time period between the current date and registration date and creates
      * the appropriate message containing the years and months.
@@ -401,13 +538,21 @@ public class User {
     }
 
     /**
+     * return a list of UserImage object related to the user.
+     * @return user image
+     */
+    public List<UserImage> getUserImages() {
+        return userImages;
+    }
+
+    /**
      * Removes the given business from the businessesAdministeredObjects
      * @param business a business to be removed.
      */
-    public void removeABusinessesAdministeredObjects(Business business){
+    public void removeABusinessesAdministeredObjects(Business business) {
         int businessId = business.getId();
-        for (int i = 0; i < businessesAdministeredObjects.size(); i++){
-            if (businessesAdministeredObjects.get(i).getId() == businessId){
+        for (int i = 0; i < businessesAdministeredObjects.size(); i++) {
+            if (businessesAdministeredObjects.get(i).getId() == businessId) {
                 this.businessesAdministeredObjects.remove(i);
                 i--;
             }
@@ -418,10 +563,10 @@ public class User {
      * Removes the given card from the list of cards created by the user.
      * @param card the card to be removed
      */
-    public void removeACardFromMarketplaceCards(MarketplaceCard card){
+    public void removeACardFromMarketplaceCards(MarketplaceCard card) {
         int cardId = card.getId();
-        for (int i = 0; i < this.cards.size(); i++){
-            if (this.cards.get(i).getId() == cardId){
+        for (int i = 0; i < this.cards.size(); i++) {
+            if (this.cards.get(i).getId() == cardId) {
                 this.cards.remove(i);
                 i--;
             }
@@ -435,7 +580,7 @@ public class User {
      */
     public List<Integer> getBusinessesAdministered() {
         List<Integer> businessesAdministered = new ArrayList<>();
-        for (Business business: businessesAdministeredObjects) {
+        for (Business business : businessesAdministeredObjects) {
             businessesAdministered.add(business.getId());
         }
         return businessesAdministered;
@@ -445,8 +590,8 @@ public class User {
      * Add a listing to user bookmark if that listing not in user's bookmark
      * @param listing listing
      */
-    public void addAListingToBookmark(Listing listing){
-        if (!this.bookmarkedListings.contains(listing)){
+    public void addAListingToBookmark(Listing listing) {
+        if (!this.bookmarkedListings.contains(listing)) {
             this.bookmarkedListings.add(listing);
         }
     }
@@ -455,7 +600,7 @@ public class User {
      * Remove a listing from user bookmark if that listing not in user's bookmark
      * @param givenListing given listing
      */
-    public void removeAListingFromBookmark(Listing givenListing){
+    public void removeAListingFromBookmark(Listing givenListing) {
         for (int i = 0; i < bookmarkedListings.size(); i++) {
             if (bookmarkedListings.get(i) == givenListing) {
                 bookmarkedListings.remove(i);
@@ -558,7 +703,8 @@ public class User {
                 homeAddress.toAddressPayloadSecure(),
                 created,
                 role,
-                administrators
+                administrators,
+                userImages
         );
     }
 
@@ -671,5 +817,55 @@ public class User {
                 (password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,30}$"));
     }
 
+    /**
+     * Update number of remaining login attempts
+     */
+    public void useAttempt() {
+        if (this.remainingLoginAttempts > 0) {
+            this.remainingLoginAttempts -= 1;
+        } else if (this.remainingLoginAttempts < 0) {
+            this.remainingLoginAttempts = 0;
+        }
+    }
+
+    /**
+     * Checks whether the user has exceed the allowed number of attempts.
+     * @return true if the user has exceeded this limit, otherwise false.
+     */
+    public boolean hasLoginAttemptsRemaining() {
+      return this.remainingLoginAttempts > 0;
+    }
+
+    /**
+     * Checks if the user's account can be unlocked.
+     * @return true if the account can be unlocked, false otherwise.
+     */
+    public boolean canUnlock() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        return currentTime.isAfter(this.timeWhenUnlocked);
+    }
+
+    /**
+     * Locks the account for the HOURS_LOCKED_FOR
+     */
+    public void lockAccount() {
+        this.timeWhenUnlocked = LocalDateTime.now().plusHours(HOURS_LOCKED_FOR);
+    }
+
+    /**
+     * Unlocks the account for the user
+     */
+    public void unlockAccount() {
+        this.timeWhenUnlocked = null;
+        this.remainingLoginAttempts = LOGIN_ATTEMPTS_LIMIT;
+    }
+
+    /**
+     * Determines whether the account is locked
+     * @return Boolean, true if account is locked, otherwise false
+     */
+    public boolean isLocked() {
+        return this.timeWhenUnlocked != null;
+    }
 
 }

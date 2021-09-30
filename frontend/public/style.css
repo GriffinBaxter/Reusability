@@ -255,3 +255,8 @@ input[type=number] {
 .text-font, p, h, label, textarea, select, button, h4 {
   font-family: 'Roboto', sans-serif;
 }
+
+/* Background colour of modals */
+.modal {
+  background: rgba(17, 78, 60, 0.4);
+}

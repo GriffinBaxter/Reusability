@@ -1,0 +1,461 @@
+{
+	"info": {
+		"_postman_id": "47dc1b4c-3aa4-49ec-becd-6c23e1c006e8",
+		"name": "Put for modified User Profile",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create-user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Smith\",\r\n  \"middleName\": \"Hector\",\r\n  \"nickname\": \"Jonny\",\r\n  \"bio\": \"Likes long walks on the beach\",\r\n  \"email\": \"user@email.com\",\r\n  \"dateOfBirth\": \"1999-04-27\",\r\n  \"phoneNumber\": \"+64 3 555 0129\",\r\n  \"homeAddress\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-firstname",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-lastname",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalide-middle-name",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"空\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-nickname",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"空\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-bio",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！Likes long walks on the beach！\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-email-address",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"1.1\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-date-of-birth",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"2018-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-phone-number",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"phone number\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-current-password",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123\",\n  \"newPassword\": \"Password123456!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-new-password",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"abc\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "modified-user-profile-with-invalid-country",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login-as-dgaa",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"email@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "admin-can-change-user-password-without-current-password",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"new Name\",\n  \"lastName\": \"Smith\",\n  \"middleName\": \"Hector\",\n  \"nickname\": \"Jonny\",\n  \"bio\": \"Likes long walks on the beach\",\n  \"email\": \"user@email.com\",\n  \"dateOfBirth\": \"1999-04-27\",\n  \"phoneNumber\": \"+64 3 555 0129\",\n  \"homeAddress\": {\n    \"streetNumber\": \"3/24\",\n    \"streetName\": \"Ilam Road\",\n    \"suburb\": \"Upper Riccarton\",\n    \"city\": \"Christchurch\",\n    \"region\": \"Canterbury\",\n    \"country\": \"New Zealand\",\n    \"postcode\": \"90210\"\n  },\n  \"currentPassword\": \"\",\n  \"newPassword\": \"Password123456!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users/22/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users",
+						"22",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

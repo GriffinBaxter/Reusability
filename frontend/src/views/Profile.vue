@@ -8,229 +8,286 @@
 <template>
   <div>
     <div id="main">
-    <!--nav bar-->
-    <Navbar></Navbar>
+      <!--nav bar-->
+      <Navbar ref="navbar"></Navbar>
 
-    <!--profile container-->
-    <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
+      <!--profile container-->
+      <div class="container p-5 mt-3 all-but-footer text-font" id="profile-container">
 
-      <!--profile header, contains user search bar-->
-      <ProfileHeader id="profile-header"/>
-
-      <div class="row">
-
-        <div class="col-xl-3 mb-3">
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
-
-              <!--user's profile image-->
-              <div id="imageDiv">
-                <img class="rounded-circle img-fluid" :src="require('/public/sample_profile_image.jpg')" alt="Profile Image"/>
-              </div>
-
-              <!--user's nickname and bio-->
-              <div class="mt-3">
-                <h4>{{ nickname }}</h4>
-                <div class="text-secondary">{{ bio }}</div>
-              </div>
-
-            </div>
+        <div class="row">
+          <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromSearch">
+            <button class="btn btn-lg green-button w-100" @click="returnToSearch()" id="return-button" tabindex="9">Return to Search</button>
           </div>
-
-
-          <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
-            <div class="card-header">Something went wrong with your action...</div>
-            <div class="card-body">{{ actionErrorMessage }}</div>
-          </div>
-
-
-          <div class="card text-center shadow-sm mt-3" v-if="populatedBox()">
-            <!-- These messages will appear for GAA accounts -->
-            <div class="card-body" v-if="hasAdminRights(role) && isGAA(role)">
-              <div class="alert alert-info" role="alert">
-                Global Application Admin
-              </div>
-            </div>
-
-            <!-- These messages will appear for DGAA accounts -->
-            <div class="card-body" v-if="hasAdminRights(role) && isDGAA(role)">
-              <div class="alert alert-info" role="alert">
-                Default Global Application Admin
-              </div>
-            </div>
-
-            <!--make/remove business administrator button-->
-            <div class="card-body" v-if="actingBusinessId && otherUser">
-              <div v-if="!isBusinessAdministrator">
-                <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
-                  Grant Business Administrator Status
-                </button>
-              </div>
-
-              <div v-else>
-                <div class="spinner-border spinner-border-sm text-warning" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-warning" v-else @click="removeActiveAdministrator()">
-                  Revoke Business Administrator Status
-                </button>
-              </div>
-            </div>
-
-            <!-- This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
-            because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
-            but the backend will prevent this from occurring.
-
-            The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
-            another user's id.
-            -->
-            <div class="card-body" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
-              <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
-              <div v-if="isGAA(role)">
-                <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-danger" v-else @click="revokeUserGAA">
-                  Revoke Global Application Admin
-                </button>
-              </div>
-
-              <div v-else>
-                <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
-                <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
-                  Grant Global Application Admin
-                </button>
-              </div>
-            </div>
-
-            <!--register business button-->
-            <div class="card-body" v-if="!otherUser">
-              <div id="registerBusinessRow" v-if="!otherUser">
-                <button type="button" class="btn btn-md btn-outline-primary green-button" @click="$router.push('/businessRegistration')">
-                  Register Business
-                </button>
-              </div>
-            </div>
-          </div>
-
         </div>
 
-        <div class="col">
-          <div class="card shadow-sm">
-            <div class="card-body">
+        <!--profile header, contains user search bar-->
+        <ProfileHeader id="profile-header"/>
 
-              <!--user's name-->
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Name:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" style="text-align: right">
-                      {{ firstName }} {{ middleName }} {{ lastName }}
+        <div class="row">
+
+          <!-- Update images modal -->
+          <UpdateImagesModal v-on:updatePrimary="updatePrimaryNav" ref="updateImagesModal" location="User" :id="userId" v-model="user"/>
+
+          <div class="col-xl-3 mb-3">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+
+                <!--user's profile image-->
+                <div id="imageDiv">
+                  <div id="profileCarouselControls" class="carousel carousel-dark slide"
+                       data-bs-interval="false" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="image-carousel">
+                      <div v-if="user.data.images === null || user.data.images.length === 0">
+                        <img :src="getImageSrc('')"
+                             class="rounded-circle img-fluid"
+                             alt="Profile Image">
+                      </div>
+                      <div v-for="image of user.data.images"
+                           v-bind:key="image.id"
+                           :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
+                        <img :src="getImageSrc(image.thumbnailFilename)"
+                             class="rounded-circle img-fluid"
+                             alt="Profile Image">
+                      </div>
+                    </div>
+                    <div v-if="user.data.images.length > 1">
+                      <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
+                              data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                      </button>
+                      <button class="carousel-control-next" type="button" data-bs-target="#profileCarouselControls"
+                              data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                      </button>
                     </div>
                   </div>
+
+
+                  <div id="change-profile-picture-button" style="padding-top: 10px" v-if="!otherUser">
+                    <button type="button" style="width: 252px; max-width: 100%"
+                            class="btn btn-md btn-outline-primary green-button"
+                            @click="(event) => {this.$refs.updateImagesModal.showModel(event)}">
+                      Change Profile Picture
+                    </button>
+                  </div>
+                </div>
+
+
+                <!--user's nickname and bio-->
+                <div class="mt-3">
+                  <hr>
+                  <h4 v-if="nickname !== null && nickname.length !== 0">{{ nickname }}</h4>
+                  <h4 v-else>{{ firstName }}</h4>
+                  <div class="text-secondary">{{ bio }}</div>
+                  <div id="edit-profile" style="padding-top: 10px" v-if="!otherUser">
+                    <hr>
+                    <button type="button" style="width: 252px; max-width: 100%"
+                            class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
+                      Edit Profile
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div v-if="actionErrorMessage" class="card text-white bg-danger shadow-sm mt-3">
+              <div class="card-body">{{ actionErrorMessage }}</div>
+            </div>
+
+            <div class="card text-center shadow-sm mt-3" v-if="populatedBox()">
+              <!-- These messages will appear for GAA accounts -->
+              <div class="card-body" v-if="hasAdminRights(role) && isGAA(role)">
+                <div class="alert alert-info" role="alert">
+                  Global Application Admin
                 </div>
               </div>
 
-              <!--user's email-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Email:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" style="text-align: right">
-                      {{ email }}
-                    </div>
-                  </div>
+              <!-- These messages will appear for DGAA accounts -->
+              <div class="card-body" v-if="hasAdminRights(role) && isDGAA(role)">
+                <div class="alert alert-info" role="alert">
+                  Default Global Application Admin
                 </div>
               </div>
 
-              <!--user's date of birth-->
-              <hr v-if="!otherUser || isDGAA(loginRole)">
-              <div class="container" v-if="!otherUser || isDGAA(loginRole)">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Date of Birth:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" style="text-align: right">
-                      {{ dateOfBirth }}
-                    </div>
-                  </div>
+              <!--make/remove business administrator button-->
+              <div class="card-body" v-if="actingBusinessId && otherUser">
+                <div v-if="!isBusinessAdministrator">
+                  <div class="spinner-border spinner-border-sm text-primary" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-primary" v-else @click="activeAsAdministrator()">
+                    Grant Business Administrator Status
+                  </button>
+                </div>
+
+                <div v-else>
+                  <div class="spinner-border spinner-border-sm text-warning" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-warning" v-else
+                          @click="removeActiveAdministrator()">
+                    Revoke Business Administrator Status
+                  </button>
                 </div>
               </div>
 
-              <!--user's phone number-->
-              <hr v-if="!otherUser || isDGAA(loginRole)">
-              <div class="container" v-if="!otherUser || isDGAA(loginRole)">
+              <!-- This only works under the assumption that only the DGAA can see the roles of others. Otherwise this will break. This is
+              because then isValidRole(role) will return true, which means that these buttons will appear on other users profile pages
+              but the backend will prevent this from occurring.
 
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Phone number:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" style="text-align: right">
-                      {{ phoneNumber }}
-                    </div>
-                  </div>
+              The error can currently be shown on your own profile if you are a GAA. This is done by changing your userID cookie to
+              another user's id.
+              -->
+              <div class="card-body" v-if="isValidRole(role) && otherUser && !isDGAA(role)">
+                <!-- If the current (page) user has admin rights. Then show the revoke message. Otherwise show the grant message.-->
+                <div v-if="isGAA(role)">
+                  <div class="spinner-border spinner-border-sm text-danger" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-danger" v-else @click="revokeUserGAA">
+                    Revoke Global Application Admin
+                  </button>
+                </div>
+
+                <div v-else>
+                  <div class="spinner-border spinner-border-sm text-success" v-if="loadingAction"></div>
+                  <button type="button" class="btn btn-md btn-outline-success" v-else @click="grantUserGAA">
+                    Grant Global Application Admin
+                  </button>
                 </div>
               </div>
 
-              <!--user's home address-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Address:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" v-for="lines in address" :key="lines.line" style="text-align: right">
-                      {{ lines.line }}
-                    </div>
-                  </div>
+              <!--register business button-->
+              <div class="card-body" v-if="!otherUser">
+                <div id="registerBusinessRow" v-if="!otherUser">
+                  <button type="button" style="width: 252px; max-width: 100%"
+                          class="btn btn-md btn-outline-primary green-button"
+                          @click="$router.push('/businessRegistration')">
+                    Register Business
+                  </button>
                 </div>
               </div>
+            </div>
 
-              <!--user's joined date-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Joined:</h6>
-                  </div>
-                  <div class="col">
-                    <div class="text-secondary" style="text-align: right">
-                      {{ joined }}
+          </div>
+
+          <div class="col">
+            <div class="card shadow-sm">
+              <div class="card-body">
+
+                <!--user's name-->
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Name:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary" style="text-align: right">
+                        {{ firstName }} {{ middleName }} {{ lastName }}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <!--user's businesses administered-->
-              <hr v-if="businessesAdministeredExist()">
-              <div class="container" v-if="businessesAdministeredExist()">
-                <div class="row justify-content-between">
-                  <div class="col-md-3">
-                    <h6>Businesses Administered:</h6>
+
+                <!--user's email-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Email:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" style="text-align: right">
+                        {{ email }}
+                      </div>
+                    </div>
                   </div>
-                  <div class="col">
-                    <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
-                    <div v-else>
-                      <div class="text-secondary businesses-administered" v-for="business in businessesAdministered" :key="business.name"
-                           style="text-align: right" @click="redirectToBusiness(business.id)">
-                        {{ business.name }}
+                </div>
+
+                <!--user's date of birth-->
+                <hr v-if="!otherUser || isDGAA(loginRole)">
+                <div class="container" v-if="!otherUser || isDGAA(loginRole)">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Date of Birth:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" style="text-align: right">
+                        {{ dateOfBirth }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--user's phone number-->
+                <hr v-if="!otherUser || isDGAA(loginRole)">
+                <div class="container" v-if="!otherUser || isDGAA(loginRole)">
+
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Phone number:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" style="text-align: right">
+                        {{ phoneNumber }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--user's home address-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Address:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" v-for="lines in address" :key="lines.line" style="text-align: right">
+                        {{ lines.line }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--user's joined date-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Joined:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="text-secondary" style="text-align: right">
+                        {{ joined }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--user's businesses administered-->
+                <hr v-if="businessesAdministeredExist()">
+                <div class="container" v-if="businessesAdministeredExist()">
+                  <div class="row justify-content-between">
+                    <div class="col-md-3">
+                      <h6>Businesses Administered:</h6>
+                    </div>
+                    <div class="col">
+                      <div class="spinner-border spinner-border-sm text-dark" v-if="loadingAction"></div>
+                      <div v-else>
+                        <div class="text-secondary businesses-administered" v-for="business in businessesAdministered"
+                             :key="business.name"
+                             style="text-align: right" @click="redirectToBusiness(business.id)">
+                          {{ business.name }}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!--user's cards-->
-          <UserCardsComp class="mt-3" :users-cards="usersCards" :other-user="otherUser" />
+            <!--user's cards-->
+            <UserCardsComp class="mt-3" :users-cards="usersCards" :other-user="otherUser"/>
+          </div>
         </div>
       </div>
-    </div>
     </div>
     <!--footer-->
     <Footer></Footer>
@@ -247,6 +304,7 @@ import Navbar from "../components/Navbar";
 import {UserRole} from '../configs/User'
 import {getFormattedAddress, checkNullity} from "../views/helpFunction"
 import UserCardsComp from "../components/UserCardsComp";
+import UpdateImagesModal from "../components/UpdateImagesModal";
 
 export default {
   name: "Profile",
@@ -255,13 +313,24 @@ export default {
     Footer,
     ProfileHeader,
     Navbar,
+    UpdateImagesModal
   },
 
   data() {
     return {
+      user: {
+        data: {
+          firstName: "",
+          images: [],
+          id: 0
+        }
+      },
+
+      userId: 0,
       actionErrorMessage: "",
       loadingAction: false,
       urlID: null,
+      currentID: null,
       firstName: "",
       lastName: "",
       middleName: "",
@@ -291,6 +360,10 @@ export default {
 
       // User card variables
       usersCards: [],
+
+      images: [],
+
+      fromSearch: false
     }
   },
   methods: {
@@ -337,6 +410,28 @@ export default {
     // --------------------------------------------------------------------------------------------------------------------
 
     /**
+     * Updates the Navbar to display the new primary image.
+     * Only when acting as a user
+     * @param newPrimaryImage thumbnail filename of new image to display
+     */
+    updatePrimaryNav(newPrimaryImage) {
+      if (!Cookies.get("actAs")) {
+        this.$refs.navbar.updatePrimaryImage(newPrimaryImage);
+      }
+    },
+
+    /**
+     * Gets the full URL of the file to display
+     * @param filename name of file
+     */
+    getImageSrc(filename) {
+      if (filename === "") {
+        return require('../../public/default-image.jpg')
+      }
+      return Api.getServerURL() + "/" + filename;
+    },
+
+    /**
      * Calculates the months between the given date and the current date, then formats the given date and months.
      * Finally it sets the join date on the page to the formatted string.
      * @param createdDate
@@ -344,7 +439,7 @@ export default {
     getCreatedDate(createdDate) {
       const dateJoined = new Date(createdDate);
 
-      const currentDate = new Date();
+      const currentDate = new Date(Date.now());
       let months = (currentDate.getFullYear() - dateJoined.getFullYear()) * 12
           + (currentDate.getMonth() - dateJoined.getMonth());
 
@@ -507,6 +602,7 @@ export default {
       so it must be 'unpacked' and formatted.
        */
       //basic unpack
+      this.userId = data.id;
       this.dateOfBirth = this.formatAge(data.dateOfBirth);
       this.phoneNumber = data.phoneNumber;
 
@@ -543,7 +639,17 @@ export default {
       if (data.role) {
         this.role = data.role;
       }
+      if (data.images) {
+        this.images = data.images
+      }
 
+      this.user = {
+        data: {
+          firstName: this.firstName,
+          id: this.userId,
+          images: this.images
+        }
+      }
       this.getCreatedDate(data.created);
     },
 
@@ -565,8 +671,8 @@ export default {
      * Logs the user out of the site by deleting the relevant cookies and redirecting to the login page.
      */
     logout() {
-      Cookies.remove('userID', { sameSite: 'strict' });
-      Cookies.remove('actAs', { sameSite: 'strict' });
+      Cookies.remove('userID', {sameSite: 'strict'});
+      Cookies.remove('actAs', {sameSite: 'strict'});
       Api.signOut().then(() => {
         this.$router.push({name: 'Login'})
       })
@@ -589,6 +695,7 @@ export default {
         let success = true;
         await Api.makeAdministrator(Cookies.get("actAs"), this.urlID).then(response => {
               if (response.status !== 200) {
+                success = false;
                 this.actionErrorMessage = "Sorry, but something went wrong..."
               }
             }
@@ -660,7 +767,7 @@ export default {
 
         if (error.response.status === 403) {
           // Lacks permissions
-          this.actionErrorMessage = "Sorry, but you lack permissions to perform this action."
+          this.actionErrorMessage = "Sorry, but you lack the permissions to perform this action."
         }
 
         if (error.response.status === 406) {
@@ -736,26 +843,54 @@ export default {
           (this.actingBusinessId && this.otherUser) ||
           (this.isValidRole(this.role) && this.otherUser && !this.isDGAA(this.role)) ||
           (!this.otherUser);
+    },
+    /**
+     * Takes the user to the edit profile page
+     */
+    goToEdit() {
+      let id
+      if (this.urlID === "profile") {
+        id = this.currentID
+      } else {
+        id = this.urlID
+      }
+      this.$router.push({name: "EditProfile", params: {id}})
+    },
+    /**
+     * Returns the user to the previously visited page
+     * Only used for returning to the search page
+     */
+    returnToSearch() {
+      this.$router.back();
     }
   },
-
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // If the user has come from the search page then a return to search button
+      // should be rendered.
+      if (from.name === 'Search') {
+        vm.fromSearch = true;
+      }
+      next();
+    });
+  },
   /**
    * When mounted, initiate population of page.
    * If cookies are invalid or not present, redirect to login page.
    */
   mounted() {
 
-    const currentID = Cookies.get('userID');
+    this.currentID = Cookies.get('userID');
 
-    if (currentID) {
-      this.getLoginRole(currentID);
+    if (this.currentID) {
+      this.getLoginRole(this.currentID);
 
       const url = document.URL
       this.urlID = url.substring(url.lastIndexOf('/') + 1);
 
-      if (currentID === this.urlID || this.urlID === 'profile') {
-        this.retrieveUser(currentID);
-        this.retrieveUsersCards(currentID);
+      if (this.currentID === this.urlID || this.urlID === 'profile') {
+        this.retrieveUser(this.currentID);
+        this.retrieveUsersCards(this.currentID);
       } else {
         // Another user
         this.retrieveUser(this.urlID);
@@ -776,7 +911,7 @@ export default {
 }
 
 #imageDiv {
-  width:100%;
+  width: 100%;
   padding: 2px;
 }
 

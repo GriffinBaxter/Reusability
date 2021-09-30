@@ -60,15 +60,19 @@
 
             </div>
 
+              <!--forgot password location-->
+              <div class="row">
+                <router-link to="/forgotPassword" style="color: #1EBA8C; text-decoration: none; background-color: transparent;" tabindex="6">Forgot password?</router-link>
+              </div>
+
               <!--error message location-->
               <div class="row">
                 <div class="col mb-2 mb-md-0">
-                  <label for="loginButton" id="error-label" ref="errorLbl" class="text-danger mt-2">Failed login attempt, email or password incorrect.</label>
+                  <label for="loginButton" id="error-label" ref="errorLbl" class="text-danger mt-2"></label>
                 </div>
               </div>
 
               <div class="row">
-
                 <!--register button-->
                 <div class="col-5">
                   <router-link class="btn btn-lg m-sm-4 mb-4 green-button-transparent" to="/registration" tag="button" type="button" tabindex="5" >Register</router-link>
@@ -81,7 +85,6 @@
               </div>
 
             </form>
-
 
           </div>
         </div>
@@ -103,7 +106,6 @@ export default {
   name: "Login",
   components: {
     Footer
-
   },
 
   data() {
@@ -133,15 +135,18 @@ export default {
       })
       .catch((error) => {
         if (error.response) {
-          this.$refs.errorLbl.innerText = 'Failed login attempt, email or password incorrect.';
-          this.$refs.errorLbl.style.visibility = "visible";
+          if (error.response.status === 403) {
+            this.$refs.errorLbl.innerText = 'Exceeded login attempts. Please wait 1 hour for your account to be ' +
+                'unlocked, or use the forgotten password functionality above.';
+          } else if (error.response.status === 400) {
+            this.$refs.errorLbl.innerText = 'Failed login attempt, email or password incorrect.';
+          }
         } else if (error.request) {
           this.$refs.errorLbl.innerText = 'Connection Timeout.';
-          this.$refs.errorLbl.style.visibility = "visible";
         } else {
           this.$refs.errorLbl.innerText = 'Connection error.';
-          this.$refs.errorLbl.style.visibility = "visible";
         }
+        this.$refs.errorLbl.style.visibility = "visible";
       })
     },
 
@@ -198,5 +203,7 @@ input:focus, textarea:focus {
   box-shadow: 0 0 2px 2px #2eda77; /* Full freedom. (works also with border-radius) */
   border: 1px solid #1EBABC;
 }
+
+
 
 </style>

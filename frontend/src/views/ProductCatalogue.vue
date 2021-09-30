@@ -7,28 +7,30 @@
 
         <div id="body" class="container all-but-footer mb-3">
 
-          <div class="row mt-3">
-            <h2 style="text-align: center">Product Catalogue</h2>
-            <!--Creation success info-->
-            <div class="alert alert-success" role="alert" v-if="creationSuccess">
-              <div class="row">
-                <div class="col" style="text-align: center">{{ userAlertMessage }}</div>
-              </div>
-            </div>
+          <div v-if="creationSuccess">
+            <feedback-notification :messages="messages"/>
           </div>
 
-          <div class="row mb-3">
+          <div class="row mt-3">
+            <h2 style="text-align: center">Product Catalogue</h2>
+          </div>
+
+          <div class="row">
             <div class="col">
-              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end" tabindex="0"
+              <button id="create-product-button" type="button" class="btn btn-md btn-primary green-button float-end"
+                      tabindex="0"
                       @click="showCreateProductModal()">Create Product
               </button>
             </div>
           </div>
 
+          <ProductSearchBar v-on:search="onSearch"/>
+
           <Table table-id="product-catalogue-id" null-string-value="N/A" :table-tab-index="0"
                  :table-headers="tableHeaders" :table-data="tableData"
                  :max-rows-per-page="rowsPerPage" :total-rows="totalRows" :current-page-override="currentPage"
                  :order-by-override="tableOrderBy" :loading-data="loadingProducts" :table-data-is-page="true"
+                 :hide-pagination="barcodeSearched"
                  @update-current-page="event => updatePage(event)"
                  @order-by-header-index="event => orderProducts(event)"
                  @row-selected="event => showRowModal(event.index)"
@@ -37,7 +39,7 @@
 
         <UpdateProductModal ref="updateProductModel" :business-id="businessId" v-model="currentProduct"/>
 
-        <UpdateProductImagesModal ref="updateProductImagesModal" :business-id="businessId" v-model="currentProduct"/>
+        <UpdateImagesModal ref="updateImagesModal" location="Product" :id="businessId" v-model="currentProduct"/>
 
         <div v-if="showModal">
           <transition name="fade">
@@ -57,14 +59,15 @@
                           v-bind:created="created"
                           v-bind:currencyCode="currencyCode"
                           v-bind:currencySymbol="currencySymbol"
-                          v-bind:images="images"
+                          v-bind:images="currentProduct.data.images"
                           v-bind:barcode="barcode"/>
                     </div>
                     <div class="modal-footer">
-                      <button class="btn btn-primary" @click="(event) => {
+                      <button class="btn btn-primary green-button" @click="(event) => {
                       this.showModal = false;
-                      this.$refs.updateProductImagesModal.showModel(event);
-                    }">Update Photos</button>
+                      this.$refs.updateImagesModal.showModel(event);
+                    }">Update Images
+                      </button>
                       <button class="btn btn-outline-primary green-button float-end" @click="(event) => {
                       this.showModal = false;
                       this.$refs.updateProductModel.showModel(event);
@@ -90,6 +93,22 @@
                 <button type="button" class="btn-close" @click="closeCreateProductModal()" aria-label="Close"></button>
               </div>
               <div class="modal-body">
+                <!-- Autofill success message card-->
+                <div class="row my-lg-2">
+                  <div class="col-12 mx-auto">
+                    <div v-if="autofilled" id="autofillSuccessMessage" class="alert alert-success text-center">
+                      <label>Product information has been autofilled</label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Autofill error message card-->
+                <div class="row my-lg-2">
+                  <div class="col-12 mx-auto">
+                    <div v-if="autofillError" id="autofillErrorMessage" class="alert alert-danger text-center">
+                      <label>Could not autofill, product may not exist in database</label>
+                    </div>
+                  </div>
+                </div>
                 <!--create product form, needs validation-->
                 <form id="create" novalidate @submit.prevent>
                   <!--product id-->
@@ -102,6 +121,62 @@
                       {{ productIDErrorMsg }}
                     </div>
                   </div>
+                  <hr>
+                  <!--product barcode-->
+                  <div class="form-group py-2">
+                    <label for="barcode-checkbox">Add Barcode?&nbsp;</label>
+                    <input type="checkbox" id="barcode-checkbox" name="barcode-checkbox" v-model="addBarcode">
+                    <div v-if="addBarcode">
+                      <br>
+                      <label for="product-barcode">Barcode (EAN or UPC)</label>
+                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text"
+                             v-model="barcode"
+                             :class="toggleInvalidClass(barcodeErrorMsg)" :maxlength="config.barcode.maxLength">
+                      <div class="invalid-feedback">
+                        {{ barcodeErrorMsg }}
+                      </div>
+                      <br><br>
+                      <div class="row">
+                        <div class="col">
+                          <button id="scan-by-uploading-image-button" class="btn green-button-transparent"
+                                  @click="onUploadClick">
+                            Scan by uploading image
+                          </button>
+                          <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
+                                 name="img" accept="image/png, image/gif, image/jpeg">
+                        </div>
+                        <div class="col align-content-end">
+                          <button id="scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
+                                  class="btn green-button-transparent" @click="getBarcodeLiveStream">
+                            Scan using camera
+                          </button>
+                          <button id="stop-scanning-button" v-if="liveStreaming && !barcodeFound"
+                                  class="btn green-button-transparent"
+                                  @click="liveStreaming = false; removeCameraError();">
+                            Stop scanning (barcode not found)
+                          </button>
+                        </div>
+                      </div>
+                      <button id="save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
+                              class="btn green-button" @click="liveStreaming = false">
+                        Save Scanned Barcode
+                      </button>
+                      <br>
+                      <div v-if="liveStreaming"><br></div>
+                      <div id="createLiveStreamCamera" style="padding-bottom: 6px"></div>
+                      <button id="autofill-button" type="button"
+                              :class="`btn green-button ${getErrorMessage(
+                              config.barcode.name,
+                              barcode,
+                              config.barcode.minLength,
+                              config.barcode.maxLength,
+                              config.barcode.regexMessage,
+                              config.barcode.regex) === '' ? '': 'disabled'}`"
+                              @click="autofillProductFromBarcode()">Autofill Empty Fields
+                      </button>
+                    </div>
+                  </div>
+                  <hr>
                   <!--product name-->
                   <div class="form-group">
                     <label for="product-name">Product Name*</label>
@@ -114,10 +189,12 @@
                   </div>
                   <!--recommended retail price-->
                   <div class="form-group">
-                    <label for="product-price" v-if="currencyCode != ''">Recommended Retail Price ({{ currencyCode }})</label>
+                    <label for="product-price" v-if="currencyCode !== ''">Recommended Retail Price ({{
+                        currencyCode
+                      }})</label>
                     <label for="product-price" v-else>Recommended Retail Price</label>
                     <div class="input-group">
-                      <div class="input-group-prepend" v-if="currencySymbol != ''">
+                      <div class="input-group-prepend" v-if="currencySymbol !== ''">
                         <span class="input-group-text">{{ currencySymbol }}</span>
                       </div>
                       <input id="product-price" class="input-styling" name="product-price" type="text"
@@ -151,57 +228,6 @@
                       {{ descriptionErrorMsg }}
                     </div>
                   </div>
-                  <!--product barcode-->
-                  <div class="form-group">
-                    <br>
-                    <label for="barcode-checkbox">Add Barcode?&nbsp;</label>
-                    <input type="checkbox" id="barcode-checkbox" name="barcode-checkbox" v-model="addBarcode">
-                    <br>
-                    <div v-if="addBarcode">
-                      <br>
-                      <label for="product-barcode">Barcode (EAN or UPC)</label>
-                      <input id="product-barcode" class="input-styling" name="product-barcode" type="text" v-model="barcode"
-                             :class="toggleInvalidClass(barcodeErrorMsg)" :maxlength="config.barcode.maxLength">
-                      <div class="invalid-feedback">
-                        {{ barcodeErrorMsg }}
-                      </div>
-                      <br><br>
-                      <button id="scan-by-uploading-image-button" class="btn green-button-transparent"
-                              @click="onUploadClick">
-                        Scan by uploading image
-                      </button>
-                      <input type="file" id="imageUpload" ref="image" @change="getBarcodeStatic"
-                                              name="img" accept="image/png, image/gif, image/jpeg">
-                      <br><br>
-                      <button id="scan-using-camera-button" v-if="liveStreamAvailable && !liveStreaming"
-                              class="btn green-button-transparent" @click="getBarcodeLiveStream">
-                        Scan using camera
-                      </button>
-                      <button id="stop-scanning-button" v-if="liveStreaming && !barcodeFound"
-                              class="btn green-button-transparent"
-                              @click="liveStreaming = false; removeCameraError();">
-                        Stop scanning (barcode not found)
-                      </button>
-                      <button id="save-scanned-barcode-button" v-if="liveStreaming && barcodeFound"
-                              class="btn green-button" @click="liveStreaming = false">
-                        Save Scanned Barcode
-                      </button>
-                      <br>
-                      <div v-if="liveStreaming"><br></div>
-                      <div id="createLiveStreamCamera"></div>
-                      <br>
-                      <button id="autofill-button" type="button"
-                              :class="`btn green-button ${getErrorMessage(
-                              config.barcode.name,
-                              barcode,
-                              config.barcode.minLength,
-                              config.barcode.maxLength,
-                              config.barcode.regexMessage,
-                              config.barcode.regex) === '' ? '': 'disabled'}`"
-                              @click="autofillProductFromBarcode()">Autofill Empty Fields
-                      </button>
-                    </div>
-                  </div>
                   <!--toast error-->
                   <div class="form-group">
                     <div id="registration-error" ref="registration-error" v-if="toastErrorMessage"
@@ -227,6 +253,8 @@
         </div>
 
       </div>
+
+
     </div>
     <Footer></Footer>
 
@@ -242,18 +270,22 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/main/Footer";
 import ProductModal from "../components/productCatalogue/ProductModal";
 import Table from "../components/Table";
-import CurrencyAPI from "../currencyInstance";
 import UpdateProductModal from "../components/productCatalogue/UpdateProductModal";
-import UpdateProductImagesModal from "../components/productCatalogue/UpdateProductImagesModal";
 import {checkAccessPermission} from "../views/helpFunction";
 import {formatDate} from "../dateUtils";
 import {autofillProductFromBarcode, getBarcodeLiveStream, getBarcodeStatic} from "../barcodeUtils";
+import ProductSearchBar from "../components/productCatalogue/ProductSearchBar";
+import UpdateImagesModal from "../components/UpdateImagesModal";
+import {toggleInvalidClass} from "../validationUtils";
+import FeedbackNotification from "../components/feedbackNotification/FeedbackNotification";
 
 export default {
   name: "ProductCatalogue",
   components: {
+    FeedbackNotification,
+    ProductSearchBar,
     UpdateProductModal,
-    UpdateProductImagesModal,
+    UpdateImagesModal,
     Table,
     ProductModal,
     Navbar,
@@ -280,7 +312,17 @@ export default {
       currentPage: 0,
       totalRows: 0,
       loadingProducts: false,
+      // The query to search for.
+      searchQuery: "",
+      // The attributes to search by stored as a list.
+      searchBy: ["name"],
+      // The attributes to search by in the required url format.
+      searchByString: "",
+      // The attributes to search by barcode in the required url format.
+      searchBarcode: "",
 
+      // For pagination buttons
+      barcodeSearched: false,
 
       // Product modal variables
       productId: null,
@@ -293,7 +335,8 @@ export default {
             name: 'temp-name',
             description: 'temp-desc',
             manufacturer: 'temp-man',
-            recommendedRetailPrice: 0
+            recommendedRetailPrice: 0,
+            images: []
           }
       ),
       currentProductIndex: null,
@@ -309,7 +352,7 @@ export default {
       // Product id related variables
       productID: "",
       productIDErrorMsg: "",
-      
+
       // Product barcode related variables
       barcode: "",
       barcodeErrorMsg: "",
@@ -317,6 +360,8 @@ export default {
       liveStreamAvailable: false,
       liveStreaming: false,
       barcodeFound: false,
+      autofilled: false,
+      autofillError: false,
 
       // Product name related variables
       productName: "",
@@ -338,28 +383,56 @@ export default {
       toastErrorMessage: "",
       cannotProceed: false,
 
-      // Message to display that product has been added to catalogue or has been edited.
-      userAlertMessage: "",
-
       // Currency related variables
       currencyCode: "",
       currencySymbol: "",
-
-      // Image related variables
-      images: [],
 
       // If product creation was successful the user will be altered.
       creationSuccess: false,
 
       // List of Business account current user account administrated
       linkBusinessAccount: [],
+
+      // For toast notifications
+      messages: [],
+      messageIdCounter: 0,
+
+      pageSize: this.$route.query["pageSize"] || "5"
+
     }
   },
   methods: {
+    toggleInvalidClass: toggleInvalidClass,
+    /**
+     * This method gets the list of attributes of a product that are to be searched for and
+     * converts them to a string which can be used in the url.
+     */
+    convertSearchByListToString() {
+      let searchByString = "";
+      for (let i = 0; i < this.searchBy.length; i++) {
+        if (i === 0) {
+          searchByString += this.searchBy[i];
+        } else {
+          searchByString = searchByString + "," + this.searchBy[i];
+        }
+      }
+      this.searchByString = searchByString;
+    },
+    /**
+     * This method converts the route query for searchBy to a list.
+     * @return list of searchBy attributes.
+     */
+    convertSearchByStringToList() {
+      let searchByString = this.$route.query["searchBy"];
+      if (searchByString) {
+        return searchByString.split(",");
+      }
+      return ["name"]; // if searchBy does not exist in route query then return the default.
+    },
     /**
      * set link business accounts
      */
-    setLinkBusinessAccount(data){
+    setLinkBusinessAccount(data) {
       this.linkBusinessAccount = data;
     },
     /**
@@ -369,20 +442,25 @@ export default {
      */
     showRowModal(productIndex) {
       let product = this.productList[productIndex % this.rowsPerPage];
+      this.currentProduct = product;
+      this.currentProductIndex = productIndex;
       this.productId = product.data.id;
       this.productName = product.data.name;
       this.description = product.data.description;
       this.manufacturer = product.data.manufacturer;
       this.recommendedRetailPrice = product.data.recommendedRetailPrice;
       this.created = product.data.created;
-      this.currentProduct = product;
-      this.currentProductIndex = productIndex;
-      this.images = product.data.images;
       this.barcode = product.data.barcode;
       // these checks are needed so that the default prop is used if there is no data (is null)
-      if (!(this.description)) { this.description = undefined; }
-      if (!(this.manufacturer)) { this.manufacturer = undefined; }
-      if (!(this.barcode)) { this.barcode = undefined; }
+      if (!(this.description)) {
+        this.description = undefined;
+      }
+      if (!(this.manufacturer)) {
+        this.manufacturer = undefined;
+      }
+      if (!(this.barcode)) {
+        this.barcode = undefined;
+      }
       this.showModal = true;
     },
 
@@ -421,23 +499,10 @@ export default {
 
       this.liveStreaming = false;
       this.barcodeFound = false;
+      this.autofilled = false;
+      this.autofillError = false;
 
       this.modal.show();
-    },
-
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
     },
 
     /**
@@ -447,9 +512,17 @@ export default {
      */
     updatePage(event) {
       this.currentPage = event.newPageNumber;
+      this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {
+          "searchQuery": this.searchQuery,
+          "searchBy": this.searchByString,
+          "barcode": this.searchBarcode,
+          "orderBy": this.orderByString,
+          "page": (this.currentPage).toString(),
+          "pageSize": this.pageSize
+        }
       })
       this.requestProducts();
     },
@@ -495,15 +568,20 @@ export default {
      * @return {Promise}
      */
     async requestProducts() {
-
       // Getting all the information necessary from the route update (params and query).
       this.businessId = parseInt(this.$route.params.id);
+      this.searchQuery = this.$route.query["searchQuery"] || "";
+      this.searchBy = this.convertSearchByStringToList();
+      this.convertSearchByListToString(); // update the searchByString
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) || 0;
+      this.pageSize = this.$route.query["pageSize"] || "5";
+      this.rowsPerPage = parseInt(this.pageSize);
       this.loadingProducts = true;
+      this.searchBarcode = this.$route.query["barcode"] || "";
 
       // Perform the call to sort the products and get them back.
-      await Api.sortProducts(this.businessId, this.orderByString, this.currentPage).then(response => {
+      await Api.searchProducts(this.businessId, this.searchQuery, this.searchByString, this.searchBarcode, this.orderByString, this.currentPage, this.pageSize).then(response => {
 
         // Parsing the orderBy string to get the orderBy and isAscending components to update the table.
         const {orderBy, isAscending} = this.parseOrderBy();
@@ -513,7 +591,7 @@ export default {
           return new Product(product);
         });
 
-        let newtableData = [];
+        let newTableData = [];
 
         // No results
         if (this.productList.length <= 0) {
@@ -525,17 +603,15 @@ export default {
           this.totalRows = parseInt(response.headers["total-rows"]);
 
           for (let i = 0; i < this.productList.length; i++) {
-            newtableData.push(this.productList[i].data.id);
-            newtableData.push(this.productList[i].data.name);
-            newtableData.push(this.productList[i].data.manufacturer);
-            newtableData.push(this.productList[i].data.recommendedRetailPrice);
-            newtableData.push(formatDate(this.productList[i].data.created));
-            newtableData.push(this.productList[i].data.barcode);
+            newTableData.push(this.productList[i].data.id);
+            newTableData.push(this.productList[i].data.name);
+            newTableData.push(this.productList[i].data.manufacturer);
+            newTableData.push(this.productList[i].data.recommendedRetailPrice);
+            newTableData.push(formatDate(this.productList[i].data.created));
+            newTableData.push(this.productList[i].data.barcode);
           }
-
-          this.tableData = newtableData;
         }
-
+        this.tableData = newTableData;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -553,6 +629,9 @@ export default {
         }
       })
       this.loadingProducts = false;
+
+      this.feedbackText = "some message here";
+      this.isErrorFeedback = false;
     },
 
     /**
@@ -560,10 +639,11 @@ export default {
      * @param event This contains the {orderBy, isAscending} components of the new desired ordering.
      */
     orderProducts(event) {
-      this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`
+      this.orderByString = `${this.tableOrderByHeaders[event.orderBy]}${event.isAscending ? 'ASC' : 'DESC'}`;
+      this.convertSearchByListToString(); // update the searchByString
       this.$router.push({
         path: `/businessProfile/${this.businessId}/productCatalogue`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage).toString()}
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": (this.currentPage).toString(), "pageSize": this.pageSize}
       });
       this.requestProducts();
     },
@@ -727,54 +807,28 @@ export default {
 
       const product = new Product(productData);
 
-      /*
-       * Add the Product to the database by sending an API request to the backend to store the product's information.
-       * Raise any errors and ensure they are displayed on the UI.
-       */
+      // Add the Product to the database by sending an API request to the backend to store the product's information.
+      // Raise any errors and ensure they are displayed on the UI.
       Api.addNewProduct(this.businessId, product
       ).then((res) => {
             if (res.status === 201) {
-              this.modal.hide();
-              // Set message so user knows product has been added.
-              this.addedMessage = "Product With ID: " + this.productID + ", Added to Catalogue";
-
-              // Reset product id related variables
-              this.productID = "";
-              this.productIDErrorMsg = "";
-
-              // Reset product barcode related variables
-              this.barcode = "";
-              this.barcodeErrorMsg = "";
-
-              // Reset product name related variables
-              this.productName = "";
-              this.productNameErrorMsg = "";
-
-              // Reset recommended retail price related variables
-              this.recommendedRetailPrice = "";
-              this.recommendedRetailPriceErrorMsg = "";
-
-              // Reset product description related variables
-              this.description = "";
-              this.descriptionErrorMsg = "";
-
-              // Reset product manufacturer related variables
-              this.manufacturer = "";
-              this.manufacturerErrorMsg = "";
-
-              // Reset toast related variables
-              this.toastErrorMessage = "";
-              this.cannotProceed = false;
-
-
-              this.userAlertMessage = this.addedMessage;
               this.closeCreateProductModal();
               this.afterCreation();
               this.requestProducts().catch(
                   (error) => console.log(error)
               )
             }
-          }
+        this.messageIdCounter += 1;
+        this.messages = [];
+        this.messages.push(
+            {
+              id: this.messageIdCounter,
+              isError: false,
+              topic: "Success",
+              text: `${product.data.name} with ID ${product.data.id} was successfully created.`
+            }
+          )
+        }
       ).catch((error) => {
         this.cannotProceed = true;
         if (error.response) {
@@ -808,7 +862,16 @@ export default {
      * After edit success, show the edit info.
      */
     afterEdit() {
-      this.userAlertMessage = "Product Edited";
+      this.messageIdCounter += 1;
+      this.messages = [];
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Product successfully edited."
+          }
+      )
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
@@ -830,6 +893,8 @@ export default {
       // Reset product barcode related variables
       this.barcode = "";
       this.barcodeErrorMsg = "";
+      this.autofilled = false;
+      this.autofillError = false;
 
       // Reset product name related variables
       this.productName = "";
@@ -855,34 +920,20 @@ export default {
     },
 
     /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
+     * Requests business details from the backend to retrieve the currency of the business.
      */
     async currencyRequest() {
       this.businessId = parseInt(this.$route.params.id);
 
-      /*
-        Request business from backend. If received assign the country of the business
-        to a variable.
-        */
-      let country = "";
       await Api.getBusiness(this.businessId).then((response) => {
-        country = response.data.address.country;
-      })
-          .catch((error) => console.log(error))
-
-      await CurrencyAPI.currencyQuery(country).then((response) => {
-        this.filterResponse(response.data);
-      })
-          .catch((error) => console.log(error))
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
+      }).catch((error) => console.log(error))
     },
 
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
-    },
-
+    /**
+     * Clicks the image
+     */
     onUploadClick() {
       this.$refs.image.click();
     },
@@ -916,18 +967,43 @@ export default {
     },
 
     /**
-     * Autofills data from the barcode, using the OpenFoodFacts API.
+     * Autofill data from the barcode, using the OpenFoodFacts API.
      */
     autofillProductFromBarcode() {
-      this.toastErrorMessage = "";
+      this.autofilled = false;
+      this.autofillError = false;
       autofillProductFromBarcode(this, function () {
         return undefined;
       });
+    },
+
+    /**
+     * Requests the products that match the current search.
+     * @param checked A list of selected checked boxes.
+     * @param searchQuery The search query.
+     * @param searchBarcode The barcode to search by.
+     * @param pageSize The number of entries for a page of results.
+     */
+    onSearch(checked, searchQuery, searchBarcode, pageSize) {
+      this.searchBy = checked;
+      this.searchQuery = searchQuery;
+      this.searchBarcode = searchBarcode;
+      this.pageSize = pageSize;
+      this.convertSearchByListToString(); // update the searchByString
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/productCatalogue`,
+        query: {"searchQuery": this.searchQuery, "searchBy": this.searchByString, "barcode": this.searchBarcode, "orderBy": this.orderByString, "page": "0", "pageSize": this.pageSize}
+      });
+      this.requestProducts();
+      this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
     }
   },
 
+  /**
+   * Mounts the product catalogue.
+   * @return {Promise<void>}
+   */
   async mounted() {
-
     // If the edit is successful the UpdateProductModal component will emit an 'edits' event. This code notices the emit
     // and will alert the user that the edit was successful by calling the afterEdit function.
     this.$root.$on('edits', this.afterEdit);
@@ -938,10 +1014,9 @@ export default {
     if (checkAccessPermission(this.$route.params.id, actAs)) {
       await this.$router.push({path: `/businessProfile/${actAs}/productCatalogue`});
     } else {
-      /**
-       * When mounted, initiate population of page.
-       * If cookies are invalid or not present, redirect to login page.
-       */
+
+      // When mounted, initiate population of page.
+      // If cookies are invalid or not present, redirect to login page.
       const currentID = Cookies.get('userID');
       if (currentID) {
         await this.currencyRequest();
@@ -953,11 +1028,13 @@ export default {
             (e) => console.log(e)
         )
       } else {
-        this.$router.push({name: 'Login'});
+        await this.$router.push({name: 'Login'});
       }
     }
 
     this.liveStreamAvailable = navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
+    this.barcodeSearched = this.$route.query.barcode !== undefined && this.$route.query.barcode !== null && this.$route.query.barcode !== ""
+
   },
   watch: {
     // If the current Product was updated we update the table.
@@ -1006,10 +1083,6 @@ export default {
 #create-product-button:focus {
   background-color: transparent;
   color: #1EBA8C;
-}
-
-.modal {
-  background: rgba(17, 78, 60, 0.4);
 }
 
 .modal-content {

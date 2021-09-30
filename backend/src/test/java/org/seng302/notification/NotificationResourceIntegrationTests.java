@@ -102,7 +102,11 @@ class NotificationResourceIntegrationTests {
             "\"created\":\"%s\"," +
             "\"notificationType\":\"LISTING\"}]";
 
-    private final String soldListingNotificationPayloadJson = "[{\"id\":%d,\"soldListing\":%s,\"description\":\"%s\",\"created\":\"%s\",\"notificationType\":\"SOLD_LISTING\"}]";
+    private final String soldListingNotificationPayloadJson = "[{\"id\":%d," +
+            "\"soldListing\":%s," +
+            "\"description\":\"%s\"," +
+            "\"created\":\"%s\"," +
+            "\"notificationType\":\"SOLD_LISTING\"}]";
 
     private String payloadJson;
 
@@ -194,7 +198,9 @@ class NotificationResourceIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
         user.setBusinessesAdministeredObjects(List.of(business));

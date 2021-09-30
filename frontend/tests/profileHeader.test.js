@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 
-import {describe, expect, test} from "@jest/globals";
+import {describe, expect, jest, test} from "@jest/globals";
 import {createLocalVue, shallowMount} from "@vue/test-utils";
 import ProfileHeader from "../src/components/ProfileHeader";
 import VueRouter from 'vue-router';
@@ -14,7 +14,12 @@ describe("Testing the search type functionality", () => {
     describe("Testing the changeSearchType method", () => {
 
         test('Testing changeSearchType sets the search type to the input', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'User';
 
             profileHeaderWrapper.vm.changeSearchType('Business');
@@ -25,7 +30,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing changeSearchType is called with User when the User radio button is clicked', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
             expect(profileHeaderWrapper.vm.searchType).toEqual('Business');
 
@@ -36,7 +46,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing changeSearchType is called with Business when the Business radio button is clicked', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'User';
             expect(profileHeaderWrapper.vm.searchType).toEqual('User');
 
@@ -51,13 +66,23 @@ describe("Testing the search type functionality", () => {
     describe("Testing the placeholder value setting", () => {
 
         test('Testing placeholder returns the correct value when the search type is User', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'User';
             expect(profileHeaderWrapper.vm.placeholder).toEqual('Search all users');
         });
 
         test('Testing placeholder returns the correct value when the search type is Business', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
             expect(profileHeaderWrapper.vm.placeholder).toEqual('Search all businesses');
         });
@@ -67,7 +92,12 @@ describe("Testing the search type functionality", () => {
     describe("Testing the business type dropdown", () => {
 
         test('Testing business type dropdown is not visible when the search type is User', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'User';
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -76,7 +106,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing business type dropdown is visible when the search type is Business', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -85,7 +120,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing that when Any is selected in the dropdown yet, selectedBusinessType is not populated', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -97,7 +137,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing that when Accommodation and Food Services is selected in the dropdown, selectedBusinessType is set to it', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -109,7 +154,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing that when Retail Trade is selected in the dropdown, selectedBusinessType is set to it', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -121,7 +171,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing that when Charitable Organisation is selected in the dropdown, selectedBusinessType is set to it', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -133,7 +188,12 @@ describe("Testing the search type functionality", () => {
         });
 
         test('Testing that when Non Profit Organisation is selected in the dropdown, selectedBusinessType is set to it', () => {
-            const profileHeaderWrapper = shallowMount(ProfileHeader);
+            const $route = { query: 'User'};
+            const profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $route
+                }
+            });
             profileHeaderWrapper.vm.searchType = 'Business';
 
             profileHeaderWrapper.vm.$nextTick().then(() => {
@@ -181,7 +241,7 @@ describe("Testing the search type functionality", () => {
                 searchBar.trigger('keydown.enter');
 
                 expect(router.currentRoute.name).toBe('Search')
-                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1`)
+                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1&pageSize=5`)
             });
         });
 
@@ -199,7 +259,7 @@ describe("Testing the search type functionality", () => {
                 searchButton.trigger('click');
 
                 expect(router.currentRoute.name).toBe('Search')
-                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1`)
+                expect(router.currentRoute.fullPath).toBe(`/search?type=User&searchQuery=${expectedQuery}&orderBy=fullNameASC&page=1&pageSize=5`)
             });
         });
 
@@ -245,7 +305,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Any";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -264,7 +324,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Any";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -289,7 +349,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Accommodation%20and%20Food%20Services";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -311,7 +371,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Accommodation%20and%20Food%20Services";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -336,7 +396,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Retail%20Trade";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -358,7 +418,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Retail%20Trade";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -383,7 +443,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Charitable%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -405,7 +465,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Charitable%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -430,7 +490,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Non%20Profit%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
 
@@ -452,7 +512,7 @@ describe("Testing the search type functionality", () => {
                     let businessType = "Non%20Profit%20Organisation";
 
                     expect(router.currentRoute.name).toBe('Search')
-                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1`);
+                    expect(router.currentRoute.fullPath).toBe(`/search?type=Business&searchQuery=${expectedQuery}&businessType=${businessType}&orderBy=nameASC&page=1&pageSize=5`);
                 });
             });
         });
@@ -514,6 +574,127 @@ describe("Testing the search type functionality", () => {
                 searchBar.trigger('keydown.escape');
 
                 expect(router.currentRoute.name).toBe('Profile')
+            });
+        });
+    });
+
+    describe("Search using enter triggering current route and target route comparison", () => {
+
+        let profileHeaderWrapper;
+        let $router;
+        let $route;
+
+        beforeAll(() => {
+            $router = {
+                push: jest.fn()
+            };
+            $route = {
+                name: "Search",
+                query: {
+                    type: 'Business',
+                    searchQuery: 'Hello World',
+                    businessType: 'Retail Trade'
+                }
+            };
+            profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router,
+                    $route
+                }
+            });
+        });
+
+        test('Testing pressing enter when searchType is Business, route businessType equals selectedBusinessType' +
+            'and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'Business';
+            profileHeaderWrapper.vm.selectedBusinessType = 'Retail Trade';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchBar = profileHeaderWrapper.find('#search-bar');
+                searchBar.trigger('keydown.enter');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
+            });
+        });
+
+        test('Testing pressing enter when searchType is User and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'User';
+            profileHeaderWrapper.vm.$route.query.type = 'User';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchBar = profileHeaderWrapper.find('#search-bar');
+                searchBar.trigger('keydown.enter');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
+            });
+        });
+    });
+
+    describe("Search using enter triggering current route and target route comparison", () => {
+
+        let profileHeaderWrapper;
+        let $router;
+        let $route;
+
+        beforeAll(() => {
+            $router = {
+                push: jest.fn()
+            };
+            $route = {
+                name: "Search",
+                query: {
+                    type: 'Business',
+                    searchQuery: 'Hello World',
+                    businessType: 'Retail Trade',
+                    pageSize: '5'
+                }
+            };
+            profileHeaderWrapper = shallowMount(ProfileHeader, {
+                mocks: {
+                    $router,
+                    $route
+                }
+            });
+        });
+
+        test('Testing clicking the search button when searchType is Business, route businessType equals selectedBusinessType' +
+            'and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'Business';
+            profileHeaderWrapper.vm.selectedBusinessType = 'Retail Trade';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchButton = profileHeaderWrapper.find('#search-button');
+                searchButton.trigger('click');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
+            });
+        });
+
+        test('Testing clicking the search button when searchType is User and current route equals target route then an event is not emitted and router.push is not called.', () => {
+            profileHeaderWrapper.vm.searchType = 'User';
+            profileHeaderWrapper.vm.$route.query.type = 'User';
+
+            profileHeaderWrapper.vm.$refs.searchInput.value = 'Hello World';
+
+            profileHeaderWrapper.vm.$nextTick().then(() => {
+                let searchButton = profileHeaderWrapper.find('#search-button');
+                searchButton.trigger('click');
+
+                expect(profileHeaderWrapper.emitted().requestUsers).toBeFalsy();
+                expect(profileHeaderWrapper.emitted().requestBusinesses).toBeFalsy();
+                expect($router.push).toHaveBeenCalledTimes(0); // should have not been called
             });
         });
     });

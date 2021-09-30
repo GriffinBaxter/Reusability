@@ -102,7 +102,8 @@ class MarketplaceCardResourceIntegrationTests {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
+            "\"images\":[],"+
             "\"homeAddress\":%s" +
             "}," +
             "\"section\":\"%s\"," +
@@ -608,10 +609,10 @@ class MarketplaceCardResourceIntegrationTests {
 
     /**
      * Tests that an OK status and marketplace cards are received when the Section is valid.
-     * Test specifically for when the cookie contains a valid UUID and orderBy and page are valid.
+     * Test specifically for when the cookie contains a valid UUID and orderBy and page and page size are valid.
      */
     @Test
-    void canRetrieveCardsWithValidSectionAndCookieAndOrderByAndPage() throws Exception {
+    void canRetrieveCardsWithValidSectionAndCookieAndOrderByAndPageAndPageSize() throws Exception {
         // given
         expectedJson = "[" + String.format(expectedCardJson, marketplaceCard.getId(), user.getId(), user.getFirstName(),
                 user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
@@ -622,7 +623,7 @@ class MarketplaceCardResourceIntegrationTests {
         given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
 
         Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase());
-        Pageable page = PageRequest.of(0, 6, sort);
+        Pageable page = PageRequest.of(0, 1, sort);
 
         List<MarketplaceCard> list = List.of(marketplaceCard);
         Page<MarketplaceCard> pagedResponse = new PageImpl<>(list);
@@ -630,7 +631,7 @@ class MarketplaceCardResourceIntegrationTests {
         // when
         when(marketplaceCardRepository.findAllBySection(Section.FORSALE, page)).thenReturn(pagedResponse);
         response = mvc.perform(get("/cards").param("section", "FORSALE")
-                .param("orderBy", "createdASC").param("page", "0")
+                .param("orderBy", "createdASC").param("page", "0").param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         // then
@@ -680,7 +681,7 @@ class MarketplaceCardResourceIntegrationTests {
 
         // when
         response = mvc.perform(get("/cards").param("section", "FORSALE")
-                .param("orderBy", "createdASC").param("page", "fd")
+                .param("orderBy", "createdASC").param("page", "fd").param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         // then
@@ -697,7 +698,24 @@ class MarketplaceCardResourceIntegrationTests {
 
         // when
         response = mvc.perform(get("/cards").param("section", "FORSALE")
-                .param("orderBy", "qwerty")
+                .param("orderBy", "qwerty").param("page", "0").param("pageSize", "1")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that the user cannot retrieve cards with an invalid page size parameter
+     */
+    @Test
+    void cantRetrieveCardsWithInvalidPageSize() throws Exception {
+        // given
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+
+        // when
+        response = mvc.perform(get("/cards").param("section", "FORSALE")
+                .param("orderBy", "createdASC").param("page", "0").param("pageSize", "a")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         // then

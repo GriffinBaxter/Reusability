@@ -80,7 +80,8 @@ public class FindMyCardsStepDefs extends CucumberSpringConfiguration {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
+            "\"images\":[]," +
             "\"homeAddress\":%s" +
             "}," +
             "\"section\":\"%s\"," +

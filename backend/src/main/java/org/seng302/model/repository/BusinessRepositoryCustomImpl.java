@@ -3,6 +3,7 @@ package org.seng302.model.repository;
 import org.seng302.model.Business;
 import org.seng302.model.User;
 import org.seng302.model.enums.BusinessType;
+import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,15 +40,8 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
 
         Path<String> namePath = business.get("name");
 
-        List<Predicate> predicates = new ArrayList<>();
-        for (String name : names) {
-            if (name.startsWith("\"") && name.endsWith("\"")) {
-                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
-                predicates.add(criteriaBuilder.equal(namePath, name));
-            } else {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(namePath), "%" + name.toUpperCase() + "%"));
-            }
-        }
+        List<Predicate> predicates =  CustomRepositoryUtils.getPredicates(names, namePath, criteriaBuilder);
+
         // the where clause of the query
         query.where(criteriaBuilder.or(predicates.toArray(new Predicate[predicates.size()])));
 
@@ -91,15 +85,7 @@ public class BusinessRepositoryCustomImpl implements BusinessRepositoryCustom {
 
         Path<String> namePath = business.get("name");
 
-        List<Predicate> predicates = new ArrayList<>();
-        for (String name : names) {
-            if (name.startsWith("\"") && name.endsWith("\"")) {
-                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
-                predicates.add(criteriaBuilder.equal(namePath, name));
-            } else {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(namePath), "%" + name.toUpperCase() + "%"));
-            }
-        }
+        List<Predicate> predicates =  CustomRepositoryUtils.getPredicates(names, namePath, criteriaBuilder);
 
         // where businessType = type
         Predicate predicateForBusinessType = criteriaBuilder.equal(business.get("businessType"), businessType);

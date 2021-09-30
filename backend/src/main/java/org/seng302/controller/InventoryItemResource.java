@@ -92,6 +92,7 @@ public class InventoryItemResource {
      * @param id           Business ID
      * @param orderBy      Column to order the results by
      * @param page         Page number to return results from
+     * @param pageSize     Number of elements to return per page
      * @return A list of InventoryPayload objects representing the inventory items belonging to the given business.
      */
     @GetMapping("/businesses/{id}/inventory")
@@ -99,11 +100,13 @@ public class InventoryItemResource {
             @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
             @PathVariable Integer id,
             @RequestParam(defaultValue = "productIdASC") String orderBy,
-            @RequestParam(defaultValue = "0") String page
+            @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "5") String pageSize,
+            @RequestParam(required = false) String barcode
     ) throws Exception {
 
-        logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}",
-                id, orderBy, page);
+        logger.debug("Product inventory retrieval request received with business ID {}, order by {}, page {}, page size {}",
+                id, orderBy, page, pageSize);
 
         //401: Access token is missing or invalid
         // user is retrieved if access token is provided and valid
@@ -116,9 +119,7 @@ public class InventoryItemResource {
         //200: Inventory retrieved successfully. This could be an empty array.
 
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 5 product inventory items per page
-        int pageSize = 5;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
 
@@ -225,9 +226,15 @@ public class InventoryItemResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
 
-        Page<InventoryItem> pagedResult = inventoryItemRepository.findInventoryItemsByBusinessId(id, paging);
+        Page<InventoryItem> pagedResult;
+
+        if (barcode != null && !barcode.equals("")) {
+            pagedResult = inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(barcode, id, paging);
+        } else {
+            pagedResult = inventoryItemRepository.findInventoryItemsByBusinessId(id, paging);
+        }
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();

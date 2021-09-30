@@ -10,9 +10,10 @@
  */
 package org.seng302.view.outgoing;
 
-import org.seng302.model.Image;
+import org.seng302.model.ProductImage;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class ProductPayload {
      * @param manufacturer Product manufacturer
      * @param recommendedRetailPrice The recommended retail price (RRP) of the product, a double
      * @param created The date and time the product was created
-     * @param images The images for the product
+     * @param productImages The images for the product
      * @param barcode The barcode of the product. Must be UPC or EAN-13.
      * @param business The payload representation of the business the product belongs to
      */
@@ -50,7 +51,7 @@ public class ProductPayload {
             String manufacturer,
             Double recommendedRetailPrice,
             LocalDateTime created,
-            List<Image> images,
+            List<ProductImage> productImages,
             BusinessPayload business,
             String barcode
     ) {
@@ -60,7 +61,7 @@ public class ProductPayload {
         this.manufacturer = manufacturer;
         this.recommendedRetailPrice = recommendedRetailPrice;
         this.created = created.toString();
-        this.images = ImagePayload.convertToImagePayload(images);
+        this.images = ImagePayload.convertToImagePayload(productImages == null ? null : new ArrayList<>(productImages));
         this.business = business;
         this.barcode = barcode;
     }
@@ -109,9 +110,9 @@ public class ProductPayload {
                 "\"description\":\"" + description + "\"," +
                 "\"manufacturer\":\"" + manufacturer + "\"," +
                 "\"recommendedRetailPrice\":" + recommendedRetailPrice + "," +
-                "\"created\":\"" + created + "," +
+                "\"created\":\"" + created + "\"," +
                 "\"images\":" + images + "," +
-                "\"business\":" + business +
+                "\"business\":" + business + "," +
                 "\"barcode\":\"" + barcode + "\"}";
     }
 

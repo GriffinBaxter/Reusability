@@ -3,6 +3,7 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.seng302.Main;
+import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.model.*;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.model.enums.Role;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.when;
 
 /**
  * ListingRepositoryCustomImpl test class
@@ -65,6 +68,7 @@ class CustomListingRepositoryTests {
     private Listing listing3;
     private Listing listing4;
     private Listing listing5;
+    private Listing nonListingListing;
     private List<Listing> listings;
 
     /**
@@ -119,7 +123,9 @@ class CustomListingRepositoryTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business = entityManager.persist(business);
         entityManager.flush();
@@ -131,7 +137,9 @@ class CustomListingRepositoryTests {
                 anotherAddress,
                 BusinessType.NON_PROFIT_ORGANISATION,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         anotherBusiness = entityManager.persist(anotherBusiness);
         entityManager.flush();
@@ -179,7 +187,7 @@ class CustomListingRepositoryTests {
                 "New Description",
                 "New Manufacturer",
                 10.00,
-                "9400547002634"
+                "9400547002627"
         );
 
         products = List.of(product1, product2, product3, product4, product5);
@@ -277,7 +285,15 @@ class CustomListingRepositoryTests {
                 15.20,
                 "",
                 LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
-                LocalDateTime.of(LocalDate.of(2023, 10, 1), LocalTime.of(0,0,0)));
+                LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+
+        nonListingListing = new Listing(inventoryItem5,
+                1,
+                15.20,
+                "",
+                LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(0,0,0)),
+                LocalDateTime.of(LocalDate.of(2022, 10, 1), LocalTime.of(0,0,0)));
+        nonListingListing.setId(255);
 
         listings = List.of(listing1, listing2, listing3, listing4, listing5);
         for (Listing listing : listings) {
@@ -309,7 +325,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -340,7 +356,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -367,7 +383,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isZero();
@@ -393,7 +409,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -421,7 +437,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, minimumPrice, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, minimumPrice, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -449,7 +465,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, maximumPrice, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, maximumPrice, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -478,7 +494,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, minimumPrice, maximumPrice, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, minimumPrice, maximumPrice, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -507,7 +523,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, fromDate, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, fromDate, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -535,7 +551,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, toDate);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, toDate, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -564,12 +580,40 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, fromDate, toDate);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, fromDate, toDate, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
         for (int i = 0; i < listingsPage.getContent().size(); i++){
             assertThat(listingsPage.getContent().get(i).getCloses().getYear()).isEqualTo(toDate.getYear());
+        }
+    }
+
+    /**
+     * Tests findAllListingsByProductName when query is empty and barcode is set
+     * Returns list of Listings
+     */
+    @Test
+    void whenFindAllListingsByProductName_BarcodeExists() {
+        List<String> strings = new ArrayList<>();
+        strings.add("");
+
+        String barcode = "9400547002634";
+
+        int pageNo = 0;
+        int pageSize = 5;
+
+        Sort sortBy = Sort.by(Sort.Order.asc("id"));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
+
+        // when
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, null, null, null, null, null, barcode);
+
+        // then
+        assertThat(listingsPage.getContent().size()).isNotZero();
+        for (int i = 0; i < listingsPage.getContent().size(); i++){
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProduct().getBarcode()).isEqualTo(barcode);
         }
     }
 
@@ -593,7 +637,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), 5.0, 50.0, fromDate, toDate);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), 5.0, 50.0, fromDate, toDate, "9400547002627");
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -601,6 +645,7 @@ class CustomListingRepositoryTests {
             assertThat(listingsPage.getContent().get(i).getCloses().getYear()).isEqualTo(toDate.getYear());
             assertThat(listingsPage.getContent().get(i).getInventoryItem().getProduct().getBusiness().getBusinessType()).isEqualTo(BusinessType.RETAIL_TRADE);
             assertThat(listingsPage.getContent().get(i).getPrice()).isBetween(5.0, 50.0);
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProduct().getBarcode()).isEqualTo("9400547002627");
         }
     }
 
@@ -624,7 +669,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), 5.0, 50.0, fromDate, toDate);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByProductName(strings, pageable, List.of(BusinessType.RETAIL_TRADE), 5.0, 50.0, fromDate, toDate, "9400547002634");
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -632,6 +677,7 @@ class CustomListingRepositoryTests {
             assertThat(listingsPage.getContent().get(i).getCloses().getYear()).isEqualTo(toDate.getYear());
             assertThat(listingsPage.getContent().get(i).getInventoryItem().getProduct().getBusiness().getBusinessType()).isEqualTo(BusinessType.RETAIL_TRADE);
             assertThat(listingsPage.getContent().get(i).getPrice()).isBetween(5.0, 50.0);
+            assertThat(listingsPage.getContent().get(i).getInventoryItem().getProduct().getBarcode()).isEqualTo("9400547002634");
         }
     }
 
@@ -653,7 +699,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -678,7 +724,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -703,7 +749,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -730,7 +776,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByLocation(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -759,7 +805,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByBusinessName(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByBusinessName(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -785,7 +831,7 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByBusinessName(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByBusinessName(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isNotZero();
@@ -810,9 +856,20 @@ class CustomListingRepositoryTests {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortBy);
 
         // when
-        Page<Listing> listingsPage = listingRepository.findAllListingsByBusinessName(strings, pageable, null, null, null, null, null);
+        Page<Listing> listingsPage = listingRepository.findAllListingsByBusinessName(strings, pageable, null, null, null, null, null, null);
 
         // then
         assertThat(listingsPage.getContent().size()).isZero();
     }
+
+    /**
+     * When deleting a listing and the listing does not exist an error is thrown.
+     */
+    @Test
+    void whenDeleteListingCannotFindListingAnErrorIsThrown() {
+        assertThatExceptionOfType(FailedToDeleteListingException.class)
+                .isThrownBy(() -> {listingRepository.deleteListing(nonListingListing.getId());})
+                .withMessage(String.format("Listing with id (%d). Does not exist.", nonListingListing.getId()));
+    }
+
 }

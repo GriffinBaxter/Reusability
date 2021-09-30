@@ -2,8 +2,9 @@
   <div>
 
   <!-- a placeholder so that when you click on a user's card on their profile it will open the more detailed display -->
-  <CardDetail v-bind:id="selectedCard"
-              v-bind:section="cardSection"/>
+  <CardDetail v-bind:id="selectedCard" v-bind:section="cardSection"></CardDetail>
+
+    <MessageModal ref="messageModal"></MessageModal>
 
   <!-- Edit Modal for editing your own cards -->
   <EditCardModal ref="editCardModal"></EditCardModal>
@@ -29,6 +30,7 @@
                   v-bind:created="styleDate(card.created)"
                   v-bind:expires="styleDate(card.displayPeriodEnd)"
                   v-bind:creator="card.creator"
+                  v-bind:creatorImage="getPrimaryImageSrc(card.creator.images)"
                   v-bind:address="combineSuburbAndCity(card.creator.homeAddress.suburb, card.creator.homeAddress.city)"
             />
           </div>
@@ -43,6 +45,8 @@ import Card from "./marketplace/Card"
 import {formatDate} from "../dateUtils";
 import CardDetail from "./marketplace/CardDetailPopup";
 import EditCardModal from "./marketplace/EditCardModal";
+import MessageModal from "./marketplace/MessageModal";
+import Api from "../Api";
 
 export default {
   name: "UserCardsComp",
@@ -66,6 +70,7 @@ export default {
     Card,
     CardDetail,
     EditCardModal,
+    MessageModal
   },
   data() {return {
     selectedCard: 0,
@@ -106,11 +111,17 @@ export default {
      */
     combineSuburbAndCity(suburb, city) {
       return (suburb === null) ? city : suburb + ", " + city;
-    }
+    },
+    getPrimaryImageSrc(images) {
+      if (images.length > 0) {
+        for (let image of images) {
+          if (image.isPrimary) {
+            return Api.getServerURL() + "/" + image.thumbnailFilename;
+          }
+        }
+      }
+      return require('../../public/default-image.jpg')
+    },
   }
 }
 </script>
-
-<style scoped>
-
-</style>

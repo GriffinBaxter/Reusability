@@ -113,15 +113,15 @@
               <div class="col my-2 my-lg-0">
                 <h6>Password must meet the following conditions:</h6>
                 <ul>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLowerCase, passwordWasTyped)">
                     One lowercase letter</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainUpperCase, passwordWasTyped)">
                     One uppercase letter</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainNumber)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainNumber, passwordWasTyped)">
                     One number</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainSymbol, passwordWasTyped)">
                     One of the following: !, @, #, $, %, ^, & and or*</li>
-                  <li :class="checkPasswordCriteria(password, config.password.regexContainLength)">
+                  <li :class="checkPasswordCriteria(password, config.password.regexContainLength, passwordWasTyped)">
                     At least 8 characters in length</li>
                 </ul>
               </div>
@@ -135,7 +135,8 @@
               <div class="col my-2 my-lg-0">
                 <label for="password">Password*</label>
                 <div class="input-group">
-                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password" v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)">
+                  <input id="password" name="password" tabindex="7" :type="togglePasswordInputType(showPassword)" v-model="password"
+                         v-on:focus="passwordWasTyped = true" :class="toggleInvalidClass(passwordErrorMsg)" autocomplete="new-password">
 
                   <!--toggle password visibility-->
                   <span class="input-group-text green-search-button" @click="showPassword = !showPassword"
@@ -162,7 +163,7 @@
                 <label for="confirm-password">Confirm Password*</label>
                 <input id="confirm-password" name="password" tabindex="9" :type="togglePasswordInputType(showPassword)"
                        v-model="confirmPassword" :class="toggleInvalidClass(confirmPasswordErrorMsg)"
-                       :maxlength="config.password.maxLength" required>
+                       :maxlength="config.password.maxLength" autocomplete="new-password" required>
                 <div class="invalid-feedback">
                   {{confirmPasswordErrorMsg}}
                 </div>
@@ -339,6 +340,9 @@ import User from "../configs/User"
 import Cookies from 'js-cookie';
 import FooterSecure from "../components/main/FooterSecure";
 import AddressAPI from "../addressInstance";
+import {isValidDateOfBirth, getAddressConcatenation} from "./helpFunction";
+import {toggleInvalidClass, getErrorMessage, between} from "../validationUtils";
+import {checkPasswordCriteria, togglePasswordInputType} from "../../src/passwordUtil";
 
 export default {
   name: "Registration",
@@ -434,111 +438,13 @@ export default {
     }
   },
   methods: {
+    toggleInvalidClass: toggleInvalidClass,
+    togglePasswordInputType: togglePasswordInputType,
+    checkPasswordCriteria: checkPasswordCriteria,
+    getErrorMessage: getErrorMessage,
+    between: between,
 
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
 
-    /**
-     * This method toggles the appearance of the password field, where the password will be shown if showPassword is
-     * true, else it is hidden.
-     * @param showPassword, whether the password should be displayed.
-     * @returns {string}, String, the visibility of the password.
-     */
-    togglePasswordInputType(showPassword) {
-      if (showPassword) {
-        return 'text'
-      } else {
-        return 'password'
-      }
-    },
-
-    /**
-     * This method checks the password against the given criteria and determines whether it meets the criteria.
-     * If it does, the colour is changed from black to red.
-     *
-     * @param password, string, the current input of the password field.
-     * @param regex, string, the password criteria that the password is checked against.
-     * @returns {[string]}, classList, a List containing a String of classes for the password criteria to used.
-     */
-    checkPasswordCriteria(password, regex) {
-
-      let classList = ['small']
-      if (!regex.test(password) && this.passwordWasTyped) {
-        classList.push('text-red');
-      }
-      return classList;
-    },
-
-    /**
-     * This method checks whether the given value, val, is within the given lower and upper bounds, inclusive.
-     *
-     * @param val, int, the value to be tested for being within the range.
-     * @param min, int, the minimum value in the range.
-     * @param max, int, the maximum value in the range.
-     * @returns Boolean, true if within range, false is not within range.
-     */
-    between(val, min, max) {
-      return min <= val && val <= max;
-    },
-
-    /**
-     * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
-     * the expected format.
-     *
-     * @param dateString, string, the date to validate and separate.
-     * @returns {{month: number, year: number, day: number}|null}, {year, month, day}, if the date meets the expected
-     * format, else null.
-     *
-     */
-    parseSelectedDate(dateString) {
-      const verifyRegex = /^[0-9]{1,5}-[0-9]{1,2}-[0-9]{1,2}$/
-
-      if (verifyRegex.test(dateString)) {
-        const dateParts = dateString.split("-", 3);
-        return {
-          year: Number(dateParts[0]),
-          month: Number(dateParts[1]),
-          day: Number(dateParts[2])
-        }
-      } else {
-        return null
-      }
-    },
-
-    /**
-     * This method validates the date of birth field input and creates a Date which represents the new user's
-     * date of birth.
-     *
-     * @param selectedDate, string, the date of birth of the user.
-     * @returns {Boolean|null}, returns true is the date is valid i.e. in the past and meets the expected format, else
-     *                          null or false.
-     */
-    isValidDateOfBirth(selectedDate) {
-      const todayDate = new Date();
-      const year_13_ms = 1000 * 60 * 60 * 24 * 365 * 13;
-      const data = this.parseSelectedDate(selectedDate);
-
-      if (data) {
-        const {year, month, day} = data;
-        if (year && month && day) {
-          const chosenDate = new Date(year, month, day);
-          return todayDate - chosenDate >= year_13_ms;
-        }
-      }
-      return null;
-    },
 
     /**
      * This method determines the maximum possible date of birth.
@@ -564,32 +470,6 @@ export default {
       }
 
       return `${year.toString()}-${month.toString()}-${day.toString()}`
-    },
-
-    /**
-     * This method determines the error message to be generated for a given input value based on the field type and
-     * its associated validity (determined by a regex).
-     *
-     * @param name, string, name of the input field.
-     * @param inputVal, string, the value entered in the stated field.
-     * @param minLength, number, the minimum allowed length of the inputVal.
-     * @param maxLength, number, the maximum allowed length of the inputVal.
-     * @param regexMessage, string, the tailored message about the expected syntax for the inputVal if it does not
-     *                              meet the regex given.
-     * @param regex, string, the allowed format for the given input field.
-     * @returns {string}, errorMessage, the message that needs to be raised if the inputVal does not meet the regex.
-     */
-    getErrorMessage(name, inputVal, minLength, maxLength, regexMessage = "", regex = /^[\s\S]*$/) {
-      let errorMessage = "";
-      if (inputVal === "" && minLength >= 1) {
-        errorMessage = "Please enter input";
-      }
-      else if (!regex.test(inputVal)) {
-        errorMessage = regexMessage;
-      } else if (!this.between(inputVal.length, minLength, maxLength)) {
-        errorMessage = `Input must be between ${minLength} and ${maxLength} characters long.`
-      }
-      return errorMessage;
     },
 
     /**
@@ -704,7 +584,7 @@ export default {
       if (!this.dateOfBirth) {
         this.dateOfBirthErrorMsg = "This field is required!"
         requestIsInvalid = true
-      } else if (!this.isValidDateOfBirth(this.dateOfBirth)) {
+      } else if (!isValidDateOfBirth(this.dateOfBirth)) {
         this.dateOfBirthErrorMsg = "Must be over 13, and not from the future."
         requestIsInvalid = true
       } else {
@@ -950,44 +830,9 @@ export default {
       this.addressResultProperties = [];
 
       while ((numInList < maxL) && (index < fLength)) {
-        let address = "";
         let { properties } = features[index];
         if (properties) {
-
-          let {country, city, postcode, state, street, housenumber, name, district} = properties;
-
-          if (name) {
-            address += name + ", ";
-          }
-
-          if (housenumber) {
-            address += housenumber;
-          }
-
-          if (street) {
-            address += " " + street + ", ";
-          }
-
-          if (district) {
-            address += " " + district + ", ";
-          }
-
-          if (city) {
-            address += city + ", ";
-          }
-
-          if (postcode) {
-            address += postcode + ", ";
-          }
-
-          if (state) {
-            address += state + ", ";
-          }
-
-          if (country) {
-            address += country;
-          }
-
+          let address = getAddressConcatenation(properties);
           if (!autoCompleteOptions.includes(address.trim())) {
             // Add to both the string to display and the variable for later use.
             autoCompleteOptions.push(address.trim());
@@ -999,7 +844,6 @@ export default {
       }
       return autoCompleteOptions;
     },
-
 
     /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
@@ -1015,7 +859,6 @@ export default {
      * @returns {Promise<boolean>} Async implied promise
      */
     async input() {
-
       // Populate the addresses array by making a request to the API
       await this.request();
       // Get the current address input
@@ -1048,34 +891,7 @@ export default {
             document.getElementById('home-address').value = "";
             const id = event.target.id;
 
-            let {country, city, postcode, state, street, housenumber, district} = self.addressResultProperties[id];
-
-            if (housenumber) {
-              document.getElementById('streetNumber').value = housenumber;
-            }
-            if (street) {
-              document.getElementById('streetName').value = street;
-            }
-
-            if (district) {
-              document.getElementById('suburb').value = district;
-            }
-
-            if (city) {
-              document.getElementById('city').value = city;
-            }
-
-            if (postcode) {
-              document.getElementById('postcode').value = postcode;
-            }
-
-            if (state) {
-              document.getElementById('region').value = state;
-            }
-
-            if (country) {
-              document.getElementById('country').value = country;
-            }
+            self.setAddressElementsById(self.addressResultProperties[id]);
 
             // Close the list of autocompleted values,
             // (or any other open lists of autocompleted values:
@@ -1092,13 +908,27 @@ export default {
 
     },
 
+    /**
+     * This methods sets the values of the address related fields.
+     */
+    setAddressElementsById(addressComponents) {
+      let {country, city, postcode, state, street, housenumber, district} = addressComponents;
+
+      if (housenumber) { document.getElementById('streetNumber').value = housenumber; }
+      if (street) { document.getElementById('streetName').value = street; }
+      if (district) { document.getElementById('suburb').value = district; }
+      if (city) { document.getElementById('city').value = city; }
+      if (postcode) { document.getElementById('postcode').value = postcode; }
+      if (state) { document.getElementById('region').value = state; }
+      if (country) { document.getElementById('country').value = country; }
+    },
 
     /**
      * This function is based on the example code snippet found on w3schools for a simple autocomplete dropdown menu:
      * https://www.w3schools.com/howto/howto_js_autocomplete.asp
      *
      * This function removes all of the autocomplete dropdown items except the one passed to it.
-     * @param DOM Element An optional element that won't be closed if given
+     * @param element Element An optional element that won't be closed if given
      */
     closeAllLists(element) {
       // Close all autocomplete lists in the document, except the one passed as an argument

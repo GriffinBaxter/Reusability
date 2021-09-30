@@ -52,3 +52,74 @@ export function getFormattedAddress(number, streetName, suburb, city, postcode, 
 export function checkNullity(item) {
     return (item || "");
 }
+
+/**
+ * This method validates the date of birth field input and creates a Date which represents the new user's
+ * date of birth.
+ *
+ * @param selectedDate, string, the date of birth of the user.
+ * @returns {Boolean|null}, returns true is the date is valid i.e. in the past and meets the expected format, else
+ *                          null or false.
+ */
+export function isValidDateOfBirth(selectedDate) {
+    const todayDate = new Date();
+    const year_13_ms = 1000 * 60 * 60 * 24 * 365 * 13;
+    const data = parseSelectedDate(selectedDate);
+
+    if (data) {
+        const {year, month, day} = data;
+        if (year && month && day) {
+            const chosenDate = new Date(year, month, day);
+            return todayDate - chosenDate >= year_13_ms;
+        }
+    }
+    return null;
+}
+
+/**
+ * This method parses the given date of birth input and separates it into a year, month and day, provided it meets
+ * the expected format.
+ *
+ * @param dateString, string, the date to validate and separate.
+ * @returns {{month: number, year: number, day: number}|null}, {year, month, day}, if the date meets the expected
+ * format, else null.
+ *
+ */
+function parseSelectedDate(dateString) {
+    const verifyRegex = /^[0-9]{1,5}-[0-9]{1,2}-[0-9]{1,2}$/
+
+    if (verifyRegex.test(dateString)) {
+        const dateParts = dateString.split("-", 3);
+        return {
+            year: Number(dateParts[0]),
+            month: Number(dateParts[1]),
+            day: Number(dateParts[2])
+        }
+    } else {
+        return null
+    }
+}
+
+/**
+ * This method converts the components of the address received from the Komoot Photon API
+ * to a single line string.
+ *
+ * @param properties the components of address received from the Komoot Photon API.
+ * @return address a string representation of the address returned by the Komoot Photon API
+ */
+export function getAddressConcatenation(properties) {
+    let address = "";
+
+    let {country, city, postcode, state, street, housenumber, name, district} = properties;
+
+    if (name) { address += name + ", "; }
+    if (housenumber) { address += housenumber; }
+    if (street) { address += " " + street + ", "; }
+    if (district) { address += " " + district + ", "; }
+    if (city) { address += city + ", "; }
+    if (postcode) { address += postcode + ", "; }
+    if (state) { address += state + ", "; }
+    if (country) { address += country; }
+
+    return address;
+}

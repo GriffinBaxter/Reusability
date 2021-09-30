@@ -13,12 +13,9 @@ package org.seng302.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.seng302.exceptions.IllegalListingArgumentException;
-import org.seng302.exceptions.IllegalSoldListingArgumentException;
-import org.seng302.exceptions.IllegalSoldListingNotificationArgumentException;
+import org.seng302.exceptions.*;
 import org.seng302.model.*;
 import org.seng302.model.repository.*;
-import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.model.enums.BusinessType;
 import org.seng302.utils.PaginationUtils;
 import org.seng302.utils.SearchUtils;
@@ -41,7 +38,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.*;
+
+import static java.time.temporal.TemporalAdjusters.*;
 
 
 /**
@@ -78,6 +80,7 @@ public class ListingResource {
     private BookmarkedListingMessageRepository bookmarkedListingMessageRepository;
 
     private static final Logger logger = LogManager.getLogger(ListingResource.class.getName());
+
 
     /**
      * Constructor used to insert mocked repositories for testing.
@@ -117,15 +120,19 @@ public class ListingResource {
      * @param id business ID
      * @param orderBy ordering of results
      * @param page page number
+     * @param pageSize Number of elements to return per page
+     * @param barcode Barcode number (Optional)
      * @return Listings for business
      */
     @GetMapping("/businesses/{id}/listings")
     public ResponseEntity<List<ListingPayload>> retrieveListings(@CookieValue(value = "JSESSIONID", required = false) String sessionToken,
                                                                  @PathVariable Integer id,
                                                                  @RequestParam(defaultValue = "closesASC") String orderBy,
-                                                                 @RequestParam(defaultValue = "0") String page) throws Exception {
+                                                                 @RequestParam(defaultValue = "0") String page,
+                                                                 @RequestParam(defaultValue = "5") String pageSize,
+                                                                 @RequestParam(required = false) String barcode) throws Exception {
 
-        logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}", id, orderBy, page);
+        logger.debug("Business listings retrieval request received with business ID {}, order by {}, page {}, page size {}", id, orderBy, page, pageSize);
 
         // Checks user logged in - 401
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
@@ -134,9 +141,7 @@ public class ListingResource {
 
         // Checks Page Num valid - 400
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 10 listings per page
-        int pageSize = 5;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
 
@@ -175,9 +180,15 @@ public class ListingResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
 
-        Page<Listing> pagedResult = listingRepository.findListingsByBusinessId(id, paging);
+        Page<Listing> pagedResult;
+
+        if (barcode != null && !barcode.equals("")) {
+            pagedResult = listingRepository.findByBusinessIdAndInventoryItemProductBarcode(id, barcode, paging);
+        } else {
+            pagedResult = listingRepository.findListingsByBusinessId(id, paging);
+        }
 
         int totalPages = pagedResult.getTotalPages();
         int totalRows = (int) pagedResult.getTotalElements();
@@ -266,11 +277,13 @@ public class ListingResource {
      * @param searchType Search type.
      * @param orderBy Column to order the results by.
      * @param page Page number to return results from.
+     * @param pageSize Number of elements to return per page.
      * @param businessTypes Business types to search by.
      * @param minimumPrice Minimum price.
      * @param maximumPrice Maximum price.
      * @param fromDate From date (closing).
      * @param toDate To date (closing).
+     * @param barcode A barcode to match listings to.
      * @return A list of ListingPayload objects matching the search query
      */
     @GetMapping("/listings")
@@ -280,23 +293,23 @@ public class ListingResource {
             @RequestParam(defaultValue = "listingName") String searchType,
             @RequestParam(defaultValue = "productNameASC") String orderBy,
             @RequestParam(defaultValue = "0") String page,
+            @RequestParam(defaultValue = "12") String pageSize,
             @RequestParam(required = false) List<String> businessTypes,
             @RequestParam(required = false) Double minimumPrice,
             @RequestParam(required = false) Double maximumPrice,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            @RequestParam(required = false) String barcode
     ) throws Exception {
         logger.debug(
-                "Listing search request received with search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessTypes, orderBy, page
+                "Listing search request received with search query {}, business type {}, order by {}, page {}, page size {}",
+                searchQuery, businessTypes, orderBy, page, pageSize
         );
 
         User currentUser = Authorization.getUserVerifySession(sessionToken, userRepository);
 
         int pageNo = PaginationUtils.parsePageNumber(page);
-
-        // Front-end displays 12 listings per page
-        int pageSize = 12;
+        int pageSizeNo = PaginationUtils.parsePageSizeNumber(pageSize);
 
         Sort sortBy;
         // IgnoreCase is important to let lower case letters be the same as upper case in ordering.
@@ -350,9 +363,9 @@ public class ListingResource {
                 );
         }
 
-        Pageable paging = PageRequest.of(pageNo, pageSize, sortBy);
+        Pageable paging = PageRequest.of(pageNo, pageSizeNo, sortBy);
         Page<Listing> pagedResult = parseAndExecuteQuery(
-                searchQuery, paging, searchType, businessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                searchQuery, paging, searchType, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
         );
 
         int totalPages = pagedResult.getTotalPages();
@@ -363,8 +376,8 @@ public class ListingResource {
         responseHeaders.add("Total-Rows", String.valueOf(totalRows));
 
         logger.info(
-                "Search Success - 200 [OK] - Listings retrieved for search query {}, business type {}, order by {}, page {}",
-                searchQuery, businessTypes, orderBy, pageNo
+                "Search Success - 200 [OK] - Listings retrieved for search query {}, business type {}, order by {}, page {}, page size {}",
+                searchQuery, businessTypes, orderBy, pageNo, pageSizeNo
         );
 
         logger.debug("Listings Found");
@@ -452,6 +465,155 @@ public class ListingResource {
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(listingPayloads);
+    }
+
+    /**
+     * Retrieve sales report for a business, by from/to dates and granularity (e.g. Yearly).
+     *
+     * @param sessionToken Session token used to authenticate user (is user logged in?).
+     * @param businessId ID of the business to retrieve the sales report from.
+     * @param fromDate The date the sales report should be from.
+     * @param toDate The date the sales report should be to.
+     * @param granularity The granularity of the sales report (e.g. Yearly).
+     * @return List of sales report payloads containing granularity name, total sales and total revenue.
+     */
+    @GetMapping("/businesses/{businessId}/salesReport")
+    public ResponseEntity<List<SalesReportPayload>> retrieveSalesReport(
+            @CookieValue(value = "JSESSIONID", required = false) String sessionToken,
+            @PathVariable Integer businessId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            @RequestParam(defaultValue = "Total") String granularity
+    ) {
+        logger.debug(
+                "Business sales report request received with business ID {}, from date {}, " +
+                        "to date {}, granularity {}",
+                businessId, fromDate, toDate, granularity);
+
+        // 401 if not verified
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+
+        // 406 if business does not exist
+        Authorization.verifyBusinessExists(businessId, businessRepository);
+
+        // 403 if not a business admin nor a GAA
+        Authorization.verifyBusinessAdmin(user, businessId);
+
+        LocalDateTime startOf2021 = LocalDateTime.of(2021, Month.JANUARY, 1, 0, 0);
+        if (fromDate.isBefore(startOf2021)) {
+            fromDate = startOf2021;
+        }
+        if (toDate.isAfter(LocalDateTime.now())) {
+            toDate = LocalDateTime.now();
+        }
+
+        // 400 if "from date" is after "to date"
+        if (fromDate.isAfter(toDate)) {
+            logger.error(
+                    "400 [BAD REQUEST] - \"From date\" is after \"to date\" or " +
+                            "\"to date\" is before 2021 (before the year that the app was first deployed)"
+            );
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "There was some error with the data supplied."
+            );
+        }
+
+
+        // 400 if granularity does not exist
+        ArrayList<SalesReportPayload> salesReportPayloads = new ArrayList<>();
+        LocalDateTime currentDate = fromDate;
+        switch (granularity) {
+            case "Total":
+                salesReportPayloads.add(generateIndividualSalesReport(businessId, fromDate, toDate, null));
+                break;
+            case "Yearly":
+                while (currentDate.getYear() != toDate.getYear()) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(lastDayOfYear()),
+                            String.valueOf(currentDate.getYear())
+                    ));
+                    currentDate = currentDate.plusYears(1).with(firstDayOfYear());
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate, String.valueOf(currentDate.getYear())
+                ));
+                break;
+            case "Monthly":
+                while (currentDate.getYear() != toDate.getYear() || currentDate.getMonth() != toDate.getMonth()) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(lastDayOfMonth()),
+                            currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                    currentDate.getYear()
+                    ));
+                    currentDate = currentDate.plusMonths(1).with(firstDayOfMonth());
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate,
+                        currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                currentDate.getYear()
+                ));
+                break;
+            case "Daily":
+                while (
+                        currentDate.getYear() != toDate.getYear() ||
+                        currentDate.getMonth() != toDate.getMonth() ||
+                        currentDate.getDayOfMonth() != toDate.getDayOfMonth()
+                ) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(LocalTime.MAX),
+                            currentDate.getDayOfMonth() + " " +
+                                    currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                    currentDate.getYear()
+                    ));
+                    currentDate = currentDate.plusDays(1).with(LocalTime.MIN);
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate,
+                        currentDate.getDayOfMonth() + " " +
+                                currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                currentDate.getYear()
+                ));
+                break;
+            default:
+                logger.error("400 [BAD REQUEST] - Granularity type {} does not exist", granularity);
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "There was some error with the data supplied."
+                );
+        }
+
+        logger.info(
+                "Sales Report Success - 200 [OK] - Sales Report retrieved for business ID {}, from date {}, " +
+                        "to date {}, granularity {}",
+                businessId, fromDate, toDate, granularity
+        );
+        return ResponseEntity.ok().body(salesReportPayloads);
+    }
+
+    /**
+     * Method for generating and returning an individual sales report payload.
+     * 
+     * @param businessId The business ID.
+     * @param fromDate The date the sales report payload should be from.
+     * @param toDate The date the sales report payload should be to.
+     * @param granularityName The granularity name e.g. 2020.
+     * @return SalesReportPayload.
+     */
+    private SalesReportPayload generateIndividualSalesReport(
+            Integer businessId, LocalDateTime fromDate, LocalDateTime toDate, String granularityName
+    ) {
+        // Set "to date" to the end of the day
+        toDate = toDate.with(LocalTime.MAX);
+
+        List<SoldListing> soldListings = soldListingRepository.findAllByBusinessIdAndSaleDateBetween(
+                businessId, fromDate, toDate
+        );
+        int totalSales = 0;
+        double totalRevenue = 0;
+        for (SoldListing soldListing : soldListings) {
+            totalSales++;
+            totalRevenue += soldListing.getPrice();
+        }
+        return new SalesReportPayload(granularityName, totalSales, totalRevenue);
     }
 
     /**
@@ -738,6 +900,53 @@ public class ListingResource {
         }
     }
 
+    @DeleteMapping("/businesses/{businessId}/listings/{listingId}")
+    @ResponseStatus(value = HttpStatus.OK, reason = "Successfully deleted")
+    public void deleteListing(@CookieValue(value = "JSESSIONID", required = false) String sessionToken ,@PathVariable Integer businessId, @PathVariable  Integer listingId) {
+
+        // Checking for authroization --> 401
+        User user = Authorization.getUserVerifySession(sessionToken, userRepository);
+        logger.debug("User retrieved, ID: {}.", user.getId());
+
+        // Checking that the busines id is valid --> 406
+        Optional<Business> business = businessRepository.findBusinessById(businessId);
+        if (business.isEmpty()) {
+            String errorMessage = String.format("Business id (id: %d) provided by user (id: %d) was invalid", businessId, user.getId());
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Business id doesn't exist");
+        }
+
+        // Checking the the listing exists --> 406
+        Optional<Listing> listing = listingRepository.findListingByBusinessIdAndId(businessId, listingId);
+        if (listing.isEmpty()) {
+            String errorMessage = String.format("listing id (id: %d) provided by user (id: %d) for Business (id: %d) was invalid", listingId, user.getId(), businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Listing id doesn't exist");
+        }
+
+        // Check that the listing is not closed --> 406
+        if (listing.get().getCloses().isBefore(LocalDateTime.now())) {
+            String errorMessage = String.format("listing (id: %d) was provided by user (id: %d) for Business (id: %d) was closed", listingId, user.getId(), businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Listing is closed.");
+        }
+
+        // Check that the user has permissions --> 403
+        if (!user.getBusinessesAdministered().contains(business.get().getId()) && !Authorization.isGAAorDGAA(user)) {
+            String errorMessage = String.format("listing (id: %d) was provided by user (id: %d) for Business (id: %d) was closed", listingId, user.getId(), businessId);
+            logger.error(errorMessage);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not a business administrator or a global application administrator");
+        }
+
+        // delete listing.
+        try {
+           listingRepository.deleteListing(listingId);
+        } catch (FailedToDeleteListingException error) {
+            logger.error(error.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong attempting to delete the listing");
+        }
+    }
+
 
     /**
      * This method parses the search criteria and then calls the needed methods to execute the "query".
@@ -750,6 +959,7 @@ public class ListingResource {
      * @param maximumPrice Maximum price.
      * @param fromDate From date (closing).
      * @param toDate To date (closing).
+     * @param barcode A barcode to check for matching listings.
      * @return Page<Listing> A page of listings matching the search criteria.
      */
     private Page<Listing> parseAndExecuteQuery(
@@ -757,7 +967,8 @@ public class ListingResource {
             String searchType,
             List<String> businessTypes,
             Double minimumPrice, Double maximumPrice,
-            LocalDateTime fromDate, LocalDateTime toDate
+            LocalDateTime fromDate, LocalDateTime toDate,
+            String barcode
     ) {
         List<BusinessType> convertedBusinessTypes = new ArrayList<>();
         if (businessTypes != null) {
@@ -770,15 +981,15 @@ public class ListingResource {
         switch (searchType) {
             case "listingName":
                 return listingRepository.findAllListingsByProductName(
-                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
                 );
             case "businessName":
                 return listingRepository.findAllListingsByBusinessName(
-                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
                 );
             case "location":
                 return listingRepository.findAllListingsByLocation(
-                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate
+                        names, paging, convertedBusinessTypes.isEmpty() ? null : convertedBusinessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode
                 );
             default:
                 logger.error("400 [BAD REQUEST] - {} is not a valid search type parameter", searchType);

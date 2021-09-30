@@ -69,7 +69,16 @@ public class UserRegistrationPayload {
     @Override
     public String toString() {
         return "User(" +
+                "firstName: " + firstName +
+                "lastName: " + lastName +
+                "middleName: " + middleName +
+                "nickname: " + nickname +
+                "bio: " + bio +
+                "email: " + email +
+                "dateOfBirth: " + dateOfBirth +
+                "phoneNumber: " + phoneNumber +
                 "homeAddress=" + homeAddress +
+                "password: " + password +
                 ')';
     }
 }

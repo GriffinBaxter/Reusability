@@ -10007,6 +10007,7 @@ insert into address (city, country, postcode) values ('Cambebba', 'Brazil', '119
 insert into address (city, country, postcode) values ('Ibaiti', 'Brazil', '84900-000');
 insert into address (city, country, postcode) values ('Echarate', 'Peru', null);
 insert into address (city, country, postcode) values ('Itupeva', 'Brazil', '13295-000');
+
 insert into address (city, country, postcode) values ('Mitú', 'Colombia', '054028');
 insert into address (city, country, postcode) values ('Ciénaga de Oro', 'Colombia', '232538');
 insert into address (city, country, postcode) values ('Itu', 'Brazil', '13300-000');
@@ -10017,7 +10018,6 @@ insert into address (city, country, postcode) values ('Sibayo', 'Peru', null);
 insert into address (city, country, postcode) values ('Aco', 'Peru', null);
 insert into address (city, country, postcode) values ('Firminópolis', 'Brazil', '76105-000');
 insert into address (city, country, postcode) values ('Pitumarca', 'Peru', null);
-
 insert into address (city, country, postcode) values ('Panyam', 'Nigeria', null);
 insert into address (city, country, postcode) values ('Witbank', 'South Africa', '2250');
 insert into address (city, country, postcode) values ('Ismailia', 'Egypt', null);

@@ -122,7 +122,8 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     "\"email\":\"%s\"," +
                     "\"created\":\"%s\"," +
                     "\"role\":\"%s\"," +
-                    "\"businessesAdministered\":[null]," +
+                    "\"businessesAdministered\":[]," +
+                    "\"images\":[]," +
                     "\"dateOfBirth\":\"%s\"," +
                     "\"phoneNumber\":\"%s\"," +
                     "\"homeAddress\":%s}]," +
@@ -131,7 +132,10 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     "\"description\":\"%s\"," +
                     "\"address\":%s," +
                     "\"businessType\":\"%s\"," +
-                    "\"created\":\"%s\"}," +
+                    "\"created\":\"%s\"," +
+                    "\"currencySymbol\":\"%s\"," +
+                    "\"currencyCode\":\"%s\"," +
+                    "\"businessImages\":[]}," +
                     "\"barcode\":\"%s\"}," +
                     "\"quantity\":%d," +
                     "\"pricePerItem\":%.1f," +
@@ -240,7 +244,9 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
 
@@ -251,7 +257,9 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 address2,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                anotherUser
+                anotherUser,
+                "$",
+                "NZD"
         );
         anotherBusiness.setId(2);
         anotherUser.setBusinessesAdministeredObjects(List.of(business, anotherBusiness));
@@ -286,7 +294,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 "Description",
                 "Manufacturer",
                 20.00,
-                "9400547002634"
+                "9400547002627"
         );
 
         inventoryItem2 = new InventoryItem(
@@ -340,7 +348,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -356,7 +364,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     anotherBusiness.getId(), anotherUser.getId(), anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(), anotherUser.getNickname(),
                     anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(), anotherUser.getRole(), anotherUser.getDateOfBirth(), anotherUser.getPhoneNumber(),
                     anotherUser.getHomeAddress(), anotherBusiness.getPrimaryAdministratorId(), anotherBusiness.getName(),
-                    anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(),
+                    anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(), anotherBusiness.getCurrencySymbol(), anotherBusiness.getCurrencyCode(),
                     product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                     inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                     listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -368,7 +376,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                     business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                     user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
                     user.getHomeAddress(), business.getPrimaryAdministratorId(), business.getName(),
-                    business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                    business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                     product2.getBarcode(), inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                     inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
                     listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString(),
@@ -420,7 +428,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -437,7 +445,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
                 user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
                 user.getHomeAddress(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product2.getBarcode(), inventoryItem2.getQuantity(), inventoryItem2.getPricePerItem(), inventoryItem2.getTotalPrice(),
                 inventoryItem2.getManufactured(), inventoryItem2.getSellBy(), inventoryItem2.getBestBefore(), inventoryItem2.getExpires(),
                 listing2.getQuantity(), listing2.getPrice(), listing2.getMoreInfo(), listing2.getCreated().toString(), listing2.getCloses().toString(),
@@ -447,7 +455,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
                 anotherBusiness.getId(), anotherUser.getId(), anotherUser.getFirstName(), anotherUser.getLastName(), anotherUser.getMiddleName(), anotherUser.getNickname(),
                 anotherUser.getBio(), anotherUser.getEmail(), anotherUser.getCreated(), anotherUser.getRole(), anotherUser.getDateOfBirth(), anotherUser.getPhoneNumber(),
                 anotherUser.getHomeAddress(), anotherBusiness.getPrimaryAdministratorId(), anotherBusiness.getName(),
-                anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(),
+                anotherBusiness.getDescription(), anotherBusiness.getAddress(), anotherBusiness.getBusinessType(), anotherBusiness.getCreated(), anotherBusiness.getCurrencySymbol(), anotherBusiness.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -474,7 +482,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType), null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -495,7 +503,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -516,7 +524,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, minimum, maximum, null, null
+                names, paging, null, minimum, maximum, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -538,7 +546,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByBusinessName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -559,7 +567,7 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByLocation(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -583,13 +591,36 @@ public class ListingSearchStepDefs extends CucumberSpringConfiguration {
         when(listingRepository.findAllListingsByProductName(
                 names, paging, null, null, null,
                 LocalDateTime.of(2021,1,1,0,0),
-                LocalDateTime.of(2022,1,1,0,0)
+                LocalDateTime.of(2022,1,1,0,0),
+                null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("fromDate", fromDate)
                 .param("toDate", toDate)
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+    }
+
+    /* ------------------------------------------BS2------------------------------------------ */
+
+    @When("I search using the barcode {string}")
+    public void iLimitTheClosingDateRangeToFromTo(String barcode) throws Exception {
+        String searchQuery = "";
+        List<String> names = Arrays.asList(searchQuery);
+
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
+        Pageable paging = PageRequest.of(0, 12, sort);
+
+        when(listingRepository.findAllListingsByProductName(
+                names, paging, null, null, null, null, null, barcode
+        )).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("barcode", barcode)
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
     }
 }

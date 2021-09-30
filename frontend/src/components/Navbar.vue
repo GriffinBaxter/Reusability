@@ -1,5 +1,8 @@
 <template>
   <div id="navbar-wrapper">
+    <!-- Delete Conversation Modal -->
+    <DeleteConversationModal ref="deleteConversationModal" v-on:conversationSuccessfullyDeleted="reloadMessages" :id="conversationId" :user-name="userName"/>
+
     <nav id="navbar">
       <div id="navbar-content">
 
@@ -28,17 +31,33 @@
         <!-- Contains the user icon, role, mid-screen notification and name. -->
         <div id="user-section">
 
+          <div>
+
+            <svg style="margin: 0 0.4em; cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16" @click="toggleMessages" v-if="!isActAsBusiness && unreadMessage">
+              <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
+              <circle cx="13.5" cy="3" r="2.25" color="red" />
+            </svg>
+
+            <svg style="margin: 0 0.4em; cursor: pointer" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16" @click="toggleMessages" v-if="!isActAsBusiness && !unreadMessage">
+              <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
+            </svg>
+
+            <transition name="expand">
+              <Messages v-on:emittedDeleteConversation="onDeleteConversation" v-on:updateNotifications="updateMessages" v-on:newMessage="unreadMessage = true" v-if="showMessages"/>
+            </transition>
+          </div>
+
           <!-- Mid screen notification icon -->
           <div>
             <div
-                type="button"
                 @click="switchNotificationBox()">
 
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16" v-if="newNotification">
-                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16" v-if="newNotification" style="cursor:pointer;">
+                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+                <circle cx="12.0" cy="3" r="2.25" color="red" />
               </svg>
 
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16" v-else>
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16" v-else style="cursor:pointer;">
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
               </svg>
             </div>
@@ -51,7 +70,7 @@
           </div>
 
           <button id="act-as-wrapper" @click="toggleInteractAs">
-            <img src="../../public/profile_icon_default.png"
+            <img :src="getPrimaryImageSrc(currentUser)"
                  class="rounded-circle img-fluid" id="act-as-image" alt="Acting as image"/>
           </button>
 
@@ -76,21 +95,27 @@
         <ul id="links-list" v-if="showNavbar">
         <li class="a-nav-item" >
           <router-link to="/home" class="router-nav-link" active-class="active-link">
-            <i class="side-nav-link-icon fas fa-home"></i>Home
+            <em class="side-nav-link-icon fas fa-home"></em>Home
           </router-link>
         </li>
 
         <li class="a-nav-item" v-if="actAsId">
           <router-link :to="'/businessProfile/' + actAsId" class="router-nav-link" exact-active-class="active-link">
-            <i class="side-nav-link-icon fas fa-user-alt"></i>Profile
+            <em class="side-nav-link-icon fas fa-user-alt"></em>Profile
           </router-link>
         </li>
 
         <li class="a-nav-item" v-else>
           <router-link to="/profile" class="router-nav-link" active-class="active-link">
-            <i class="side-nav-link-icon fas fa-user-alt"></i>Profile
+            <em class="side-nav-link-icon fas fa-user-alt"></em>Profile
           </router-link>
         </li>
+
+          <li class="a-nav-item">
+            <router-link to="/search?type=User&searchQuery=&orderBy=fullNameASC&page=1" class="router-nav-link" active-class="active-link">
+              <em class="side-nav-link-icon fas fa-search"></em>Search
+            </router-link>
+          </li>
 
         <li class="a-nav-item">
           <router-link to="/browseListings" class="router-nav-link" active-class="active-link">
@@ -103,13 +128,13 @@
 
         <li class="a-nav-item" v-if="!isActAsBusiness">
           <router-link to="/marketplace" class="router-nav-link" active-class="active-link">
-            <i class="side-nav-link-icon fas fa-store"></i>Marketplace
+            <em class="side-nav-link-icon fas fa-store"></em>Marketplace
           </router-link>
         </li>
 
         <li class="a-nav-item" v-if="isActAsBusiness">
           <button class="router-nav-link add-dropdown-icon" @click="toggleBusinessDropdown">
-            <i class="side-nav-link-icon fas fa-briefcase"></i>Business
+            <em class="side-nav-link-icon fas fa-briefcase"></em>Business
           </button>
           <transition name="expand" >
             <ul class="is-dropdown" v-if="showBusinessDropdown">
@@ -138,11 +163,11 @@
                 </router-link>
               </li>
               <li class="a-nav-item">
-                <router-link :to="'/businessProfile/' + businessAccountId + '/saleHistory'" class="router-nav-link" active-class="active-link">
+                <router-link :to="'/businessProfile/' + businessAccountId + '/sales'" class="router-nav-link" active-class="active-link">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-line-fill side-nav-link-icon" viewBox="0 0 16 16">
                     <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2z"/>
                   </svg>
-                  Sale History
+                  Sales
                 </router-link>
               </li>
             </ul>
@@ -214,12 +239,16 @@ import Cookies from "js-cookie";
 import Api from "../Api";
 import {UserRole} from "../configs/User";
 import Notification from "./main/Notification";
+import Messages from "./messages/Messages";
+import DeleteConversationModal from "./messages/DeleteConversationModal";
 
 export default {
 
   name: "NewNavbar",
   components: {
+    Messages,
     Notification,
+    DeleteConversationModal
   },
   props: {
 
@@ -242,6 +271,7 @@ export default {
       actAsId: null,
       actAs: "",
       currentUser: null,
+      currentBusinessImage: null,
       // navbar required variables
       showNavbar: false,
       isActAsBusiness: false,
@@ -260,6 +290,15 @@ export default {
 
       // Admin rights
       role: null,
+
+      // Messages
+      showMessages: false,
+
+      // used by the delete conversation modal to delete a conversation
+      conversationId: 0,
+      userName: "",
+
+      unreadMessage: false
     }
   },
   methods: {    // ---------------------------------------- Admin Rights --------------------------------
@@ -287,20 +326,16 @@ export default {
     isGAA(role) {
       return role === UserRole.GLOBALAPPLICATIONADMIN;
     },
-    /**
-     * get role of given id
-     */
-    getLoginRole(id) {
-      Api.getUser(id).then(response => (this.role = response.data.role))
-    },
 
     // -------------------------------------------------------------------------------------
     /**
-     * switch Notification Box
+     * Switch Notification Box
      */
     switchNotificationBox() {
       this.newNotification = false;
       this.openNotificationBox = !this.openNotificationBox;
+      this.showInteractMenu = false;
+      this.showMessages = false;
     },
     /**
      * omit name which length longer than max.
@@ -315,7 +350,7 @@ export default {
      * Refreshes dropdown list for interact as
      */
     refreshDropdown() {
-      if (this.currentUser.nickname == null) {
+      if (this.currentUser.nickname == null || this.currentUser.nickname === "") {
         this.interactAs = [{
           id: this.currentUser.id,
           name: this.omitName(this.currentUser.firstName, this.maxNameLength)
@@ -359,7 +394,7 @@ export default {
         Api.getNotifications()
           .then(response => this.newNotification = (response.data.length > 0))
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               // Missing or invalid token
               this.$router.push({path: '/invalidtoken'});
             } else {
@@ -370,7 +405,7 @@ export default {
       Api.getBusinessNotifications(Cookies.get('actAs'))
           .then(response => this.newNotification = (response.data.length > 0))
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               // Missing or invalid token
               this.$router.push({path: '/invalidtoken'});
             } else {
@@ -396,17 +431,27 @@ export default {
       }
     },
     /**
+     * Toggles the messages menu.
+     */
+    toggleMessages() {
+      this.showMessages = !this.showMessages;
+      this.openNotificationBox = false;
+      this.showInteractMenu = false;
+    },
+    /**
      * Closes the interact as and its inner parts.
      */
     closeInteractMenu() {
       this.openNotificationBox = false;
       this.showInteractMenu = false;
+      this.showMessages = false;
     },
     /**
      * Closes the navbar and its inner parts.
      */
     closeNavbar() {
       this.showBusinessDropdown = false;
+      this.showMessages = false;
       this.showNavbar = false;
     },
     /**
@@ -434,20 +479,20 @@ export default {
     /**
      * Gets information about the current logged in user
      */
-    getUserData() {
-      const currentID = Cookies.get('userID');
-      if (currentID) {
-        Api.getUser(currentID).then(response => (this.setCurUser(response.data))).catch((error) => {
-          if (error.request && !error.response) {
-            this.$router.push({path: '/timeout'});
-          } else if (error.response.status === 401) {
-            this.$router.push({path: '/invalidtoken'});
-          } else {
-            this.$router.push({path: '/noUser'});
-            console.log(error.message);
-          }
-        })
-      }
+    async getUserData(currentID) {
+      await Api.getUser(currentID).then((response) => {
+        this.role = response.data.role;
+        this.setCurUser(response.data);
+      }).catch((error) => {
+        if (error.request && !error.response) {
+          this.$router.push({path: '/timeout'});
+        } else if (error.response.status === 401) {
+          this.$router.push({path: '/invalidtoken'});
+        } else {
+          this.$router.push({path: '/noUser'});
+          console.log(error.message);
+        }
+      })
     },
     /**
      * Logs the user out of the their account by deleting the cookies of the user, and sending them to
@@ -506,8 +551,8 @@ export default {
     },
     setCurUser(response) {
       this.currentUser = response;
-      if (Cookies.get('actAs')) {
-        this.actAsId = Cookies.get('actAs');
+      this.actAsId = Cookies.get('actAs')
+      if (this.actAsId) {
         // Checks if user is admin of business at id actAs
         let check = false;
         for (let i = 0; i < response.businessesAdministered.length; i++) {
@@ -516,6 +561,7 @@ export default {
           }
           if (String(response.businessesAdministered[i].id) === this.actAsId) {
             this.actAs = response.businessesAdministered[i].name;
+            this.currentBusinessImage = response.businessesAdministered[i].businessImages;
             check = true;
             i = response.businessesAdministered.length; // Ends for loop
           }
@@ -547,6 +593,78 @@ export default {
 
       this.refreshDropdown();
     },
+    /**
+     * When the Navbar receives a custom event from its child components (deleting a conversation) it will open
+     * the deleteConversationModal with props conversationId and userName.
+     *
+     * @param conversationId the id of the conversation to delete.
+     * @param userName the name of the other member in the conversation.
+     */
+    onDeleteConversation(conversationId, userName) {
+      this.conversationId = conversationId;
+      this.userName = userName;
+      this.$refs.deleteConversationModal.showModal(event);
+    },
+    /**
+     * When a conversation is successfully deleted instead of reloading the page to update the conversations, the
+     * Messages component is quickly closed and then opened to repopulate the conversations. This makes it seem like the
+     * deletion was instantaneous.
+     */
+    reloadMessages() {
+      this.toggleMessages();
+      setTimeout(() => {
+        this.toggleMessages();
+      }, 5);
+    },
+    getPrimaryImageSrc(currentUser) {
+      if (!this.isActAsBusiness) {
+        if (currentUser != null && currentUser.images.length > 0) {
+          for (let image of currentUser.images) {
+            if (image.isPrimary) {
+              return Api.getServerURL() + "/" + image.thumbnailFilename;
+            }
+          }
+        }
+      } else {
+        if (this.currentBusinessImage != null && this.currentBusinessImage.length > 0) {
+          for (let image of this.currentBusinessImage) {
+            if (image.isPrimary) {
+              return Api.getServerURL() + "/" + image.thumbnailFilename;
+            }
+          }
+        }
+      }
+      return require('../../public/profile_icon_default.png');
+    },
+    /**
+     * Updates the currently displayed acting as image
+     * @param newPrimaryImage filename of new image
+     */
+    updatePrimaryImage(newPrimaryImage) {
+      if (newPrimaryImage !== null) {
+        document.getElementById("act-as-image").src = Api.getServerURL() + "/" + newPrimaryImage;
+      } else {
+        document.getElementById("act-as-image").src = require('../../public/profile_icon_default.png');
+      }
+    },
+    /**
+     * Updates the messages when acting as a user
+     */
+    updateMessages() {
+      if (Cookies.get('actAs') === undefined) {
+        Api.getConversations().then(response => {
+          this.unreadMessage = false;
+          for (let conversation of response.data) {
+            if (conversation.receiverId === this.currentUser.id && !conversation.readByReceiver) {
+              this.unreadMessage = true;
+              break;
+            } else if (conversation.instigatorId === this.currentUser.id && !conversation.readByInstigator) {
+              this.unreadMessage = true;
+            }
+          }
+        }).catch((err) => console.log(err))
+      }
+    }
   },
   async beforeMount() {
     if (this.loginRequired) {
@@ -562,17 +680,16 @@ export default {
       }
     }
 
-    // update notifications
-    this.updateNotificationState();
   },
-  mounted() {
+  async mounted() {
     const currentID = Cookies.get('userID');
 
-    if(currentID) {
-      this.getLoginRole(currentID);
-    }
+    await this.getUserData(currentID);
 
-    this.getUserData();
+    // update notifications
+    this.updateNotificationState();
+    this.updateMessages();
+
   }
 }
 
@@ -763,6 +880,7 @@ export default {
   #logo-image-nav {
     max-width: 90px;
     width: 100%;
+    display: none;
   }
 
   #act-as-wrapper {
@@ -832,6 +950,7 @@ export default {
     margin:12px auto
   }
 
+
   #act-as-small-size-user-section {
     display: flex;
     justify-content: space-evenly;
@@ -881,6 +1000,12 @@ export default {
     }
     100% {
       max-height: 100vh;
+    }
+  }
+
+  @media screen and (min-width: 350px){
+    #logo-image-nav {
+      display: block;
     }
   }
 

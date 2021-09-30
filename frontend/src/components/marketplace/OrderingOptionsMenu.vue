@@ -1,6 +1,6 @@
 <template>
 
-  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+  <div class="btn-toolbar w-100 align-items-end" role="toolbar" aria-label="Toolbar with button groups">
     <div class="btn-group me-2" role="group" aria-label="First group">
       <!------------------------------------------ ordering by options menu ------------------------------------------->
       <div class="btn-group col" role="group">
@@ -53,8 +53,13 @@
 
     <!--------------------------------------- create card button ------------------------------------------------------>
     <div class="btn-group me-2" role="group" aria-label="Second group" style="margin-top: 6px">
-      <CreateCardModal @new-card-created="(e) => $emit('new-card-created', e)"></CreateCardModal>
+      <CreateCardModal @new-card-created="(e) => $emit('new-card-created', e)" v-bind:type="type"></CreateCardModal>
     </div>
+
+    <div class="float-end ms-auto">
+      <PageSize :current-page-size="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
+    </div>
+
   </div>
 
 </template>
@@ -62,18 +67,29 @@
 <script>
 
 import CreateCardModal from "./CreateCardModal";
+import PageSize from "../../components/PageSize";
 
 export default {
   name: "OrderingOptionsMenu",
   components: {
+    PageSize,
     CreateCardModal
   },
   data() {
     return {
       orderByOption: "Select Order By",         // default
       orderDirectionOption: "Select Direction",  // default
-      orderBy: this.$route.query["orderBy"] || "dateDESC" // gets orderBy from URL or (if not there) sets to default
+      orderBy: this.$route.query["orderBy"] || "dateDESC", // gets orderBy from URL or (if not there) sets to default
+
+      pageSizes: ["6", "12", "18"], // a list of page size options
+      pageSize: this.$route.query["pageSize"] || "6" // default page size
     }
+  },
+  props: {
+    type: {
+      type: String,
+      required: true
+    },
   },
   methods: {
 
@@ -131,6 +147,16 @@ export default {
       // now can use this.orderBy to request cards from backend
 
     },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.$parent.$emit("selectedPageSize", this.pageSize);
+    }
   }
 }
 </script>

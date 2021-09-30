@@ -1,6 +1,6 @@
 <template>
   <!-- Modal -->
-  <div class="modal fade" ref="_updateInventoryItemModal" id="updateInventoryItemModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <div class="modal fade" ref="_updateInventoryItemModal" id="updateInventoryItemModal" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="updateInventoryItemModalTitle" aria-hidden="false">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -27,7 +27,7 @@
             <div class="col-7 form-group py-1 px-3">
               <div id="autofill-container" @click="autofillClick" @keyup="keyPressedOnInput" ref="autofill-container">
                 <label for="autofill-input">Product ID*: </label>
-                <input tabindex="1" type="text" id="autofill-input" ref="autofill-input" :class="inventoryValidationHelper.toggleInvalidClass(productIdErrorMsg)" :maxlength="config.productId.maxLength" v-model="newInventoryItem.data.productId">
+                <input tabindex="1" type="text" id="autofill-input" ref="autofill-input" :class="toggleInvalidClass(productIdErrorMsg)" :maxlength="config.productId.maxLength" v-model="newInventoryItem.data.productId">
                 <div class="invalid-feedback">
                   {{ productIdErrorMsg }}
                 </div>
@@ -44,7 +44,7 @@
             <div class="col-5 form-group py-1 px-3">
               <label for="quantity">Quantity*: </label>
               <input id="quantity" name="quantity" tabindex="2" type="number" min="0"
-                     v-model="newInventoryItem.data.quantity" :class="inventoryValidationHelper.toggleInvalidClass(quantityErrorMsg)"
+                     v-model="newInventoryItem.data.quantity" :class="toggleInvalidClass(quantityErrorMsg)"
                      :maxlength="config.quantity.maxLength" required>
               <div class="invalid-feedback">
                 {{ quantityErrorMsg }}
@@ -54,13 +54,14 @@
 
             <!-- Price Per Item -->
             <div class="col-6 form-group py-1 px-3">
-              <label for="price-per-item">Price Per Item ({{ currencyCode }}): </label>
+              <label for="price-per-item" v-if="currencyCode !== ''">Price Per Item ({{ currencyCode }}): </label>
+              <label for="price-per-item" v-else>Price Per Item: </label>
               <div class="input-group">
-                <div class="input-group-prepend">
+                <div class="input-group-prepend" v-if="currencySymbol !== ''">
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="price-per-item" name="price-per-item" tabindex="3" type="number" step="0.01"
-                       v-model="newInventoryItem.data.pricePerItem" :class="inventoryValidationHelper.toggleInvalidClass(pricePerItemErrorMsg)"
+                       v-model="newInventoryItem.data.pricePerItem" :class="toggleInvalidClass(pricePerItemErrorMsg)"
                        min="0" :maxlength="config.pricePerItem.maxLength">
                 <div class="invalid-feedback">
                   {{ pricePerItemErrorMsg }}
@@ -70,13 +71,14 @@
 
             <!-- Total Price -->
             <div class="col-6 form-group py-1 px-3">
-              <label for="total-price">Total Price ({{ currencyCode }}): </label>
+              <label for="total-price" v-if="currencyCode !== ''">Total Price ({{ currencyCode }}): </label>
+              <label for="total-price" v-else>Total Price: </label>
               <div class="input-group">
-                <div class="input-group-prepend">
+                <div class="input-group-prepend" v-if="currencySymbol !== ''">
                   <span class="input-group-text">{{ currencySymbol }}</span>
                 </div>
                 <input id="total-price" name="total-price" tabindex="4" type="number" step="0.01"
-                       v-model="newInventoryItem.data.totalPrice" :class="inventoryValidationHelper.toggleInvalidClass(totalPriceErrorMsg)"
+                       v-model="newInventoryItem.data.totalPrice" :class="toggleInvalidClass(totalPriceErrorMsg)"
                        :maxlength="config.totalPrice.maxLength">
                 <div class="invalid-feedback">
                   {{ totalPriceErrorMsg }}
@@ -88,7 +90,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="manufactured">Manufactured: </label>
               <input id="manufactured" name="manufactured" tabindex="5" type="date"
-                     v-model="newInventoryItem.data.manufactured" :class="inventoryValidationHelper.toggleInvalidClass(manufacturedErrorMsg)">
+                     v-model="newInventoryItem.data.manufactured" :class="toggleInvalidClass(manufacturedErrorMsg)">
               <div class="invalid-feedback">
                 {{ manufacturedErrorMsg }}
               </div>
@@ -98,7 +100,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="sell-by">Sell By: </label>
               <input id="sell-by" name="sell-by" tabindex="6" type="date"
-                     v-model="newInventoryItem.data.sellBy" :class="inventoryValidationHelper.toggleInvalidClass(sellByErrorMsg)">
+                     v-model="newInventoryItem.data.sellBy" :class="toggleInvalidClass(sellByErrorMsg)">
               <div class="invalid-feedback">
                 {{ sellByErrorMsg }}
               </div>
@@ -108,7 +110,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="best-before">Best Before: </label>
               <input id="best-before" name="best-before" tabindex="7" type="date"
-                     v-model="newInventoryItem.data.bestBefore" :class="inventoryValidationHelper.toggleInvalidClass(bestBeforeErrorMsg)">
+                     v-model="newInventoryItem.data.bestBefore" :class="toggleInvalidClass(bestBeforeErrorMsg)">
               <div class="invalid-feedback">
                 {{ bestBeforeErrorMsg }}
               </div>
@@ -118,7 +120,7 @@
             <div class="col-12 form-group py-1 px-3">
               <label for="expires">Expires*: </label>
               <input class="col-6" id="expires" name="expires" tabindex="8" type="date"
-                     v-model="newInventoryItem.data.expires" :class="inventoryValidationHelper.toggleInvalidClass(expiresErrorMsg)"
+                     v-model="newInventoryItem.data.expires" :class="toggleInvalidClass(expiresErrorMsg)"
                      required>
               <div class="invalid-feedback">
                 {{ expiresErrorMsg }}
@@ -144,9 +146,11 @@
 
 import { Modal } from 'bootstrap'
 import InventoryItem from "../../configs/InventoryItem";
-const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 import Api from "../../Api";
 import Autofill from '../autofill';
+import {toggleInvalidClass} from "../../validationUtils";
+
+const inventoryValidationHelper = require('../../components/inventory/InventoryValidationHelper');
 
 export default {
   name: "UpdateInventoryItemModal",
@@ -212,6 +216,7 @@ export default {
     }
   },
   methods: {
+    toggleInvalidClass: toggleInvalidClass,
     /**
      * Emits an event that updates the v-model prop value.
      * @param value The new value of the value prop.
@@ -593,7 +598,6 @@ export default {
                     // Custom event so that Inventory.vue knows edit was a success and can alert the user.
                     this.$root.$emit('editedInventory');
                     this.modal.hide();
-                    this.$router.go();
                   }
                 }
             )

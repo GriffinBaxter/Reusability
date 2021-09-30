@@ -4,7 +4,6 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.seng302.controller.InventoryItemResource;
 import org.seng302.controller.ListingResource;
 import org.seng302.exceptions.IllegalBookmarkedListingMessageArgumentException;
 import org.seng302.exceptions.IllegalListingArgumentException;
@@ -15,7 +14,6 @@ import org.seng302.model.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -140,7 +138,9 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
         product = new Product(
@@ -204,7 +204,8 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                             "\"email\":\"" + user.getEmail() + "\"," +
                             "\"created\":\"" + user.getCreated() + "\"," +
                             "\"role\":\"" + user.getRole() + "\"," +
-                            "\"businessesAdministered\":[null]," +
+                            "\"businessesAdministered\":[]," +
+                            "\"images\":[]," +
                             "\"dateOfBirth\":\"" + user.getDateOfBirth() + "\"," +
                             "\"phoneNumber\":\"" + user.getPhoneNumber() + "\"," +
                             "\"homeAddress\":" + user.getHomeAddress() + "}]," +
@@ -213,7 +214,10 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
                         "\"description\":\"" + business.getDescription() + "\"," +
                         "\"address\":" + business.getAddress() + "," +
                         "\"businessType\":\"" + business.getBusinessType() + "\"," +
-                        "\"created\":\"" + business.getCreated() + "\"}," +
+                        "\"created\":\"" + business.getCreated() + "\"," +
+                        "\"currencySymbol\":\"" + business.getCurrencySymbol() + "\"," +
+                        "\"currencyCode\":\"" + business.getCurrencyCode() + "\"," +
+                        "\"businessImages\":[]}," +
                     "\"barcode\":\"" + product.getBarcode() + "\"" +
                 "}," +
                 "\"quantity\":" + inventoryItem.getQuantity() + "," +
@@ -323,5 +327,4 @@ public class FullSaleListingStepDefs extends CucumberSpringConfiguration {
     public void the_number_of_bookmarks_the_listing_has_is_decremented() {
         assertThat(listing.getTotalBookmarks()).isZero();
     }
-
 }

@@ -22,7 +22,7 @@
           </div>
         </div>
         <div v-else>
-          <img class="card-img mt-4" :src="require('../../../public/default-product.jpg')" id="product-image" alt="product image">
+          <img class="card-img mt-4" :src="require('../../../public/default-image.jpg')" id="product-image" alt="product image">
         </div>
       </div>
       <div class="col-md-9">
@@ -36,7 +36,7 @@
             <br>
             <strong>Manufacturer:</strong> {{ manufacturer }}
             <br>
-            <strong>RRP:</strong> {{ currencySymbol }}{{ recommendedRetailPrice }} {{ currencyCode }}
+            <strong>RRP:</strong> {{ recommendedRetailPrice ? currencySymbol : "" }}{{ recommendedRetailPrice ? recommendedRetailPrice : "N/A" }} {{ recommendedRetailPrice ? currencyCode: "" }}
             <br>
             <strong>Description:</strong>
             <br>

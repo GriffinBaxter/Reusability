@@ -1,0 +1,2544 @@
+{
+	"info": {
+		"_postman_id": "e865a44e-2b4b-4e55-aef6-22ea50f137d3",
+		"name": "Images",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create-image",
+			"item": [
+				{
+					"name": "user-image",
+					"item": [
+						{
+							"name": "create-image-invalid-user-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-no-image",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "anythingElse",
+											"value": "asd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-txt",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-gif",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-gif.gif"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-user-image-jpeg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpeg.jpeg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "product-image",
+					"item": [
+						{
+							"name": "create-product-image-invalid-business-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-invalid-product-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-no-image",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "anythingElse",
+											"value": "asd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-txt",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-gif",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-gif.gif"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-product-image-jpeg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpeg.jpeg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "business-image",
+					"item": [
+						{
+							"name": "create-business-image-invalid-business-id",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-no-image",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "anythingElse",
+											"value": "asd",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-txt",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-txt.txt"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-gif",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-gif.gif"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-business-image-jpeg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpeg.jpeg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create-image-invalid-unchecked-image-type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"contentType": "multipart/form-data",
+									"type": "file",
+									"src": "postman-product-test-images/test-txt.txt"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9499/images?uncheckedImageType=OTHERS",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"images"
+							],
+							"query": [
+								{
+									"key": "uncheckedImageType",
+									"value": "OTHERS"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "delete-image",
+			"item": [
+				{
+					"name": "user-image",
+					"item": [
+						{
+							"name": "create-user-image",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.collectionVariables.set(\"imageId\", jsonData[\"id\"]);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId={{userId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "{{userId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-user-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/{{imageId}}?uncheckedImageType=USER_IMAGE&userId={{userId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"{{imageId}}"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "{{userId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-user-image-no-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/0?uncheckedImageType=USER_IMAGE&userId={{userId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"0"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "{{userId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-user-image-no-user",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=USER_IMAGE&userId=0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "product-image",
+					"item": [
+						{
+							"name": "create-product-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-product-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-image-no-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/0?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"0"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-image-no-business",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=PRODUCT_IMAGE&businessId=0&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "0"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-image-no-product",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=NOT-EXISTING",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "NOT-EXISTING"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "business-image",
+					"item": [
+						{
+							"name": "create-business-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-business-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-business-no-image",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/0?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"0"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-business-no-business",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/1?uncheckedImageType=BUSINESS_IMAGE&businessId=0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"1"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create-image-bad-request",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9499/images/1?uncheckedImageType=OTHERS",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"images",
+								"1"
+							],
+							"query": [
+								{
+									"key": "uncheckedImageType",
+									"value": "OTHERS"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "make-primary",
+			"item": [
+				{
+					"name": "user-image",
+					"item": [
+						{
+							"name": "create-primary-user-image-png",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-non-primary-user-image-jpg",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-image-id-2-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-image-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/100/makePrimary?uncheckedImageType=USER_IMAGE&userId=22",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"100",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "22"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-user-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=USER_IMAGE&userId=100",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "USER_IMAGE"
+										},
+										{
+											"key": "userId",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "product-image",
+					"item": [
+						{
+							"name": "create-primary-product-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-non-primary-product-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-image-id-2-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-image-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/100/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"100",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-product-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=4&productId=AA",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										},
+										{
+											"key": "productId",
+											"value": "AA"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-business-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=PRODUCT_IMAGE&businessId=100&productId=WATT-420-BEANS1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "PRODUCT_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "100"
+										},
+										{
+											"key": "productId",
+											"value": "WATT-420-BEANS1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "business-image",
+					"item": [
+						{
+							"name": "create-primary-business-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-png.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-non-primary-business-image",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "images",
+											"contentType": "multipart/form-data",
+											"type": "file",
+											"src": "postman-product-test-images/test-jpg.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:9499/images?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-image-id-2-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-image-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/100/makePrimary?uncheckedImageType=BUSINESS_IMAGE&businessId=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"100",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make-invalid-business-id-primary",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=BUSINESS_IMAGE&businessId=100",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9499",
+									"path": [
+										"images",
+										"2",
+										"makePrimary"
+									],
+									"query": [
+										{
+											"key": "uncheckedImageType",
+											"value": "BUSINESS_IMAGE"
+										},
+										{
+											"key": "businessId",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "make-image-be-primary-with-invalid-uncheckedImageType",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9499/images/2/makePrimary?uncheckedImageType=OTHERS",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9499",
+							"path": [
+								"images",
+								"2",
+								"makePrimary"
+							],
+							"query": [
+								{
+									"key": "uncheckedImageType",
+									"value": "OTHERS"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login-as-admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"email@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login-as-dgaa",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"email@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-gaa",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Smith\",\r\n  \"middleName\": \"Hector\",\r\n  \"nickname\": \"Jonny\",\r\n  \"bio\": \"Likes long walks on the beach\",\r\n  \"email\": \"gaa@email.com\",\r\n  \"dateOfBirth\": \"1999-04-27\",\r\n  \"phoneNumber\": \"+64 3 555 0129\",\r\n  \"homeAddress\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login-as-gaa",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"gaa@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"John\",\r\n  \"lastName\": \"Smith\",\r\n  \"middleName\": \"Hector\",\r\n  \"nickname\": \"Jonny\",\r\n  \"bio\": \"Likes long walks on the beach\",\r\n  \"email\": \"user@email.com\",\r\n  \"dateOfBirth\": \"1999-04-27\",\r\n  \"phoneNumber\": \"+64 3 555 0129\",\r\n  \"homeAddress\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login-as-user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"user@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-another-user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"Leo\",\r\n  \"lastName\": \"Messi\",\r\n  \"middleName\": \"Goat\",\r\n  \"nickname\": \"Goat\",\r\n  \"bio\": \"Likes long walks on the beach\",\r\n  \"email\": \"messi@email.com\",\r\n  \"dateOfBirth\": \"1999-04-27\",\r\n  \"phoneNumber\": \"+64 3 555 0129\",\r\n  \"homeAddress\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login-as-another-user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"userId\", jsonData[\"userId\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"user@email.com\",\r\n    \"password\": \"Password123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9499/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-a-businesses",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"primaryAdministratorId\": 22,\r\n  \"name\": \"Lumbridge General Store\",\r\n  \"description\": \"A one-stop shop for all your adventuring needs\",\r\n  \"address\": {\r\n    \"streetNumber\": \"3/24\",\r\n    \"streetName\": \"Ilam Road\",\r\n    \"suburb\": \"Upper Riccarton\",\r\n    \"city\": \"Christchurch\",\r\n    \"region\": \"Canterbury\",\r\n    \"country\": \"New Zealand\",\r\n    \"postcode\": \"90210\"\r\n  },\r\n  \"businessType\": \"Accommodation and Food Services\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9499/businesses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-a-product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": \"WATT-420-BEANS1\",\r\n  \"name\": \"Watties Baked Beans - 420g can\",\r\n  \"description\": \"Baked Beans as they should be.\",\r\n  \"manufacturer\": \"Some manufacturer\",\r\n  \"recommendedRetailPrice\": 2.2,\r\n  \"barcode\": 9400547002634\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9499/businesses/4/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"businesses",
+						"4",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9499/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9499",
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "imageId",
+			"value": ""
+		}
+	]
+}

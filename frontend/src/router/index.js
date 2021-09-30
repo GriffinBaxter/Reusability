@@ -17,6 +17,17 @@ const routes = [
         component: () => import('../views/Login')
     },
     {
+        path: '/forgotPassword',
+        name: 'ForgotPassword',
+        meta: {
+            title: 'ForgotPassword'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/ForgotPassword.vue')
+    },
+    {
         path: '/registration',
         name: 'Registration',
         meta: {
@@ -48,6 +59,17 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import('../views/Profile.vue')
+    },
+    {
+        path: '/profile/:id/edit',
+        name: 'EditProfile',
+        meta: {
+            title: 'EditProfile'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/EditProfile.vue')
     },
     {
         path: '/search',
@@ -154,6 +176,17 @@ const routes = [
         component: () => import('../views/BusinessProfile.vue')
     },
     {
+        path: '/businessProfile/:id/edit',
+        name: 'EditBusinessProfile',
+        meta: {
+            title: 'Edit Business Profile'
+        },
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('../views/EditBusinessProfile.vue')
+    },
+    {
         path: '/businessRegistration',
         name: 'BusinessRegistration',
         meta: {
@@ -235,16 +268,24 @@ const routes = [
         component: () => import('../views/BrowseListings')
     },
     {
-        path: '/businessProfile/:businessId/saleHistory',
-        name: 'SaleHistory',
+        path: '/businessProfile/:id/sales',
+        name: 'Sales',
         meta: {
-            title: 'SaleHistory'
+            title: 'Sales'
         },
         props: true,
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import('../views/SaleHistory')
+        component: () => import('../views/Sales')
+    },
+    {
+        path: '/resetPassword',
+        name: "ResetPassword",
+        meta: {
+            title: 'Reset Password'
+        },
+        component: () => import('../views/ResetPassword')
     },
     {
         path: '*',
@@ -259,7 +300,7 @@ const router = new VueRouter({
     routes
 })
 router.beforeEach((to, from, next) => {
-    if(to.name !== "Login" && to.name !== "Registration") {
+    if(to.name !== "Login" && to.name !== "Registration" && to.name !== "ResetPassword" && to.name !== "ForgotPassword") {
         if (!Cookies.get('userID')) {
             next({ name: "Login"});
         } else {

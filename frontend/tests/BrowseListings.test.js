@@ -55,7 +55,7 @@ describe('Tests for BrowseListings',  () => {
                 listings: [],
                 notInitialLoad: true,
             });
-            expect(wrapper.find('.noListings').exists()).toBeTruthy()
+            expect(wrapper.find('.no-listing-container').exists()).toBeTruthy()
         })
 
         test('No Listings Found message component is not rendered when listings are retrieved in the Browse Listings page.', async () => {
@@ -70,7 +70,7 @@ describe('Tests for BrowseListings',  () => {
                         moreInfo: "Selling quick.",
                         price: 11.96,
                         quantity: 4,
-                        totalBookmarks: 0,
+                        totalBookmarks: 0
                     }
                 ],
                 notInitialLoad: true,
@@ -78,7 +78,7 @@ describe('Tests for BrowseListings',  () => {
             })
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.find('.noListings').exists()).toBeFalsy()
+            expect(wrapper.find('.noListings').exists()).toBeFalsy();
         })
 
         test('No Listings Found message component is not rendered when listings have not yet been retrieved in the Browse Listings page.', async () => {

@@ -9,6 +9,8 @@
     <CardDetail v-bind:id="selectedCard"
                 v-bind:section="selectSection"/>
 
+    <MessageModal ref="messageModal"/>
+
     <!-- Edit Modal -->
     <EditCardModal ref="editCardModal"></EditCardModal>
 
@@ -44,6 +46,7 @@
         <div class="tab-pane fade show active" id="for-sale" role="tabpanel" aria-labelledby="for-sale-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @selectedPageSize="updatePageSize"
                                  @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'For Sale'"
@@ -57,6 +60,7 @@
         <div class="tab-pane fade" id="wanted" role="tabpanel" aria-labelledby="wanted-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @selectedPageSize="updatePageSize"
                                  @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'Wanted'"
@@ -70,6 +74,7 @@
         <div class="tab-pane fade" id="exchange" role="tabpanel" aria-labelledby="exchange-tab">
           <MarketplaceTabSection @openCardDetail="openCardDetail"
                                  @orderedCards="orderedCards"
+                                 @selectedPageSize="updatePageSize"
                                  @updatePage="updatePage"
                                  :sendData="selectedCard"
                                  v-bind:section="'Exchange'"
@@ -99,6 +104,7 @@ import Navbar from '../components/Navbar';
 import MarketplaceTabSection from "../components/marketplace/MarketplaceTabSection";
 import Api from "../Api";
 import EditCardModal from "../components/marketplace/EditCardModal";
+import MessageModal from "../components/marketplace/MessageModal";
 
 export default {
   name: "Marketplace",
@@ -120,7 +126,12 @@ export default {
       wantedPage: 0,
       exchangePage: 0,
       totalPages: 1,
-      hasDataLoaded: false
+      hasDataLoaded: false,
+
+      pageSize: "6",
+      forSalePageSize: "6",
+      wantedPageSize: "6",
+      exchangePageSize: "6"
     }
   },
   components: {
@@ -129,6 +140,7 @@ export default {
     Footer,
     Navbar,
     EditCardModal,
+    MessageModal
   },
   methods: {
 
@@ -143,14 +155,17 @@ export default {
           case "For Sale":
             this.sortBy = this.forSaleSortBy;
             this.page = this.forSalePage;
+            this.pageSize = this.forSalePageSize;
             break;
           case "Wanted":
             this.sortBy = this.wantedSortBy;
             this.page = this.wantedPage;
+            this.pageSize = this.wantedPageSize;
             break;
           case "Exchange":
             this.sortBy = this.exchangeSortBy;
             this.page = this.exchangePage;
+            this.pageSize = this.exchangePageSize;
             break;
           default:
             break;
@@ -177,6 +192,7 @@ export default {
       // Getting query params from the route
       this.sortBy = this.$route.query["orderBy"] || "createdDESC";
       this.page = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.pageSize = this.$route.query["pageSize"] || "6";
 
       switch (section) {
         case "ForSale":
@@ -198,7 +214,7 @@ export default {
       }
 
       this.hasDataLoaded = false;
-      Api.getAllCards(section, this.sortBy, this.page).then(response => {
+      Api.getAllCards(section, this.sortBy, this.page, this.pageSize).then(response => {
         this.allCards[section] = response.data;
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -234,6 +250,30 @@ export default {
       this.updateUrl();
       this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
     },
+    /**
+     * Updates the page size based on users selection, and then updates url and retrieves cards based on page size.
+     * @param selectedPageSize the new page size.
+     */
+    updatePageSize(selectedPageSize) {
+      switch (this.selectSection) {
+        case "For Sale":
+          this.forSalePageSize = selectedPageSize;
+          break;
+        case "Wanted":
+          this.wantedPageSize = selectedPageSize;
+          break;
+        case "Exchange":
+          this.exchangePageSize = selectedPageSize;
+          break;
+        default:
+          this.pageSize = selectedPageSize;
+          break;
+      }
+      this.pageSize = selectedPageSize;
+      this.page = 0;
+      this.updateUrl();
+      this.retrieveAllCardsForSection(this.selectSection.replace(" ", ""));
+    },
 
     /**
      * Updates the display to show the new page when a user clicks to move to a different page.
@@ -261,7 +301,7 @@ export default {
     updateUrl() {
       this.$router.push({
         path: `/marketplace`,
-        query: {"section": this.selectSection.replace(" ", ""), "orderBy": this.sortBy, "page": (this.page + 1).toString()}
+        query: {"section": this.selectSection.replace(" ", ""), "orderBy": this.sortBy, "page": (this.page + 1).toString(), "pageSize": this.pageSize}
       })
     }
   },

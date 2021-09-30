@@ -45,7 +45,7 @@
           <!-- Adds extra rows to maintain table size -->
           <div v-if="currentPageRows.length < maxRowsPerPage">
             <!-- The index is equal to that because, we would have duplicates otherwise with the rows.-->
-            <div v-for="index in maxRowsPerPage - currentPageRows.length" :key="`${tableId}-row-${index + currentPageRows.length}`" :class="`row py-4 shadow-sm productRows row-colour`" style="min-height: 7em; margin-bottom: 1em"></div>
+            <div v-for="index in maxRowsPerPage - currentPageRows.length" :key="`${tableId}-row-${index + currentPageRows.length}`" :class="`row py-4 shadow-sm productRows`" style="min-height: 7em; margin-bottom: 1em"></div>
           </div>
 
       </div>
@@ -59,15 +59,17 @@
     <!-- Table footer -->
     <div :id="`${tableId}-footer-row`" class="row flex-column-reverse flex-lg-row">
       <!-- Showing results out of total results section-->
-      <div class="col-lg" v-if="totalRows > 0">
+      <div class="col-lg"
+           v-if="totalRows > 0 && !hidePagination">
         Showing {{currentPage*maxRowsPerPage+1}}-{{currentPageRows.length+currentPage*maxRowsPerPage}} of {{totalRows}} results
       </div>
-      <div v-else>
+      <div v-else-if="!hidePagination">
         No results found
       </div>
       <!---------------------------------------------- page buttons ------------------------------------------------>
 
-      <div id="page-button-container">
+      <div id="page-button-container"
+           v-if="!hidePagination">
         <PageButtons
             v-bind:totalPages="totalPages"
             v-bind:currentPage="currentPage"
@@ -89,7 +91,7 @@ export default {
     PageButtons,
   },
   props: {
-    // Table ID must be unqiue within the page it is placed!
+    // Table ID must be unique within the page it is placed!
     // This is used to identify the icons per table.
     tableId: {
       type: String,
@@ -145,7 +147,7 @@ export default {
       default() { return true; }
     },
 
-    // This controls wether or not the data given is considered the page data.
+    // This controls whether or not the data given is considered the page data.
     tableDataIsPage: {
       type: Boolean,
       required: false,
@@ -178,8 +180,13 @@ export default {
       },
       required: false,
       default() { return null; }
-    }
+    },
 
+    hidePagination: {
+      type: Boolean,
+      required: false,
+      default() { return false}
+    }
 
   },
   data() {
@@ -338,7 +345,6 @@ export default {
     updateTable(newData = false, rebuildRows = false) {
       this.dataIsReady = false;
 
-
       // Updates the totalPages to be able to know how many pages exist
       this.totalPages = Math.ceil(this.totalRows/this.maxRowsPerPage);
 
@@ -375,12 +381,12 @@ export default {
       let row = [];
       let numberOfDataPoints = this.tableData.length + this.tableData.length % this.tableHeaders.length;
 
-      // Prases the raw stream of tabke data and converts it into lists of rows.
+      // Parses the raw stream of table data and converts it into lists of rows.
       for (let i = 0; i < numberOfDataPoints; i++) {
 
         let dataPoint = this.nullStringValue;
 
-        // If the value is accessable and not null we set the data point to the value. Otherwise to the nullTableValue.
+        // If the value is accessible and not null we set the data point to the value. Otherwise to the nullTableValue.
         if (i < this.tableData.length) {
           if (this.tableData[i] != null) {
             dataPoint = this.tableData[i];
@@ -389,7 +395,7 @@ export default {
 
         row.push(dataPoint);
 
-        // Once we added a divisable amount of data points by the number of headers onto the row array
+        // Once we added a divisible amount of data points by the number of headers onto the row array
         // and this isn't the first item (this is because 0 % NUMBER == 0). Then we can add it to the rows.
         if ((i+1) % this.tableHeaders.length === 0 && i > 0) {
           this.rows.push(row);

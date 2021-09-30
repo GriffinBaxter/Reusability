@@ -9,6 +9,24 @@ import PageButtons from "../src/components/PageButtons";
 
 describe("Testing the page button functionality", () => {
 
+    test('Testing the first page button is disabled when on the first page', () => {
+        const buttonSelector = '#firstButton';
+
+        const currentPage = 0;
+        const totalPages = 2;
+        const pageButtonWrapper = shallowMount(
+            PageButtons,
+            {
+                propsData: {
+                    currentPage,
+                    totalPages
+                },
+            });
+
+        const button = pageButtonWrapper.find(buttonSelector);
+        expect(button.classes()).toContain('disabled');
+    })
+
     test('Testing the previous page button is disabled when on the first page', () => {
         const buttonSelector = '#previousButton';
 
@@ -45,10 +63,64 @@ describe("Testing the page button functionality", () => {
         expect(button.classes()).toContain('disabled');
     })
 
+    test('Testing the last page button is disabled when on the last page', () => {
+        const buttonSelector = '#lastButton';
+
+        const currentPage = 0;
+        const totalPages = 1;
+        const pageButtonWrapper = shallowMount(
+            PageButtons,
+            {
+                propsData: {
+                    currentPage,
+                    totalPages
+                },
+            });
+
+        const button = pageButtonWrapper.find(buttonSelector);
+        expect(button.classes()).toContain('disabled');
+    })
+
+    test('Testing the first page button is enabled when on the last page', () => {
+        const buttonSelector = '#firstButton';
+
+        const currentPage = 1;
+        const totalPages = 2;
+        const pageButtonWrapper = shallowMount(
+            PageButtons,
+            {
+                propsData: {
+                    currentPage,
+                    totalPages
+                },
+            });
+
+        const button = pageButtonWrapper.find(buttonSelector);
+        expect(button.classes().includes('disabled')).toBeFalsy();
+    })
+
     test('Testing the previous page button is enabled when on the last page', () => {
         const buttonSelector = '#previousButton';
 
         const currentPage = 1;
+        const totalPages = 2;
+        const pageButtonWrapper = shallowMount(
+            PageButtons,
+            {
+                propsData: {
+                    currentPage,
+                    totalPages
+                },
+            });
+
+        const button = pageButtonWrapper.find(buttonSelector);
+        expect(button.classes().includes('disabled')).toBeFalsy();
+    })
+
+    test('Testing the last page button is enabled when on the first page', () => {
+        const buttonSelector = '#lastButton';
+
+        const currentPage = 0;
         const totalPages = 2;
         const pageButtonWrapper = shallowMount(
             PageButtons,
@@ -81,9 +153,9 @@ describe("Testing the page button functionality", () => {
         expect(button.classes().includes('disabled')).toBeFalsy();
     })
 
-    test('Testing that when there are three or more pages and you are on page 1 there are three numbered page buttons', () => {
+    test('Testing that when there are five or more pages and you are on page 1 there are five numbered page buttons', () => {
         const currentPage = 0;
-        const totalPages = 4;
+        const totalPages = 6;
         const pageButtonWrapper = shallowMount(
             PageButtons,
             {
@@ -106,12 +178,20 @@ describe("Testing the page button functionality", () => {
         expect(button.isVisible()).toBeTruthy();
 
         buttonSelector = '#pageButton4';
+        button = pageButtonWrapper.find(buttonSelector);
+        expect(button.isVisible()).toBeTruthy();
+
+        buttonSelector = '#pageButton5';
+        button = pageButtonWrapper.find(buttonSelector);
+        expect(button.isVisible()).toBeTruthy();
+
+        buttonSelector = '#pageButton6';
         expect(pageButtonWrapper.find(buttonSelector).exists()).toBeFalsy();
     })
 
-    test('Testing that when there are three or more pages and you are on page 3 there are three numbered page buttons', () => {
+    test('Testing that when there are five or more pages and you are on page 4 there are five numbered page buttons', () => {
         const currentPage = 3;
-        const totalPages = 4;
+        const totalPages = 7;
         const pageButtonWrapper = shallowMount(
             PageButtons,
             {
@@ -133,7 +213,18 @@ describe("Testing the page button functionality", () => {
         button = pageButtonWrapper.find(buttonSelector);
         expect(button.isVisible()).toBeTruthy();
 
+        buttonSelector = '#pageButton5';
+        button = pageButtonWrapper.find(buttonSelector);
+        expect(button.isVisible()).toBeTruthy();
+
+        buttonSelector = '#pageButton6';
+        button = pageButtonWrapper.find(buttonSelector);
+        expect(button.isVisible()).toBeTruthy();
+
         buttonSelector = '#pageButton1';
+        expect(pageButtonWrapper.find(buttonSelector).exists()).toBeFalsy();
+
+        buttonSelector = '#pageButton7';
         expect(pageButtonWrapper.find(buttonSelector).exists()).toBeFalsy();
     })
 

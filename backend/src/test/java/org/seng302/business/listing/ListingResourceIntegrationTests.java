@@ -4,6 +4,7 @@ package org.seng302.business.listing;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.seng302.exceptions.FailedToDeleteListingException;
 import org.seng302.model.Address;
 import org.seng302.model.Business;
 import org.seng302.model.repository.*;
@@ -147,7 +148,8 @@ class ListingResourceIntegrationTests {
                                                         "\"email\":\"%s\"," +
                                                         "\"created\":\"%s\"," +
                                                         "\"role\":\"%s\"," +
-                                                        "\"businessesAdministered\":[null]," +
+                                                        "\"businessesAdministered\":[]," +
+                                                        "\"images\":[]," +
                                                         "\"dateOfBirth\":\"%s\"," +
                                                         "\"phoneNumber\":\"%s\"," +
                                                         "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
@@ -156,7 +158,10 @@ class ListingResourceIntegrationTests {
                                                     "\"description\":\"%s\"," +
                                                     "\"address\":%s," +
                                                     "\"businessType\":\"%s\"," +
-                                                    "\"created\":\"%s\"}," +
+                                                    "\"created\":\"%s\"," +
+                                                    "\"currencySymbol\":\"%s\"," +
+                                                    "\"currencyCode\":\"%s\"," +
+                                                    "\"businessImages\":[]}," +
                                                     "\"barcode\":\"%s\"}," +
                                                 "\"quantity\":%d," +
                                                 "\"pricePerItem\":%.1f," +
@@ -197,7 +202,8 @@ class ListingResourceIntegrationTests {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
+            "\"images\":[]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
             "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
@@ -206,7 +212,10 @@ class ListingResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\"}," +
+            "\"created\":\"%s\"," +
+            "\"currencySymbol\":\"%s\"," +
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":[]}," +
             "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.1f," +
@@ -309,7 +318,9 @@ class ListingResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
 
@@ -320,7 +331,9 @@ class ListingResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         anotherBusiness.setId(2);
         user.setBusinessesAdministeredObjects(List.of(business, anotherBusiness));
@@ -373,7 +386,9 @@ class ListingResourceIntegrationTests {
                 address,
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                dGAA
+                dGAA,
+                "$",
+                "NZD"
         );
         adminBusiness.setId(3);
         dGAA.setBusinessesAdministeredObjects(List.of(adminBusiness));
@@ -755,8 +770,8 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
                 listing.isBookmarked(user), listing.getTotalBookmarks());
@@ -798,8 +813,8 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
                 listing.isBookmarked(user), listing.getTotalBookmarks());
@@ -838,13 +853,14 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("created").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(listingRepository.findListingsByBusinessId(business.getId(), paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(get(String.format("/businesses/%d/listings", 0))
                 .param("orderBy", "createdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -867,7 +883,8 @@ class ListingResourceIntegrationTests {
         // when
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "createdASC")
-                .param("page", "0"))
+                .param("page", "0")
+                .param("pageSize", "1"))
                 .andReturn().getResponse();
 
         // then
@@ -890,6 +907,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "createdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", "0")))
                 .andReturn().getResponse();
 
@@ -901,12 +919,12 @@ class ListingResourceIntegrationTests {
     /**
      * Tests that an OK status and a list of listing payloads is received when the business ID in the
      * /businesses/{id}/listings API endpoint exists.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page, and page size params provided are valid.
      *
      * @throws Exception Exception error
      */
     @Test
-    void canRetrieveListingsWhenBusinessExistsWithValidOrderByAndPageParams() throws Exception {
+    void canRetrieveListingsWhenBusinessExistsWithValidOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
         given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
@@ -918,8 +936,8 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
-                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
                 listing.isBookmarked(user), listing.getTotalBookmarks());
@@ -928,13 +946,14 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
         when(listingRepository.findListingsByBusinessId(1, paging)).thenReturn(pagedResponse);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "closesASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -963,6 +982,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "a")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -991,7 +1011,37 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
                 .param("orderBy", "closesASC")
                 .param("page", "a")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status and no listing payloads are received when the business ID in the
+     * /businesses/{id}/listings API endpoint exists but the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveListingsWhenBusinessExistsWithInvalidPageSizeParam() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(dGAA));
+        given(businessRepository.findBusinessById(1)).willReturn(Optional.ofNullable(business));
+
+        expectedJSON = "";
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                        .param("orderBy", "closesASC")
+                        .param("page", "0")
+                        .param("pageSize", "a")
+                        .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -1020,7 +1070,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1033,7 +1083,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
@@ -1048,10 +1098,10 @@ class ListingResourceIntegrationTests {
      * Tests that an OK status is received when searching for a listing using the /listings API endpoint
      * and that the JSON response is equal to the listing searched for. The listing is searched for using the
      * listing name.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page, and page size params provided are valid.
      */
     @Test
-    void canSearchListingsWhenListingExistsWithValidOrderByAndPageParamsTest() throws Exception {
+    void canSearchListingsWhenListingExistsWithValidOrderByAndPageAndPageSizeParamsTest() throws Exception {
         // given
         String searchQuery = "Beans";
         List<String> names = Arrays.asList(searchQuery);
@@ -1063,7 +1113,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1073,16 +1123,17 @@ class ListingResourceIntegrationTests {
         List<Listing> list = List.of(listing);
         Page<Listing> pagedResponse = new PageImpl<>(list);
         Sort sort = Sort.by(Sort.Order.asc("inventoryItemId.product.name").ignoreCase());
-        Pageable paging = PageRequest.of(0, 12, sort);
+        Pageable paging = PageRequest.of(0, 1, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("orderBy", "productNameASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1108,7 +1159,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1121,7 +1172,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1152,7 +1203,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, null, null, null, null, null
+                names, paging, null, null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1181,6 +1232,7 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("orderBy", "b")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -1205,6 +1257,32 @@ class ListingResourceIntegrationTests {
         response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
                 .param("orderBy", "productNameASC")
                 .param("page", "b")
+                .param("pageSize", "1")
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a listing using the /listings API endpoint
+     * when the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     */
+    @Test
+    void cantSearchListingsWithInvalidPageSizeParam() throws Exception {
+        // given
+        String searchQuery = "Beans";
+
+        expectedJSON = "";
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get("/listings").param("searchQuery", searchQuery)
+                .param("orderBy", "productNameASC")
+                .param("page", "0")
+                .param("pageSize", "a")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -1273,7 +1351,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1286,7 +1364,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType), null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1320,7 +1398,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1333,7 +1411,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType), null, null, null, null
+                names, paging, List.of(convertedBusinessType), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1369,7 +1447,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1380,7 +1458,7 @@ class ListingResourceIntegrationTests {
                 dGAA.getDateOfBirth(), dGAA.getPhoneNumber(), dGAA.getHomeAddress().getStreetNumber(), dGAA.getHomeAddress().getStreetName(),
                 dGAA.getHomeAddress().getSuburb(), dGAA.getHomeAddress().getCity(), dGAA.getHomeAddress().getRegion(), dGAA.getHomeAddress().getCountry(),
                 dGAA.getHomeAddress().getPostcode(), adminBusiness.getPrimaryAdministratorId(), adminBusiness.getName(),
-                adminBusiness.getDescription(), adminBusiness.getAddress(), adminBusiness.getBusinessType(), adminBusiness.getCreated(),
+                adminBusiness.getDescription(), adminBusiness.getAddress(), adminBusiness.getBusinessType(), adminBusiness.getCreated(), adminBusiness.getCurrencySymbol(), adminBusiness.getCurrencyCode(),
                 adminProduct.getBarcode(), adminInventoryItem.getQuantity(), adminInventoryItem.getPricePerItem(), adminInventoryItem.getTotalPrice(),
                 adminInventoryItem.getManufactured(), adminInventoryItem.getSellBy(), adminInventoryItem.getBestBefore(), adminInventoryItem.getExpires(),
                 adminListing.getQuantity(), adminListing.getPrice(), adminListing.getMoreInfo(), adminListing.getCreated().toString(), adminListing.getCloses().toString(),
@@ -1393,7 +1471,7 @@ class ListingResourceIntegrationTests {
         Pageable paging = PageRequest.of(0, 12, sort);
 
         when(listingRepository.findAllListingsByProductName(
-                names, paging, List.of(convertedBusinessType1, convertedBusinessType2), null, null, null, null
+                names, paging, List.of(convertedBusinessType1, convertedBusinessType2), null, null, null, null, null
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1427,7 +1505,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1443,7 +1521,8 @@ class ListingResourceIntegrationTests {
                 names, paging, List.of(convertedBusinessType),
                 10.0, 11.0,
                 LocalDateTime.of(2021, 1, 1, 0, 0),
-                LocalDateTime.of(2022, 1, 1, 0, 0)
+                LocalDateTime.of(2022, 1, 1, 0, 0),
+                "9400547002634"
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1455,6 +1534,7 @@ class ListingResourceIntegrationTests {
                 .param("maximumPrice", "11.0")
                 .param("fromDate", "2021-01-01T00:00")
                 .param("toDate", "2022-01-01T00:00")
+                .param("barcode", "9400547002634")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1483,7 +1563,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1499,7 +1579,8 @@ class ListingResourceIntegrationTests {
                 names, paging, List.of(convertedBusinessType),
                 9.0, 12.0,
                 LocalDateTime.of(2020, 1, 1, 0, 0),
-                LocalDateTime.of(2023, 1, 1, 0, 0)
+                LocalDateTime.of(2023, 1, 1, 0, 0),
+                "9400547002634"
         )).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
@@ -1511,6 +1592,7 @@ class ListingResourceIntegrationTests {
                 .param("maximumPrice", "12.0")
                 .param("fromDate", "2020-01-01T00:00")
                 .param("toDate", "2023-01-01T00:00")
+                .param("barcode", "9400547002634")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID()))).andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -1538,7 +1620,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1576,7 +1658,7 @@ class ListingResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
                 product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
                 listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
@@ -1684,6 +1766,52 @@ class ListingResourceIntegrationTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    /**
+     * Test that an OK status is returned along with a payload of valid Listings when calling
+     * /businesses/{businessId}/listings with a barcode parameter
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canRetrieveListingByBarcode() throws Exception {
+
+        List<Listing> list = List.of(listing);
+        Page<Listing> pagedResponse = new PageImpl<>(list);
+        Sort sort = Sort.by(Sort.Order.asc("closes").ignoreCase()).and(Sort.by(Sort.Order.asc("id").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 5, sort);
+
+        // given
+        given(userRepository.findById(4)).willReturn(Optional.ofNullable(anotherUser));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        given(listingRepository.findByBusinessIdAndInventoryItemProductBarcode(business.getId(), product.getBarcode(), paging)).willReturn(pagedResponse);
+
+        expectedJSON = String.format(expectedListingsJSON, listing.getId(), inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), business.getCurrencySymbol(), business.getCurrencyCode(),
+                product.getBarcode(), inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires(),
+                listing.getQuantity(), listing.getPrice(), listing.getMoreInfo(), listing.getCreated().toString(), listing.getCloses().toString(),
+                listing.isBookmarked(anotherUser), listing.getTotalBookmarks());
+
+
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        response = mvc.perform(get(String.format("/businesses/%d/listings", business.getId()))
+                .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))
+                .param("barcode", product.getBarcode()))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 
@@ -2005,7 +2133,7 @@ class ListingResourceIntegrationTests {
 
     /**
      * Tests that a 200 is returned when the user tries to delete their own message
-     * @throws Exception
+     * @throws Exception Exception error
      */
     @Test
     void canDeleteBookmarkMessageWithExistingMessage() throws Exception {
@@ -2131,4 +2259,135 @@ class ListingResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    /**
+     * Tests that when deleting a listing and you do not provide a session token a 401 UNAUTHROIZED is returned.
+     */
+    @Test
+    void WhenDeleteListingThatYouDontProvideSessionTokenAnUnauthorizedIsReturned() throws Exception{
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId()))).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Tests that when deleting a listing and providing a invalid business id a NOT_ACCEPTABLE is thrown
+     */
+    @Test
+    void whenDeleteListingThatYouProvideInvalidBusinessIdANotAcceptableIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.empty());
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * When deleting a listing when providing a invalid listing id then an NOT_ACCEPTABLE is thrown.
+     */
+    @Test
+    void whenDeleteListingThatYouProvideInvalidListingIdANotAcceptableIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.empty());
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Testing that a when deleting a listing and providing a closed listing that then a NOT_ACEEPTABLE is thrown.
+     */
+    @Test
+    void whenDeleteListingThatTheListingIsAlreadyClosedThrowANotAcceptable() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+        listing.setCloses(LocalDateTime.of(2020, 12, 12, 12, 12));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Testing that when deleting a listing and you are not an admin then a FORBIDDEN is thrown
+     */
+    @Test
+    void whenDeletingListingAndYouAreNotAdminAForbiddenIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.of(anotherUser));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    /**
+     * When deleting a listing as a admin then a OK status is returned.
+     */
+    @Test
+    void whenDeletingListingAndYouAreAdminAOkIsReturned() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", user.getSessionUUID());
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When deleting a listing as a GAA then a OK status is returned.
+     */
+    @Test
+    void whenDeletingListingAndYouAreGaaAOkIsReturned() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", gAA.getSessionUUID());
+        when(userRepository.findBySessionUUID(gAA.getSessionUUID())).thenReturn(Optional.of(gAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When deleting a listing as a DGAA then a OK status is returned.
+     */
+    @Test
+    void whenDeletingListingAndYouAreDgaaAOkIsReturned() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When an error is thrown when trying to delete the listing then an internal server error is thrown.
+     */
+    @Test
+    void whenDeletingListingAndListingRepositoryFailsToDeleteThenServerErrorIsThrown() throws Exception {
+        Cookie session = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(businessRepository.findBusinessById(business.getId())).thenReturn(Optional.of(business));
+        when(listingRepository.findListingByBusinessIdAndId(business.getId(), listing.getId())).thenReturn(Optional.of(listing));
+        when(listingRepository.deleteListing(listing.getId())).thenThrow(new FailedToDeleteListingException(""));
+
+        response = mvc.perform(delete(String.format("/businesses/%d/listings/%d", business.getId(), listing.getId())).cookie(session)).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

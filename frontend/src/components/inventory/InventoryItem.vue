@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-secondary mb-3 px-2 py-2 shadow" @click="$emit('click')">
+  <div class="card border-secondary mb-3 px-2 py-2 shadow" style="cursor: pointer" @click="$emit('click')">
     <div class="row no-gutters">
 
       <!--image-->
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div v-else>
-            <img class="card-img" :src="require('../../../public/default-product.jpg')" alt="inventory item image">
+            <img class="card-img" :src="require('../../../public/default-image.jpg')" alt="inventory item image">
           </div>
         </div>
       </div>
@@ -20,7 +20,10 @@
         <div class="card-body px-2 py-2">
 
           <!--Product info-->
-          <h3 class="card-title">{{ productName }}</h3>
+          <h3 class="card-title">
+            {{ productName }}
+            <em class="card-text fas fa-edit float-end"></em>
+          </h3>
           <h6 class="card-text">
             {{ productId }}
           </h6>
@@ -70,7 +73,7 @@
 
 <script>
 
-import Api from "@/Api";
+import Api from "../../Api";
 
 export default {
   name: "InventoryItem",

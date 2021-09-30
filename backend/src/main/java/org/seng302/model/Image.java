@@ -1,33 +1,17 @@
 package org.seng302.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import org.seng302.model.enums.ImageType;
 
 import javax.persistence.*;
 
-@Data
-@NoArgsConstructor
-@Entity
+@MappedSuperclass
 public class Image {
     // Id field for an Image entity
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id", nullable = false)
     private Integer id;
-
-    // Association many images can have the same one product id.
-    @ManyToOne(targetEntity = Product.class, fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "product_id", referencedColumnName = "id", insertable = false, updatable = false),
-            @JoinColumn(name = "business_id", referencedColumnName = "business_id", insertable = false, updatable = false)
-    })
-    private Product product;
-
-    @Column(name = "product_id", nullable = false)
-    private String productId;
-
-    @Column(name = "business_id", nullable = false)
-    private int businessId;
 
     // The file name in case we need to resolve it.
     @Column(name = "filename", nullable = false)
@@ -40,23 +24,62 @@ public class Image {
     @Column(name = "is_primary", nullable = false)
     private Boolean isPrimary;
 
+    private ImageType imageType;
 
-
-    public Image(int id, String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
-        this.id = id;
-        this.productId = productId;
-        this.businessId = businessId;
+    public Image(String filename, String thumbnailFilename, Boolean isPrimary, ImageType imageType) {
         this.filename = filename;
         this.thumbnailFilename = thumbnailFilename;
         this.isPrimary = isPrimary;
     }
 
-    public Image(String productId, Integer businessId, String filename, String thumbnailFilename, boolean isPrimary) {
-        this.productId = productId;
-        this.businessId = businessId;
+    public Image(Integer id, String filename, String thumbnailFilename, Boolean isPrimary, ImageType imageType) {
+        this.id = id;
         this.filename = filename;
         this.thumbnailFilename = thumbnailFilename;
         this.isPrimary = isPrimary;
+    }
+
+    public Image() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public String getThumbnailFilename() {
+        return thumbnailFilename;
+    }
+
+    public void setThumbnailFilename(String thumbnailFilename) {
+        this.thumbnailFilename = thumbnailFilename;
+    }
+
+    public Boolean getIsPrimary() {
+        return isPrimary;
+    }
+
+    public void setIsPrimary(Boolean primary) {
+        isPrimary = primary;
+    }
+
+    public ImageType getImageType() {
+        return imageType;
+    }
+
+    public void setImageType(ImageType imageType) {
+        this.imageType = imageType;
     }
 
     public String toString() {
@@ -67,5 +90,4 @@ public class Image {
                 "\"isPrimary\":\"" + isPrimary + "\"," +
                 "}";
     }
-
 }

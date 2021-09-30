@@ -1,7 +1,7 @@
 /**
  * Summary. This file contains the definition for the Business.
  *
- * Description. This file contains the defintion for the Business.
+ * Description. This file contains the definition for the Business.
  *
  * @link   team-400/src/main/java/org/seng302/business/Business
  * @file   This file contains the definition for Business.
@@ -68,6 +68,15 @@ public class Business {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
+    @Column(name = "currencySymbol")
+    private String currencySymbol;
+
+    @Column(name = "currencyCode")
+    private String currencyCode;
+
+    @OneToMany(mappedBy = "business")
+    private List<BusinessImage> businessImages;
+
     // Values need for validation.
     private static final Integer NAME_MIN_LENGTH = 1;
     private static final Integer NAME_MAX_LENGTH = 100;
@@ -85,6 +94,8 @@ public class Business {
      * @param businessType the type of the business (mandatory)
      * @param created the date the business was created
      * @param administrator the user who created this business
+     * @param currencySymbol the symbol of the currency belonging to the business
+     * @param currencyCode the code of the currency belonging to the business
      * @throws IllegalBusinessArgumentException thrown when parameter is not valid.
      */
     public Business(Integer primaryAdministratorId,
@@ -93,12 +104,14 @@ public class Business {
                     Address address,
                     BusinessType businessType,
                     LocalDateTime created,
-                    User administrator
+                    User administrator,
+                    String currencySymbol,
+                    String currencyCode
     ) throws IllegalBusinessArgumentException {
         if (!isValidName(name)){
             throw new IllegalBusinessArgumentException("Invalid business name");
         }
-        if (!isValidDescription(description)){
+        if (isValidDescription(description)){
             throw new IllegalBusinessArgumentException("Invalid business description");
         }
 
@@ -109,7 +122,8 @@ public class Business {
         this.businessType = businessType;
         this.created = created;
         administrators.add(administrator);
-
+        this.currencySymbol = currencySymbol;
+        this.currencyCode = currencyCode;
     }
 
     /**
@@ -176,6 +190,29 @@ public class Business {
         return primaryAdministratorId;
     }
 
+    /**
+     * get currency symbol
+     * @return currency symbol
+     */
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    /**
+     * get currency code
+     * @return currency code
+     */
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    /**
+     * return a list of BusinessImage object related to the business.
+     * @return business image
+     */
+    public List<BusinessImage> getBusinessImages() {
+        return businessImages;
+    }
 
     /**
      * set id
@@ -190,7 +227,7 @@ public class Business {
      * @param name name
      */
     public void setName(String name) throws IllegalBusinessArgumentException {
-        if (!Validation.isName(name)){
+        if (!isValidName(name)){
             throw new IllegalBusinessArgumentException("Invalid business name");
         }
         this.name = name;
@@ -223,9 +260,29 @@ public class Business {
     /**
      * set description
      * @param description despite shop info
+     * @throws IllegalBusinessArgumentException When the description is not null and is invalid.
      */
-    public void setDescription(String description) {
+    public void setDescription(String description) throws IllegalBusinessArgumentException{
+        if (description != null && isValidDescription(description)) {
+            throw new IllegalBusinessArgumentException("Invalid business description");
+        }
         this.description = description;
+    }
+
+    /**
+     * set currency symbol
+     * @param currencySymbol the symbol of the currency of the business
+     */
+    public void setCurrencySymbol(String currencySymbol) {
+        this.currencySymbol = currencySymbol;
+    }
+
+    /**
+     * set currency code
+     * @param currencyCode the code of the currency of the business
+     */
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 
     /**
@@ -234,6 +291,14 @@ public class Business {
      */
     public void setPrimaryAdministratorId(Integer primaryAdministratorId) {
         this.primaryAdministratorId = primaryAdministratorId;
+    }
+
+    /**
+     * set businessImages
+     * @param businessImages business images
+     */
+    public void setBusinessImages(List<BusinessImage> businessImages) {
+        this.businessImages = businessImages;
     }
 
     /**
@@ -292,6 +357,15 @@ public class Business {
     }
 
     /**
+     * Check if a user is the primary administrator of this business
+     * @param user The given user to check
+     * @return True when the user is a primary administrator of this business.
+     */
+    public boolean isPrimaryBusinessAdministrator(User user) {
+        return (user.getId() == primaryAdministratorId);
+    }
+
+    /**
      * Converts the business to payload form and returns it.
      * @return A payload representation of the business
      */
@@ -306,7 +380,10 @@ public class Business {
                 description,
                 addressPayload,
                 businessType,
-                created
+                created,
+                currencySymbol,
+                currencyCode,
+                businessImages
         );
     }
 
@@ -325,6 +402,8 @@ public class Business {
                 ",\"address\":\"" + address + "\"" +
                 ",\"businessType\":\"" + businessType + "\"" +
                 ",\"created\":\"" + created + "\"" +
+                ",\"currencySymbol\":\"" + currencySymbol + "\"" +
+                ",\"currencyCode\":\"" + currencyCode + "\"" +
                 "}";
     }
 
@@ -347,6 +426,6 @@ public class Business {
      * @return true when the description is valid.
      */
     private boolean isValidDescription(String description) {
-        return (description.length() >= DESCRIPTION_MIN_LENGTH) && (description.length() <= DESCRIPTION_MAX_LENGTH);
+        return (description.length() < DESCRIPTION_MIN_LENGTH) || (description.length() > DESCRIPTION_MAX_LENGTH);
     }
 }

@@ -1,12 +1,17 @@
 package org.seng302.model.repository;
 
+import org.seng302.exceptions.FailedToDeleteListingException;
+import org.seng302.exceptions.IllegalListingNotificationArgumentException;
 import org.seng302.model.Listing;
+import org.seng302.model.ListingNotification;
 import org.seng302.model.enums.BusinessType;
+import org.seng302.utils.CustomRepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
@@ -22,6 +27,15 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
     @Autowired
     private EntityManager entityManager;
 
+
+    private static final String BUSINESS_STRING = "business";
+
+    private static final String INVENTORY_ITEM_STRING = "inventoryItem";
+
+    private static final String PRODUCT_STRING = "product";
+
+    private static final String CLOSES_STRING = "closes";
+
     /**
      * Search for listings by product name and optional filters.
      *
@@ -32,6 +46,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
      * @param toDate       Later end of close dates to include in search. (Optional)
+     * @param barcode      The barcode to match to listings (Optional)
      * @return A Page object containing all matching listing results.
      *
      * Preconditions:  A non-null list of names to search for product names.
@@ -43,17 +58,18 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
             List<String> names, Pageable pageable,
             List<BusinessType> businessTypes,
             Double minimumPrice, Double maximumPrice,
-            LocalDateTime fromDate, LocalDateTime toDate
+            LocalDateTime fromDate, LocalDateTime toDate,
+            String barcode
     ) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
         Root<Listing> listing = query.from(Listing.class);
 
-        Path<String> namePath = listing.get("inventoryItem").get("product").get("name");
+        Path<String> namePath = listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get("name");
 
-        ArrayList<Predicate> predicates = getNamePredicates(names, namePath, criteriaBuilder);
+        ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, namePath, criteriaBuilder);
 
-        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -66,6 +82,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
      * @param toDate       Later end of close dates to include in search. (Optional)
+     * @param barcode      The barcode to match to listings (Optional)
      * @return A Page object containing all matching listing results.
      *
      * Preconditions:  A non-null list of locations to search for.
@@ -73,18 +90,18 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * Postconditions: A page object containing all matching listing results.
      */
     @Override
-    public Page<Listing> findAllListingsByLocation(List<String> locations, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Page<Listing> findAllListingsByLocation(List<String> locations, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
 
         Root<Listing> listing = query.from(Listing.class);
 
-        Path<String> addressPath = listing.get("inventoryItem").get("product").get("business").get("address");
+        Path<String> addressPath = listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get(BUSINESS_STRING).get("address");
 
         ArrayList<Predicate> predicates = new ArrayList<>();
         for (String location : locations) {
             if (location.startsWith("\"") && location.endsWith("\"")) {
-                location = location.replaceAll("^\"+|\"+$", ""); // Remove quotations.
+                location = location.replace("\"", "");
                 predicates.add(criteriaBuilder.equal(addressPath.get("suburb"), location));
                 predicates.add(criteriaBuilder.equal(addressPath.get("region"), location));
                 predicates.add(criteriaBuilder.equal(addressPath.get("city"), location));
@@ -96,7 +113,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(addressPath.get("country")), "%" + location.toUpperCase() + "%"));
             }
         }
-        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -109,6 +126,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of prices to include in search. (Optional)
      * @param fromDate     Earlier end of close dates to include in search. (Optional)
      * @param toDate       Later end of close dates to include in search. (Optional)
+     * @param barcode      The barcode to match to listings (Optional)
      * @return A Page object containing all matching listing results.
      *
      * Preconditions:  A non-null list of names to search for businesses.
@@ -116,42 +134,17 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * Postconditions: A page object containing all matching listing results.
      */
     @Override
-    public Page<Listing> findAllListingsByBusinessName(List<String> names, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Page<Listing> findAllListingsByBusinessName(List<String> names, Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Listing> query = criteriaBuilder.createQuery(Listing.class);
 
         Root<Listing> listing = query.from(Listing.class);
 
-        Path<String> businessNamePath = listing.get("inventoryItem").get("product").get("business").get("name");
+        Path<String> businessNamePath = listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get(BUSINESS_STRING).get("name");
 
-        ArrayList<Predicate> predicates = getNamePredicates(names, businessNamePath, criteriaBuilder);
+        ArrayList<Predicate> predicates = CustomRepositoryUtils.getPredicates(names, businessNamePath, criteriaBuilder);
 
-        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, criteriaBuilder, query, listing, predicates);
-    }
-
-    /**
-     * Gets Predicates that contain only one field (ie Product name).
-     *
-     * @param names list of names to search
-     * @param path path to required field
-     * @param criteriaBuilder CriteriaBuilder object
-     * @return ArrayList of Predicates
-     *
-     * Preconditions: path is valid
-     *                names is not empty
-     * Postconditions: List of predicates
-     */
-    private ArrayList<Predicate> getNamePredicates(List<String> names, Path<String> path, CriteriaBuilder criteriaBuilder) {
-        ArrayList<Predicate> predicates = new ArrayList<>();
-        for (String name : names) {
-            if (name.startsWith("\"") && name.endsWith("\"")) {
-                name = name.replaceAll("^\"+|\"+$", ""); // Remove quotations.
-                predicates.add(criteriaBuilder.equal(path, name));
-            } else {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(path), "%" + name.toUpperCase() + "%"));
-            }
-        }
-        return predicates;
+        return getListings(pageable, businessTypes, minimumPrice, maximumPrice, fromDate, toDate, barcode, criteriaBuilder, query, listing, predicates);
     }
 
     /**
@@ -163,6 +156,7 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      * @param maximumPrice Higher end of price range
      * @param fromDate Earlier date of close date range
      * @param toDate Later date of close date range
+     * @param barcode A barcode to match the listings to
      * @param criteriaBuilder Criteria builder
      * @param query Query for Listings location
      * @param listing Root for listing location
@@ -174,13 +168,13 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
      *                 query and listing are for the same place
      * Postconditions: A matching Page of Listings
      */
-    private Page<Listing> getListings(Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, CriteriaBuilder criteriaBuilder, CriteriaQuery<Listing> query, Root<Listing> listing, ArrayList<Predicate> predicates) {
+    private Page<Listing> getListings(Pageable pageable, List<BusinessType> businessTypes, Double minimumPrice, Double maximumPrice, LocalDateTime fromDate, LocalDateTime toDate, String barcode, CriteriaBuilder criteriaBuilder, CriteriaQuery<Listing> query, Root<Listing> listing, ArrayList<Predicate> predicates) {
 
         // Optional filters
         ArrayList<Predicate> predicateList = new ArrayList<>();
         if (businessTypes != null) {
             // where businessType = type
-            Predicate predicateForBusinessType = criteriaBuilder.isTrue(listing.get("inventoryItem").get("product").get("business").get("businessType").in(businessTypes));
+            Predicate predicateForBusinessType = criteriaBuilder.isTrue(listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get(BUSINESS_STRING).get("businessType").in(businessTypes));
             predicateList.add(predicateForBusinessType);
         }
         if (minimumPrice != null) {
@@ -193,24 +187,29 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         }
         if (fromDate != null) {
             Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
-                    listing.get("closes").as(LocalDateTime.class), fromDate
+                    listing.get(CLOSES_STRING).as(LocalDateTime.class), fromDate
             );
             predicateList.add(predicateForFromDate);
         }
         if (toDate != null) {
             Predicate predicateForToDate = criteriaBuilder.lessThanOrEqualTo(
-                    listing.get("closes").as(LocalDateTime.class), toDate
+                    listing.get(CLOSES_STRING).as(LocalDateTime.class), toDate
             );
             predicateList.add(predicateForToDate);
         }
+        if (barcode != null && !barcode.equals("")) {
+            // where businessType = type
+            Predicate predicateForBarcode = criteriaBuilder.equal(listing.get(INVENTORY_ITEM_STRING).get(PRODUCT_STRING).get("barcode"), barcode);
+            predicateList.add(predicateForBarcode);
+        }
 
         Predicate predicateExpireDate = criteriaBuilder.greaterThanOrEqualTo(
-                listing.get("inventoryItem").get("expires").as(LocalDateTime.class), LocalDateTime.now()
+                listing.get(INVENTORY_ITEM_STRING).get("expires").as(LocalDateTime.class), LocalDateTime.now()
         );
         predicateList.add(predicateExpireDate);
 
         Predicate predicateForFromDate = criteriaBuilder.greaterThanOrEqualTo(
-                listing.get("closes").as(LocalDateTime.class), LocalDateTime.now()
+                listing.get(CLOSES_STRING).as(LocalDateTime.class), LocalDateTime.now()
         );
         predicateList.add(predicateForFromDate);
 
@@ -239,5 +238,44 @@ public class ListingRepositoryCustomImpl implements ListingRepositoryCustom {
         Long count = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(listings, pageable, count);
+    }
+
+
+    /**
+     * Given a listing id attempt to delete it. And created a notification for all bookmarked users.
+     *
+     * @param id This is the id of the listing to be deleted if exists.
+     * @return Returns true if succeeds.
+     * @throws FailedToDeleteListingException Thrown when something goes wrong. The message will contain the details.
+     */
+    @Transactional
+    public Boolean deleteListing(Integer id) throws FailedToDeleteListingException {
+        // Try to get the listing
+        Listing listing = entityManager.find(Listing.class, id);
+        if (listing == null) {
+            throw new FailedToDeleteListingException(String.format("Listing with id (%d). Does not exist.", id));
+        }
+
+        // Try to create a notification
+        ListingNotification notification;
+        try {
+            notification = new ListingNotification(String.format("Listing for '%s' from business '%s' has been deleted. Sorry for the inconvenience.", listing.getInventoryItem().getProduct().getName(), listing.getInventoryItem().getProduct().getBusiness().getName()));
+        } catch (IllegalListingNotificationArgumentException err) {
+            String errMessage = String.format("Failed to create listing notification for listing (%d) delete.", id);
+            throw new FailedToDeleteListingException(errMessage);
+        }
+
+        // Add the users to it.
+        notification.setUsers(listing.getBookmarkedListings());
+
+        // Attempt to save the changes
+        try {
+            entityManager.remove(listing);
+            entityManager.persist(notification);
+            entityManager.flush();
+        } catch (Exception err) {
+            throw new FailedToDeleteListingException(err.getMessage());
+        }
+        return true;
     }
 }

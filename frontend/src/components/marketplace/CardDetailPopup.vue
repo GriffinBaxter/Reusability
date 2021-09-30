@@ -29,7 +29,7 @@
                 <br>
 
                 <!--keywords-->
-                <p class="btn btn-outline-secondary"
+                <p class="btn btn-outline-dark disabled"
                    v-for="keyword in keywords"
                    v-bind:key="keyword.id"
                    style="padding: 0px 3px; margin: 3px 5px">
@@ -59,6 +59,10 @@
                 <div style="vertical-align:middle; font-size:15px;">
                   <img :src="avatar" class="rounded-circle" id="avatar-image" alt="User Avatar"/>
                   <a v-bind:title="creator" style="font-size: 17px"> {{ displayCreator }} </a>
+                  <button v-if="!checkCurrentUserIsCreator()" class="btn btn-outline-success"
+                          style="float:right"
+                          data-bs-dismiss="modal"
+                          @click="openMessage">Send Message</button>
                   <button v-if="deletePermissionCheck()" class="btn btn-outline-success"
                           style="float:right"
                           @click="openEdit"
@@ -70,7 +74,7 @@
                           style="float:right"
                           @click="removeCurrentCard()"
                           data-bs-dismiss="modal"
-                          aria-label="Close" >Remove</button>
+                          aria-label="Close">Remove</button>
                 </div>
 
               </div>
@@ -92,7 +96,7 @@ export default {
   name: "CardDetail",
   data() {
     return {
-      avatar: require("../../../public/sample_profile_image.jpg"),
+      avatar: require("../../../public/default-image.jpg"),
       section: "",
       title: "",
       description: "",
@@ -148,6 +152,15 @@ export default {
       data.keywords.forEach(keyword => {
         this.keywords.push({id: keyword.id, name: keyword.name});
       })
+
+      this.avatar = require("../../../public/default-image.jpg");
+      if (data.creator.images.length > 0) {
+        for (let image of data.creator.images) {
+          if (image.isPrimary) {
+            this.avatar = Api.getServerURL() + "/" + image.thumbnailFilename;
+          }
+        }
+      }
     },
     /**
      * retrieve card detail by given id
@@ -211,10 +224,24 @@ export default {
       return flag;
     },
     /**
+     * Checks if the current user is the creator of the card
+     * @return {boolean} Whether the current user is the creator or not
+     */
+    checkCurrentUserIsCreator() {
+      let currentUserId = Cookies.get('userID');
+      return currentUserId == this.creatorId;
+    },
+    /**
      * Opens the edit modal
      */
     openEdit() {
       this.$parent.$refs.editCardModal.showModal(this.id)
+    },
+    /**
+     * Opens the message modal
+     */
+    openMessage() {
+      this.$parent.$refs.messageModal.showModal(this.creator, this.creatorId, this.title, this.id);
     }
   },
   /**

@@ -7,6 +7,11 @@
     <create-listing @updateListings="afterCreation"
                     v-bind:currency-code="currencyCode"
                     v-bind:currency-symbol="currencySymbol"/>
+
+      <div v-if="creationSuccess">
+        <feedback-notification :messages="messages" style="z-index:999;"/>
+      </div>
+
     <!-- Listing Container -->
     <div class="container mt-4">
       <div class="card p-3">
@@ -14,8 +19,8 @@
         <hr>
         <div class="row" role="group" aria-label="Button group with nested dropdown">
           <!--filter-->
-          <div class="btn-group col-md-3 py-1" role="group">
-            <button type="button" class="btn green-button dropdown-toggle"
+          <div class="btn-group col-md-2 py-1 align-text-center" role="group" style="display: flex; align-items: flex-end">
+            <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                     data-bs-toggle="dropdown" aria-expanded="false">Filter Option
             </button>
 
@@ -51,28 +56,30 @@
           </div>
 
           <!-- Create New Button -->
-          <div class="col-md-3 py-1" v-if="businessAdmin">
-            <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup">Create New</button>
+          <div class="col-md-2 py-1 align-text-center" v-if="businessAdmin" style="display: flex; align-items: flex-end">
+            <button type="button" class="btn green-button w-100" data-bs-toggle="modal" data-bs-target="#listingCreationPopup" style="height: 38px">Create New</button>
           </div>
 
-          <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+          <div class="col-3 col-md-3 text-secondary flex-nowrap align-text-center" style="margin-top: 1.7rem">Filter By: {{convertToString()}}</div>
+
+          <div class="col-md-3 justify-content-md-center" >
+            <BarcodeSearchBar @barcodeSearch="barcodeSearch" search-bar-identifier="listings-business"/>
+          </div>
+
+          <div class="col justify-content-md-center" style="display: flex; align-items: flex-end">
+            <PageSize :current-page-size="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
+          </div>
 
         </div>
 
         <!--space-->
         <br>
 
-        <!--creation success info-->
-        <div class="alert alert-success" role="alert" v-if="creationSuccess">
-          <div class="row">
-            <div class="col" style="text-align: center">New Listing Created</div>
-          </div>
-        </div>
-
         <!-- Listings -->
         <ListingItem
             v-for="item in listings"
             v-bind:key="item.index"
+            v-bind:listing-id="item.id"
             v-bind:product-name="item.productName"
             v-bind:description="item.description"
             v-bind:product-id="item.productId"
@@ -80,6 +87,7 @@
             v-bind:price="item.price"
             v-bind:listDate="item.listDate"
             v-bind:close-date="item.closeDate"
+            v-bind:full-close-date="item.fullCloseDate"
             v-bind:best-before="item.bestBefore"
             v-bind:expires="item.expires"
             v-bind:moreInfo="item.moreInfo"
@@ -87,6 +95,8 @@
             v-bind:currency-symbol="currencySymbol"
             v-bind:images="item.images"
             v-bind:barcode="item.barcode"
+            v-bind:isAdmin="businessAdmin"
+            v-on:withdrawConfirmation="withdrawListingConfirmation($event)"
         />
 
         <!--space-->
@@ -101,14 +111,26 @@
               @updatePage="updatePage"/>
         </div>
 
-      </div>
-    </div>
-      <div class="noListings" v-if="noListings">
-        <div class="card p-1">
-          <p class="h2 py-5" style="text-align: center">No Listings Found</p>
+        <div class="noListings" v-if="noListings">
+          <div class="card p-1">
+            <p class="h2 py-5" style="text-align: center">No Listings Found</p>
+          </div>
         </div>
+
       </div>
     </div>
+    </div>
+
+    <WithdrawListingConfirmationModal ref="withdrawListingConfirmationModal"
+                                      :businessName="businessName"
+                                      :productName="currentProductName"
+                                      :quantity="currentQuantity.toString()"
+                                      :price="currentPrice.toString()"
+                                      :currencySymbol="currencySymbol"
+                                      :currencyCode="currencyCode"
+                                      v-on:deleteListing="deleteListing()"
+    />
+
     <!-- Footer -->
     <Footer class="footer"/>
   </div>
@@ -121,14 +143,26 @@ import Api from "../Api";
 import Cookies from "js-cookie";
 import CreateListing from "../components/listing/CreateListingModal";
 import Footer from "../components/main/Footer";
-import CurrencyAPI from "../currencyInstance";
 import PageButtons from "../components/PageButtons";
 import {formatDate} from "../dateUtils";
-
+import BarcodeSearchBar from "../components/BarcodeSearchBar";
+import PageSize from "../components/PageSize";
+import WithdrawListingConfirmationModal from "../components/listing/WithdrawListingConfirmationModal";
+import FeedbackNotification from "../components/feedbackNotification/FeedbackNotification";
 
 export default {
 name: "Listings",
-  components: {Footer, CreateListing, ListingItem, Navbar, PageButtons},
+  components: {
+    Footer,
+    CreateListing,
+    ListingItem,
+    Navbar,
+    PageSize,
+    PageButtons,
+    BarcodeSearchBar,
+    WithdrawListingConfirmationModal,
+    FeedbackNotification
+  },
   data() {
     return {
       allListings: [],
@@ -153,12 +187,27 @@ name: "Listings",
       closesAscending: false,
       createdAscending: false,
 
-      // currency related variables
-      businessCountry: "", // used to retrieve the currency code and symbol
+      // Currency related variables
+      businessCountry: "", // Used to retrieve the currency code and symbol
       currencyCode: "",
       currencySymbol: "",
 
-      creationSuccess: false
+      barcode: "",
+
+      creationSuccess: false,
+
+      // Withdraw listing confirmation modal values.
+      currentListingId: null,
+      currentProductName: "",
+      currentQuantity: "",
+      currentPrice: "",
+
+      // For toast notifications
+      messages: [],
+      messageIdCounter: 0,
+
+      pageSizes: ["5", "10", "15", "25"], // a list of available page sizes.
+      pageSize: this.$route.query["pageSize"] || "5" // default page size
     }
   },
   computed: {
@@ -167,6 +216,60 @@ name: "Listings",
   }
   },
   methods: {
+    /**
+     * Opens the withdraw listing confirmation modal for the given item.
+     * @param data An object containing the click event and the listingId
+     */
+    withdrawListingConfirmation(data) {
+
+      const listingId = data.listingId;
+      const listing = this.listings.find(listingItem => listingItem.id === listingId);
+
+      this.currentProductName = listing.productName;
+      this.currentQuantity = listing.quantity;
+      this.currentPrice = listing.price;
+      this.currentListingId = listing.id;
+
+      this.$refs.withdrawListingConfirmationModal.showModal(data.event);
+    },
+    /**
+     * Delete a listing at ID
+     */
+    async deleteListing() {
+      if (this.currentListingId !== null) {
+        await Api.deleteListing(this.businessId, this.currentListingId).then(() => {
+          this.getListings();
+          this.creationSuccess = true;
+          this.messageIdCounter += 1;
+          this.messages = [];
+          this.messages.push(
+              {
+                id: this.messageIdCounter,
+                isError: false,
+                topic: "Success",
+                text: "Listing successfully deleted."
+              }
+          )
+          setTimeout(() => {
+            this.creationSuccess = false
+          }, 5000);
+        }).catch((err) => {
+          if (err.response) {
+            if (err.response.status === 406) {
+              this.getListings()
+            } else if (err.response.status === 401) {
+              this.$router.push({name: "InvalidToken"})
+            } else if (err.response.status === 403) {
+              this.businessAdmin = false
+            } else {
+              console.log(err)
+            }
+          } else {
+            console.log(err)
+          }
+        })
+      }
+    },
     /**
      * convert orderByString to more readable for user
      */
@@ -189,7 +292,7 @@ name: "Listings",
      */
     updatePage(newPageNumber) {
       this.currentPage = newPageNumber;
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}})
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}})
       this.getListings();
     },
 
@@ -273,7 +376,7 @@ name: "Listings",
 
       }
 
-      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"orderBy": this.orderBy, "page": (this.currentPage + 1).toString()}});
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}});
       this.getListings();
     },
 
@@ -295,8 +398,15 @@ name: "Listings",
       */
       this.orderBy = this.$route.query["orderBy"] || "closesASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.pageSize = this.$route.query["pageSize"] || "5";
+      this.rowsPerPage = parseInt(this.pageSize);
+      this.barcode = this.$route.query["barcode"] || "";
 
-      await Api.sortListings(this.businessId, this.orderBy, this.currentPage).then(response => {
+      if (this.barcode === undefined || this.barcode === null) {
+        this.barcode = "";
+      }
+
+      await Api.sortListings(this.businessId, this.orderBy, this.currentPage, this.pageSize, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -339,6 +449,8 @@ name: "Listings",
     getBusinessData(data) {
       this.businessName = data.name;
       this.businessCountry = data.address.country;
+      this.currencySymbol = data.currencySymbol;
+      this.currencyCode = data.currencyCode;
       // Checks if user is acting as business
       const actAs = Cookies.get('actAs');
       this.businessAdmin = actAs === String(data.id);
@@ -356,6 +468,7 @@ name: "Listings",
     },
     populatePage(response) {
       if (response.data.length <= 0) {
+        this.listings = [];
         this.currentPage = 0;
         this.maxPage = 0;
         this.totalRows = 0;
@@ -369,6 +482,7 @@ name: "Listings",
             return
           }
           this.listings.push({
+            id: response.data[i].id,
             productName: response.data[i].inventoryItem.product.name,
             description: response.data[i].inventoryItem.product.description,
             productId: response.data[i].inventoryItem.product.id,
@@ -376,6 +490,7 @@ name: "Listings",
             price: response.data[i].price,
             listDate: formatDate(response.data[i].created, false),
             closeDate: formatDate(response.data[i].closes, false),
+            fullCloseDate: response.data[i].closes,
             moreInfo: response.data[i].moreInfo,
             expires: formatDate(response.data[i].inventoryItem.expires, false),
             images: response.data[i].inventoryItem.product.images,
@@ -383,26 +498,6 @@ name: "Listings",
           })
         }
       }
-    },
-
-    /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
-     */
-    async currencyRequest() {
-      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
-        this.filterResponse(response.data);
-      }).catch((error) => console.log(error))
-    },
-
-    /**
-     * Retrieves the currency code and symbol that we want from the API response.
-     * @param response The response from the REST countries API
-     */
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
     },
 
     async getUserRole(id) {
@@ -416,11 +511,42 @@ name: "Listings",
     afterCreation() {
       this.creationSuccess = true;
       // The corresponding alert will close automatically after 5000ms.
+      this.messageIdCounter += 1;
+      this.messages = [];
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Listing successfully created."
+          }
+      )
       setTimeout(() => {
         this.creationSuccess = false
       }, 5000);
       this.getListings();
     },
+
+    /**
+     * Routes to URL with event value as the barcode and triggers getListings
+     */
+    barcodeSearch(event) {
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`,
+        query: {"barcode": event, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}})
+      this.getListings();
+    },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.currentPage = 0;
+      this.$router.push({path: `/businessProfile/${this.businessId}/listings`, query: {"barcode": this.barcode, "orderBy": this.orderBy, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}});
+      this.getListings();
+    }
   },
   async mounted() {
     /**
@@ -436,7 +562,6 @@ name: "Listings",
       this.getListings().catch(
           (e) => console.log(e)
       );
-      await this.currencyRequest();
     }
   }
 }

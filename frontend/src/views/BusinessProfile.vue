@@ -2,156 +2,227 @@
   <div>
 
     <div id="main">
-    <!--nav bar-->
-    <Navbar></Navbar>
+      <!--nav bar-->
+      <Navbar ref="navbar"></Navbar>
+      <UpdateImagesModal v-on:updatePrimary="updatePrimaryNav" ref="updateImagesModal" location="Business" :id="business.data.id" v-model="business"/>
 
-    <!--profile container-->
-    <div class="container p-5" id="profileContainer">
+      <!--profile container-->
+      <div class="container p-5" id="profileContainer">
       <div class="row">
-      <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
-        <button class="btn btn-lg green-button w-100" @click="returnToListing()" id="return-button" tabindex="9">Return to Sale Listing</button>
+        <div class="return-button-wrapper col-xl-3 mb-3" v-if="fromListing">
+          <button class="btn btn-lg green-button w-100" @click="returnToPreviousPage()" id="return-button-listing" tabindex="9">Return to Sale Listing</button>
+        </div>
+        <div class="return-button-wrapper col-xl-3 mb-3" v-else-if="fromSearch">
+          <button class="btn btn-lg green-button w-100" @click="returnToPreviousPage()" id="return-button-search" tabindex="9">Return to Search</button>
+        </div>
       </div>
-      </div>
 
-      <!--profile header, contains user search bar-->
-      <ProfileHeader id="profile-header"/>
+        <!--profile header, contains user search bar-->
+        <ProfileHeader id="profile-header"/>
 
-      <div class="row">
-        <div class="col-xl-3 mb-3">
+        <div class="row">
 
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
+          <!-- modal for modify primary admin -->
+          <PrimaryAdminModification
+              ref="primaryAdminModification"
+              :business-info="businessInfo"
+              :admin-list="adminList"
+              :selected-user="null"/>
+
+          <div class="col-xl-3 mb-3">
+
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
 
               <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_business_logo.jpg')"
-                   alt="Profile Image"/>
+              <div id="profileCarouselControls" class="carousel carousel-dark slide"
+                   data-bs-interval="false" data-bs-ride="carousel">
+                <div class="carousel-inner" id="image-carousel">
+                  <div v-if="business.data.images === undefined || business.data.images === [] || business.data.images.length === 0">
+                    <img :src="getImageSrc()"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
+                  </div>
+                  <div v-for="image of business.data.images"
+                       v-bind:key="image.id"
+                       :class="image.isPrimary ? 'carousel-item active ratio ratio-1x1' : 'carousel-item ratio ratio-1x1'">
+                    <img :src="getImageSrc(image.thumbnailFilename)"
+                         class="rounded-circle img-fluid"
+                         alt="Profile Image">
+                  </div>
+                </div>
+                <div v-if="business.data.images !== null && business.data.images !== [] && business.data.images.length > 1">
+                  <button class="carousel-control-prev" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#profileCarouselControls"
+                          data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+              </div>
 
-              <!--business's name-->
-              <div class="mt-3">
-                <h5>{{ name }}</h5>
-                <div class="text-secondary">{{ description }}</div>
+                <div id="change-profile-picture-button" style="padding-top: 10px"
+                     v-if="isAdministrator || business.data.id">
+                  <button type="button" style="width: 252px; max-width: 100%" id="update-business-image-button"
+                          class="btn btn-md btn-outline-primary green-button"
+                          @click="(event) => {this.$refs.updateImagesModal.showModel(event)}">
+                    Change Profile Picture
+                  </button>
+                </div>
+
+                <!--business's name-->
+                <div class="mt-3">
+                  <h5>{{ name }}</h5>
+                  <div class="text-secondary">{{ description }}</div>
+                </div>
+
+                <div id="edit-business-profile" style="padding-top: 10px" v-if="isAdministrator">
+                  <hr>
+                  <button type="button" style="width: 252px; max-width: 100%"
+                          class="btn btn-md btn-outline-primary green-button" @click="goToEdit()">
+                    Edit Profile
+                  </button>
+
+                  <hr v-if="isPrimaryAdministrator">
+                  <button id="editPrimaryAdminButton"
+                          type="button"
+                          v-if="isPrimaryAdministrator"
+                          style="width: 252px; max-width: 100%"
+                          class="btn btn-md btn-outline-primary green-button"
+                          @click="(event) => {this.$refs.primaryAdminModification.showModel(event)}">
+                    Edit Primary Admin
+                  </button>
+                </div>
               </div>
             </div>
+
           </div>
 
-        </div>
+          <div class="col">
+            <div class="card shadow-sm">
+              <div class="card-body">
 
-        <div class="col">
-          <div class="card shadow-sm">
-            <div class="card-body">
-
-              <!--business's name-->
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Name:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" style="text-align: right">{{ name }}</div>
+                <!--business's name-->
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Name:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary" style="text-align: right">{{ name }}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's type-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Business Type:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" style="text-align: right">{{ businessType }}</div>
+                <!--business's type-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Business Type:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary" style="text-align: right">{{ businessType }}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's created time-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Created Time:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary" style="text-align: right">{{ created }}</div>
+                <!--business's created time-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Created Time:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary" style="text-align: right">{{ created }}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's address-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Address:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="row">
-                      <div class="text-secondary" v-for="(lines, i) in address" :key="'address-line-'+i" style="text-align: right">
-                        {{ lines.line }}
+                <!--business's address-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Address:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="row">
+                        <div class="text-secondary" v-for="(lines, i) in address" :key="'address-line-'+i"
+                             style="text-align: right">
+                          {{ lines.line }}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's primary administrator-->
-              <hr v-if="isAdministrator">
-              <div class="container" v-if="isAdministrator">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Primary Administrator:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary primary-administrator" style="text-align: right" @click="pushToUser(primaryAdministratorId)">
-                      {{ primaryAdministrator }}
+                <!--business's primary administrator-->
+                <hr v-if="isAdministrator">
+                <div class="container" v-if="isAdministrator">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Primary Administrator:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary primary-administrator" style="text-align: right"
+                           @click="pushToUser(primaryAdministratorId)">
+                        {{ primaryAdministrator }}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!--business's administrators-->
-              <hr>
-              <div class="container">
-                <div class="row justify-content-between">
-                  <div class="col-4 -align-left">
-                    <h6>Administrators:</h6>
-                  </div>
-                  <div class="col-8">
-                    <div class="text-secondary other-administrators" v-for="nameOfAdministrator in nameOfAdministrators"
-                         :key="nameOfAdministrator.name"
-                         style="text-align: right" @click="pushToUser(nameOfAdministrator.id)">
-                      {{ nameOfAdministrator.name }}
+                <!--business's administrators-->
+                <hr>
+                <div class="container">
+                  <div class="row justify-content-between">
+                    <div class="col-4 -align-left">
+                      <h6>Administrators:</h6>
+                    </div>
+                    <div class="col-8">
+                      <div class="text-secondary other-administrators"
+                           v-for="nameOfAdministrator in nameOfAdministrators"
+                           :key="nameOfAdministrator.name"
+                           style="text-align: right" @click="pushToUser(nameOfAdministrator.id)">
+                        {{ nameOfAdministrator.name }}
+                      </div>
                     </div>
                   </div>
                 </div>
+
               </div>
-
             </div>
-          </div>
 
-          <div class="row">
+            <div class="row">
 
-            <div class="col">
-              <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="0">Listings</button>
-            </div>
+              <div class="col">
+                <button class="btn green-button mt-4" @click="navigateTo('Listings')" tabindex="0">Listings</button>
+              </div>
 
             <div class="col">
               <div style="text-align: right" id="adminButtonRow" v-if="isAdministrator">
-                <button class="btn green-button mt-4 mx-2" id="InventoryButton"
+                <button class="btn green-button mt-4 mx-2" id="inventoryButton"
                         @click="navigateTo('Inventory')" tabindex="0">Inventory
                 </button>
-                <button class="btn green-button float-end mt-4 mx-2" id="productCatalogueButton"
+                <button class="btn green-button mt-4 mx-2" id="productCatalogueButton"
                         @click="navigateTo('ProductCatalogue')" tabindex="0">Product Catalogue
-
+                </button>
+                <button class="btn green-button float-end mt-4 mx-2" id="salesButton"
+                        @click="navigateTo('Sales')" tabindex="0">Sales
                 </button>
               </div>
             </div>
           </div>
 
+          </div>
         </div>
       </div>
-    </div>
 
     </div>
     <!--footer-->
@@ -161,20 +232,24 @@
 </template>
 
 <script>
-import ProfileHeader from "@/components/ProfileHeader";
-import Footer from "@/components/main/Footer";
-import Navbar from "@/components/Navbar";
-import Api from "@/Api";
+import ProfileHeader from "../components/ProfileHeader";
+import UpdateImagesModal from "../components/UpdateImagesModal"
+import Footer from "../components/main/Footer";
+import Navbar from "../components/Navbar";
+import Api from "../Api";
 import Cookies from 'js-cookie';
-import {UserRole} from "@/configs/User";
-import {checkNullity, getFormattedAddress} from "@/views/helpFunction";
+import {UserRole} from "../configs/User";
+import {checkNullity, getFormattedAddress} from "./helpFunction";
+import PrimaryAdminModification from "../components/business/PrimaryAdminModification";
 
 export default {
   name: "BusinessProfile",
   components: {
+    PrimaryAdminModification,
     Footer,
     ProfileHeader,
-    Navbar
+    Navbar,
+    UpdateImagesModal
   },
   data() {
     return {
@@ -195,31 +270,67 @@ export default {
       postcode: "",
 
       nameOfAdministrators: [],
+      adminList: [],
 
       isAdministrator: false,
-      // keep track of if user came from individual listing page so they can return.
-      fromListing: false
+      isPrimaryAdministrator: false,
+
+      // keep track of if user came from individual listing page or search page so they can return.
+      fromListing: false,
+      fromSearch: false,
+
+      business: {
+        data: {
+          name: "",
+          id: 0,
+          images: []
+        }
+      },
+      businessInfo: {
+        primaryAdministratorId: null,
+        name: "",
+        description: "",
+        address: {},
+        businessType: "",
+        currencySymbol: "",
+        currencyCode: "",
+        images: []
+      }
     }
   },
   methods: {
-    formatAge(ageString) {
-      /*
-      Formats the given age string using a Date object and removes the day from the result.
-      Returns a formatted string.
-       */
+    /**
+     * Updates the Navbar to display the new primary image.
+     * Only when acting as a business
+     * @param newPrimaryImage thumbnail filename of new image to display
+     */
+    updatePrimaryNav(newPrimaryImage) {
+      if (Cookies.get("actAs")) {
+        this.$refs.navbar.updatePrimaryImage(newPrimaryImage);
+      }
+    },
+    /**
+     * Formats the given age string using a Date object and removes the day from the result.
+     * Returns a formatted string.
+     *
+     * @param ageString The age string returned.
+     * @return {string} Returns the formatted age string.
+     */
+    formatDate(ageString) {
       let array = (new Date(ageString)).toDateString().split(" ");
       array.shift();
       return array.join(' ')
     },
+    /**
+     * Calculates the months between the given date and the current date, then formats the given date and months.
+     * Finally it sets the join date on the page to the formatted string.
+     *
+     * @param createdDate the created date.
+     */
     getCreatedDate(createdDate) {
-      /*
-      Calculates the months between the given date and the current date, then formats the given date and months.
-      Finally it sets the join date on the page to the formatted string.
-       */
-
       const dateJoined = new Date(createdDate);
 
-      const currentDate = new Date();
+      const currentDate = new Date(Date.now());
       let months = (currentDate.getFullYear() - dateJoined.getFullYear()) * 12
           + (currentDate.getMonth() - dateJoined.getMonth());
 
@@ -231,14 +342,16 @@ export default {
         months -= 1;
       }
 
-      const finalDate = this.formatAge(createdDate);
+      const finalDate = this.formatDate(createdDate);
       this.created = `${finalDate} (${months} months ago)`;
     },
+    /**
+     * try to send a request to backend, and use populatePage() function to unpack data returned,
+     * if fail, push to a page show the error.
+     *
+     * @param businessID The business id we want to retrieve.
+     */
     retrieveBusiness(businessID) {
-      /*
-      try to send a request to backend, and use populatePage() function to unpack data returned,
-      if fail, push to a page show the error.
-      */
       Api.getBusiness(businessID).then(response => (this.populatePage(response.data))).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -252,31 +365,54 @@ export default {
         }
       })
     },
+    /**
+     * Unpacks the data into the correct data attributes.
+     *
+     * @param data The data to be unpacked from a Api.getBusiness(id) call.
+     */
     populatePage(data) {
-      /*
-      unpack data
-      */
-
       //basic data unpack
       this.name = data.name;
+      this.business.data.name = this.name;
+      this.businessInfo.name = this.name;
+
+      this.business.data.images = data.businessImages;
+      this.businessInfo.images = data.businessImages;
+
       this.description = data.description;
-      let businessTypeLowerCaseAndSplit = data.businessType.replaceAll("_", " ").toLowerCase().split(" ");
+      this.businessInfo.description = this.description;
+
+      let businessTypeLowerCaseAndSplit = data.businessType.replace(/_/g, ' ').toLowerCase().split(" ");
+
       for (let i = 0; i < businessTypeLowerCaseAndSplit.length; i++) {
         businessTypeLowerCaseAndSplit[i] = businessTypeLowerCaseAndSplit[i][0].toUpperCase() + businessTypeLowerCaseAndSplit[i].slice(1);
       }
       this.businessType = businessTypeLowerCaseAndSplit.join(" ");
+      this.businessInfo.businessType = this.businessType;
       this.getCreatedDate(data.created);
 
       //address unpack
       this.streetNumber = checkNullity(data.address.streetNumber);
       this.streetName = checkNullity(data.address.streetName);
-      this.suburb = checkNullity(data.address.suburb);
+      const suburb = checkNullity(data.address.suburb);
       this.city = checkNullity(data.address.city);
       this.region = checkNullity(data.address.region);
       this.country = checkNullity(data.address.country);
       this.postcode = checkNullity(data.address.postcode);
 
-      this.address = getFormattedAddress(this.streetNumber, this.streetName, this.suburb, this.city, this.postcode, this.region, this.country);
+      this.address = getFormattedAddress(this.streetNumber, this.streetName, suburb, this.city, this.postcode, this.region, this.country);
+      this.businessInfo.address = {
+        streetNumber: this.streetNumber,
+        streetName: this.streetName,
+        suburb: suburb,
+        city: this.city,
+        region: this.region,
+        country: this.country,
+        postcode: this.postcode
+      }
+
+      this.businessInfo.currencySymbol = data.currencySymbol;
+      this.businessInfo.currencyCode = data.currencyCode;
 
       // administrators unpack
       this.primaryAdministratorId = data.primaryAdministratorId;
@@ -297,33 +433,77 @@ export default {
         if (anUser.id === this.primaryAdministratorId) {
           this.primaryAdministrator = anUser.firstName + " " + adminMiddleName + " " + anUser.lastName;
         }
+
+        if (anUser.id !== this.primaryAdministratorId) {
+          this.adminList.push(anUser);
+        }
+
         this.nameOfAdministrators.push({
           name: anUser.firstName + " " + adminMiddleName + " " + anUser.lastName,
           id: anUser.id
         })
       })
+
+      // check primary administrator permission
+      if (data.primaryAdministratorId == Cookies.get('userID')) {
+        this.isPrimaryAdministrator = true;
+      }
     },
+    /**
+     * When called the page will route you to the profile page for a user with a given id.
+     *
+     * @param id The id of the user we want to see the profile page of.
+     */
     pushToUser(id) {
       this.$router.push({name: 'Profile', params: {id}});
     },
+    /**
+     * Navigates to a page with a given name. This includes also the params id.
+     * This is intended for the product catalogue, inventory and listings pages.
+     *
+     * @param name The name of the page.
+     */
     navigateTo(name) {
-      /*
-      Navigates to the product catalogue of the business
-       */
       let id = this.$route.params.id;
       this.$router.push({name: name, params: {id}});
     },
+    /**
+     * Returns the src property for a img tag.
+     *
+     * @param filename Optional image source name. Defaults to an empty string.
+     * @return {String} returns the src link.
+     */
+    getImageSrc(filename = "") {
+      if (filename === "") {
+        return require('../../public/default-image.jpg')
+      }
+      return Api.getServerURL() + "/" + filename;
+    },
+    /**
+     * Given a role see if it is a DGAA or GAA.
+     *
+     * @param role The role we want to test against.
+     * @return {Boolean} Returns true if the role is a DGAA or GAA. Otherwise false.
+     */
+    isGaaOrDgaa(role) {
+      return role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
+          || role === UserRole.GLOBALAPPLICATIONADMIN
+    },
+    /**
+     * Given a id we attempt to see if the user is an admin. And update the isAdministrator variable.
+     *
+     * @param currentID The user's id we are testing against.
+     */
     checkIsAdmin(currentID) {
-      Api.getUser(currentID).then(response => {
+      Api.getUser(currentID).then((response) => {
         response.data.businessesAdministered.forEach(business => {
-          if (business.id.toString() === this.$route.params.id) {
+          if (business.id === this.$route.params.id) {
             this.isAdministrator = true;
           }
         });
-        this.isAdministrator = this.isAdministrator ? true :
-            (response.data.role === UserRole.DEFAULTGLOBALAPPLICATIONADMIN
-            || response.data.role === UserRole.GLOBALAPPLICATIONADMIN);
-        if (Cookies.get('actAs') !== undefined && this.$route.params.id !== Cookies.get('actAs')) {
+        this.isAdministrator = this.isAdministrator || this.isGaaOrDgaa(response.data.role);
+        this.isPrimaryAdministrator = this.isPrimaryAdministrator || this.isGaaOrDgaa(response.data.role);
+        if (Cookies.get('actAs') !== undefined && this.$route.params.id.toString() !== Cookies.get('actAs')) {
           this.isAdministrator = false;
         }
       }).catch((error) => {
@@ -340,14 +520,27 @@ export default {
       })
     },
     /**
-     * Redirect the user back to the individual sale listings page.
+     * Redirect the user back to the previous page.
      */
-    returnToListing() {
+    returnToPreviousPage() {
       this.$router.back();
+    },
+    /**
+     * Redirects the currently logged in administrator to the edit business profile page.
+     */
+    goToEdit() {
+      let id;
+      if (this.urlID === "businessProfile") {
+        id = this.currentID;
+      } else {
+        id = this.urlID;
+      }
+      this.$router.push({name: "EditBusinessProfile", params: {id}});
     }
   },
   mounted() {
     const currentID = Cookies.get('userID');
+    const actAsId = Cookies.get("actAs");
     if (currentID) {
       this.checkIsAdmin(currentID);
       const url = document.URL;
@@ -358,12 +551,18 @@ export default {
       } else {
         this.retrieveBusiness(urlID);
         this.urlID = urlID;
+        try {
+          this.business.data.id = parseInt(actAsId, 10);
+        } catch (err) {
+          this.business.data.id = null;
+        }
       }
     }
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     // Reset variables
     this.name = "";
+    this.business.data.name = this.name;
     this.description = "";
     this.businessType = "";
     this.created = "";
@@ -392,6 +591,8 @@ export default {
       // should be rendered.
       if (from.name === 'SaleListing') {
         vm.fromListing = true;
+      } else if (from.name === 'Search') {
+        vm.fromSearch = true;
       }
       next();
     });

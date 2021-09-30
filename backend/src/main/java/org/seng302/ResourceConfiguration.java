@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 
 /**
  * Configures exposed directories to allow for access to files in the file system.
- * e.g., product-images
+ * e.g., images
  * Source: https://www.codejava.net/frameworks/spring-boot/spring-boot-file-upload-tutorial
  */
 @Configuration

@@ -31,10 +31,11 @@
 import axios from 'axios'
 
 const SERVER_URL = process.env.VUE_APP_SERVER_ADD;
+const CLIENT_URL = process.env.VUE_APP_CLIENT_ADD;
 
 const instance = axios.create({
     baseURL: SERVER_URL,
-    timeout: 10000
+    timeout: 20000
 });
 
 export default {
@@ -51,6 +52,13 @@ export default {
 
     // Sends a post request to the backend with a new user object to store
     addNewUser: (user) => instance.post('/users', {
+        ...user.data
+    }, {
+        withCredentials: true
+    }),
+
+    // Sends a put request to the backend with an userID and a edit user object to update user
+    editUser: (id, user) => instance.put(`/users/${id}/profile`, {
         ...user.data
     }, {
         withCredentials: true
@@ -75,15 +83,15 @@ export default {
     },
 
     // Sends a get request to the backend asking for a list of users which match the search criteria.
-    searchUsers: (query, orderBy, page) => {
-        return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}`, {
+    searchUsers: (query, orderBy, page, pageSize) => {
+        return instance.get(`/users/search?searchQuery=${query}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
 
     // Sends a GET request to the backend asking for any businesses matching the given criteria
-    searchBusinesses: (query, businessType, orderBy, page) => {
-        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}`, {
+    searchBusinesses: (query, businessType, orderBy, page, pageSize) => {
+        return instance.get(`/businesses/search?searchQuery=${query}&businessType=${businessType}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
@@ -95,16 +103,23 @@ export default {
         withCredentials: true
     }),
 
-    // Sends a get request to the backend asking for a sorted list of products for a business
-    sortProducts: (businessID, sortBy, page) => {
-        return instance.get(`/businesses/${businessID}/products?orderBy=${sortBy}&page=${page}`, {
+    // Sends a post request to the backend with a new business object to store
+    editBusiness: (id, business) => instance.put(`/businesses/${id}`, {
+        ...business.data
+    }, {
+        withCredentials: true
+    }),
+
+    // Sends a get request to the backend asking for a sorted and paginated list of products matching the given search criteria for a business.
+    searchProducts: (businessID, searchQuery, searchBy, barcode, sortBy, page, pageSize) => {
+        return instance.get(`/businesses/${businessID}/products?searchQuery=${searchQuery}&searchBy=${searchBy}&barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
 
     // Sends a get request to the backend asking for a sorted list of inventory items for a business.
-    sortInventoryItems: (id, sortBy, page) => {
-        return instance.get(`/businesses/${id}/inventory?orderBy=${sortBy}&page=${page}`, {
+    sortInventoryItems: (id, sortBy, page, pageSize, barcode) => {
+        return instance.get(`/businesses/${id}/inventory?barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
@@ -169,8 +184,8 @@ export default {
     },
 
     // Sends a get request to the backend asking for a sorted list of listings belonging to a business.
-    sortListings: (businessId, sortBy, page) => {
-        return instance.get(`/businesses/${businessId}/listings?orderBy=${sortBy}&page=${page}`, {
+    sortListings: (businessId, sortBy, page, pageSize, barcode) => {
+        return instance.get(`/businesses/${businessId}/listings?barcode=${barcode}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true,
         })
     },
@@ -222,8 +237,8 @@ export default {
     },
 
     // Sends a get request to the backend to retrieve all marketplace cards (for a specific section, and paginated and sorted).
-    getAllCards: (section, sortBy, page) => {
-        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}`, {
+    getAllCards: (section, sortBy, page, pageSize) => {
+        return instance.get(`/cards?section=${section}&orderBy=${sortBy}&page=${page}&pageSize=${pageSize}`, {
             withCredentials: true
         })
     },
@@ -249,19 +264,21 @@ export default {
         })
     },
 
+    // Retrieves all user notifications
     getNotifications: () => {
         return instance.get(`/users/notifications`, {
             withCredentials: true
         })
     },
 
+    // Retrieves all business notifications
     getBusinessNotifications: (businessId) => {
         return instance.get(`/businesses/${businessId}/notifications`, {
             withCredentials: true
         })
     },
 
-
+    // Edits the details of a marketplace card
     editCard: (cardId, updatedCard) => {
         return instance.put(`/cards/${cardId}`, {...updatedCard}, {
             withCredentials: true
@@ -275,22 +292,25 @@ export default {
         })
     },
 
+    // Adds a new keyword to the global keyword store
     addNewKeyword: (newKeyword) => {
         return instance.post(`/keywords`, {...newKeyword}, {
             withCredentials: true
         })
     },
 
-    // Sends a delete request to the backend to delete the image of a selected product for a business.
-    deleteProductImage: (businessId, productId, imageId) => {
-        return instance.delete(`/businesses/${businessId}/products/${productId}/images/${imageId}`, {
+    // Sends a delete request to the backend to delete the image.
+    deleteImage: (query, imageId) => {
+        return instance.delete(`/images/${imageId}${query}`, {
             withCredentials: true
         })
     },
 
+
     // Uploads an image to a given product
-    uploadProductImage: (businessId, productId, image) => {
-        return instance.post(`/businesses/${businessId}/products/${productId}/images`, image, {
+    uploadImage: (query, image) => {
+        return instance.post(`/images${query}`,
+            image, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -299,8 +319,8 @@ export default {
     },
 
     // Sets the primary image
-    setPrimaryImage: (businessId, productId, imageId) => {
-        return instance.put(`/businesses/${businessId}/products/${productId}/images/${imageId}/makeprimary`,
+    setPrimaryImage: (query, imageId) => {
+        return instance.put(`/images/${imageId}/makePrimary${query}`,
             {}, {
                 withCredentials: true
             })
@@ -321,8 +341,8 @@ export default {
     },
 
     // Sends a GET request to the backend asking for any listings matching the given criteria (paginated)
-    searchListings: (searchQuery, searchType, orderBy, page, businessTypes, minimumPrice, maximumPrice, fromDate, toDate) => {
-        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&businessTypes=${businessTypes}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
+    searchListings: (searchQuery, searchType, orderBy, page, pageSize, businessTypes, barcode, minimumPrice, maximumPrice, fromDate, toDate) => {
+        return instance.get(`/listings?searchQuery=${searchQuery}&searchType=${searchType}&orderBy=${orderBy}&page=${page}&pageSize=${pageSize}&businessTypes=${businessTypes}&barcode=${barcode}&minimumPrice=${minimumPrice}&maximumPrice=${maximumPrice}&fromDate=${fromDate}&toDate=${toDate}`, {
             withCredentials: true
         })
     },
@@ -348,13 +368,21 @@ export default {
         })
     },
 
-    // Buy a listing
+    // Purchases a listing
     buyListing: (id) => {
         return instance.put(`/listings/${id}/buy`, {}, {
             withCredentials: true
         })
     },
 
+    // Delete a listing
+    deleteListing: (businessId, id) => {
+        return instance.delete(`businesses/${businessId}/listings/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // Deletes are bookmark message
     deleteBookmarkMessage: (id) => {
         return instance.delete(`/home/bookmarkMessages/${id}`, {
             withCredentials: true
@@ -368,9 +396,63 @@ export default {
         })
     },
 
+    // Deletes a single notification
     deleteNotification: (id, notificationType) => {
         return instance.delete(`/users/notifications/${id}?type=${notificationType}`, {
             withCredentials: true
         })
     },
+
+    // Sends a POST request to the backend to make a new conversation for a marketplace card.
+    createConversation: (messagePayload) => {
+        return instance.post(`/home/conversation`, messagePayload, { withCredentials: true})
+    },
+
+    // Sends a message to the backend with a card ID and user ID of the intended recipient
+    sendMessage: (cardId, recipient, message) => {
+        return instance.post(`/cards/${cardId}/message`, {
+            recipient, message
+        }, {
+            withCredentials: true
+        })
+    },
+
+    // Retrieves conversation entities
+    getConversations() {
+        return instance.get(`/home/conversation`, {withCredentials: true})
+    },
+
+    // Sends a DELETE request to the backend to delete a conversation with the given id.
+    deleteConversation: (id) => {
+        return instance.delete(`/users/conversation/${id}`, {
+            withCredentials: true
+        })
+    },
+
+    // Retrieves a specific conversation
+    getConversation(id) {
+        return instance.get(`/home/conversation/${id}/messages`, {withCredentials: true})
+    },
+
+    // Sends a reply message in the given conversation
+    sendReply: (conversationId, message) => {
+        return instance.post(`/home/conversation/${conversationId}`, message, {withCredentials: true})
+    },
+
+    // Retrieves the business's sales report for the given dates and granularity
+    getSalesReport(id, fromDate, toDate, granularity) {
+        return instance.get(`businesses/${id}/salesReport?fromDate=${fromDate}&toDate=${toDate}&granularity=${granularity}`, {
+            withCredentials: true
+        })
+    },
+
+    // Resets the password for an associated token.
+    resetPassword(token, password) {
+        return instance.put(`/users/forgotPassword?token=${token}`, {password: password});
+    },
+
+    // Sends a password reset email to the user
+    forgotPasswordSendEmail(emailAddress) {
+        return instance.post(`/users/forgotPassword`, {email: emailAddress, clientURL: CLIENT_URL});
+    }
 }

@@ -104,7 +104,8 @@ class InventoryItemResourceIntegrationTests {
             "\"email\":\"%s\"," +
             "\"created\":\"%s\"," +
             "\"role\":\"%s\"," +
-            "\"businessesAdministered\":[null]," +
+            "\"businessesAdministered\":[]," +
+            "\"images\":[]," +
             "\"dateOfBirth\":\"%s\"," +
             "\"phoneNumber\":\"%s\"," +
             "\"homeAddress\":{\"streetNumber\":\"%s\",\"streetName\":\"%s\",\"suburb\":\"%s\",\"city\":\"%s\",\"region\":\"%s\",\"country\":\"%s\",\"postcode\":\"%s\"}}]," +
@@ -113,7 +114,10 @@ class InventoryItemResourceIntegrationTests {
             "\"description\":\"%s\"," +
             "\"address\":%s," +
             "\"businessType\":\"%s\"," +
-            "\"created\":\"%s\"}," +
+            "\"created\":\"%s\"," +
+            "\"currencySymbol\":\"%s\"," +
+            "\"currencyCode\":\"%s\"," +
+            "\"businessImages\":[]}," +
             "\"barcode\":\"%s\"}," +
             "\"quantity\":%d," +
             "\"pricePerItem\":%.2f," +
@@ -191,7 +195,9 @@ class InventoryItemResourceIntegrationTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(3);
         user.setBusinessesAdministeredObjects(List.of(business));
@@ -814,7 +820,8 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -858,7 +865,8 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -866,7 +874,7 @@ class InventoryItemResourceIntegrationTests {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sortBy);
+        Pageable paging = PageRequest.of(0, 1, sortBy);
 
         when(inventoryItemRepository.findInventoryItemsByBusinessId(business.getId(), paging)).thenReturn(pagedResult);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -874,6 +882,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -903,7 +912,8 @@ class InventoryItemResourceIntegrationTests {
                 user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
                 user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
                 user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
-                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(), product.getBarcode(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
                 inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
                 inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
 
@@ -911,7 +921,7 @@ class InventoryItemResourceIntegrationTests {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResult = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sortBy);
+        Pageable paging = PageRequest.of(0, 1, sortBy);
 
         when(inventoryItemRepository.findInventoryItemsByBusinessId(business.getId(), paging)).thenReturn(pagedResult);
         when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
@@ -919,6 +929,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -948,6 +959,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -974,6 +986,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", "0")))
                 .andReturn().getResponse();
 
@@ -1001,6 +1014,7 @@ class InventoryItemResourceIntegrationTests {
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
                 .param("page", "0")
+                .param("pageSize", "1")
                 .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
@@ -1024,7 +1038,8 @@ class InventoryItemResourceIntegrationTests {
         // when
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
-                .param("page", "0"))
+                .param("page", "0")
+                .param("pageSize", "1"))
                 .andReturn().getResponse();
 
         // then
@@ -1051,18 +1066,149 @@ class InventoryItemResourceIntegrationTests {
         List<InventoryItem> list = List.of(inventoryItem);
         Page<InventoryItem> pagedResponse = new PageImpl<>(list);
         Sort sortBy = Sort.by(Sort.Order.asc("id").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sortBy);
+        Pageable paging = PageRequest.of(0, 1, sortBy);
 
         when(inventoryItemRepository.findInventoryItemsByBusinessId(3, paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
                 .param("orderBy", "productIdASC")
-                .param("page", "0"))
+                .param("page", "0")
+                .param("pageSize", "1"))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is given when the business exists and the user is the business
+     * admin BUT an invalid order by param is provided.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveInventoryItemsWhenOrderByIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                        .param("orderBy", "a")
+                        .param("page", "0")
+                        .param("pageSize", "1")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                        .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is given when the business exists and the user is the business
+     * admin BUT an invalid page param is provided.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveInventoryItemsWhenPageIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                        .param("orderBy", "productIdASC")
+                        .param("page", "a")
+                        .param("pageSize", "1")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is given when the business exists and the user is the business
+     * admin BUT an invalid page size param is provided.
+     * This is for testing /businesses/{id}/inventory/ API endpoint exists.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void cantRetrieveInventoryItemsWhenPageSizeIsInvalid() throws Exception {
+        // given
+        given(userRepository.findById(1)).willReturn(Optional.ofNullable(user));
+        given(userRepository.findBySessionUUID(user.getSessionUUID())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(3)).willReturn(Optional.ofNullable(business));
+        expectedJson = "";
+
+        // when
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                        .param("orderBy", "productIdASC")
+                        .param("page", "0")
+                        .param("pageSize", "a")
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+    }
+
+    /**
+     * Tests that an OK status and a list of inventory item payloads is received when the business ID in the
+     * /businesses/{id}/inventory/ API endpoint exists and a barcode is sent.
+     * Test specifically for when the cookie contains an ID belonging to a USER who is an administrator of the given business.
+     *
+     * @throws Exception Exception error
+     */
+    @Test
+    void canRetrieveInventoryItemsWhenBusinessExistsWithBarcode() throws Exception {
+        // given
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        given(businessRepository.findBusinessById(business.getId())).willReturn(Optional.ofNullable(business));
+        expectedJson = String.format(expectedInventoryItemJson, inventoryItem.getId(), product.getProductId(), product.getName(),
+                product.getDescription(), product.getManufacturer(), product.getRecommendedRetailPrice(), product.getCreated(),
+                business.getId(), user.getId(), user.getFirstName(), user.getLastName(), user.getMiddleName(), user.getNickname(),
+                user.getBio(), user.getEmail(), user.getCreated(), user.getRole(), user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress().getStreetNumber(), user.getHomeAddress().getStreetName(), user.getHomeAddress().getSuburb(),
+                user.getHomeAddress().getCity(), user.getHomeAddress().getRegion(), user.getHomeAddress().getCountry(),
+                user.getHomeAddress().getPostcode(), business.getPrimaryAdministratorId(), business.getName(),
+                business.getDescription(), business.getAddress(), business.getBusinessType(), business.getCreated(),
+                business.getCurrencySymbol(), business.getCurrencyCode(), product.getBarcode(),
+                inventoryItem.getQuantity(), inventoryItem.getPricePerItem(), inventoryItem.getTotalPrice(),
+                inventoryItem.getManufactured(), inventoryItem.getSellBy(), inventoryItem.getBestBefore(), inventoryItem.getExpires());
+
+        // when
+        List<InventoryItem> list = List.of(inventoryItem);
+        Page<InventoryItem> pagedResult = new PageImpl<>(list);
+        Sort sortBy = Sort.by(Sort.Order.asc("productId").ignoreCase()).and(Sort.by(Sort.Order.asc("bestBefore").ignoreCase())).and(Sort.by(Sort.Order.asc("expires").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 1, sortBy);
+        
+        when(inventoryItemRepository.findInventoryItemsByBarcodeAndBusinessId(product.getBarcode(), business.getId(), paging)).thenReturn(pagedResult);
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(get(String.format("/businesses/%d/inventory/", business.getId()))
+                .param("orderBy", "productIdASC")
+                .param("page", "0")
+                .param("pageSize", "1")
+                .param("barcode", product.getBarcode())
+                .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 

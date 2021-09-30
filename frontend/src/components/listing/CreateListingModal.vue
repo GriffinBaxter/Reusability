@@ -1,6 +1,6 @@
 <template>
   <!-- Modal -->
-  <div class="modal fade" id="listingCreationPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  <div class="modal fade" id="listingCreationPopup" data-bs-keyboard="false" tabindex="-1"
        aria-labelledby="creationPopupTitle" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -125,6 +125,7 @@ import Autofill from '../autofill';
 
 import {Modal, Popover} from "bootstrap";
 import Vue from "vue";
+import {toggleInvalidClass} from "../../validationUtils";
 
 const datefns = require('date-fns');
 
@@ -173,20 +174,7 @@ export default {
     }
   },
   methods: {
-    /**
-     * This method toggles the appearance of the error message, where the is-invalid class is added to the messages
-     * if an error message needs to be presented to the user.
-     *
-     * @param errorMessage, string, the error message relating to invalid input of a field.
-     * @returns {[string]}, classList, a list containing the classes for an invalid message.
-     */
-    toggleInvalidClass(errorMessage) {
-      let classList = ['form-control']
-      if (errorMessage) {
-        classList.push('is-invalid')
-      }
-      return classList
-    },
+    toggleInvalidClass: toggleInvalidClass,
     /**
      * Resets data on the page
      */
@@ -617,19 +605,6 @@ export default {
         }
 
       })
-    },
-    /**
-     * Creates test data TEMP
-     */
-    testData() {
-      const product = {id: "WATT-420-BEANS"};
-      const item = {id: 1, product: product, quantity: 5, totalPrice: 5.19};
-      this.inventoryItems.push(item);
-      const anotherProduct = {id: "FOOT-LETTUCE"};
-      const anotherItem = {id: 2, product: anotherProduct, quantity: 3, totalPrice: 2.59};
-      this.inventoryItems.push(anotherItem);
-      this.inventoryItems.push({id: 7, product: anotherProduct, quantity: 2});
-      this.inventoryItems.push({id: 234, product: product, quantity: 3})
     }
   },
   mounted() {
@@ -731,7 +706,10 @@ input:focus, textarea:focus {
 /*********************************************************************/
 
 .currentlySelectedLabel {
-  color: red;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
 }
 
 </style>

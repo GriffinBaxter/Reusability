@@ -4,17 +4,14 @@
 
 import {test, expect, describe, jest, beforeAll} from "@jest/globals"
 import reg from '../src/views/ProductCatalogue'
-// noinspection DuplicatedCode
 import Product from '../src/configs/Product'
 import {shallowMount} from "@vue/test-utils";
 import ProductCatalogue from "../src/views/ProductCatalogue";
 import Cookies from "js-cookie";
 import Api from "../src/Api";
-import CurrencyApi from "../src/currencyInstance";
 import OpenFoodFactsApi from "../src/openFoodFactsInstance";
 
 jest.mock("../src/Api");
-jest.mock("../src/currencyInstance");
 jest.mock("../src/openFoodFactsInstance");
 jest.mock("js-cookie");
 
@@ -948,9 +945,13 @@ describe('Testing autofill functionality', function () {
     let productCatalogueWrapper;
 
     beforeAll(() => {
-        Api.getBusiness.mockImplementation(() => Promise.resolve({data: {address: {country: ''}}}));
-        CurrencyApi.currencyQuery.mockImplementation(() => Promise.resolve({data: [{currencies: [{code: '', symbol: ''}]}]}));
-        Api.sortProducts.mockImplementation(() => Promise.resolve({
+        Api.getBusiness.mockImplementation(() => Promise.resolve({
+            data: {
+                currencySymbol: '$',
+                currencyCode: 'USD'
+            }
+        }));
+        Api.searchProducts.mockImplementation(() => Promise.resolve({
             status: 200,
             data: [],
             headers: {
@@ -963,7 +964,7 @@ describe('Testing autofill functionality', function () {
                 id: 1
             },
             query: {
-                orderBy: '', page: '0'
+                searchQuery: '', searchBy: 'productName', orderBy: '', page: '0'
             }
         }
 
@@ -1018,7 +1019,7 @@ describe('Testing autofill functionality', function () {
         });
     });
 
-    test("Testing that if result.data.status isn't 1, then the toast error message is set", async () => {
+    test("Testing that if result.data.status isn't 1, then the error message is shown", async () => {
         productCatalogueWrapper.vm.barcode = "111111111111";
 
         OpenFoodFactsApi.retrieveProductByBarcode.mockImplementation(() => Promise.resolve({data: {status: 0}}));
@@ -1026,8 +1027,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("Could not autofill, product may not exist in database");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeTruthy();
     });
 
     test("Testing that when product name is empty, then it is autofilled", async () => {
@@ -1049,8 +1054,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Description");
@@ -1075,8 +1084,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Description");
@@ -1101,8 +1114,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Product Name");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
@@ -1127,8 +1144,12 @@ describe('Testing autofill functionality', function () {
         productCatalogueWrapper.vm.autofillProductFromBarcode();
 
         await Promise.resolve();
+        await productCatalogueWrapper.vm.$nextTick();
 
-        expect(productCatalogueWrapper.vm.toastErrorMessage).toBe("");
+        expect(productCatalogueWrapper.find('#autofillSuccessMessage').exists()).toBeTruthy();
+        expect(productCatalogueWrapper.find('#autofillErrorMessage').exists()).toBeFalsy();
+        expect(productCatalogueWrapper.vm.autofilled).toBeTruthy();
+        expect(productCatalogueWrapper.vm.autofillError).toBeFalsy();
         expect(productCatalogueWrapper.vm.productName).toBe("Barcode Product Name Quantity");
         expect(productCatalogueWrapper.vm.manufacturer).toBe("Barcode Manufacturer");
         expect(productCatalogueWrapper.vm.description).toBe("Barcode Description");
@@ -1145,7 +1166,7 @@ describe('Testing scanning UI functionality', function () {
                 id: 1
             },
             query: {
-                orderBy: '', page: '0'
+                searchQuery: '', searchBy: 'productName', orderBy: '', page: '0'
             }
         }
 
@@ -1154,6 +1175,13 @@ describe('Testing scanning UI functionality', function () {
                 $route
             }
         });
+
+        Api.getBusiness.mockImplementation(() => Promise.resolve({
+            data: {
+                currencySymbol: '$',
+                currencyCode: 'USD'
+            }
+        }));
     });
 
     test('Testing that the scanning buttons are not available when the "add barcode" checkbox is not selected.', () => {
@@ -1227,3 +1255,160 @@ describe('Testing scanning UI functionality', function () {
         });
     });
 });
+
+describe('Tests miscellaneous methods in Product Catalogue', () => {
+    let wrapper;
+    let $route;
+    let $router;
+
+    beforeEach(() => {
+        $route = {
+            params: {
+                id: 1
+            },
+            query: {
+                searchQuery: '', searchBy: 'name', orderBy: '', page: '0'
+            }
+        }
+        $router = {
+            push: jest.fn()
+        }
+
+        jest.useFakeTimers();
+
+        wrapper = shallowMount(ProductCatalogue, {
+            mocks: {
+                $route,
+                $router
+            }
+        });
+
+        Api.getBusiness.mockImplementation(() => Promise.resolve({
+            data: {
+                currencySymbol: '$',
+                currencyCode: 'USD'
+            }
+        }));
+        Cookies.get = jest.fn().mockImplementation(() => 1); // mock the actAs cookie (business id)
+        Api.searchProducts.mockImplementation(() => Promise.resolve({
+            status: 200,
+            data: [],
+            headers: {
+                "total-rows": 1,
+                "total-pages": 1
+            }}));
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Test the onSearch method pushes the user to their search destination.', () => {
+        const checked = ["productName"];
+        const searchQuery = "Apples";
+        wrapper.vm.$data.businessId = 1;
+        wrapper.vm.onSearch(checked, searchQuery);
+
+        expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
+            query: { "searchQuery": searchQuery, "searchBy": "productName", "orderBy": "productIdASC", "page": "0"}})
+    })
+
+    test('Test the closeCreateProductModal method resets variables.', () => {
+        // "mock" values for modal entries
+        wrapper.vm.$data.productID = "NEW-PRODUCT";
+        wrapper.vm.$data.productName = "A new product";
+        wrapper.vm.$data.description = "Testing to see if values are reset";
+
+        wrapper.vm.closeCreateProductModal();
+
+        expect(wrapper.vm.$data.productID).toEqual("");
+        expect(wrapper.vm.$data.productName).toEqual("");
+        expect(wrapper.vm.$data.description).toEqual("");
+    })
+
+
+    test( 'Test the trimTextInputFields method removes whitespace from start and end of string', () => {
+        // "mock" values for text input fields
+        wrapper.vm.$data.productID = "NEW-PRODUCT";
+        wrapper.vm.$data.barcode = "         9300675024235";
+        wrapper.vm.$data.productName = "A new product";
+        wrapper.vm.$data.description = "   Testing to see if values are trimmed   ";
+        wrapper.vm.$data.manufacturer = "PepsiCo      ";
+
+        wrapper.vm.trimTextInputFields();
+
+        expect(wrapper.vm.$data.productID).toEqual("NEW-PRODUCT");
+        expect(wrapper.vm.$data.barcode).toEqual("9300675024235");
+        expect(wrapper.vm.$data.productName).toEqual("A new product");
+        expect(wrapper.vm.$data.description).toEqual("Testing to see if values are trimmed");
+        expect(wrapper.vm.$data.manufacturer).toEqual("PepsiCo");
+    })
+
+    test('Test the updatePage method pushes the user to their search destination.', () => {
+        const mockedEvent = {newPageNumber: 2}
+        wrapper.vm.$data.businessId = 1;
+        wrapper.vm.updatePage(mockedEvent);
+
+        expect($router.push).toHaveBeenCalledWith({path: `/businessProfile/1/productCatalogue`,
+            query: { "searchQuery": "", "searchBy": "name", "orderBy": "productIdASC", "page": "2", "pageSize": "5", "barcode": ""}})
+    })
+
+    test('Test the convertSearchByListToString method generates the correct string when searchBy only contains name', () => {
+        wrapper.vm.$data.searchBy = ["name"];
+
+        wrapper.vm.convertSearchByListToString();
+
+        expect(wrapper.vm.$data.searchByString).toEqual("name");
+    })
+
+    test('Test the convertSearchByListToString method generates the correct string when searchBy contains name, id and description', () => {
+        wrapper.vm.$data.searchBy = ["name", "id", "description"];
+
+        wrapper.vm.convertSearchByListToString();
+
+        expect(wrapper.vm.$data.searchByString).toEqual("name,id,description");
+    })
+
+    test('Test the convertSearchByStringToList method generates the correct list when searchByString contains name,id,description', () => {
+        wrapper.vm.$route.query["searchBy"] = "name,id,description";
+
+        const searchBy = wrapper.vm.convertSearchByStringToList();
+
+        expect(searchBy).toEqual(["name", "id", "description"]);
+    })
+
+    test('Test the convertSearchByStringToList method generates the correct list when searchByString is not set', () => {
+        wrapper.vm.$route.query["searchBy"] = null;
+
+        const searchBy = wrapper.vm.convertSearchByStringToList();
+
+        expect(searchBy).toEqual(["name"]);
+    })
+
+    test('Test the afterCreation method successfully sets creationSuccess', () => {
+        wrapper.vm.afterCreation();
+
+        expect(wrapper.vm.$data.creationSuccess).toBeTruthy();
+
+        jest.advanceTimersByTime(5000);
+
+        expect(wrapper.vm.$data.creationSuccess).toBeFalsy();
+    })
+
+    test('Test the afterEdit method successfully sets messages and creationSuccess', () => {
+        wrapper.vm.afterEdit();
+
+        expect(wrapper.vm.$data.creationSuccess).toBeTruthy();
+        expect(wrapper.vm.$data.messageIdCounter).toEqual(1); // one increment
+        expect(wrapper.vm.$data.messages).toEqual([{
+            id: wrapper.vm.$data.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Product successfully edited."
+        }]);
+
+        jest.advanceTimersByTime(5000);
+
+        expect(wrapper.vm.$data.creationSuccess).toBeFalsy();
+    })
+})

@@ -2,11 +2,13 @@ package org.seng302.user;
 
 import org.junit.jupiter.api.*;
 import org.seng302.model.Address;
+import org.seng302.model.ForgotPassword;
 import org.seng302.model.repository.AddressRepository;
 import org.seng302.controller.UserResource;
 import org.seng302.Main;
 import org.seng302.model.enums.Role;
 import org.seng302.model.User;
+import org.seng302.model.repository.ForgotPasswordRepository;
 import org.seng302.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -53,6 +56,9 @@ class UserResourceIntegrationTests {
     @MockBean
     private AddressRepository addressRepository;
 
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
+
     private final String loginPayloadJson = "{\"email\": \"%s\", " +
                                         "\"password\": \"%s\"}";
 
@@ -66,6 +72,7 @@ class UserResourceIntegrationTests {
                                     "\"created\":\"%s" + "\"," +
                                     "\"role\":%s," +
                                     "\"businessesAdministered\":%s," +
+                                    "\"images\":%s," +
                                     "\"dateOfBirth\":\"%s\"," +
                                     "\"phoneNumber\":\"%s\"," +
                                     "\"homeAddress\":%s"+
@@ -81,10 +88,36 @@ class UserResourceIntegrationTests {
             "\"created\":\"%s" + "\"," +
             "\"role\":%s," +
             "\"businessesAdministered\":%s," +
-            "\"homeAddress\":%s"+
+            "\"images\":%s," +
+            "\"homeAddress\":%s" +
             "}";
 
     private final String expectedUserIdJson = "{\"userId\":%s}";
+
+    private final String modifiedUserPayload = "{\n" +
+            "\"firstName\": \"%s\",\n" +
+            "\"lastName\": \"%s\",\n" +
+            "\"middleName\": \"%s\",\n" +
+            "\"nickname\": \"%s\",\n" +
+            "\"bio\": \"%s\",\n" +
+            "\"email\": \"%s\",\n" +
+            "\"dateOfBirth\": \"%s\",\n" +
+            "\"phoneNumber\": \"%s\",\n" +
+            "\"homeAddress\": {\n" +
+            "\"streetNumber\": \"%s\",\n" +
+            "\"streetName\": \"%s\",\n" +
+            "\"suburb\": \"%s\",\n" +
+            "\"city\": \"%s\",\n" +
+            "\"region\": \"%s\",\n" +
+            "\"country\": \"%s\",\n" +
+            "\"postcode\": \"%s\"\n" +
+            "},\n" +
+            "\"currentPassword\": \"%s\",\n" +
+            "\"newPassword\": \"%s\"\n" +
+            "}";
+
+    private final String forgotPasswordJSON = "{\"email\":\"%s\"," +
+                                                "\"clientURL\":\"%s\"}";
 
     private MockHttpServletResponse response;
 
@@ -108,6 +141,8 @@ class UserResourceIntegrationTests {
     private Address address3;
     private Address address4;
     private Address address5;
+
+    private ForgotPassword forgotPassword;
 
     @BeforeAll
     void setup() throws Exception {
@@ -167,7 +202,6 @@ class UserResourceIntegrationTests {
                                 Role.USER);
         anotherUser.setId(3);
         anotherUser.setSessionUUID(User.generateSessionUUID());
-       // this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
 
         //test users for searching for user by name
 
@@ -194,8 +228,10 @@ class UserResourceIntegrationTests {
                         LocalTime.of(0, 0)),
                 Role.USER);
         searchUser1.setId(4);
+        searchUser1.setSessionUUID(User.generateSessionUUID());
 
-        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi", "China", "Barryville");
+        address2 = new Address("80416", "", "", "Jon Loop", "Shaanxi",
+                "China", "Barryville");
 
         searchUser2 = new User(
                 "Chad",
@@ -213,7 +249,8 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser2.setId(5);
 
-        address3 = new Address("9205", "", "Monique Vista", "Bururi", "Bigomogomo", "Africa", "Buri");
+        address3 = new Address("9205", "", "Monique Vista", "Bururi",
+                "Bigomogomo", "Africa", "Buri");
 
         searchUser3 = new User(
                 "Naomi",
@@ -231,7 +268,8 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser3.setId(6);
 
-        address4 = new Address("240", "", "", "Bernhard Run", "Southland", "New Zealand", "Ilam");
+        address4 = new Address("240", "", "", "Bernhard Run", "Southland",
+                "New Zealand", "Ilam");
 
         searchUser4 = new User(
                 "Seth",
@@ -249,7 +287,8 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser4.setId(7);
 
-        address5 = new Address("186", "Simpsons Road", "", "Ashburton", "Canterbury", "New Zealand", "Ilam");
+        address5 = new Address("186", "Simpsons Road", "", "Ashburton",
+                "Canterbury", "New Zealand", "Ilam");
 
         searchUser5 = new User(
                 "Minttu",
@@ -267,9 +306,95 @@ class UserResourceIntegrationTests {
                 Role.USER);
         searchUser5.setId(8);
 
-        // initializes the MockMVC object and tells it to use the userRepository
-        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        forgotPassword = new ForgotPassword(user.getId());
 
+        // initializes the MockMVC object and tells it to use the userRepository
+        this.mvc = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
+
+    }
+
+    //********************************************** POST /login tests *************************************************
+
+    /**
+     * Tests that a FORBIDDEN status is received when the user exists but their account is locked due to exceeding
+     * the maximum number of attempts.
+     */
+    @Test
+    void canLoginWhenUserExistsAndAccountWasLockedAndCanUnlockAndPasswordCorrect() throws Exception {
+        // given
+        expectedJson = String.format(expectedUserIdJson, user.getId());
+        user.setRemainingLoginAttempts(0);
+        user.setTimeWhenUnlocked(LocalDateTime.now().minusMinutes(70));
+        user.setPassword(Base64.getEncoder().encodeToString("Testpassword123!".getBytes(StandardCharsets.UTF_8)));
+
+        // when
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getCookie("JSESSIONID")).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(user.isLocked()).isFalse();
+    }
+
+    /**
+     * Tests that a FORBIDDEN status is received when the user exists but their account is locked due to exceeding
+     * the maximum number of attempts.
+     */
+    @Test
+    void cantLoginWhenUserExistsButAccountIsLockedAndCannotUnlockYet() throws Exception {
+        // given
+        expectedJson = "";
+        user.setRemainingLoginAttempts(0);
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusHours(1));
+
+        // when
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+
+        response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, user.getEmail(), "Testpassword123!")))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(user.isLocked()).isTrue();
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when the user exists and this is their third failed attempt
+     * of logging in and their account gets locked.
+     */
+    @Test
+    void cantLoginWhenUserExistsButThirdFailedLoginAttempt() throws Exception {
+        // given
+        expectedJson = "";
+        user.setRemainingLoginAttempts(1);
+        user.setTimeWhenUnlocked(null);
+
+        // when
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.save(any(User.class))).thenReturn(user); // after using third attempt
+        when(userRepository.save(any(User.class))).thenReturn(user); // after locking
+
+        response = mvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(String.format(loginPayloadJson, user.getEmail(), "asbhash")))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        assertThat(response.getCookie("JSESSIONID")).isNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(user.isLocked()).isTrue();
     }
 
     /**
@@ -278,6 +403,11 @@ class UserResourceIntegrationTests {
      */
     @Test
     void canLoginWhenUserExistsAndPasswordCorrect() throws Exception {
+        // given
+        expectedJson = String.format(expectedUserIdJson, user.getId());
+        user.setRemainingLoginAttempts(3);
+        user.setTimeWhenUnlocked(null);
+
         // when
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(post("/login")
@@ -286,10 +416,10 @@ class UserResourceIntegrationTests {
                 .andReturn().getResponse();
 
         // then
-        assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, user.getId()));
-        assertThat(response.getCookie("JSESSIONID").getValue()).isEqualTo(user.getSessionUUID());
-        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isEqualTo(28800);
+
+        assertThat(response.getCookie("JSESSIONID")).isNotNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     /**
@@ -335,6 +465,9 @@ class UserResourceIntegrationTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    //********************************************* POST /logout tests *************************************************
+
+
     /**
      * Tests that an OK status is received when making a POST to the /logout API endpoint
      * with an existing JSESSIONID cookie
@@ -376,9 +509,9 @@ class UserResourceIntegrationTests {
     @Test
     void canRegisterWhenUserDoesntExistAndDataValid() throws Exception {
         // given
-        User newUser = new User("Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
-                          "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()), "01234567",
-                     address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        User newUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, user.getId(), dGAA.getId()),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
         newUser.setId(4);
         newUser.setSessionUUID(User.generateSessionUUID());
         given(userRepository.findByEmail(newUser.getEmail())).willReturn(java.util.Optional.empty());
@@ -409,7 +542,7 @@ class UserResourceIntegrationTests {
 
         // then
         assertThat(response.getContentAsString()).isEqualTo(String.format(expectedUserIdJson, 4));
-        assertThat(response.getCookie("JSESSIONID").getValue()).isNotNull();
+        assertThat(Objects.requireNonNull(response.getCookie("JSESSIONID")).getValue()).isNotNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
     }
 
@@ -536,14 +669,16 @@ class UserResourceIntegrationTests {
     void canRetrieveUserWhenUserExistsWithDgaaCookie() throws Exception {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" + user.getRole() + "\"", "[null]",  user.getDateOfBirth(),
-                user.getPhoneNumber(), user.getHomeAddress());
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
+                "\"" + user.getRole() + "\"", "[]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID())))
+                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID",
+                        dGAA.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -560,13 +695,14 @@ class UserResourceIntegrationTests {
         // given
         expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                ("\"" + user.getRole() + "\""), "[null]", user.getDateOfBirth(), user.getPhoneNumber(),  user.getHomeAddress());
+                ("\"" + user.getRole() + "\""), "[]", "[]", user.getDateOfBirth(), user.getPhoneNumber(),
+                user.getHomeAddress());
 
         // when
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-        response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
+        response = mvc.perform(get(String.format("/users/%d", user.getId()))
+                        .cookie(new Cookie("JSESSIONID", user.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -580,30 +716,18 @@ class UserResourceIntegrationTests {
      */
     @Test
     void canRetrieveUserWhenUserExistsWithUserCookie() throws Exception {
-        String expectedUserJson = "{\"id\":%d," +
-                "\"firstName\":\"%s\"," +
-                "\"lastName\":\"%s\"," +
-                "\"middleName\":\"%s\"," +
-                "\"nickname\":\"%s\"," +
-                "\"bio\":\"%s\"," +
-                "\"email\":\"%s\"," +
-                "\"created\":\"%s" + "\"," +
-                "\"role\":%s," +
-                "\"businessesAdministered\":%s," +
-                "\"homeAddress\":%s"+
-                "}";
-
-
         // given
-        expectedJson = String.format(expectedUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null, "[null]", user.getHomeAddress().toSecureString());
+        expectedJson = String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
+                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), null,
+                "[]", "[]", user.getHomeAddress().toSecureString());
 
         // when
-        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID()))
+                .thenReturn(Optional.ofNullable(anotherUser));
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
 
-        response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
+        response = mvc.perform(get(String.format("/users/%d", user.getId()))
+                        .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID())))
                 .andReturn().getResponse();
 
         // then
@@ -624,8 +748,8 @@ class UserResourceIntegrationTests {
         // when
         when(userRepository.findBySessionUUID(nonExistingSessionUUID)).thenReturn(Optional.empty());
         when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-        response = mvc.perform(
-                get(String.format("/users/%d", user.getId())).cookie(new Cookie("JSESSIONID", nonExistingSessionUUID)))
+        response = mvc.perform(get(String.format("/users/%d", user.getId()))
+                        .cookie(new Cookie("JSESSIONID", nonExistingSessionUUID)))
                 .andReturn().getResponse();
 
         // then
@@ -694,21 +818,30 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" +
-                user.getRole() + "\"", "[null]",  user.getHomeAddress().toSecureString()) + "]";
+                user.getRole() + "\"", "[]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging))
+                .thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -728,10 +861,10 @@ class UserResourceIntegrationTests {
      * Tests that an OK status is received when searching for a user using the /users/search API endpoint and that
      * the JSON response is equal to the user searched for. The user is searched for using the following orders of the
      * names: first, last, middle, first middle last, first last.
-     * Test specifically for when the order by and page params provided are valid.
+     * Test specifically for when the order by, page, and page size params provided are valid.
      */
     @Test
-    void canSearchUsersWhenUserExistsWithValidOrderByAndPageParams() throws Exception {
+    void canSearchUsersWhenUserExistsWithValidOrderByAndPageAndPageSizeParams() throws Exception {
         // given
         List<String> searchQueryList = List.of(
                 "TESTFIRST",
@@ -741,23 +874,33 @@ class UserResourceIntegrationTests {
                 "TESTFIRST TESTMIDDLE TESTLAST",
                 "TESTFIRST TESTLAST"
         );
-        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
-                user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(), "\"" +
-                        user.getRole() + "\"", "[null]",  user.getHomeAddress().toSecureString()) + "]";
+        expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(),
+                user.getLastName(), user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(),
+                user.getCreated(), "\"" + user.getRole() + "\"", "[]", "[]",
+                user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
-        Pageable paging = PageRequest.of(0, 5, sort);
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Pageable paging = PageRequest.of(0, 1, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging))
+                .thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
 
         for (String searchQuery: searchQueryList) {
@@ -765,6 +908,7 @@ class UserResourceIntegrationTests {
                     get("/users/search").param("searchQuery", searchQuery)
                             .param("orderBy", "fullNameASC")
                             .param("page", "0")
+                            .param("pageSize", "1")
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
@@ -794,21 +938,24 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                null, "[null]",  user.getHomeAddress().toSecureString()) + "]";
+                null, "[]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
 
         for (String searchQuery: searchQueryList) {
@@ -843,27 +990,30 @@ class UserResourceIntegrationTests {
         );
         expectedJson = "[" + String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                 user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                null, "[null]",  user.getHomeAddress().toSecureString()) + "]";
+                null, "[]", "[]", user.getHomeAddress().toSecureString()) + "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID()))
+                .thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery)
-                            .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+            responseList.add(mvc.perform(get("/users/search").param("searchQuery", searchQuery)
+                    .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
         }
 
         // then
@@ -895,16 +1045,19 @@ class UserResourceIntegrationTests {
         // when
         List<User> list = List.of();
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
         when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(0)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(1)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(2)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(3)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(4)), paging)).thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(List.of(searchQueryList.get(5)), paging)).thenReturn(pagedResponse);
         for (String searchQuery: searchQueryList) {
             responseList.add(mvc.perform(
                     get("/users/search").param("searchQuery", searchQuery)
@@ -945,6 +1098,7 @@ class UserResourceIntegrationTests {
                     get("/users/search").param("searchQuery", searchQuery)
                             .param("orderBy", "a")
                             .param("page", "0")
+                            .param("pageSize", "1")
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
@@ -982,6 +1136,45 @@ class UserResourceIntegrationTests {
                     get("/users/search").param("searchQuery", searchQuery)
                             .param("orderBy", "fullNameASC")
                             .param("page", "a")
+                            .param("pageSize", "1")
+                            .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
+        }
+
+        // then
+        for (MockHttpServletResponse response: responseList) {
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+        }
+    }
+
+    /**
+     * Tests that a BAD_REQUEST status is received when searching for a user using the /users/search API endpoint
+     * when the page size param is invalid.
+     * Test specifically for when the page size param provided is invalid.
+     */
+    @Test
+    void cantSearchUsersWithInvalidPageSizeParam() throws Exception {
+        // given
+        List<String> searchQueryList = List.of(
+                "TESTFIRST",
+                "TESTLAST",
+                "TESTMIDDLE",
+                "TESTNICK",
+                "TESTFIRST TESTMIDDLE TESTLAST",
+                "TESTFIRST TESTLAST"
+        );
+        expectedJson = "";
+        ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+
+        for (String searchQuery: searchQueryList) {
+            responseList.add(mvc.perform(
+                    get("/users/search").param("searchQuery", searchQuery)
+                            .param("orderBy", "fullNameASC")
+                            .param("page", "0")
+                            .param("pageSize", "a")
                             .cookie(new Cookie("JSESSIONID", dGAA.getSessionUUID()))).andReturn().getResponse());
         }
 
@@ -1076,31 +1269,39 @@ class UserResourceIntegrationTests {
         expectedJson = "[" +
                 String.format(expectedSecureUserJson, user.getId(), user.getFirstName(), user.getLastName(),
                         user.getMiddleName(), user.getNickname(), user.getBio(), user.getEmail(), user.getCreated(),
-                        null, "[null]",  user.getHomeAddress().toSecureString()) + "," +
+                        null, "[]", "[]", user.getHomeAddress().toSecureString()) + "," +
                 String.format(expectedSecureUserJson, searchUser1.getId(), searchUser1.getFirstName(),
                         searchUser1.getLastName(), searchUser1.getMiddleName(), searchUser1.getNickname(),
                         searchUser1.getBio(), searchUser1.getEmail(), searchUser1.getCreated(),
-                        null, "[null]",  searchUser1.getHomeAddress().toSecureString()) +
+                        null, "[]", "[]", searchUser1.getHomeAddress().toSecureString()) +
                 "]";
         ArrayList<MockHttpServletResponse> responseList = new ArrayList<>();
 
         // when
         List<User> list = List.of(user, searchUser1);
         Page<User> pagedResponse = new PageImpl<>(list);
-        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase()).and(Sort.by(Sort.Order.asc("middleName").ignoreCase())).and(Sort.by(Sort.Order.asc("lastName").ignoreCase())).and(Sort.by(Sort.Order.asc("email").ignoreCase()));
+        Sort sort = Sort.by(Sort.Order.asc("firstName").ignoreCase())
+                .and(Sort.by(Sort.Order.asc("middleName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("lastName").ignoreCase()))
+                .and(Sort.by(Sort.Order.asc("email").ignoreCase()));
         Pageable paging = PageRequest.of(0, 5, sort);
 
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "ALEX"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("testfirst", "alex"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "alex"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "TESTLAST", "Alex"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "ALEX"), paging)).thenReturn(pagedResponse);
-        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "ALEX"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("testfirst", "alex"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "alex"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST", "TESTLAST", "Alex"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findAllUsersByNames(Arrays.asList("TESTFIRST TESTLAST", "ALEX"), paging))
+                .thenReturn(pagedResponse);
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID()))
+                .thenReturn(Optional.ofNullable(anotherUser));
 
         for (String searchQuery: searchQueryList) {
-            responseList.add(mvc.perform(
-                    get("/users/search").param("searchQuery", searchQuery)
-                            .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
+            responseList.add(mvc.perform(get("/users/search").param("searchQuery", searchQuery)
+                    .cookie(new Cookie("JSESSIONID", anotherUser.getSessionUUID()))).andReturn().getResponse());
         }
 
         // then
@@ -1442,5 +1643,616 @@ class UserResourceIntegrationTests {
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(userRepository.findById(dGAA.getId()).get().getRole()).isEqualTo(Role.DEFAULTGLOBALAPPLICATIONADMIN);
+    }
+
+/* ------------------------------------------ Modified User Profile Tests ------------------------------------------- */
+
+    /**
+     * Test An OK status return when user modify his profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanChangeProfileForHisSelf() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK status return when DGAA modify other user's profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testDGAACanChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.ofNullable(dGAA));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        System.out.println(response.getErrorMessage());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK status return when GAA modify other user's profile, and profile been successfully modified.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test A FORBIDDEN status return when user try to modify other user's profile.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangeProfileForOtherUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", anotherUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(anotherUser.getSessionUUID())).thenReturn(Optional.ofNullable(anotherUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(LocalDate.of(2000, 5, 10));
+    }
+
+    /**
+     * Test A NOT_ACCEPTABLE status return when user try to modify not exist user's profile.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangeProfileForNotExistUser() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Test A UNAUTHORIZED status return when user is not login.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testNotLoginUserCanNotChangeProfile() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Test A BAD_REQUEST status return when user is try to modify profile by invalid info, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testValidationStillWorkForModifiedUserProfile() throws Exception {
+        // given
+        String newName = "";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, newName, "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!",
+                "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                        .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                        .cookie(cookie))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid first name");
+    }
+
+    /**
+     * Test A BAD_REQUEST status return when user is try to modify profile by invalid address, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testValidationStillWorkForModifiedAddress() throws Exception {
+        // given
+        String newCountry = "";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", LocalDate.of(1990, 9, 10).toString(), "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", newCountry, "90210", "Testpassword123!",
+                "Testpassword123!");
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                        .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                        .cookie(cookie))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getErrorMessage()).isEqualTo("Invalid country");
+    }
+
+    /**
+     * Test A BAD_REQUEST status return when user is try to modify profile by invalid address, and error message will
+     * show what is invalid.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanUserEmailAddressAlreadyExist() throws Exception {
+        // given
+        String newDateOfBirth = LocalDate.of(1990, 9, 10).toString();
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", newDateOfBirth, "01234567", "3/24",
+                "Ilam Road", "Ilam", "Christchurch", "Canterbury", "New Zealand", "90210", "Testpassword123!",
+                "Testpassword123!");
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.getDateOfBirth()).isEqualTo(newDateOfBirth);
+    }
+
+    /**
+     * Test An OK status return when user modify his password with a correct current password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanChangePasswordWhenTheyGivenCorrectCurrentPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Testpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Test An BAD_REQUEST status return when user modify his password with an incorrect current password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testUserCanNotChangePasswordWhenTheyGivenIncorrectCurrentPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", selectedUser.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(selectedUser.getSessionUUID())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isFalse();
+    }
+
+    /**
+     * Test An OK status return when GAA modify User's password without password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanChangePasswordForOtherUsersWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Test An BAD_REQUEST status return when GAA try to modify GAA's password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanNotChangePasswordForOtherGAAWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(),
+                Role.GLOBALAPPLICATIONADMIN);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isFalse();
+    }
+
+    /**
+     * Test An BAD_REQUEST status return when GAA try to modify DGAA's password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testGAACanNotChangePasswordForDGAA() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(),
+                Role.DEFAULTGLOBALAPPLICATIONADMIN);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", user.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(user.getSessionUUID())).thenReturn(Optional.of(user));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isFalse();
+    }
+
+    /**
+     * Test An OK status return when DGAA try to modify User's password without password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testDGAACanChangePasswordForUsersWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(), Role.USER);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    /**
+     * Test An OK status return when DGAA try to modify GAA's password without password.
+     * @throws Exception User Create Error
+     */
+    @Test
+    void testDGAACanChangePasswordForGAAWithoutPassword() throws Exception {
+        // given
+        String newPassword = "NewPassword123!";
+        User selectedUser = new User("Bob", "Boberson", "Robert", "Bobert",
+                "Bobsbio", "bob@email.com", LocalDate.of(2000, 5, 10),
+                "01234567", address, "Testpassword123!", LocalDateTime.now(),
+                Role.GLOBALAPPLICATIONADMIN);
+        selectedUser.setId(4);
+        selectedUser.setSessionUUID(User.generateSessionUUID());
+
+        String registerJson = String.format(modifiedUserPayload, "Bob", "Boberson", "Robert", "Bobert", "Bobsbio",
+                "bob@email.com", "2000-05-10", "01234567", "3/24", "Ilam Road", "Ilam", "Christchurch", "Canterbury",
+                "New Zealand", "90210", "Wrongpassword123!", newPassword);
+        Cookie cookie = new Cookie("JSESSIONID", dGAA.getSessionUUID());
+
+        // when
+        when(userRepository.findBySessionUUID(dGAA.getSessionUUID())).thenReturn(Optional.of(dGAA));
+        when(userRepository.findById(selectedUser.getId())).thenReturn(Optional.of(selectedUser));
+        when(userRepository.findByEmail("bob@email.com")).thenReturn(Optional.empty());
+        response = mvc.perform(put(String.format("/users/%d/profile", selectedUser.getId()))
+                .contentType(MediaType.APPLICATION_JSON).content(registerJson)
+                .cookie(cookie)).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectedUser.verifyPassword(newPassword)).isTrue();
+    }
+
+    // ----------------------- Forgot Password - PUT tests -----------------------
+
+    /**
+     * Tests that the PUT Forgot Password endpoint returns a 406 if the Forgot Password Token is invalid
+     * @throws Exception exception
+     */
+    @Test
+    void testInvalidForgotPasswordToken_UpdatePassword() throws Exception {
+        String passwordJson = "{" +
+                "\"password\":\"NewPassword1!\"" +
+                "}";
+
+        String token = "12345";
+        when(forgotPasswordRepository.findByToken(token)).thenReturn(Optional.empty());
+
+        response = mvc.perform(put("/users/forgotPassword")
+                .param("token", token)
+                .contentType(MediaType.APPLICATION_JSON).content(passwordJson))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    /**
+     * Tests that the PUT Forgot Password endpoint returns a 400 if the password isn't valid
+     * @throws Exception exception
+     */
+    @Test
+    void testInvalidPassword_UpdatePassword() throws Exception {
+        String passwordJson = "{" +
+                "\"password\":\"badPass\"" +
+                "}";
+
+        String token = "12345";
+        when(forgotPasswordRepository.findByToken(token)).thenReturn(Optional.of(forgotPassword));
+        when(userRepository.findById(forgotPassword.getUserId())).thenReturn(Optional.of(user));
+
+        response = mvc.perform(put("/users/forgotPassword")
+                .param("token", token)
+                .contentType(MediaType.APPLICATION_JSON).content(passwordJson))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Tests that the PUT Forgot Password endpoint returns a 200 if token exists and password is valid
+     */
+    @Test
+    void testValidForgotPassword_UpdatePassword() throws Exception {
+        String passwordJson = "{" +
+                "\"password\":\"NewPassword1!\"" +
+                "}";
+
+        String token = "12345";
+
+        String oldPass = user.getPassword();
+
+        when(forgotPasswordRepository.findByToken(token)).thenReturn(Optional.of(forgotPassword));
+        when(userRepository.findById(forgotPassword.getUserId())).thenReturn(Optional.of(user));
+
+        response = mvc.perform(put("/users/forgotPassword")
+                .param("token", token)
+                .contentType(MediaType.APPLICATION_JSON).content(passwordJson))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(user.getPassword()).isNotEqualTo(oldPass); // Tests that it has changed as cannot exact String due to encoding
+    }
+
+    /**
+     * Tests that a NOT_ACCEPTABLE status is received from the forgot password endpoint when there is no user
+     * in the database with the supplied email.
+     */
+    @Test
+    void cantRequestForgotPasswordEmailWhenEmailDoesNotExist() throws Exception {
+        // given
+        String userEmail = "randomEmail@email.com";
+        given(userRepository.findByEmail(userEmail)).willReturn(Optional.empty());
+
+        // when
+        response = mvc.perform(
+                post("/users/forgotPassword").contentType(MediaType.APPLICATION_JSON).content(String.format(forgotPasswordJSON, userEmail, "http://localhost")))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 }

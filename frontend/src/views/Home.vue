@@ -10,7 +10,7 @@
       <!--Nav bar; displays either business account or individual account nav bar-->
       <Navbar></Navbar>
 
-      <div id="home" class="container all-but-footer">
+      <div id="home" class="container all-but-footer" v-if="isActingAsUser()">
         <h1 style="text-align: center">Home</h1>
 
         <ul class="nav nav-tabs" id="homepage-tabs" role="tablist">
@@ -31,6 +31,10 @@
         <div class="tab-content">
           <!--Home feed-->
           <div class="tab-pane fade show active" id="my-feed" role="tabpanel" aria-labelledby="my-feed-tab">
+            <div id="no-bookmarks-message" class="mt-2" v-if="hasDataLoaded && bookmarkMessages.length === 0 && rendered">
+              No bookmarked messages to show
+            </div>
+
             <div class="container-news mx-md-5 text-font">
 
             <br>
@@ -39,11 +43,7 @@
             <div v-if="showBookmarkMessages">
 
               <!-- Bookmarked listing message -->
-              <div id="bookmark-messages-container" v-if="hasDataLoaded">
-                <div v-if="bookmarkMessages.length === 0 && rendered">
-                  <h2 id="no-bookmark-message" style="text-align: center">(No Bookmarked Messages)</h2>
-                </div>
-
+              <div id="bookmark-messages-container" v-if="hasDataLoaded && bookmarkMessages.length !== 0 && rendered">
                 <div :id="'bookmark-message-container-' + message.id"
                      class="row post shadow py-3 px-4"
                      type="button"
@@ -77,7 +77,7 @@
                 </div>
               </div>
               <!--     Loading Dotes     -->
-              <div v-else>
+              <div v-if="!hasDataLoaded">
                 <LoadingDots/>
               </div>
 
@@ -100,6 +100,11 @@
         </div>
       </div>
 
+      <div class="container all-but-footer" v-else>
+        <h1 style="text-align: center">Home</h1>
+        <HomeSales></HomeSales>
+      </div>
+
     </div>
     <!--Footer contains links that are the same as those in the nav bar-->
     <Footer/>
@@ -115,10 +120,12 @@ import Api from "../Api";
 import {formatDate} from "../dateUtils";
 import Cookies from "js-cookie";
 import LoadingDots from "../components/LoadingDots";
+import HomeSales from "../components/saleInsights/HomeSales";
 
 export default {
   name: "Home",
   components: {
+    HomeSales,
     LoadingDots,
     Footer,
     Navbar,
@@ -134,7 +141,7 @@ export default {
 
       usersCards: [],
       userId: null,
-      loadingCards: false
+      loadingCards: false,
     }
   },
   mounted() {
@@ -178,7 +185,6 @@ export default {
     formatDateVar(date, tf) {
       return formatDate(date, tf)
     },
-
     /**
      * Routes the user to the listing page associated with their bookmarked message with the given business id and
      * listing id.
@@ -235,12 +241,8 @@ export default {
      *                 3. 0 if the card sections are equal.
      */
     compareCards(card1, card2) {
-      if (card1.section < card2.section) {
-        return -1;
-      }
-      if (card1.section > card2.section) {
-        return 1;
-      }
+      if (card1.section < card2.section) { return -1; }
+      if (card1.section > card2.section) { return 1; }
       return 0;
     },
     /**
@@ -270,7 +272,7 @@ export default {
       const value = Cookies.get("actAs")
       return value === undefined || value === null;
     }
-  }
+  },
 }
 </script>
 

@@ -23,7 +23,6 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +62,10 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
     @MockBean
     private ProductUpdateService productUpdateService;
 
+    @Autowired
+    @MockBean
+    private ForgotPasswordRepository forgotPasswordRepository;
+
     private MockHttpServletResponse response;
 
     private User user;
@@ -83,7 +86,6 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
             "\"barcode\":\"%s\"}";
 
     private String productPayload;
-    private String returnProductPayload;
 
     @Before
     public void createMockMvc() {
@@ -96,7 +98,7 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
         this.productMVC = MockMvcBuilders.standaloneSetup(new ProductResource(
                 productRepository, businessRepository, userRepository, productUpdateService
         )).build();
-        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository)).build();
+        this.userMVC = MockMvcBuilders.standaloneSetup(new UserResource(userRepository, addressRepository, forgotPasswordRepository)).build();
     }
 
     @Given("I am logged in as a business administrator for an existing business.")
@@ -131,7 +133,9 @@ public class AddBarcodeStepDefs extends CucumberSpringConfiguration {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2), LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
         user.setBusinessesAdministeredObjects(List.of(business));

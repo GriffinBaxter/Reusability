@@ -1,7 +1,11 @@
 <template>
   <div class="card rounded shadow-sm border-0" id="card-container">
     <div class="card-body p-4">
-        <h4 id="card-title" class="col">{{ title }}</h4>
+      <h4 :id="'card-title_' + index"
+          style="height: 70px; padding-bottom: 0;"
+          class="col">
+        {{ title }}
+      </h4>
 
       <div class="row">
         <div class="col">
@@ -9,9 +13,7 @@
         </div>
       </div>
 
-      <div id="card-img-container" class="row">
-        <img id="card-img" :src="cardImage" alt="Card Image">
-      </div>
+      <hr class="mb-0"><br>
 
       <img :src="creatorImage" id="avatar-image" alt="User Avatar">
       {{ creator.firstName }} {{ creator.lastName }}
@@ -50,18 +52,14 @@ export default {
     },
     creator: {
       type: Object,
-      default: function () {return {}},
+      default: function () {
+        return {}
+      },
       required: true
-    },
-    cardImage: {
-      type: String,
-      default: require("../../../public/apples.jpg"),
-      required: false
     },
     creatorImage: {
       type: String,
-      default: require("../../../public/sample_profile_image.jpg"),
-      required: false
+      required: true
     },
     address: {
       type: String,
@@ -77,19 +75,6 @@ export default {
 #avatar-image {
   width: 30px;
   border-radius: 50px;
-}
-
-#card-title {
-  height: 70px;
-  padding-bottom: 0px;
-}
-
-#card-img-container {
-  margin-bottom: 20px;
-}
-
-#card-img {
-  border-radius: 35px;
 }
 
 #address-container {

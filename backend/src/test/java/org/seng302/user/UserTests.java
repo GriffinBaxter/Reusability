@@ -12,8 +12,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * User test class.
@@ -63,7 +66,9 @@ class UserTests {
                 address,
                 BusinessType.ACCOMMODATION_AND_FOOD_SERVICES,
                 LocalDateTime.now(),
-                user
+                user,
+                "$",
+                "NZD"
         );
         business.setId(1);
         product = new Product(
@@ -111,7 +116,9 @@ class UserTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
         User newUser = new User("NEWUSER",
                 "testlast",
@@ -1368,7 +1375,9 @@ class UserTests {
                 BusinessType.RETAIL_TRADE,
                 LocalDateTime.of(LocalDate.of(2021, 2, 2),
                         LocalTime.of(0, 0)),
-                user
+                user,
+                "$",
+                "NZD"
         );
 
         business.addAdministrators(user);
@@ -1428,4 +1437,324 @@ class UserTests {
         Assertions.assertTrue(user.getBookmarkedListing().isEmpty());
     }
 
+    /**
+     * Test that a IllegalUserArgumentException been catch If new first name invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfFirstNameInvalid() {
+        // Given
+        String firstName = "";
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updateFirstName(firstName);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid first name", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new last name invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfLastNameInvalid() {
+        // Given
+        String lastName = "";
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updateLastName(lastName);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid last name", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new middle name invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfMiddleNameInvalid() {
+        // Given
+        String middleName = "This is a Invalid middle name".repeat(10);
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updateMiddleName(middleName);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid middle name", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new nickname invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfNicknameInvalid() {
+        // Given
+        String nickname = "This is a Invalid nickname".repeat(10);
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updateNickname(nickname);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid nickname", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new bio invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfBioInvalid() {
+        // Given
+        String bio = "This is a Invalid bio".repeat(100);
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updateBio(bio);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid bio", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new email invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfEmailInvalid() {
+        // Given
+        String email = "abc.abc";
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updateEmail(email);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid email address", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new date of birth invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfDateOfBirthInvalid() {
+        // Given
+        LocalDate dateOfBirth = LocalDate.now();
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updateDateOfBirth(dateOfBirth);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid date of birth", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new phone number invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfPhoneNameInvalid() {
+        // Given
+        String phoneNumber = "aa";
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updatePhoneNumber(phoneNumber);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid phone number", errorMessage);
+    }
+
+    /**
+     * Test that a IllegalUserArgumentException been catch If new password invalid.
+     */
+    @Test
+    void testAnExceptionBeenThrowIfPasswordInvalid() {
+        // Given
+        String password = "";
+        String errorMessage = "";
+
+        // When
+        try {
+            user.updatePassword(password);
+        } catch (IllegalUserArgumentException e) {
+            errorMessage = e.getMessage();
+        }
+
+        // Then
+        Assertions.assertEquals("Invalid password", errorMessage);
+    }
+
+    // ********************************* useAttempt() method tests ************************************
+
+    /**
+     * Test that remainingLoginAttempts is reduced by 1 attempt when the current remainingLoginAttempts is greater than
+     * 0 when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsGreaterThanOne() {
+        int attempts = 2;
+        int expectedAttempts = 1;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    /**
+     * Test that remainingLoginAttempts is not reduced when the current remainingLoginAttempts is 0
+     * when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsNoAttemptsRemaining() {
+        int attempts = 0;
+        int expectedAttempts = 0;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    /**
+     * Test that remainingLoginAttempts is not reduced when the current remainingLoginAttempts is negative
+     * when useAttempt is called
+     */
+    @Test
+    void testUseAttempt_AttemptsReducedByOneWhenAttemptsNegativeAttemptsRemaining() {
+        int attempts = -10;
+        int expectedAttempts = 0;
+        user.setRemainingLoginAttempts(attempts);
+        user.useAttempt();
+        Assertions.assertEquals(expectedAttempts, user.getRemainingLoginAttempts());
+    }
+
+    // ********************************* hasLoginAttemptsRemaining() method tests ************************************
+
+    /**
+     * Test that hasLoginAttemptsRemaining returns true when there is at least one remaining login attempt
+     * available.
+     */
+    @Test
+    void testHasLoginAttemptsRemaining_AtLeastOneAttemptRemaining_ReturnsTrue() {
+        user.setRemainingLoginAttempts(1);
+        Assertions.assertTrue(user.hasLoginAttemptsRemaining());
+    }
+
+    /**
+     * Test that hasLoginAttemptsRemaining returns true when there are no remaining login attempts
+     * available.
+     */
+    @Test
+    void testHasLoginAttemptsRemaining_NoAttemptsRemaining_ReturnsFalse() {
+        user.setRemainingLoginAttempts(0);
+        Assertions.assertFalse(user.hasLoginAttemptsRemaining());
+    }
+
+    // ********************************* isLocked() method tests ************************************
+
+    /**
+     * Test that isLocked returns false when the account is not locked.
+     */
+    @Test
+    void testIsLocked_NotLocked_ReturnsFalse() {
+        user.setTimeWhenUnlocked(null);
+        Assertions.assertFalse(user.isLocked());
+    }
+
+    /**
+     * Test that isLocked returns true when the account is locked.
+     */
+    @Test
+    void testIsLocked_Locked_ReturnsTrue() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusMinutes(29));
+        Assertions.assertTrue(user.isLocked());
+    }
+
+    // ********************************* canUnlock() method tests ************************************
+
+    /**
+     * Test that canUnlock returns true when the 1 hour since locking the account has passed.
+     */
+    @Test
+    void testCanUnlock_HourPassed_ReturnsTrue() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().minusHours(2));
+        Assertions.assertTrue(user.canUnlock());
+    }
+
+    /**
+     * Test that canUnlock returns false when the 1 hour since locking the account has not passed yet.
+     */
+    @Test
+    void testCanUnlock_HourNotPassed_ReturnsFalse() {
+        user.setTimeWhenUnlocked(LocalDateTime.now().plusMinutes(38));
+        Assertions.assertFalse(user.canUnlock());
+    }
+
+    // ********************************* lockAccount() method tests ************************************
+
+    /**
+     * Test that lockAccount locks the account for 1 hour.
+     */
+    @Test
+    void testLockAccount_LocksForOneHour() {
+        user.lockAccount();
+
+        LocalDateTime lockedTime = LocalDateTime.now();
+
+        LocalDateTime whenLocked = lockedTime.truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime whenUnlocked = user.getTimeWhenUnlocked().truncatedTo(ChronoUnit.MINUTES);
+
+        assertThat(user.isLocked()).isTrue();
+        assertThat(whenUnlocked).isEqualTo(whenLocked.plusHours(1));
+    }
+
+    // ********************************* unlockAccount() method tests ************************************
+
+    /**
+     * Test that unlockAccount sets timeWhenUnlocked to null.
+     */
+    @Test
+    void testUnlockAccount_TimeWhenUnlockedSetToNull() {
+        user.unlockAccount();
+        Assertions.assertEquals(null, user.getTimeWhenUnlocked());
+    }
+
+    /**
+     * Test that unlockAccount sets remainingLoginAttempts to three.
+     */
+    @Test
+    void testUnlockAccount_SetsRemainingLoginAttemptsToThree() {
+        user.unlockAccount();
+        Assertions.assertEquals(3, user.getRemainingLoginAttempts());
+    }
 }

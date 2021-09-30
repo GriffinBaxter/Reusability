@@ -1,8 +1,14 @@
 <template>
   <div>
+    <div v-if="creationSuccess">
+      <feedback-notification :messages="messages" style="z-index:999;"/>
+    </div>
+
     <div id="main">
+
       <!--nav bar-->
       <navbar @getLinkBusinessAccount="setLinkBusinessAccount" :sendData="linkBusinessAccount"/>
+
     <!--creation popup-->
     <inventory-item-creation @updateInventoryItem="afterCreation"
                              v-bind:currency-code="currencyCode"
@@ -12,34 +18,16 @@
     <div class="container p-4 mt-3" id="profileContainer">
       <div class="row">
 
-        <div class="col-xl-2 mb-2">
-          <div class="card text-center shadow-sm">
-            <div class="card-body">
-
-              <!--business's profile image-->
-              <img class="rounded-circle img-fluid" :src="require('../../public/sample_profile_image.jpg')"
-                   alt="Profile Image"/>
-
-              <!--business's name-->
-              <div class="mt-3">
-                <h5>{{ businessName }}</h5>
-                <div class="text-secondary">{{ businessDescription }}</div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
         <div class="col">
           <div class="card card-body">
-            <h1 style="text-align: center">Inventory</h1>
+            <h1 style="text-align: center">{{ businessName }}'s Inventory</h1>
 
             <hr/>
 
-            <div class="row" role="group" aria-label="Button group with nested dropdown">
+            <div class="row" role="group" aria-label="Button group with nested dropdown" style="display: flex; align-items: flex-end">
               <!--filter-->
-              <div class="btn-group col-md-3 py-1" role="group">
-                <button type="button" class="btn green-button dropdown-toggle"
+              <div class="btn-group col-md-2 py-1 align-self-end" role="group">
+                <button type="button" class="btn green-button dropdown-toggle" style="height: 38px"
                         data-bs-toggle="dropdown" aria-expanded="false">Filter Option
                 </button>
 
@@ -102,26 +90,28 @@
                 </ul>
               </div>
 
-              <div class="col-md-3 py-1">
+              <div class="col-md-2 py-1 align-self-end">
                 <!--creation button-->
                 <button type="button" class="btn green-button w-100" data-bs-toggle="modal"
-                        data-bs-target="#creationPopup">
+                        data-bs-target="#creationPopup" style="height: 38px">
                   Create New
                 </button>
               </div>
 
-              <div class="col-12 col-md-6 text-secondary px-3 flex-nowrap">Filter By: {{convertToString()}}</div>
+              <div class="col-3 col-md-3 text-secondary flex-nowrap align-self-end" style="margin-bottom: 0.7em">Filter By: {{convertToString()}}</div>
+
+              <div class="col-md-3 justify-content-md-end" style="display: flex; ">
+                <BarcodeSearchBar @barcodeSearch="barcodeSearch" search-bar-identifier="inventory-business"/>
+              </div>
+
+              <div class="col justify-content-md-end" style="display: flex;">
+                <PageSize :current-page-size="pageSize" :page-sizes="pageSizes" v-on:selectedPageSize="updatePageSize"></PageSize>
+              </div>
+
             </div>
 
             <!--space-->
             <br>
-
-            <!--creation success info-->
-            <div class="alert alert-success" role="alert" v-if="creationSuccess">
-              <div class="row">
-                <div class="col" style="text-align: center"> {{userAlertMessage}} </div>
-              </div>
-            </div>
 
             <UpdateInventoryItemModal ref="updateInventoryItemModal"
                                       :business-id=businessId
@@ -162,6 +152,12 @@
                   @updatePage="updatePage"/>
             </div>
 
+            <div class="noInventory" v-if="noInventory">
+              <div class="card p-1">
+                <p class="h2 py-5" style="text-align: center">No Inventory Items Found</p>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -177,17 +173,20 @@
 
 
 <script>
+
 import Footer from "../components/main/Footer";
 import InventoryItem from "../components/inventory/InventoryItem";
 import Navbar from "../components/Navbar";
 import InventoryItemCreation from "../components/inventory/CreateInventoryItemModal";
 import Api from "../Api";
 import Cookies from "js-cookie";
-import UpdateInventoryItemModal from "@/components/inventory/UpdateInventoryItemModal";
+import UpdateInventoryItemModal from "../components/inventory/UpdateInventoryItemModal";
 import PageButtons from "../components/PageButtons";
-import CurrencyAPI from "../currencyInstance";
 import {formatDate} from "../dateUtils";
 import {checkAccessPermission} from "../views/helpFunction";
+import PageSize from "../components/PageSize";
+import BarcodeSearchBar from "../components/BarcodeSearchBar";
+import FeedbackNotification from "../components/feedbackNotification/FeedbackNotification";
 
 export default {
   components: {
@@ -196,7 +195,10 @@ export default {
     Navbar,
     InventoryItem,
     Footer,
-    PageButtons
+    PageSize,
+    PageButtons,
+    BarcodeSearchBar,
+    FeedbackNotification
   },
   data() {
     return {
@@ -230,7 +232,7 @@ export default {
       businessName: null,
       businessDescription: null,
 
-      inventories: null,
+      inventories: [],
       currentInventoryItem: null,
 
       // currency related variables
@@ -238,8 +240,26 @@ export default {
       currencyCode: "",
       currencySymbol: "",
 
+      barcode: "",
+
       // List of Business account current user account administrated
       linkBusinessAccount:[],
+
+      // When page is initially loaded, we don't want 'No Inventory Items Found' message to display since, inventory has not
+      // been retrieved yet.
+      notInitialLoad: false,
+
+      // For toast notifications
+      messages: [],
+      messageIdCounter: 0,
+
+      pageSizes: ["5", "10", "15", "25"], // a list of available page sizes
+      pageSize: this.$route.query["pageSize"] || "5" // default pages size
+    }
+  },
+  computed: {
+    noInventory() {
+      return (this.inventories.length < 1) && this.notInitialLoad;
     }
   },
   methods: {
@@ -314,7 +334,7 @@ export default {
       this.currentPage = newPageNumber;
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
       })
       this.retrieveInventoryItems();
     },
@@ -333,6 +353,8 @@ export default {
         this.businessName = response.data.name;
         this.businessDescription = response.data.description;
         this.businessCountry = response.data.address.country;
+        this.currencySymbol = response.data.currencySymbol;
+        this.currencyCode = response.data.currencyCode;
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -512,7 +534,7 @@ export default {
 
       this.$router.push({
         path: `/businessProfile/${this.businessId}/inventory`,
-        query: {"orderBy": this.orderByString, "page": (this.currentPage + 1).toString()}
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
       });
       this.retrieveInventoryItems();
     },
@@ -543,9 +565,16 @@ export default {
       // Getting query params from the route update.
       this.orderByString = this.$route.query["orderBy"] || "productIdASC";
       this.currentPage = parseInt(this.$route.query["page"]) - 1 || 0;
+      this.pageSize = this.$route.query["pageSize"] || "5";
+      this.rowsPerPage = parseInt(this.pageSize);
+      this.barcode = this.$route.query["barcode"] || "";
+
+      if (this.barcode === undefined || null) {
+        this.barcode = "";
+      }
 
       // Perform the call to sort the products and get them back.
-      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage).then(response => {
+      await Api.sortInventoryItems(this.businessId, this.orderByString, this.currentPage, this.pageSize, this.barcode).then(response => {
         this.totalRows = parseInt(response.headers["total-rows"]);
         this.totalPages = parseInt(response.headers["total-pages"]);
 
@@ -557,8 +586,8 @@ export default {
 
         // No results
         if (this.InventoryItemList.length <= 0) {
+          this.inventories = [];
           this.currentPage = 0;
-          this.maxPage = 0;
           this.totalRows = 0;
           this.totalPages = 0;
           // Generate the tableData to be placed in the table & get the total number of rows.
@@ -595,6 +624,7 @@ export default {
             })
           }
         }
+        this.notInitialLoad = true; // inventories has been retrieved
       }).catch((error) => {
         if (error.request && !error.response) {
           this.$router.push({path: '/timeout'});
@@ -617,7 +647,16 @@ export default {
      */
     afterCreation() {
       this.creationSuccess = true;
-      this.userAlertMessage = "New Inventory Item Created";
+      this.messageIdCounter += 1;
+      this.messages = [];
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Inventory item successfully created."
+          }
+      )
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
         this.creationSuccess = false
@@ -629,26 +668,48 @@ export default {
      */
     afterEdit() {
       this.creationSuccess = true;
-      this.userAlertMessage = "Product Edited";
+      this.messageIdCounter += 1;
+      this.messages = [];
+      this.messages.push(
+          {
+            id: this.messageIdCounter,
+            isError: false,
+            topic: "Success",
+            text: "Inventory item successfully edited."
+          }
+      )
       // The corresponding alert will close automatically after 5000ms.
       setTimeout(() => {
         this.creationSuccess = false
       }, 5000);
+      this.retrieveInventoryItems();
     },
+
     /**
-     * Currency API requests.
-     * An asynchronous function that calls the REST Countries API with the given country input.
-     * Upon success, the filterResponse function is called with the response data.
+     * Routes to URL with event value as the barcode and triggers retrieveInventoryItems
      */
-    async currencyRequest() {
-      await CurrencyAPI.currencyQuery(this.businessCountry).then((response) => {
-        this.filterResponse(response.data);
-      }).catch((error) => console.log(error))
+    barcodeSearch(event) {
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"barcode": event, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
+      });
+      this.retrieveInventoryItems();
     },
-    filterResponse(response) {
-      this.currencyCode = response[0].currencies[0].code;
-      this.currencySymbol = response[0].currencies[0].symbol;
-    },
+
+    /**
+     * When a user selects a page size using the PageSize component then the current page size should be
+     * updated and the results should be retrieved from the backend.
+     * @param selectedPageSize the newly selected page size.
+     */
+    updatePageSize(selectedPageSize) {
+      this.pageSize = selectedPageSize;
+      this.currentPage = 0;
+      this.$router.push({
+        path: `/businessProfile/${this.businessId}/inventory`,
+        query: {"barcode": this.barcode, "orderBy": this.orderByString, "page": (this.currentPage + 1).toString(), "pageSize": this.pageSize}
+      })
+      this.retrieveInventoryItems();
+    }
   },
 
   async mounted() {
@@ -672,7 +733,6 @@ export default {
         this.retrieveInventoryItems().catch(
             (e) => console.log(e)
         );
-        await this.currencyRequest();
       }
     }
   }
