@@ -144,7 +144,7 @@
 
           <div class="d-grid gap-2 d-lg-block">
             <button class="btn btn-lg btn-outline-primary green-button-transparent" type="button" tabindex="13" @click="$router.push('/profile')">Back to Profile</button>
-            <button id="register-button" tabindex="12" class="btn btn-lg float-lg-end green-button" type="button" @click="addNewBusiness($event)">Register</button>
+            <button id="register-button" tabindex="12" :class="`btn btn-lg float-lg-end green-button ${!registeringBusiness ? '': 'disabled'}`" type="button" @click="addNewBusiness($event)">Register</button>
           </div>
 
         </form>
@@ -234,7 +234,9 @@ export default {
       address: "",
       addresses: [],
       autocompleteFocusIndex: 0,
-      addressResultProperties: []
+      addressResultProperties: [],
+
+      registeringBusiness: false
     }
   },
 
@@ -300,6 +302,8 @@ export default {
      * @param e, the current event.
      */
     async addNewBusiness(e) {
+      this.registeringBusiness = true;
+      
       // Steps required for the function before starting processing.
       e.preventDefault();  // prevents page from reloading
 
@@ -309,7 +313,7 @@ export default {
       this.getErrorMessages();
 
       // If at any stage an error has been discovered we cancel the procedure.
-      if (this.checkInvalidRequest()) { return; }
+      if (this.checkInvalidRequest()) { this.registeringBusiness = false; return; }
 
       const addressData = {
         streetNumber: this.$refs.streetNumber.value,
@@ -345,6 +349,7 @@ export default {
        */
       await Api.addNewBusiness(business
       ).then( (res) => {
+        this.registeringBusiness = false;
             if (res.status === 201) {
               const businessId = res.data.businessId;
               if (businessId) {
@@ -354,6 +359,7 @@ export default {
             }
           }
       ).catch((error) => {
+        this.registeringBusiness = false;
         this.cannotProceed = true;
         if (error.response) {
           if (error.response.status === 400) {
