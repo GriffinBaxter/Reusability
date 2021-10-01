@@ -37,10 +37,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 import static java.time.temporal.TemporalAdjusters.*;
@@ -550,6 +552,25 @@ public class ListingResource {
                 salesReportPayloads.add(generateIndividualSalesReport(
                         businessId, currentDate, toDate,
                         currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
+                                currentDate.getYear()
+                ));
+                break;
+            case "Weekly":
+                while (
+                        currentDate.getYear() != toDate.getYear() ||
+                        currentDate.get(WeekFields.of(Locale.US).weekOfWeekBasedYear()) !=
+                                toDate.get(WeekFields.of(Locale.US).weekOfWeekBasedYear())
+                ) {
+                    salesReportPayloads.add(generateIndividualSalesReport(
+                            businessId, currentDate, currentDate.with(DayOfWeek.SUNDAY),
+                            "Week " + currentDate.get(WeekFields.of(Locale.US).weekOfWeekBasedYear()) + ", " +
+                                    currentDate.getYear()
+                    ));
+                    currentDate = currentDate.plusWeeks(1).with(DayOfWeek.MONDAY);
+                }
+                salesReportPayloads.add(generateIndividualSalesReport(
+                        businessId, currentDate, toDate,
+                        "Week " + currentDate.get(WeekFields.of(Locale.US).weekOfWeekBasedYear()) + ", " +
                                 currentDate.getYear()
                 ));
                 break;

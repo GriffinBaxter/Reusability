@@ -21,19 +21,19 @@
               </button>
               <ul class="dropdown-menu gap-2" aria-labelledby="btnGroupDrop1">
                 <li id="year-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Year'; retrieveSalesReport()">
+                    @click="period = 'Year'; updateGranularity(); retrieveSalesReport()">
                   Year
                 </li>
                 <li id="month-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Month'; retrieveSalesReport()">
+                    @click="period = 'Month'; updateGranularity(); retrieveSalesReport()">
                   Month
                 </li>
                 <li id="week-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Week'; retrieveSalesReport()">
+                    @click="period = 'Week'; updateGranularity(); retrieveSalesReport()">
                   Week
                 </li>
                 <li id="day-option" class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="period = 'Day'; retrieveSalesReport()">
+                    @click="period = 'Day'; updateGranularity(); retrieveSalesReport()">
                   Day
                 </li>
                 <li id="custom-option" class="btn green-button-transparent col-12 order-by-options-btn"
@@ -171,6 +171,11 @@
                 </li>
 
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
+                    @click="setGranularityOption('Weekly', $event)">
+                  Weekly
+                </li>
+
+                <li class="btn green-button-transparent col-12 order-by-options-btn"
                     @click="setGranularityOption('Daily', $event)">
                   Daily
                 </li>
@@ -199,7 +204,7 @@
                   Table
                 </li>
                 <li class="btn green-button-transparent col-12 order-by-options-btn"
-                    @click="visualisationType = 'Graph'">
+                    @click="visualisationType = 'Graph'; updateGranularity(); retrieveSalesReport();">
                   Graph
                 </li>
               </ul>
@@ -470,6 +475,21 @@ export default {
         dates = this.generateDatesFromDay(this.selectedDay);
       }
       return dates;
+    },
+
+    /**
+     * Updates the granularity based on the period, only for the graph visualisation type.
+     */
+    updateGranularity() {
+      if (this.visualisationType === "Graph") {
+        if (this.period === "Year") {
+          this.granularity = "Monthly"
+        } else if (this.period === "Month") {
+          this.granularity = "Weekly"
+        } else {
+          this.granularity = "Daily"
+        }
+      }
     },
 
     /**
